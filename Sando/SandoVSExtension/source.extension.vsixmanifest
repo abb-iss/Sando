@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Vsix Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
+  <Identifier Id="SandoVSExtension.ABB.416cf525-08b9-4b10-bedd-dc0001d3d96d">
+    <Name>SandoVSExtension</Name>
+    <Author>ABB</Author>
+    <Version>1.0</Version>
+    <Description xml:space="preserve">Empty VSIX Project.</Description>
+    <Locale>1033</Locale>
+    <SupportedProducts>
+      <VisualStudio Version="10.0">
+        <Edition>Pro</Edition>
+      </VisualStudio>
+    </SupportedProducts>
+    <SupportedFrameworkRuntimeEdition MinVersion="4.0" MaxVersion="4.0" />
+  </Identifier>
+  <References>
+  <!--Add References here-->  
+  </References>
+
+  <Content>
+    <!--Add Content here-->
+  </Content>
+
+</Vsix>
