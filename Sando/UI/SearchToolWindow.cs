@@ -20,12 +20,12 @@ namespace VSPackage.UI
     /// implementation of the IVsUIElementPane interface.
     /// </summary>
     [Guid("ac71d0b7-7613-4edd-95cc-9be31c0a993a")]
-    public class MyToolWindow : ToolWindowPane
+    public class SearchToolWindow : ToolWindowPane
     {
         /// <summary>
         /// Standard constructor for the tool window.
         /// </summary>
-        public MyToolWindow() :
+        public SearchToolWindow() :
             base(null)
         {
             // Set the window title reading it from the resources.

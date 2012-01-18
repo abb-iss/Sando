@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Core;
 
 namespace VSPackage.UI
 {
@@ -24,8 +25,10 @@ namespace VSPackage.UI
             InitializeComponent();
         }
 
+        private List<ProgramElement> SearchResults; 
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(string.Format(System.Globalization.CultureInfo.CurrentUICulture, "We are inside {0}.button1_Click()", this.ToString()),
                             "Sando Search");
