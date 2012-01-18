@@ -1,5 +1,9 @@
 syntax: regexp
 Sando/_ReSharper*
 syntax: glob
-*/obj/x86/Debug/*
-*/bin/Debug/*
+*/bin/*
+Indexer/Indexer.suo
+Indexer/TraceAndTestImpact.testsettings
+Indexer/Local.testsettings
+Indexer/Indexer.vsmdi
+*/obj/*
