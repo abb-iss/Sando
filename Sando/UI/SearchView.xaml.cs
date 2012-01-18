@@ -16,16 +16,38 @@ using Core;
 namespace VSPackage.UI
 {
     /// <summary>
-    /// Interaction logic for MyControl.xaml
+    /// Interaction logic for SearchViewControl.xaml
     /// </summary>
-    public partial class MyControl : UserControl
+    public partial class SearchViewControl : UserControl
     {
-        public MyControl()
+        public SearchViewControl()
         {
-            InitializeComponent();
+            this.DataContext = this; //so we can show results
+            InitializeFakeData();
+            InitializeComponent();            
         }
 
-        private List<ProgramElement> SearchResults; 
+        private void InitializeFakeData()
+        {
+            SearchResults = new List<ProgramElement>();
+            SearchResults.Add(new Method());
+            SearchResults.Add(new Method());
+            SearchResults.Add(new Method());
+            SearchResults.Add(new Method());
+            SearchResults.Add(new Method());                         
+        }
+
+        public List<ProgramElement> SearchResults { get; set; }
+
+        public ProgramElement Result1
+        {
+            get { return SearchResults.ToArray()[0]; }
+        }
+
+        public ProgramElement Result2
+        {
+            get { return SearchResults.ToArray()[1]; }
+        }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
