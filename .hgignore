@@ -1,0 +1,4 @@
+syntax: regexp
+Sando/_ReSharper*
+syntax: glob
+*/obj/x86/Debug/*
