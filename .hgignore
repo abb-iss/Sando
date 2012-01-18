@@ -3,3 +3,4 @@ Sando/_ReSharper*
 syntax: glob
 */obj/x86/Debug/*
 */bin/Debug/*
+*/obj/Debug/*
