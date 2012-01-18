@@ -1,0 +1,125 @@
+﻿<UserControl x:Class="VSPackage.UI.SearchViewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
+             xmlns:UI="clr-namespace:VSPackage.UI" mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="300"
+             Name="MyToolWindow"
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
+    <Grid>
+        <StackPanel Margin="5,5,5,5">
+            
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="5,5,5,5">
+                <TextBox Width="200" Height="30" AcceptsReturn="True" Text=""></TextBox>
+                <Button Content="Search" Width="60" Height="30" Name="searchButton" Click="SearchButtonClick" />
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" DataContext="{Binding Path=Result1}" >
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="1" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="2" Grid.Column="0" >
+                    </TextBlock>
+                </Grid>
+                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
+                </TextBlock>
+                
+
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" DataContext="{Binding Path=Result2}" >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="1" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="2" Grid.Column="0" >
+                    </TextBlock>
+                </Grid>
+                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
+                </TextBlock>
+
+
+            </StackPanel>
+
+            <StackPanel  Orientation="Horizontal">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+                <Grid>
+                    <TextBlock Width="Auto" Height="60
+                               " >
+
+                    </TextBlock>
+                </Grid>
+
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+                <Grid>
+                    <TextBlock Width="Auto" Height="60
+                               " >
+
+                    </TextBlock>
+                </Grid>
+
+            </StackPanel>
+
+            <StackPanel  Orientation="Horizontal">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="20" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+                <Grid>
+                    <TextBlock Width="Auto" Height="60
+                               " >
+                        
+                    </TextBlock>
+                </Grid>
+
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

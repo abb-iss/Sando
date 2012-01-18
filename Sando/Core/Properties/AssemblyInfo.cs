@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ABB")]
 [assembly: AssemblyProduct("Core")]
-[assembly: AssemblyCopyright("Copyright © ABB 2011")]
+[assembly: AssemblyCopyright("Copyright © ABB 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d08923da-1f1c-4a97-8000-ff0299113930")]
+[assembly: Guid("2c241d41-4898-4c9c-b269-8ba147c2229b")]
 
 // Version information for an assembly consists of the following four values:
 //
