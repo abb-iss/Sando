@@ -166,12 +166,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
-      <Name>Core</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
