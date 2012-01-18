@@ -8,3 +8,4 @@ Indexer/Local.testsettings
 Indexer/Indexer.vsmdi
 */obj/*
 .hgignore.orig
+*.orig
