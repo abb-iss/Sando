@@ -9,6 +9,8 @@ namespace Sando.Indexer.Documents
 			return document;
 		}
 
+		protected abstract void CreateDocument();
+
 		protected Document document;
 	}
 }
