@@ -5,17 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              mc:Ignorable="d" 
-             d:DesignHeight="350" d:DesignWidth="300"
+             d:DesignHeight="450" d:DesignWidth="300"
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
     <Grid>
-        <StackPanel Margin="5,5,5,5">
-            
-            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="5,5,5,5">
+        <StackPanel Margin="10,10,10,10" >
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="Margin" Value="0,10,0,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="5,5,5,5">
                 <TextBox Width="200" Height="30" AcceptsReturn="True" Text=""></TextBox>
                 <Button Content="Search" Width="60" Height="30" Name="searchButton" Click="SearchButtonClick" />
             </StackPanel>
-            <StackPanel  Orientation="Horizontal" DataContext="{Binding Path=Result1}" >
+            <StackPanel Margin="0,5,0,5" Orientation="Horizontal" DataContext="{Binding Path=Result1}" >
 
                 <Grid>
                     <Grid.RowDefinitions>
@@ -28,9 +32,9 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
                     </TextBlock>
-                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="1" Grid.Column="0" >
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=ContainerName}" Grid.Row="1" Grid.Column="0" >
                     </TextBlock>
-                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="2" Grid.Column="0" >
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="2" Grid.Column="0" >
                     </TextBlock>
                 </Grid>
                 <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
@@ -50,18 +54,17 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
                     </TextBlock>
-                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="1" Grid.Column="0" >
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=ContainerName}" Grid.Row="1" Grid.Column="0" >
                     </TextBlock>
-                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="2" Grid.Column="0" >
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="2" Grid.Column="0" >
                     </TextBlock>
                 </Grid>
                 <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
                 </TextBlock>
 
-
             </StackPanel>
 
-            <StackPanel  Orientation="Horizontal">
+            <StackPanel  Orientation="Horizontal" DataContext="{Binding Path=Result3}" >
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20" />
@@ -71,16 +74,18 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
                     </Grid.ColumnDefinitions>
-                </Grid>
-                <Grid>
-                    <TextBlock Width="Auto" Height="60
-                               " >
-
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=ContainerName}" Grid.Row="1" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="2" Grid.Column="0" >
                     </TextBlock>
                 </Grid>
+                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
+                </TextBlock>
 
             </StackPanel>
-            <StackPanel  Orientation="Horizontal">
+            <StackPanel  Orientation="Horizontal" DataContext="{Binding Path=Result4}" >
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20" />
@@ -90,17 +95,18 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
                     </Grid.ColumnDefinitions>
-                </Grid>
-                <Grid>
-                    <TextBlock Width="Auto" Height="60
-                               " >
-
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=ContainerName}" Grid.Row="1" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="2" Grid.Column="0" >
                     </TextBlock>
                 </Grid>
+                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
+                </TextBlock>
 
             </StackPanel>
-
-            <StackPanel  Orientation="Horizontal">
+            <StackPanel  Orientation="Horizontal" DataContext="{Binding Path=Result5}" >
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20" />
@@ -110,13 +116,15 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
                     </Grid.ColumnDefinitions>
-                </Grid>
-                <Grid>
-                    <TextBlock Width="Auto" Height="60
-                               " >
-                        
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=ContainerName}" Grid.Row="1" Grid.Column="0" >
+                    </TextBlock>
+                    <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="2" Grid.Column="0" >
                     </TextBlock>
                 </Grid>
+                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=SummaryText}" >
+                </TextBlock>
 
             </StackPanel>
 
