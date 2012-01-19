@@ -2,7 +2,7 @@
 // MUST match guids.h
 using System;
 
-namespace VSPackage.UI
+namespace Sando.UI
 {
     static class GuidList
     {

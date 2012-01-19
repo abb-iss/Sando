@@ -2,7 +2,7 @@
 // MUST match PkgCmdID.h
 using System;
 
-namespace VSPackage.UI
+namespace Sando.UI
 {
     static class PkgCmdIDList
     {

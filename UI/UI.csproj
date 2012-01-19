@@ -113,8 +113,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SearchView.xaml.cs">
-      <DependentUpon>SearchView.xaml</DependentUpon>
+    <Compile Include="SearchViewControl.xaml.cs">
+      <DependentUpon>SearchViewControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="SearchToolWindow.cs" />
     <Compile Include="Guids.cs" />
@@ -161,10 +161,16 @@
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="SearchView.xaml">
+    <Page Include="SearchViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

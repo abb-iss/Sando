@@ -11,9 +11,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Core;
+using Sando.Core;
 
-namespace VSPackage.UI
+namespace Sando.UI
 {
     /// <summary>
     /// Interaction logic for SearchViewControl.xaml

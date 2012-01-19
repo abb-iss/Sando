@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VSPackage.UI {
+namespace  Sando.UI {
     using System;
     
     
