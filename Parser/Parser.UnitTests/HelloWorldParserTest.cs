@@ -21,7 +21,10 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void GenerateSrcMLTest()
 		{
-			String srcML = SrcMLGenerator.generateSrcML(HelloWorldFile);
+			var generator = new SrcMLGenerator();
+			var v = Environment.CurrentDirectory;
+			generator.SetSrcMLLocation(v + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
+			String srcML = generator.GenerateSrcML(HelloWorldFile);
 			Assert.IsNotNullOrEmpty(srcML);
 		}
 

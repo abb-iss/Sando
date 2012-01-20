@@ -5,10 +5,25 @@ namespace Sando.Parser
 {
     public class SrcMLGenerator
     {
+    	private const string Src2SrcmlExe = "\\src2srcml.exe";
+
+    	private String SrcMLFolderPath;
+
+		public void SetSrcMLLocation(String location)
+		{
+			SrcMLFolderPath = location;
+
+			if(!System.IO.File.Exists(SrcMLFolderPath+Src2SrcmlExe))
+			{
+				throw new ParserException("sr2srcml.exe cannot be found. looking in: " + SrcMLFolderPath);
+			}
+		}
+		
+
 		//
 		// run srcML and return the generated sourceXML as a string
 		//
-		public static String generateSrcML(String filename)
+		public String GenerateSrcML(String filename)
 		{
 			//check whether filename exists
 			if(!System.IO.File.Exists(filename))
@@ -16,28 +31,19 @@ namespace Sando.Parser
 				throw new ParserException("parser input file name does not exist: " + filename);
 			}
 
-			return launchSrcML(filename);
+			return LaunchSrcML(filename);
 		}
 
 		
-		private static String launchSrcML(String filename)
+		private String LaunchSrcML(String filename)
 		{
 			string srcML = "";
-
-			string srcMLExecutable = Environment.CurrentDirectory;
-			int idx = srcMLExecutable.IndexOf("sando");
-			srcMLExecutable = srcMLExecutable.Remove(idx + "sando".Length);
-			srcMLExecutable = srcMLExecutable + "\\LIBS\\srcML-Win\\src2srcml.exe";
-			if(!System.IO.File.Exists(srcMLExecutable))
-			{
-				throw new ParserException("sr2srcml.exe cannot be found. looking in: " + srcMLExecutable);
-			}
 
 			ProcessStartInfo startInfo = new ProcessStartInfo();
 			startInfo.CreateNoWindow = true;
 			startInfo.UseShellExecute = false;
 			startInfo.RedirectStandardOutput = true;
-			startInfo.FileName = srcMLExecutable;
+			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
 			startInfo.Arguments = "-l Java " + filename ;
 

@@ -7,7 +7,9 @@ namespace Sando.Parser
 	{
 		public ProgramElement[] parse(String filename)
 		{
-			String srcml = SrcMLGenerator.generateSrcML(filename);
+			var generator = new SrcMLGenerator();
+			generator.SetSrcMLLocation("'");
+			String srcml = generator.GenerateSrcML(filename);
 
 			//now parse the important parts of the srcml and generate program elements
 
