@@ -46,10 +46,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParserException.cs" />
+    <Compile Include="ParserInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SrcMLGenerator.cs" />
+    <Compile Include="SrcMLParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
