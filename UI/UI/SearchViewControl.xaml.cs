@@ -20,7 +20,7 @@ namespace Sando.UI
     /// </summary>
     public partial class SearchViewControl : UserControl
     {
-        public SearchViewControl()
+    	public SearchViewControl()
         {
             this.DataContext = this; //so we can show results
             InitializeFakeData();
@@ -38,43 +38,43 @@ namespace Sando.UI
         	method.ContainerName = "List";
         	method.FileName = "List.cs";
 			method.SummaryText = code;
-        	SearchResults.Add(method);
+			SearchResults.Add(method);
 
         	var item = new Method();
 			item.Name = "Add";
 			item.ContainerName = "List";
 			item.FileName = "List.cs";
 			item.SummaryText = code;
-        	SearchResults.Add(item);
+			SearchResults.Add(item);
 
         	var method1 = new Method();
 			method1.Name = "Add";
 			method1.ContainerName = "List";
 			method1.FileName = "List.cs";
 			method1.SummaryText = code;
-        	SearchResults.Add(method1);
+			SearchResults.Add(method1);
 
         	var item1 = new Method();
 			item1.Name = "Add";
 			item1.ContainerName = "List";
 			item1.FileName = "List.cs";
 			item1.SummaryText = code;
-        	SearchResults.Add(item1);
+			SearchResults.Add(item1);
 
         	var method2 = new Method();
 			method2.Name = "Add";
 			method2.ContainerName = "List";
 			method2.FileName = "List.cs";
         	method2.SummaryText = code;
-        	SearchResults.Add(method2);  
+			SearchResults.Add(method2);  
   
 			
          
         }
 
-        public List<ProgramElement> SearchResults { get; set; }
+    	public List<ProgramElement> SearchResults { get; private set; }
 
-        public ProgramElement Result1
+    	public ProgramElement Result1
         {
             get { return SearchResults.ToArray()[0]; }
         }
