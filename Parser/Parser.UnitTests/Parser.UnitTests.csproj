@@ -48,6 +48,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Parser\Parser.csproj">
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
       <Name>Parser</Name>

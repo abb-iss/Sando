@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.Win32;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -88,7 +90,24 @@ namespace Sando.UI
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand( menuToolWin );
             }
+				
+			var dte = GetService(typeof(DTE2)) as DTE2;
+			var solutionEvents = dte.Events.SolutionEvents;
+			// wire up the events you need
+			solutionEvents.Opened += new _dispSolutionEvents_OpenedEventHandler(solutionHasBeenOpened);
+			solutionEvents.AfterClosing += new _dispSolutionEvents_AfterClosingEventHandler(solutionHasBeenClosed);
         }
+
+		private void solutionHasBeenClosed()
+		{
+			throw new NotImplementedException();
+		}
+
+		private void solutionHasBeenOpened()
+		{
+			throw new NotImplementedException();
+		}
+    
         #endregion
 
     }
