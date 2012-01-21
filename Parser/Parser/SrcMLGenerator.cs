@@ -3,11 +3,32 @@ using System.Diagnostics;
 
 namespace Sando.Parser
 {
+	public enum LanguageEnum
+	{
+		Java,
+		C,
+		CSharp
+	};
+
     public class SrcMLGenerator
     {
+		
     	private const string Src2SrcmlExe = "\\src2srcml.exe";
-
     	private String SrcMLFolderPath;
+    	private LanguageEnum Language;
+
+		public SrcMLGenerator()
+		{
+			Language = LanguageEnum.Java;
+		}
+
+		public void SetLanguage(LanguageEnum language)
+		{
+			Language = language;
+			//temporary
+			if(language==LanguageEnum.CSharp)
+				Language = LanguageEnum.Java;
+		}
 
 		public void SetSrcMLLocation(String location)
 		{
@@ -45,7 +66,7 @@ namespace Sando.Parser
 			startInfo.RedirectStandardOutput = true;
 			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "-l Java " + filename ;
+			startInfo.Arguments = "-l "+Language.ToString()+" " + filename ;
 
 			try
 			{
