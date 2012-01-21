@@ -7,7 +7,7 @@ namespace Sando.Core
 {
     public abstract class ProgramElement
     {
-    	public abstract String Name
+    	public String Name
     	{
     		get; set;
     	}
@@ -17,12 +17,12 @@ namespace Sando.Core
 			get;
 			set;
 		} 
-		public abstract String FileName
+		public String FileName
 		{
 			get;
 			set;
 		}
-    	public abstract String SummaryText
+    	public String SummaryText
     	{
     		get; set;
     	}

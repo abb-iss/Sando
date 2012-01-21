@@ -1,5 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
+using Sando.Core;
 using Sando.Parser;
 
 namespace Sando.Parser.UnitTests
@@ -44,6 +45,24 @@ namespace Sando.Parser.UnitTests
 		{			
 			String srcML = Generator.GenerateSrcML("..\\..\\TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsNotNullOrEmpty(srcML);
+		}
+
+		[Test]
+		public void BasicParserTest()
+		{
+			SrcMLParser parser = new SrcMLParser(Generator);
+			var elements = parser.parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			Assert.IsNotNull(elements);
+			Assert.IsTrue(elements.Length>0);
+			bool hasClass=false, hasMethod=false;
+			foreach (var programElement in elements)
+			{
+				if(programElement as Method != null)
+					hasMethod = true;
+				if(programElement as Class != null)
+					hasClass = true;
+			}
+			Assert.IsTrue(hasClass && hasMethod);
 		}
 
 		[TearDown]
