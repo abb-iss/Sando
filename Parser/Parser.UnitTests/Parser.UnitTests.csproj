@@ -53,8 +53,10 @@
       <Name>Parser</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="TestFiles\" />
+    <Content Include="TestFiles\ShortCSharpFile.txt" />
+    <Content Include="TestFiles\ShortestCSharpFile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
