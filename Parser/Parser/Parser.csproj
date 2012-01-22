@@ -8,7 +8,7 @@
     <ProjectGuid>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Parser</RootNamespace>
+    <RootNamespace>Sando.Parser</RootNamespace>
     <AssemblyName>Parser</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

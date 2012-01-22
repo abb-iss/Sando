@@ -8,7 +8,7 @@
     <ProjectGuid>{49F631B7-D5C7-4330-B64B-6A7765759E3D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UI.UnitTests</RootNamespace>
+    <RootNamespace>Sando.UI.UnitTests</RootNamespace>
     <AssemblyName>UI.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

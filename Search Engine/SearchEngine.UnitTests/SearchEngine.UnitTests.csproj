@@ -8,7 +8,7 @@
     <ProjectGuid>{237C4ECB-97E5-4B2B-8DF4-D27CB39B28BA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SearchEngine.UnitTests</RootNamespace>
+    <RootNamespace>Sando.SearchEngine.UnitTests</RootNamespace>
     <AssemblyName>SearchEngine.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -57,9 +57,9 @@ namespace Sando.Parser.UnitTests
 			bool hasClass=false, hasMethod=false;
 			foreach (var programElement in elements)
 			{
-				if(programElement as Method != null)
+				if(programElement as MethodElement != null)
 					hasMethod = true;
-				if(programElement as Class != null)
+				if(programElement as ClassElement != null)
 					hasClass = true;
 			}
 			Assert.IsTrue(hasClass && hasMethod);

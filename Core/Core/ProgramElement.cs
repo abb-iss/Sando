@@ -7,24 +7,9 @@ namespace Sando.Core
 {
     public abstract class ProgramElement
     {
-    	public String Name
-    	{
-    		get; set;
-    	}
-		//could be namespace, package, folder, class, etc. depending on language and element
-		public abstract String ContainerName
-		{
-			get;
-			set;
-		} 
-		public String FileName
-		{
-			get;
-			set;
-		}
-    	public String SummaryText
-    	{
-    		get; set;
-    	}
+		public virtual Guid Id { get; set; }
+		public virtual string Name { get; set; }
+		public virtual AccessLevel AccessLevel { get; set; }
+		public virtual int DefinitionLineNumber { get; set; }
     }
 }

@@ -8,7 +8,7 @@
     <ProjectGuid>{DB482A0E-4294-4008-BC79-D22505B5B661}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core</RootNamespace>
+    <RootNamespace>Sando.Core</RootNamespace>
     <AssemblyName>Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,9 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class.cs" />
-    <Compile Include="Field.cs" />
-    <Compile Include="Method.cs" />
+    <Compile Include="AccessLevel.cs" />
+    <Compile Include="ClassElement.cs" />
+    <Compile Include="EnumElement.cs" />
+    <Compile Include="PropertyElement.cs" />
+    <Compile Include="FieldElement.cs" />
+    <Compile Include="MethodElement.cs" />
     <Compile Include="ProgramElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

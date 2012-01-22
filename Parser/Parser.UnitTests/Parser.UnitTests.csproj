@@ -8,7 +8,7 @@
     <ProjectGuid>{05789817-3744-4ACF-B090-280DD14D05A2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Parser.UnitTests</RootNamespace>
+    <RootNamespace>Sando.Parser.UnitTests</RootNamespace>
     <AssemblyName>Parser.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
