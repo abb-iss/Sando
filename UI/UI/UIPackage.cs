@@ -90,22 +90,22 @@ namespace Sando.UI
                 MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand( menuToolWin );
             }
-				
-			var dte = GetService(typeof(DTE2)) as DTE2;
+
+			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 			var solutionEvents = dte.Events.SolutionEvents;
-			// wire up the events you need
-			solutionEvents.Opened += new _dispSolutionEvents_OpenedEventHandler(solutionHasBeenOpened);
-			solutionEvents.AfterClosing += new _dispSolutionEvents_AfterClosingEventHandler(solutionHasBeenClosed);
+			solutionEvents.Opened += solutionHasBeenOpened;
+			solutionEvents.AfterClosing += solutionHasBeenClosed;
         }
 
 		private void solutionHasBeenClosed()
 		{
-			throw new NotImplementedException();
+			//shut down the current indexer
 		}
 
 		private void solutionHasBeenOpened()
 		{
-			throw new NotImplementedException();
+			//create a new indexer to search this solution
+			//or reuse the existing index
 		}
     
         #endregion

@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Parser.UnitTests
 {
-
 	class SplitterTest
 	{
 	}
