@@ -1,6 +1,7 @@
 ﻿using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Indexer.Documents;
+using Sando.Core;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -19,7 +20,8 @@ namespace Sando.Indexer.UnitTests
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer target = new DocumentIndexer("C:/Windows/Temp", analyzer);
-			SandoDocument sandoDocument = ClassDocument.Create("SimpleClassName");
+			ClassElement classElement = new ClassElement() { Name = "SimpleClassName" };
+			SandoDocument sandoDocument = ClassDocument.Create(classElement);
 			Assert.DoesNotThrow(() => target.AddDocument(sandoDocument));
 			Assert.DoesNotThrow(() => target.CommitChanges());
 			target.Dispose();

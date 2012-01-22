@@ -49,6 +49,9 @@
   <ItemGroup>
     <Compile Include="Configuration\IndexerConfiguration.cs" />
     <Compile Include="Documents\ClassDocument.cs" />
+    <Compile Include="Documents\EnumDocument.cs" />
+    <Compile Include="Documents\FieldDocument.cs" />
+    <Compile Include="Documents\PropertyDocument.cs" />
     <Compile Include="Documents\MethodDocument.cs" />
     <Compile Include="DocumentIndexer.cs" />
     <Compile Include="Documents\SandoDocument.cs" />
@@ -58,6 +61,12 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
