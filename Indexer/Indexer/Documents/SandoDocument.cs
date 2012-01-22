@@ -1,6 +1,5 @@
 ﻿using Lucene.Net.Documents;
 using Sando.Core;
-using System.Reflection;
 
 namespace Sando.Indexer.Documents
 {
@@ -13,6 +12,7 @@ namespace Sando.Indexer.Documents
 
 		public Document GetDocument()
 		{
+			CreateDocument();
 			return document;
 		}
 
