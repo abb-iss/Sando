@@ -54,7 +54,7 @@ namespace Sando.Parser.UnitTests
 			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
-			Assert.IsNotNullOrEmpty(elements[0].Name);
+			Assert.IsNotNull(elements[0].Id);
 		}
 
 		[Test]

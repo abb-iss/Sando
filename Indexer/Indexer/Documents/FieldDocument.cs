@@ -1,4 +1,5 @@
-﻿using Lucene.Net.Documents;
+﻿using System;
+using Lucene.Net.Documents;
 using Sando.Core;
 
 namespace Sando.Indexer.Documents
@@ -7,6 +8,17 @@ namespace Sando.Indexer.Documents
 	{
 		public static FieldDocument Create(FieldElement fieldElement)
 		{
+			if(fieldElement == null)
+				throw new ArgumentException("FieldElement cannot be null");
+			if(fieldElement.ClassId == null)
+				throw new ArgumentException("Class id cannot be null");
+			if(String.IsNullOrWhiteSpace(fieldElement.FieldType))
+				throw new ArgumentException("Field type cannot be null");
+			if(fieldElement.Id == null)
+				throw new ArgumentException("Field id cannot be null");
+			if(String.IsNullOrWhiteSpace(fieldElement.Name))
+				throw new ArgumentException("Field name cannot be null");
+
 			return new FieldDocument(fieldElement);
 		}
 
