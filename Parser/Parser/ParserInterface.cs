@@ -5,6 +5,6 @@ namespace Sando.Parser
 {
 	interface ParserInterface
 	{
-		ProgramElement[] parse(String filename);
+		ProgramElement[] Parse(String filename);
 	}
 }

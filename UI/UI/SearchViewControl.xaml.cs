@@ -33,40 +33,40 @@ namespace Sando.UI
 			string code = "private void GenNextGraphs(object sender, EventArgs e){\n   this.Dispatcher.BeginInvoke(//System.Windows.Threading.DispatcherPriority.Background,\n     new UpdateGraphDelegate(UpdateGraph), new Object[] { _searchTerm });\n  this.Dispatcher.BeginInvoke(//System.Windows.Threading.DispatcherPriority.Background,\n     new ZoomerDelegate(UpdateZoom));   \n}"; 
 
             SearchResults = new List<ProgramElement>();
-        	var method = new Method();
-        	method.Name = "Add";
-        	method.ContainerName = "List";
-        	method.FileName = "List.cs";
-			method.SummaryText = code;
-			SearchResults.Add(method);
+        	var MethodElement = new MethodElement();
+        	MethodElement.Name = "Add";
+			//MethodElement.ContainerName = "List";
+			//MethodElement.FileName = "List.cs";
+			//MethodElement.SummaryText = code;
+			SearchResults.Add(MethodElement);
 
-        	var item = new Method();
+        	var item = new MethodElement();
 			item.Name = "Add";
-			item.ContainerName = "List";
-			item.FileName = "List.cs";
-			item.SummaryText = code;
+			//item.ContainerName = "List";
+			//item.FileName = "List.cs";
+			//item.SummaryText = code;
 			SearchResults.Add(item);
 
-        	var method1 = new Method();
-			method1.Name = "Add";
-			method1.ContainerName = "List";
-			method1.FileName = "List.cs";
-			method1.SummaryText = code;
-			SearchResults.Add(method1);
+        	var MethodElement1 = new MethodElement();
+			MethodElement1.Name = "Add";
+			//MethodElement1.ContainerName = "List";
+			//MethodElement1.FileName = "List.cs";
+			//MethodElement1.SummaryText = code;
+			SearchResults.Add(MethodElement1);
 
-        	var item1 = new Method();
+        	var item1 = new MethodElement();
 			item1.Name = "Add";
-			item1.ContainerName = "List";
-			item1.FileName = "List.cs";
-			item1.SummaryText = code;
+			//item1.ContainerName = "List";
+			//item1.FileName = "List.cs";
+			//item1.SummaryText = code;
 			SearchResults.Add(item1);
 
-        	var method2 = new Method();
-			method2.Name = "Add";
-			method2.ContainerName = "List";
-			method2.FileName = "List.cs";
-        	method2.SummaryText = code;
-			SearchResults.Add(method2);  
+        	var MethodElement2 = new MethodElement();
+			MethodElement2.Name = "Add";
+			//MethodElement2.ContainerName = "List";
+			//MethodElement2.FileName = "List.cs";
+			//MethodElement2.SummaryText = code;
+			SearchResults.Add(MethodElement2);  
   
 			
          
@@ -74,38 +74,7 @@ namespace Sando.UI
 
     	public List<ProgramElement> SearchResults { get; private set; }
 
-    	public ProgramElement Result1
-        {
-            get { return SearchResults.ToArray()[0]; }
-        }
-
-        public ProgramElement Result2
-        {
-            get { return SearchResults.ToArray()[1]; }
-        }
-
-		public ProgramElement Result3
-		{
-			get
-			{
-				return SearchResults.ToArray()[2];
-			}
-		}
-
-		public ProgramElement Result4
-		{
-			get
-			{
-				return SearchResults.ToArray()[3];
-			}
-		}
-		public ProgramElement Result5
-		{
-			get
-			{
-				return SearchResults.ToArray()[4];
-			}
-		}
+    
 
 		
 

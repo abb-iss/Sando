@@ -48,10 +48,20 @@ namespace Sando.Parser.UnitTests
 		}
 
 		[Test]
+		public void ParseFunctionTest()
+		{
+			var parser = new SrcMLParser();
+			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			Assert.IsNotNull(elements);
+			Assert.IsTrue(elements.Length>0);
+			Assert.IsNotNullOrEmpty(elements[0].Name);
+		}
+
+		[Test]
 		public void BasicParserTest()
 		{
 			SrcMLParser parser = new SrcMLParser(Generator);
-			var elements = parser.parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
 			bool hasClass=false, hasMethod=false;
