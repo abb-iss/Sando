@@ -48,6 +48,8 @@
   <ItemGroup>
     <Compile Include="AccessLevel.cs" />
     <Compile Include="ClassElement.cs" />
+    <Compile Include="CommentElement.cs" />
+    <Compile Include="DocCommentElement.cs" />
     <Compile Include="EnumElement.cs" />
     <Compile Include="PropertyElement.cs" />
     <Compile Include="FieldElement.cs" />

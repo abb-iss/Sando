@@ -5,13 +5,10 @@ using System.Text;
 
 namespace Sando.Core
 {
-	public class EnumElement : ProgramElement
+	public class DocCommentElement : ProgramElement
 	{
-		public virtual string Name { get; set; }
-		public virtual AccessLevel AccessLevel { get; set; }
 		public virtual int DefinitionLineNumber { get; set; }
-		public virtual string Namespace { get; set; }
-		public virtual string Values { get; set; }
+		public virtual string Body { get; set; }
 		public virtual string FileName { get; set; }
 		public virtual string FullFilePath { get; set; }
 	}
