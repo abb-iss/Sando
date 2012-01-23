@@ -11,7 +11,8 @@ namespace Sando.Parser
 	{
 		private SrcMLGenerator Generator;
 
-		private static readonly XNamespace Namespace = "http://www.sdml.info/srcML/src";
+		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
+		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
 
 		public SrcMLParser()
 		{
@@ -42,7 +43,7 @@ namespace Sando.Parser
 		private void ParseFunctions(List<ProgramElement> programElements, XElement elements)
 		{
 			IEnumerable<XElement> functions =
-				from el in elements.Descendants(Namespace + "function")
+				from el in elements.Descendants(SourceNamespace + "function")
 				select el;
 			programElements.AddRange(functions.Select(ParseFunction).ToList());
 		}
@@ -51,14 +52,31 @@ namespace Sando.Parser
 		{
 			var method = new MethodElement();			
 			//get name
-			IEnumerable<XElement> name =
-				from el in function.Elements(Namespace + "name")
-				select el;
-			method.Name = name.First().Value;
+			XElement name = function.Element(SourceNamespace + "name");
+			method.Name = name.Value;
 			//get other stuff...
-
+			method.DefinitionLineNumber = Int32.Parse(name.Attribute(PositionNamespace + "line").Value);
+			XElement access = function.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
+			method.AccessLevel = strToAccessLevel(access.Value);
+			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
+			method.ReturnType = type.Value;
+			//still debating how to handle method parameters and bodies...
 			return method;
 		}
 
+		private AccessLevel strToAccessLevel(String level) 
+		{
+			switch(level.ToLower())
+			{
+				case "private":
+					return AccessLevel.Private;
+				case "public":
+					return AccessLevel.Public;
+				case "protected":
+					return AccessLevel.Protected;
+				default:
+					return AccessLevel.Protected;			
+			}
+ 		}
 	}
 }

@@ -48,13 +48,30 @@ namespace Sando.Parser.UnitTests
 		}
 
 		[Test]
-		public void ParseFunctionTest()
+		public void ParseMethodTest()
 		{
+			bool Seen_SetLanguageMethod = false;
 			var parser = new SrcMLParser();
 			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
-			Assert.IsNotNull(elements[0].Id);
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is MethodElement)
+				{
+					MethodElement method = (MethodElement)pe;
+					if(method.Name == "SetLanguage")
+					{
+						Seen_SetLanguageMethod = true;
+						Assert.AreEqual(method.DefinitionLineNumber, 26);
+						Assert.AreEqual(method.ReturnType, "void");
+						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
+						//Assert.AreEqual(method.Arguments, "LanguageEnum language");
+						//Assert.IsNotNullOrEmpty(method.Body);
+					}
+				}
+			}
+			Assert.IsTrue(Seen_SetLanguageMethod);
 		}
 
 		[Test]
