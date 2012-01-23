@@ -86,38 +86,6 @@ namespace Sando.UI
 
     	public List<ProgramElement> SearchResults { get; private set; }
 
-    	public ProgramElement Result1
-        {
-            get { return SearchResults.ToArray()[0]; }
-        }
-
-        public ProgramElement Result2
-        {
-            get { return SearchResults.ToArray()[1]; }
-        }
-
-		public ProgramElement Result3
-		{
-			get
-			{
-				return SearchResults.ToArray()[2];
-			}
-		}
-
-		public ProgramElement Result4
-		{
-			get
-			{
-				return SearchResults.ToArray()[3];
-			}
-		}
-		public ProgramElement Result5
-		{
-			get
-			{
-				return SearchResults.ToArray()[4];
-			}
-		}
 
 		
 
