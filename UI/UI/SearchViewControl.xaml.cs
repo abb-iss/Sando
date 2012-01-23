@@ -33,48 +33,91 @@ namespace Sando.UI
 			string code = "private void GenNextGraphs(object sender, EventArgs e){\n   this.Dispatcher.BeginInvoke(//System.Windows.Threading.DispatcherPriority.Background,\n     new UpdateGraphDelegate(UpdateGraph), new Object[] { _searchTerm });\n  this.Dispatcher.BeginInvoke(//System.Windows.Threading.DispatcherPriority.Background,\n     new ZoomerDelegate(UpdateZoom));   \n}"; 
 
             SearchResults = new List<ProgramElement>();
-        	var MethodElement = new MethodElement();
-        	MethodElement.Name = "Add";
-			//MethodElement.ContainerName = "List";
-			//MethodElement.FileName = "List.cs";
-			//MethodElement.SummaryText = code;
-			SearchResults.Add(MethodElement);
+			var method = new MethodElement()
+						{
+							Name = "Add",
+							Arguments = "object sender",
+							ReturnType = "void",
+							Id = Guid.NewGuid(),
+							ClassId = Guid.NewGuid(),
+							AccessLevel = AccessLevel.Public,
+							Body = code
+						};
+			SearchResults.Add(method);
 
-        	var item = new MethodElement();
-			item.Name = "Add";
-			//item.ContainerName = "List";
-			//item.FileName = "List.cs";
-			//item.SummaryText = code;
-			SearchResults.Add(item);
+			method = new MethodElement()
+						{
+							Name = "Add",
+							Arguments = "object sender",
+							ReturnType = "void",
+							Id = Guid.NewGuid(),
+							ClassId = Guid.NewGuid(),
+							AccessLevel = AccessLevel.Public,
+							Body = code
+						};
+			SearchResults.Add(method);
 
-        	var MethodElement1 = new MethodElement();
-			MethodElement1.Name = "Add";
-			//MethodElement1.ContainerName = "List";
-			//MethodElement1.FileName = "List.cs";
-			//MethodElement1.SummaryText = code;
-			SearchResults.Add(MethodElement1);
 
-        	var item1 = new MethodElement();
-			item1.Name = "Add";
-			//item1.ContainerName = "List";
-			//item1.FileName = "List.cs";
-			//item1.SummaryText = code;
-			SearchResults.Add(item1);
+			method = new MethodElement()
+						{
+							Name = "Add",
+							Arguments = "object sender",
+							ReturnType = "void",
+							Id = Guid.NewGuid(),
+							ClassId = Guid.NewGuid(),
+							AccessLevel = AccessLevel.Public,
+							Body = code
+						};
+			SearchResults.Add(method);
 
-        	var MethodElement2 = new MethodElement();
-			MethodElement2.Name = "Add";
-			//MethodElement2.ContainerName = "List";
-			//MethodElement2.FileName = "List.cs";
-			//MethodElement2.SummaryText = code;
-			SearchResults.Add(MethodElement2);  
-  
-			
-         
+
+			method = new MethodElement()
+						{
+							Name = "Add",
+							Arguments = "object sender",
+							ReturnType = "void",
+							Id = Guid.NewGuid(),
+							ClassId = Guid.NewGuid(),
+							AccessLevel = AccessLevel.Public,
+							Body = code
+						};
+			SearchResults.Add(method);
         }
 
     	public List<ProgramElement> SearchResults { get; private set; }
 
-    
+    	public ProgramElement Result1
+        {
+            get { return SearchResults.ToArray()[0]; }
+        }
+
+        public ProgramElement Result2
+        {
+            get { return SearchResults.ToArray()[1]; }
+        }
+
+		public ProgramElement Result3
+		{
+			get
+			{
+				return SearchResults.ToArray()[2];
+			}
+		}
+
+		public ProgramElement Result4
+		{
+			get
+			{
+				return SearchResults.ToArray()[3];
+			}
+		}
+		public ProgramElement Result5
+		{
+			get
+			{
+				return SearchResults.ToArray()[4];
+			}
+		}
 
 		
 
