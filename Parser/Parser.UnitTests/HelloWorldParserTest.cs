@@ -66,8 +66,8 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(method.DefinitionLineNumber, 26);
 						Assert.AreEqual(method.ReturnType, "void");
 						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
-						//Assert.AreEqual(method.Arguments, "LanguageEnum language");
-						//Assert.IsNotNullOrEmpty(method.Body);
+						Assert.AreEqual(method.Arguments, "LanguageEnum language");
+						Assert.IsNotNullOrEmpty(method.Body);
 					}
 				}
 			}

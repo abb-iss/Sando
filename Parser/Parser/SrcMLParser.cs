@@ -50,23 +50,45 @@ namespace Sando.Parser
 
 		private ProgramElement ParseFunction(XElement function)
 		{
-			var method = new MethodElement();			
-			//get name
+			var method = new MethodElement();	
+
+			//parse name...
 			XElement name = function.Element(SourceNamespace + "name");
 			method.Name = name.Value;
-			//get other stuff...
 			method.DefinitionLineNumber = Int32.Parse(name.Attribute(PositionNamespace + "line").Value);
 			XElement access = function.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
 			method.AccessLevel = StrToAccessLevel(access.Value);
 			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
 			method.ReturnType = type.Value;
-			//still debating how to handle method parameters and bodies...
+
+			//parse arguments
+			XElement paramlist = function.Element(SourceNamespace + "parameter_list");
+			IEnumerable<XElement> arguments =
+				from el in paramlist.Descendants(SourceNamespace + "name")
+				select el;
+			foreach(XElement elem in arguments)
+			{
+				method.Arguments = method.Arguments + elem.Value + " ";
+			}
+			method.Arguments = method.Arguments.TrimEnd();
+
+			//parse function body
+			XElement block = function.Element(SourceNamespace + "block");
+			IEnumerable<XElement> bodyNames =
+				from el in block.Descendants(SourceNamespace + "name")
+				select el;
+			foreach(XElement elem in bodyNames)
+			{
+				method.Body = method.Body + elem.Value + " ";
+			}
+			method.Body = method.Body.TrimEnd();
+
 			return method;
 		}
 
 		private AccessLevel StrToAccessLevel(String level)
 		{
-			return (AccessLevel)Enum.Parse(typeof (AccessLevel), level);		
+			return (AccessLevel)Enum.Parse(typeof (AccessLevel), level, true);		
  		}
 	}
 }
