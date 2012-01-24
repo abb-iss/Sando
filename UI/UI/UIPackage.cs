@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
 using EnvDTE80;
+using Lucene.Net.Analysis.Snowball;
+using Lucene.Net.Analysis.Standard;
 using Microsoft.Win32;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Sando.Indexer;
+using Lucene.Net.Analysis.Standard;
 
 namespace Sando.UI
 {
@@ -36,7 +41,11 @@ namespace Sando.UI
     [Guid(GuidList.guidUIPkgString)]
     public sealed class UIPackage : Package
     {
-        /// <summary>
+    	private const string Lucene = "\\lucene";
+    	private DocumentIndexer CurrentIndexer;
+		private SolutionMonitor CurrentMonitor;
+
+    	/// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
         /// any Visual Studio service because at this point the package object is created but 
@@ -93,22 +102,51 @@ namespace Sando.UI
 
 			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 			var solutionEvents = dte.Events.SolutionEvents;
-			solutionEvents.Opened += solutionHasBeenOpened;
-			solutionEvents.AfterClosing += solutionHasBeenClosed;
+			solutionEvents.Opened += SolutionHasBeenOpened;
+			solutionEvents.AfterClosing += SolutionHasBeenClosed;
         }
 
-		private void solutionHasBeenClosed()
+		private void SolutionHasBeenClosed()
 		{
 			//shut down the current indexer
+			if(CurrentIndexer!=null)
+			{
+				CurrentIndexer.Dispose();
+				CurrentIndexer = null;
+			}
+			if(CurrentMonitor != null)
+			{
+				CurrentMonitor.Dispose();
+				CurrentMonitor = null;
+			}
 		}
 
-		private void solutionHasBeenOpened()
+		private void SolutionHasBeenOpened()
 		{
 			//create a new indexer to search this solution
 			//or reuse the existing index
+			string luceneFolder = CreateLuceneFolder();
+			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+			var openSolution = dte.Solution;
+			CurrentIndexer = new DocumentIndexer(luceneFolder+"\\"+openSolution.FullName, new SnowballAnalyzer("English"));
+			CurrentMonitor = new SolutionMonitor(openSolution, CurrentIndexer);
+		}
+
+		private string CreateLuceneFolder()
+		{			
+			var current = Directory.GetCurrentDirectory();
+			if(!File.Exists(current+Lucene))
+			{
+				var directoryInfo = Directory.CreateDirectory(current + Lucene);
+				return directoryInfo.FullName;
+			}else
+			{
+				return current + Lucene;
+			}
 		}
     
         #endregion
 
+	
     }
 }
