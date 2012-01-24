@@ -9,7 +9,7 @@ namespace Sando.Parser
 {
 	public class SrcMLParser : ParserInterface
 	{
-		private SrcMLGenerator Generator;
+		private readonly SrcMLGenerator Generator;
 
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
@@ -57,26 +57,16 @@ namespace Sando.Parser
 			//get other stuff...
 			method.DefinitionLineNumber = Int32.Parse(name.Attribute(PositionNamespace + "line").Value);
 			XElement access = function.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-			method.AccessLevel = strToAccessLevel(access.Value);
+			method.AccessLevel = StrToAccessLevel(access.Value);
 			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
 			method.ReturnType = type.Value;
 			//still debating how to handle method parameters and bodies...
 			return method;
 		}
 
-		private AccessLevel strToAccessLevel(String level) 
+		private AccessLevel StrToAccessLevel(String level)
 		{
-			switch(level.ToLower())
-			{
-				case "private":
-					return AccessLevel.Private;
-				case "public":
-					return AccessLevel.Public;
-				case "protected":
-					return AccessLevel.Protected;
-				default:
-					return AccessLevel.Protected;			
-			}
+			return (AccessLevel)Enum.Parse(typeof (AccessLevel), level);		
  		}
 	}
 }
