@@ -20,11 +20,9 @@ namespace Sando.Indexer.Documents
 			return new CommentDocument(commentElement);
 		}
 
-		protected override void CreateDocument()
+		protected override void AddDocumentFields()
 		{
-			document = new Document();
 			CommentElement commentElement = (CommentElement) programElement;
-			document.Add(new Field("Id", commentElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
 			document.Add(new Field("Body", commentElement.Body, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("MethodId", commentElement.MethodId.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 		}

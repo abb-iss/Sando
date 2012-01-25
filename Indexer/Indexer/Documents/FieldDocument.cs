@@ -22,11 +22,9 @@ namespace Sando.Indexer.Documents
 			return new FieldDocument(fieldElement);
 		}
 
-		protected override void CreateDocument()
+		protected override void AddDocumentFields()
 		{
-			document = new Document();
 			FieldElement fieldElement = (FieldElement) programElement;
-			document.Add(new Field("Id", fieldElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
 			document.Add(new Field("Name", fieldElement.Name, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("AccessLevel", fieldElement.AccessLevel.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 			document.Add(new Field("DefinitionLineNumber", fieldElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
