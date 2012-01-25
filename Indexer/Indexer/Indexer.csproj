@@ -43,6 +43,9 @@
     <Reference Include="Lucene.Net">
       <HintPath>..\Lucene.Net-2.9.4\bin\Lucene.Net.dll</HintPath>
     </Reference>
+    <Reference Include="Lucene.Net.Contrib.Snowball">
+      <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Lucene.Net.Contrib.Snowball.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
