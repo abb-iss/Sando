@@ -31,6 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lucene.Net">
+      <HintPath>..\..\Indexer\Lucene.Net-2.9.4\bin\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\LIBS\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,7 +46,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeSearcherFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
+      <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
+      <Name>Indexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Search Engine\Search Engine.csproj">
+      <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
+      <Name>Search Engine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
