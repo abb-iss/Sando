@@ -33,10 +33,11 @@
         /// Initializes a new instance of the <see cref="CodeSearcher"/> class.
         /// </summary>
         /// <param name="directory">Sando code indexer directory.</param>
-        /// <param name="analyzer">Analyzer used during index creation, Same has to be used during search.</param>
+        /// <param name="analyzer">Analyzer used during index creation, Same has to be used during search.</param>      
         public CodeSearcher(string directory, SimpleAnalyzer analyzer)
         {
             this.directory = directory;
+			//DAVE: Consider removing reference to Lucene and analyzer by using the DocumentIndexerFactory
             this.analyzer = analyzer;
         }
         #endregion
@@ -53,7 +54,9 @@
             IndexSearcher searcher = null;
             IndexReader indexReader = null;
             try
-            {             
+            {
+			 //DAVE: Consider putting code to initialize indexer and searcher in a CodeSearcher.Initialize method.
+				// My concern with initializing the indexer and searcher for each search is that it may be to expensive in terms of time.
              luceneDirectory = FSDirectory.Open(new System.IO.DirectoryInfo(this.directory));
              indexReader = IndexReader.Open(luceneDirectory, true);             
              searcher = new IndexSearcher(indexReader);             
@@ -69,6 +72,7 @@
             }   
             finally
             {
+				//DAVE: Same idea as above, consider moving this to a CodeSearcher.Dispose instead of opening and closing for each search
                 if (luceneDirectory != null)
                 {
                     luceneDirectory.Close();
