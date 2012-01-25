@@ -15,7 +15,11 @@ namespace Sando.SearchEngine.UnitTests
     [TestFixture]
     public class CodeSearcherFixture
     {
-        [Test]
+		private DocumentIndexer Indexer;
+    	private string IndexerPath;
+
+
+    	[Test]
         public void TestCreateCodeSearcher()
         {
             SimpleAnalyzer analyzer = new SimpleAnalyzer();           
@@ -24,44 +28,54 @@ namespace Sando.SearchEngine.UnitTests
 
         [Test]     
         public void PerformBasicSearch()
-        {
-            Analyzer analyzer = new SimpleAnalyzer();            
-            string indexerPath = System.IO.Path.GetTempPath() +"luceneindexer";
-            if (System.IO.Directory.Exists(indexerPath))
-            {
-                System.IO.Directory.Delete(indexerPath,true);
-            }
-
-            DocumentIndexer target = new DocumentIndexer(indexerPath, analyzer);
-            ClassElement classElement = new ClassElement()
-            {
-                AccessLevel = Core.AccessLevel.Public,
-                DefinitionLineNumber = 11,
-                ExtendedClasses = "SimpleClassBase",
-                FileName = "SimpleClass.cs",
-                FullFilePath = "C:/Projects/SimpleClass.cs",
-                Id = Guid.NewGuid(),
-                ImplementedInterfaces = "IDisposable",
-                Name = "SimpleName",
-                Namespace = "Sanod.Indexer.UnitTests"
-            };
-            SandoDocument sandoDocument = ClassDocument.Create(classElement);
-            target.AddDocument(sandoDocument);
-            MethodElement methodElement = new MethodElement()
-            {
-                AccessLevel = Core.AccessLevel.Protected,
-                Name = "SimpleName",
-                Id = Guid.NewGuid(),
-                ReturnType="Void",
-                ClassId=Guid.NewGuid()
-            };
-            sandoDocument = MethodDocument.Create(methodElement);
-            target.AddDocument(sandoDocument);
-            target.CommitChanges();
-            CodeSearcher cs = new CodeSearcher(indexerPath, new SimpleAnalyzer());            
+        {        	
+        	CodeSearcher cs = new CodeSearcher(IndexerPath, new SimpleAnalyzer());            
             List<CodeSearchResult> result = cs.Search("SimpleName");
-            Assert.AreEqual(2, result.Count);
-            target.Dispose();                        
+            Assert.AreEqual(2, result.Count);                                 
         }
+
+		[TestFixtureSetUp]
+    	public void CreateIndexer()
+    	{
+    		Analyzer analyzer = new SimpleAnalyzer();
+    		IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
+    		if (System.IO.Directory.Exists(IndexerPath))
+    		{
+    			System.IO.Directory.Delete(IndexerPath, true);
+    		}
+
+    		Indexer = new DocumentIndexer(IndexerPath, analyzer);
+    		ClassElement classElement = new ClassElement()
+    		                            	{
+    		                            		AccessLevel = Core.AccessLevel.Public,
+    		                            		DefinitionLineNumber = 11,
+    		                            		ExtendedClasses = "SimpleClassBase",
+    		                            		FileName = "SimpleClass.cs",
+    		                            		FullFilePath = "C:/Projects/SimpleClass.cs",
+    		                            		Id = Guid.NewGuid(),
+    		                            		ImplementedInterfaces = "IDisposable",
+    		                            		Name = "SimpleName",
+    		                            		Namespace = "Sanod.Indexer.UnitTests"
+    		                            	};
+    		SandoDocument sandoDocument = ClassDocument.Create(classElement);
+    		Indexer.AddDocument(sandoDocument);
+    		MethodElement methodElement = new MethodElement()
+    		                              	{
+    		                              		AccessLevel = Core.AccessLevel.Protected,
+    		                              		Name = "SimpleName",
+    		                              		Id = Guid.NewGuid(),
+    		                              		ReturnType = "Void",
+    		                              		ClassId = Guid.NewGuid()
+    		                              	};
+    		sandoDocument = MethodDocument.Create(methodElement);
+    		Indexer.AddDocument(sandoDocument);
+    		Indexer.CommitChanges();    		
+    	}
+
+		[TestFixtureTearDown]
+    	public void ShutdownIndexer()
+    	{
+			Indexer.Dispose();   
+    	}
     }
 }
