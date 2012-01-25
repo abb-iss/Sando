@@ -7,8 +7,6 @@ using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
 using EnvDTE80;
-//need to try and remove this
-using Lucene.Net.Analysis.Snowball;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 using Sando.Indexer;
@@ -130,7 +128,7 @@ namespace Sando.UI
 			var openSolution = dte.Solution;
 			
 			//note: will remove the reference to snowballanalyzer to eliminate lucene reference
-			CurrentIndexer = new DocumentIndexer(luceneFolder+"\\"+GetName(openSolution), new SnowballAnalyzer("English"));
+			CurrentIndexer = DocumentIndexerFactory.CreateIndexer(luceneFolder + "\\" + GetName(openSolution), AnalyzerType.Snowball);
 			CurrentMonitor = new SolutionMonitor(openSolution, CurrentIndexer);
 			CurrentMonitor.StartMonitoring();
 		}

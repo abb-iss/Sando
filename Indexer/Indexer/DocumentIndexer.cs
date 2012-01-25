@@ -1,5 +1,7 @@
 ﻿using System;
 using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
+using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
 using Sando.Indexer.Documents;
@@ -56,5 +58,28 @@ namespace Sando.Indexer
 		protected virtual IndexWriter IndexWriter { get; set; }
 
 		private bool disposed = false;
+	}
+
+	public enum AnalyzerType
+	{
+		Simple,Snowball,Standard
+	}
+
+	public class DocumentIndexerFactory
+	{
+		public static DocumentIndexer CreateIndexer(string luceneTempIndexesDirectory, AnalyzerType analyzerType)
+		{
+			switch (analyzerType)
+			{
+				case AnalyzerType.Simple: 
+					return new DocumentIndexer(luceneTempIndexesDirectory,new SimpleAnalyzer());
+				case AnalyzerType.Snowball:
+					return new DocumentIndexer(luceneTempIndexesDirectory, new SnowballAnalyzer("English"));
+				case AnalyzerType.Standard:
+					return new DocumentIndexer(luceneTempIndexesDirectory, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+			}
+			return new DocumentIndexer(luceneTempIndexesDirectory,new SimpleAnalyzer());
+		}
+		
 	}
 }
