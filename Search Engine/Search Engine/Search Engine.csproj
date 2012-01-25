@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="CodeSearcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CodeSearchResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

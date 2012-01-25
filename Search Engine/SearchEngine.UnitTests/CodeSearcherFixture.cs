@@ -59,8 +59,8 @@ namespace Sando.SearchEngine.UnitTests
             target.AddDocument(sandoDocument);
             target.CommitChanges();
             CodeSearcher cs = new CodeSearcher(indexerPath, new SimpleAnalyzer());            
-            Hits hits = cs.Search("SimpleName");
-            Assert.AreEqual(2, hits.Length());
+            List<CodeSearchResult> result = cs.Search("SimpleName");
+            Assert.AreEqual(2, result.Count);
             target.Dispose();                        
         }
     }

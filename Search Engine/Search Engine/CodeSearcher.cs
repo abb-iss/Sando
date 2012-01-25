@@ -11,6 +11,9 @@
     using Lucene.Net.QueryParsers;
     using Lucene.Net.Search;
     using Lucene.Net.Store;
+    /// <summary>
+    /// Class defined to search the index using code searcher
+    /// </summary>
     public class CodeSearcher
     {
         #region Private Members
@@ -22,7 +25,7 @@
         /// <summary>
         /// private member for analyzer
         /// </summary>
-        private Analyzer analyzer;        
+        private Analyzer analyzer;
         #endregion
 
         #region Constructor
@@ -34,7 +37,7 @@
         public CodeSearcher(string directory, SimpleAnalyzer analyzer)
         {
             this.directory = directory;
-            this.analyzer = analyzer;            
+            this.analyzer = analyzer;
         }
         #endregion
 
@@ -43,23 +46,35 @@
         /// Searches the specified search string.
         /// </summary>
         /// <param name="searchString">The search string.</param>
-        public virtual Hits Search(string searchString)
+        /// <returns>List of Search Result</returns>
+        public virtual List<CodeSearchResult> Search(string searchString)
         {
             Directory luceneDirectory = null;            
             IndexSearcher searcher = null;
+            IndexReader indexReader = null;
             try
-            {
-             luceneDirectory = FSDirectory.Open(new System.IO.DirectoryInfo(this.directory));             
-             searcher = new IndexSearcher(luceneDirectory, true);             
+            {             
+             luceneDirectory = FSDirectory.Open(new System.IO.DirectoryInfo(this.directory));
+             indexReader = IndexReader.Open(luceneDirectory, true);             
+             searcher = new IndexSearcher(indexReader);             
              Query searchQuery = MultiFieldQueryParser.Parse(Lucene.Net.Util.Version.LUCENE_29, new string[] { searchString }, this.GetSearchableFields(), this.analyzer);
-             return searcher.Search(searchQuery);             
-            }
+             TopDocs resultDocs = searcher.Search(searchQuery, indexReader.MaxDoc());
+             List<CodeSearchResult> results = new List<CodeSearchResult>();
+             foreach (ScoreDoc scoreDoc in resultDocs.ScoreDocs)
+             {
+                results.Add(new CodeSearchResult() { Score = scoreDoc.score, Document = searcher.Doc(scoreDoc.doc) });
+             }             
+
+             return results;                        
+            }   
             finally
             {
                 if (luceneDirectory != null)
                 {
                     luceneDirectory.Close();
                 }
+
+                indexReader.Dispose();
             }
         }
 
@@ -70,7 +85,7 @@
         public virtual string[] GetSearchableFields()
         {
             //TODO : To determine logic to get searchable fields for different elements
-            return new string[] {"Name"};
+            return new string[] { "Name" };
         }
         #endregion
     }
