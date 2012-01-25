@@ -11,5 +11,6 @@ namespace Sando.Core
 		public virtual string Body { get; set; }
 		public virtual string FileName { get; set; }
 		public virtual string FullFilePath { get; set; }
+		public override ProgramElementType ProgramElementType { get { return ProgramElementType.DocComment; } }
 	}
 }

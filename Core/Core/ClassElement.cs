@@ -15,5 +15,6 @@ namespace Sando.Core
 		public virtual string ImplementedInterfaces { get; set; }
 		public virtual string FileName { get; set; }
 		public virtual string FullFilePath { get; set; }
+		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Class; } }
 	}
 }
