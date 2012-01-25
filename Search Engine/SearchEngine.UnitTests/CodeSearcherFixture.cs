@@ -27,6 +27,11 @@ namespace Sando.SearchEngine.UnitTests
         {
             Analyzer analyzer = new SimpleAnalyzer();            
             string indexerPath = System.IO.Path.GetTempPath() +"luceneindexer";
+            if (System.IO.Directory.Exists(indexerPath))
+            {
+                System.IO.Directory.Delete(indexerPath,true);
+            }
+
             DocumentIndexer target = new DocumentIndexer(indexerPath, analyzer);
             ClassElement classElement = new ClassElement()
             {
@@ -56,9 +61,7 @@ namespace Sando.SearchEngine.UnitTests
             CodeSearcher cs = new CodeSearcher(indexerPath, new SimpleAnalyzer());            
             Hits hits = cs.Search("SimpleName");
             Assert.AreEqual(2, hits.Length());
-            target.Dispose();
-            System.IO.File.Delete(indexerPath);
-            Assert.Pass("Passed.Luncene Index Directory no longer used after Indexer and Searcher disposed");
+            target.Dispose();                        
         }
     }
 }
