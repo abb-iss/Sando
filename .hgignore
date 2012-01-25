@@ -10,3 +10,4 @@ Indexer/Indexer.vsmdi
 .hgignore.orig
 *.orig
 Search Engine/Search Engine/StyleCop.Cache
+*.suo
