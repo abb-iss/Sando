@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
 using EnvDTE80;
+//need to try and remove this
 using Lucene.Net.Analysis.Snowball;
-using Lucene.Net.Analysis.Standard;
-using Microsoft.Win32;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Sando.Indexer;
-using Lucene.Net.Analysis.Standard;
 
 namespace Sando.UI
 {
@@ -122,14 +119,27 @@ namespace Sando.UI
 		}
 
 		private void SolutionHasBeenOpened()
-		{
+		{			
+			if(CurrentIndexer!=null)
+				throw new NullReferenceException("Indexer must be null when opening a new solution.");
+
 			//create a new indexer to search this solution
 			//or reuse the existing index
 			string luceneFolder = CreateLuceneFolder();
 			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 			var openSolution = dte.Solution;
-			CurrentIndexer = new DocumentIndexer(luceneFolder+"\\"+openSolution.FullName, new SnowballAnalyzer("English"));
+			
+			//note: will remove the reference to snowballanalyzer to eliminate lucene reference
+			CurrentIndexer = new DocumentIndexer(luceneFolder+"\\"+GetName(openSolution), new SnowballAnalyzer("English"));
 			CurrentMonitor = new SolutionMonitor(openSolution, CurrentIndexer);
+			CurrentMonitor.StartMonitoring();
+		}
+
+		private string GetName(Solution openSolution)
+		{
+			var fullName = openSolution.FullName;
+			var split = fullName.Split('\\');
+			return split[split.Length - 1];
 		}
 
 		private string CreateLuceneFolder()
