@@ -6,6 +6,6 @@ namespace Sando.Indexer.Searching
 {
 	public interface IIndexerSearcher
 	{
-		public List<ProgramElement> Search(SearchCriteria searchCriteria);
+		List<ProgramElement> Search(SearchCriteria searchCriteria);
 	}
 }

@@ -68,7 +68,7 @@
     <Compile Include="Documents\SandoDocument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Searching\Criteria\AndSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\BracketSearchCriteria.cs" />
+    <Compile Include="Searching\Criteria\ParenthesisSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\OrSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\SimpleSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\NotSearchCriteria.cs" />
