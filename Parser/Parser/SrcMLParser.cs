@@ -35,9 +35,57 @@ namespace Sando.Parser
 			//now Parse the important parts of the srcml and generate program elements
 			XElement sourceElements = XElement.Parse(srcml);
 			
+			ParseClasses(programElements, sourceElements, filename);
 			ParseFunctions(programElements, sourceElements);
 
 			return programElements.ToArray();
+		}
+
+		private void ParseClasses(List<ProgramElement> programElements, XElement elements, String filename)
+		{
+			IEnumerable<XElement> classes =
+				from el in elements.Descendants(SourceNamespace + "class")
+				select el;
+			foreach(XElement cls in classes)
+			{
+				programElements.Add(ParseClass(cls,filename));
+			}
+		}
+
+		private ClassElement ParseClass(XElement cls, String filename)
+		{
+			var classElement = new ClassElement();
+			classElement.Id = System.Guid.NewGuid();
+
+			//parse stuff in class definition
+			XElement name = cls.Element(SourceNamespace + "name");
+			classElement.Name = name.Value;
+			classElement.DefinitionLineNumber = Int32.Parse(name.Attribute(PositionNamespace + "line").Value);
+			XElement access = cls.Element(SourceNamespace + "specifier");
+			classElement.AccessLevel = StrToAccessLevel(access.Value);
+
+			//parse namespace
+			IEnumerable<XElement> ownerNamespaces =
+				from el in cls.Ancestors(SourceNamespace + "decl")
+				where el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+				select el;
+			foreach(XElement ownerNamespace in ownerNamespaces)
+			{
+				foreach(XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+				{
+					classElement.Namespace = classElement.Namespace + spc.Value + " ";
+				}
+			}
+			if(classElement.Namespace.Length > 0) 
+				classElement.Namespace = classElement.Namespace.TrimEnd();
+
+			//assign filenames
+			classElement.FullFilePath = System.IO.Path.GetFullPath(filename);
+			classElement.FileName = System.IO.Path.GetFileName(filename);
+
+			//parse extended classes and implemented interfaces
+
+			return classElement;
 		}
 
 		private void ParseFunctions(List<ProgramElement> programElements, XElement elements)
@@ -45,14 +93,20 @@ namespace Sando.Parser
 			IEnumerable<XElement> functions =
 				from el in elements.Descendants(SourceNamespace + "function")
 				select el;
-			programElements.AddRange(functions.Select(ParseFunction).ToList());
+			foreach(XElement func in functions)
+			{
+				MethodElement methodElement = ParseFunction(func);
+				AssociateMethodWithClass(methodElement, func, programElements);
+				programElements.Add(methodElement);
+			}
 		}
 
-		private ProgramElement ParseFunction(XElement function)
+		private MethodElement ParseFunction(XElement function)
 		{
-			var method = new MethodElement();	
+			var method = new MethodElement();
+			method.Id = System.Guid.NewGuid();
 
-			//parse name...
+			//parse name etc.
 			XElement name = function.Element(SourceNamespace + "name");
 			method.Name = name.Value;
 			method.DefinitionLineNumber = Int32.Parse(name.Attribute(PositionNamespace + "line").Value);
@@ -84,6 +138,34 @@ namespace Sando.Parser
 			method.Body = method.Body.TrimEnd();
 
 			return method;
+		}
+
+		private void AssociateMethodWithClass(MethodElement method, XElement function, List<ProgramElement> programElements)
+		{
+			IEnumerable<XElement> ownerClasses =
+				from el in function.Ancestors(SourceNamespace + "class")
+				select el;
+			if(ownerClasses.Count() > 0)
+			{
+				//this ignores the possibility that a method may be part of an inner class
+				XElement name = ownerClasses.First().Element(SourceNamespace + "name");
+				String ownerClassName = name.Value;
+				//now find the ClassElement object corresponding to ownerClassName, since those should have been gen'd by now
+				ProgramElement ownerClass = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerClassName);
+				if(ownerClass != null)
+				{
+					method.ClassId = ownerClass.Id;
+				}
+				else
+				{
+					method.ClassId = System.Guid.Empty;
+				}
+			}
+			else
+			{
+				//method is not contained by a class
+				method.ClassId = System.Guid.Empty;
+			}
 		}
 
 		private AccessLevel StrToAccessLevel(String level)

@@ -67,11 +67,39 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(method.ReturnType, "void");
 						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 						Assert.AreEqual(method.Arguments, "LanguageEnum language");
-						Assert.IsNotNullOrEmpty(method.Body);
+						Assert.AreEqual(method.Body, "Language language language LanguageEnum CSharp Language LanguageEnum Java");
+						Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 					}
 				}
 			}
 			Assert.IsTrue(seenSetLanguageMethod);
+		}
+
+		[Test]
+		public void ParseClassTest()
+		{
+			bool seenClass = false;
+			var parser = new SrcMLParser();
+			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			Assert.IsNotNull(elements);
+			Assert.IsTrue(elements.Length > 0);
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is ClassElement)
+				{
+					ClassElement classElem = (ClassElement)pe;
+					if(classElem.Name == "SrcMLGenerator")
+					{
+						seenClass = true;
+						Assert.AreEqual(classElem.DefinitionLineNumber, 14);
+						Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
+						Assert.AreEqual(classElem.Namespace, "Sando Parser");
+						Assert.AreEqual(classElem.FileName, "ShortCSharpFile.txt");
+						Assert.AreEqual(classElem.FullFilePath,"C:\\Users\\kosta\\sando\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+					}
+				}
+			}
+			Assert.IsTrue(seenClass);
 		}
 
 		[Test]
