@@ -71,7 +71,8 @@ namespace Sando.UI
 		private void ProcessItem(ProjectItem item)
 		{
 			Debug.WriteLine("processed: " + item.Name);
-			ProcessItems(item.ProjectItems.GetEnumerator());
+			if(item.ProjectItems!=null)
+				ProcessItems(item.ProjectItems.GetEnumerator());
 		}
 
 		public void Dispose()

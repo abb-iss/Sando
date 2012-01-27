@@ -34,6 +34,8 @@ namespace Sando.UI
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SearchToolWindow))]
     [Guid(GuidList.guidUIPkgString)]
+	// This attribute starts up our extension early so that it can listen to solution events
+	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
     public sealed class UIPackage : Package
     {
     	private const string Lucene = "\\lucene";
