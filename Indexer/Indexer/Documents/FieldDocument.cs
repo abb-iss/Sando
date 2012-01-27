@@ -14,8 +14,6 @@ namespace Sando.Indexer.Documents
 				throw new ArgumentException("Class id cannot be null");
 			if(String.IsNullOrWhiteSpace(fieldElement.FieldType))
 				throw new ArgumentException("Field type cannot be null");
-			if(fieldElement.Id == null)
-				throw new ArgumentException("Field id cannot be null");
 			if(String.IsNullOrWhiteSpace(fieldElement.Name))
 				throw new ArgumentException("Field name cannot be null");
 
@@ -27,7 +25,6 @@ namespace Sando.Indexer.Documents
 			FieldElement fieldElement = (FieldElement) programElement;
 			document.Add(new Field("Name", fieldElement.Name, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("AccessLevel", fieldElement.AccessLevel.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
-			document.Add(new Field("DefinitionLineNumber", fieldElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
 			document.Add(new Field("FieldType", fieldElement.FieldType, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("ClassId", fieldElement.ClassId.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 		}

@@ -12,8 +12,6 @@ namespace Sando.Indexer.Documents
 				throw new ArgumentException("CommentElement cannot be null");
 			if(commentElement.Body == null)
 				throw new ArgumentException("Comment body cannot be null");
-			if(commentElement.Id == null)
-				throw new ArgumentException("Comment id cannot be null");
 			if(commentElement.MethodId == null)
 				throw new ArgumentException("Method id cannot be null");
 
