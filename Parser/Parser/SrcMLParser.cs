@@ -66,6 +66,7 @@ namespace Sando.Parser
 			IEnumerable<XElement> arguments =
 				from el in paramlist.Descendants(SourceNamespace + "name")
 				select el;
+			method.Arguments = ""; 
 			foreach(XElement elem in arguments)
 			{
 				method.Arguments = method.Arguments + elem.Value + " ";
