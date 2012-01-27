@@ -13,5 +13,6 @@ namespace Sando.Core
 		public virtual string PropertyType { get; set; }
 		public virtual string Body { get; set; }
 		public virtual Guid ClassId { get; set; }
+		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Property; } }
 	}
 }

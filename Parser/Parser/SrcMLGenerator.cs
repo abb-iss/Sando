@@ -66,7 +66,7 @@ namespace Sando.Parser
 			startInfo.RedirectStandardOutput = true;
 			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "--position -l "+Language.ToString()+" " + filename ;
+			startInfo.Arguments = "--position -l "+Language.ToString()+" \"" + filename +"\"";
 
 			try
 			{

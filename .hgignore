@@ -9,3 +9,5 @@ Indexer/Indexer.vsmdi
 */obj/*
 .hgignore.orig
 *.orig
+Search Engine/Search Engine/StyleCop.Cache
+*.suo

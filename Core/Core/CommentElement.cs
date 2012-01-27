@@ -9,5 +9,6 @@ namespace Sando.Core
 	{
 		public virtual string Body { get; set; }
 		public virtual Guid MethodId { get; set; }
+		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Comment; } }
 	}
 }

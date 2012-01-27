@@ -22,11 +22,9 @@ namespace Sando.Indexer.Documents
 			return new ClassDocument(classElement);
 		}
 
-		protected override void CreateDocument()
+		protected override void AddDocumentFields()
 		{
-			document = new Document();
 			ClassElement classElement = (ClassElement) programElement;
-			document.Add(new Field("Id", classElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
 			document.Add(new Field("Name", classElement.Name, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("Namespace", classElement.Namespace ?? String.Empty, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("AccessLevel", classElement.AccessLevel.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));

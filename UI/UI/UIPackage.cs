@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -7,10 +8,9 @@ using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using EnvDTE;
 using EnvDTE80;
-//need to try and remove this
-using Lucene.Net.Analysis.Snowball;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Sando.Core;
 using Sando.Indexer;
 
 namespace Sando.UI
@@ -36,11 +36,16 @@ namespace Sando.UI
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SearchToolWindow))]
     [Guid(GuidList.guidUIPkgString)]
+	// This attribute starts up our extension early so that it can listen to solution events
+	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
     public sealed class UIPackage : Package
     {
     	private const string Lucene = "\\lucene";
     	private DocumentIndexer CurrentIndexer;
 		private SolutionMonitor CurrentMonitor;
+
+		//For classloading... //TODO- eliminate the need for this
+    	private List<ProgramElement> list = new List<ProgramElement>();
 
     	/// <summary>
         /// Default constructor of the package.
@@ -130,7 +135,7 @@ namespace Sando.UI
 			var openSolution = dte.Solution;
 			
 			//note: will remove the reference to snowballanalyzer to eliminate lucene reference
-			CurrentIndexer = new DocumentIndexer(luceneFolder+"\\"+GetName(openSolution), new SnowballAnalyzer("English"));
+			CurrentIndexer = DocumentIndexerFactory.CreateIndexer(luceneFolder + "\\" + GetName(openSolution), AnalyzerType.Snowball);
 			CurrentMonitor = new SolutionMonitor(openSolution, CurrentIndexer);
 			CurrentMonitor.StartMonitoring();
 		}

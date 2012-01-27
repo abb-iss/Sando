@@ -46,7 +46,7 @@
             </StackPanel>
 
             <ListBox ItemsSource="{Binding Path=SearchResults}"
-                Margin="10" SelectedIndex="0"/>            
+                Margin="10" SelectedIndex="0" Height="400"/>            
             
 
         </StackPanel>

@@ -22,11 +22,9 @@ namespace Sando.Indexer.Documents
 			return new EnumDocument(enumElement);
 		}
 
-		protected override void CreateDocument()
+		protected override void AddDocumentFields()
 		{
-			document = new Document();
 			EnumElement enumElement = (EnumElement) programElement;
-			document.Add(new Field("Id", enumElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
 			document.Add(new Field("Name", enumElement.Name, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("Namespace", enumElement.Namespace ?? String.Empty, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("AccessLevel", enumElement.AccessLevel.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));

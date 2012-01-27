@@ -3,7 +3,7 @@ using Sando.Core;
 
 namespace Sando.Parser
 {
-	interface ParserInterface
+	public interface ParserInterface
 	{
 		ProgramElement[] Parse(String filename);
 	}

@@ -8,5 +8,6 @@ namespace Sando.Core
     public abstract class ProgramElement
     {
 		public virtual Guid Id { get; set; }
+		public abstract ProgramElementType ProgramElementType { get; }
     }
 }
