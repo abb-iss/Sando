@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Microsoft.VisualStudio;
+using Sando.Parser;
 
 namespace Sando.UI
 {
@@ -18,13 +20,13 @@ namespace Sando.UI
 		private Solution openSolution;
 		private DocumentIndexer CurrentIndexer;
 		private bool Monitoring;
-		IVsRunningDocumentTable documentTable;
-		uint documentTableItemId = 0;
+		private IVsRunningDocumentTable documentTable;
+		private uint documentTableItemId = 0;
+		private ParserInterface Parser = new SrcMLParser();
 
 
 		public SolutionMonitor(Solution openSolution, DocumentIndexer CurrentIndexer)
 		{
-			// TODO: Complete member initialization
 			this.openSolution = openSolution;
 			this.CurrentIndexer = CurrentIndexer;			
 			Monitoring = false;
@@ -70,9 +72,40 @@ namespace Sando.UI
 
 		private void ProcessItem(ProjectItem item)
 		{
-			Debug.WriteLine("processed: " + item.Name);
-			if(item.ProjectItems!=null)
+			ProcessSingleFile(item);
+			ProcessChildren(item);
+		}
+
+		private void ProcessChildren(ProjectItem item)
+		{
+			if (item.ProjectItems != null)
 				ProcessItems(item.ProjectItems.GetEnumerator());
+		}
+
+		private void ProcessSingleFile(ProjectItem item)
+		{
+			Debug.WriteLine("processed: " + item.Name);
+			if (item.Name.EndsWith(".cs"))
+			{
+				try
+				{
+					var path = item.FileNames[0];
+					var parsed = Parser.Parse(path);
+				}
+				catch (ArgumentException e)
+				{
+					//ignore items with no associated file
+				}catch(XmlException p)
+				{
+					//ignore for now
+					//TODO - should fix this if it happens too often
+					Debug.WriteLine(p);
+				}catch(NullReferenceException nre)
+				{
+					//TODO - these need to be handled
+					Debug.WriteLine(nre);
+				}
+			}
 		}
 
 		public void Dispose()

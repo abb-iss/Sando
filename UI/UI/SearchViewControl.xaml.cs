@@ -23,66 +23,10 @@ namespace Sando.UI
     	public SearchViewControl()
         {
             this.DataContext = this; //so we can show results
-            InitializeFakeData();
             InitializeComponent();            
         }
 
 
-		private void InitializeFakeData()
-        {
-			string code = "private void GenNextGraphs(object sender, EventArgs e){\n   this.Dispatcher.BeginInvoke(//System.Windows.Threading.DispatcherPriority.Background,\n     new UpdateGraphDelegate(UpdateGraph), new Object[] { _searchTerm });\n  this.Dispatcher.BeginInvoke(//System.Windows.Threading.DispatcherPriority.Background,\n     new ZoomerDelegate(UpdateZoom));   \n}"; 
-
-            SearchResults = new List<ProgramElement>();
-			var method = new MethodElement()
-						{
-							Name = "Add",
-							Arguments = "object sender",
-							ReturnType = "void",
-							Id = Guid.NewGuid(),
-							ClassId = Guid.NewGuid(),
-							AccessLevel = AccessLevel.Public,
-							Body = code
-						};
-			SearchResults.Add(method);
-
-			method = new MethodElement()
-						{
-							Name = "Add",
-							Arguments = "object sender",
-							ReturnType = "void",
-							Id = Guid.NewGuid(),
-							ClassId = Guid.NewGuid(),
-							AccessLevel = AccessLevel.Public,
-							Body = code
-						};
-			SearchResults.Add(method);
-
-
-			method = new MethodElement()
-						{
-							Name = "Add",
-							Arguments = "object sender",
-							ReturnType = "void",
-							Id = Guid.NewGuid(),
-							ClassId = Guid.NewGuid(),
-							AccessLevel = AccessLevel.Public,
-							Body = code
-						};
-			SearchResults.Add(method);
-
-
-			method = new MethodElement()
-						{
-							Name = "Add",
-							Arguments = "object sender",
-							ReturnType = "void",
-							Id = Guid.NewGuid(),
-							ClassId = Guid.NewGuid(),
-							AccessLevel = AccessLevel.Public,
-							Body = code
-						};
-			SearchResults.Add(method);
-        }
 
     	public List<ProgramElement> SearchResults { get; private set; }
 

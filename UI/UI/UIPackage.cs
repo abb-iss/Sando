@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -9,6 +10,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Sando.Core;
 using Sando.Indexer;
 
 namespace Sando.UI
@@ -41,6 +43,9 @@ namespace Sando.UI
     	private const string Lucene = "\\lucene";
     	private DocumentIndexer CurrentIndexer;
 		private SolutionMonitor CurrentMonitor;
+
+		//For classloading... //TODO- eliminate the need for this
+    	private List<ProgramElement> list = new List<ProgramElement>();
 
     	/// <summary>
         /// Default constructor of the package.
