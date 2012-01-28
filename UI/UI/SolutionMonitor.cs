@@ -8,6 +8,7 @@ using System.Xml;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Sando.Core;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Microsoft.VisualStudio;
@@ -51,7 +52,7 @@ namespace Sando.UI
 				var project = (Project)enumerator.Current;
 				ProcessItems(project.ProjectItems.GetEnumerator());
 			}
-
+			CurrentIndexer.CommitChanges();
  
 			// Register events for doc table
 			documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
@@ -91,6 +92,14 @@ namespace Sando.UI
 				{
 					var path = item.FileNames[0];
 					var parsed = Parser.Parse(path);
+					foreach (var programElement in parsed)
+					{
+						//TODO - only processing methods for now
+						if(programElement as MethodElement != null)
+						{
+							CurrentIndexer.AddDocument(MethodDocument.Create(programElement as MethodElement));
+						}	
+					}
 				}
 				catch (ArgumentException e)
 				{
@@ -133,6 +142,7 @@ namespace Sando.UI
 			if(projectItem!=null)
 			{
 				ProcessItem(projectItem);
+				CurrentIndexer.CommitChanges();
 			}
 			return VSConstants.S_OK;
 		}
