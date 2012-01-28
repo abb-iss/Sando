@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\IndexerConfiguration.cs" />
     <Compile Include="Documents\ClassDocument.cs" />
     <Compile Include="Documents\CommentDocument.cs" />
     <Compile Include="Documents\DocCommentDocument.cs" />
@@ -78,9 +77,6 @@
     <Compile Include="Searching\UsageType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="sandoKey.snk" />
   </ItemGroup>
   <ItemGroup>

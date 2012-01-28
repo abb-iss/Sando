@@ -1,11 +1,11 @@
 ﻿using System.Configuration;
 using NUnit.Framework;
-using Sando.Indexer.Configuration;
+using Sando.Configuration;
 
-namespace Sando.Indexer.UnitTests.Configuration
+namespace Sando.Configuration.UnitTests
 {
 	[TestFixture]
-	public class IndexerConfigurationTest
+	public class ConfigurationTest
 	{
 		[Test]
 		public void GetValueTest()
@@ -13,7 +13,7 @@ namespace Sando.Indexer.UnitTests.Configuration
 			string settingName = "testSetting";
 			string settingValue = "testSettingValue";
 			ConfigurationManager.AppSettings[settingName] = settingValue;
-			Assert.True(IndexerConfiguration.GetValue(settingName) == settingValue);
+			Assert.True(Configuration.GetValue(settingName) == settingValue);
 		}
 	}
 }

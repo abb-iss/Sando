@@ -1,8 +1,8 @@
 ﻿using System.Configuration;
 
-namespace Sando.Indexer.Configuration
+namespace Sando.Configuration
 {
-	public class IndexerConfiguration
+	public class Configuration
 	{
 		public static string GetValue(string settingName)
 		{
