@@ -39,11 +39,10 @@ namespace Sando.UI
 	// This attribute starts up our extension early so that it can listen to solution events
 	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
     public sealed class UIPackage : Package
-    {
-    	private const string Lucene = "\\lucene";
-    	private DocumentIndexer CurrentIndexer;
+    {    	
+    	
 		private SolutionMonitor CurrentMonitor;
-
+		
 		//For classloading... //TODO- eliminate the need for this
     	private List<ProgramElement> list = new List<ProgramElement>();
 
@@ -110,12 +109,7 @@ namespace Sando.UI
 
 		private void SolutionHasBeenClosed()
 		{
-			//shut down the current indexer
-			if(CurrentIndexer!=null)
-			{
-				CurrentIndexer.Dispose();
-				CurrentIndexer = null;
-			}
+		
 			if(CurrentMonitor != null)
 			{
 				CurrentMonitor.Dispose();
@@ -124,42 +118,17 @@ namespace Sando.UI
 		}
 
 		private void SolutionHasBeenOpened()
-		{			
-			if(CurrentIndexer!=null)
-				throw new NullReferenceException("Indexer must be null when opening a new solution.");
-
-			//create a new indexer to search this solution
-			//or reuse the existing index
-			string luceneFolder = CreateLuceneFolder();
-			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-			var openSolution = dte.Solution;
-			
-			//note: will remove the reference to snowballanalyzer to eliminate lucene reference
-			CurrentIndexer = DocumentIndexerFactory.CreateIndexer(luceneFolder + "\\" + GetName(openSolution), AnalyzerType.Snowball);
-			CurrentMonitor = new SolutionMonitor(openSolution, CurrentIndexer);
-			CurrentMonitor.StartMonitoring();
-		}
-
-		private string GetName(Solution openSolution)
 		{
-			var fullName = openSolution.FullName;
-			var split = fullName.Split('\\');
-			return split[split.Length - 1];
+			CurrentMonitor = SolutionMonitor.CreateMonitor();
 		}
 
-		private string CreateLuceneFolder()
-		{			
-			var current = Directory.GetCurrentDirectory();
-			if(!File.Exists(current+Lucene))
-			{
-				var directoryInfo = Directory.CreateDirectory(current + Lucene);
-				return directoryInfo.FullName;
-			}else
-			{
-				return current + Lucene;
-			}
-		}
-    
+  
+
+
+
+
+
+
         #endregion
 
 	

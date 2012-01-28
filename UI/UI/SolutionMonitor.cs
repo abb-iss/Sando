@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
@@ -16,6 +18,7 @@ using Sando.Parser;
 
 namespace Sando.UI
 {
+
 	class SolutionMonitor : IVsRunningDocTableEvents
 	{
 		private Solution openSolution;
@@ -32,6 +35,10 @@ namespace Sando.UI
 			this.CurrentIndexer = CurrentIndexer;			
 			Monitoring = false;
 		}
+
+
+
+
 
 		private void DocumentSaved(Document document)
 		{
@@ -120,6 +127,13 @@ namespace Sando.UI
 		public void Dispose()
 		{
 			documentTable.UnadviseRunningDocTableEvents(documentTableItemId);
+			
+			//shut down the current indexer
+			if(CurrentIndexer != null)
+			{
+				CurrentIndexer.Dispose();
+				CurrentIndexer = null;
+			}
 		}
 
 		public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
@@ -163,6 +177,55 @@ namespace Sando.UI
 		{
 			//throw new NotImplementedException();
 			return VSConstants.S_OK;
+		}
+	}
+
+	class SolutionMonitorFactory
+	{
+		private const string Lucene = "\\lucene";
+		private static string LuceneFolder = CreateLuceneFolder();
+
+		public static SolutionMonitor CreateMonitor()
+		{
+			var openSolution = GetOpenSolution();
+			var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
+																  AnalyzerType.Snowball);
+			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer);
+			currentMonitor.StartMonitoring();
+			return currentMonitor;
+		}
+
+		private static string CreateLuceneFolder()
+		{
+			var current = Directory.GetCurrentDirectory();
+			if(!File.Exists(current + Lucene))
+			{
+				var directoryInfo = Directory.CreateDirectory(current + Lucene);
+				return directoryInfo.FullName;
+			}
+			else
+			{
+				return current + Lucene;
+			}
+		}
+
+		private static string GetName(Solution openSolution)
+		{
+			var fullName = openSolution.FullName;
+			var split = fullName.Split('\\');
+			return split[split.Length - 1];
+		}
+
+		private static Solution GetOpenSolution()
+		{
+			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+			var openSolution = dte.Solution;
+			return openSolution;
+		}
+
+		private static string GetLuceneDirectoryForSolution(Solution openSolution)
+		{
+			return LuceneFolder + "\\" + GetName(openSolution);
 		}
 	}
 }
