@@ -43,9 +43,10 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void GenerateSrcMLShortestFileTest()
 		{			
-			String srcML = Generator.GenerateSrcML("..\\..\\TestFiles\\ShortestCSharpFile.txt");
-			Assert.IsNotNullOrEmpty(srcML);
-		}
+			var parser = new SrcMLParser();
+			var srcML = parser.Parse("..\\..\\TestFiles\\ShortestCSharpFile.txt");
+			Assert.IsTrue(srcML!=null);
+		}	
 
 		[Test]
 		public void ParseMethodTest()

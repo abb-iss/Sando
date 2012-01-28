@@ -23,9 +23,8 @@ namespace Sando.UI
 	{
 		private readonly Solution _openSolution;
 		private DocumentIndexer _currentIndexer;
-		private bool _monitoring;
 		private IVsRunningDocumentTable _documentTable;
-		private uint _documentTableItemId = 0;
+		private uint _documentTableItemId;
 		private readonly ParserInterface _parser = new SrcMLParser();
 
 
@@ -33,20 +32,6 @@ namespace Sando.UI
 		{
 			this._openSolution = openSolution;
 			this._currentIndexer = currentIndexer;			
-			_monitoring = false;
-		}
-
-
-
-
-
-		private void DocumentSaved(Document document)
-		{
-			if(_monitoring)
-			{
-				//CurrentIndexer.AddDocument();?			
-				Debug.WriteLine("processed: " + document.Name);
-			}
 		}
 
 		public void StartMonitoring()
@@ -64,9 +49,6 @@ namespace Sando.UI
 			// Register events for doc table
 			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
 			_documentTable.AdviseRunningDocTableEvents(this, out _documentTableItemId);
-
-
-			_monitoring = true;
 		}
 
 		private void ProcessItems(IEnumerator items)
