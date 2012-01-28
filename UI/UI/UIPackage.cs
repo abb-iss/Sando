@@ -73,7 +73,7 @@ namespace Sando.UI
             {
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
             }
-            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+            var windowFrame = (IVsWindowFrame)window.Frame;
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 

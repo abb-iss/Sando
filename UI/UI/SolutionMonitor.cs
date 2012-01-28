@@ -108,14 +108,13 @@ namespace Sando.UI
 						}	
 					}
 				}
-				catch (ArgumentException e)
+				catch (ArgumentException argumentException)
 				{
 					//ignore items with no associated file
-				}catch(XmlException p)
+				}catch(XmlException xmlException)
 				{
-					//ignore for now
 					//TODO - should fix this if it happens too often
-					Debug.WriteLine(p);
+					Debug.WriteLine(xmlException);
 				}catch(NullReferenceException nre)
 				{
 					//TODO - these need to be handled
@@ -185,11 +184,17 @@ namespace Sando.UI
 		public static SolutionMonitor CreateMonitor()
 		{
 			var openSolution = GetOpenSolution();
-			var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
-																  AnalyzerType.Snowball);
-			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer);
-			currentMonitor.StartMonitoring();
-			return currentMonitor;
+			if(openSolution != null)
+			{
+				var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
+				                                                          AnalyzerType.Snowball);
+				var currentMonitor = new SolutionMonitor(openSolution, currentIndexer);
+				currentMonitor.StartMonitoring();
+				return currentMonitor;
+			}else
+			{
+				return null;
+			}
 		}
 
 		private static string CreateLuceneFolder()
@@ -215,9 +220,15 @@ namespace Sando.UI
 
 		private static Solution GetOpenSolution()
 		{
-			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-			var openSolution = dte.Solution;
-			return openSolution;
+			var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+			if(dte != null)
+			{
+				var openSolution = dte.Solution;
+				return openSolution;
+			}else
+			{
+				return null;
+			}
 		}
 
 		private static string GetLuceneDirectoryForSolution(Solution openSolution)
