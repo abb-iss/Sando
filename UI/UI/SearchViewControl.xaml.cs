@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Sando.Core;
 
 namespace Sando.UI
@@ -30,13 +21,16 @@ namespace Sando.UI
 
     	public List<ProgramElement> SearchResults { get; private set; }
 
-
+		public String SearchString
+		{
+			get; set;
+		}
 		
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(string.Format(System.Globalization.CultureInfo.CurrentUICulture, "We are inside {0}.button1_Click()", this.ToString()),
+			MessageBox.Show(string.Format(System.Globalization.CultureInfo.CurrentUICulture, "We are inside {0}", "Sando Search: " + SearchString),
                             "Sando Search");
 
         }

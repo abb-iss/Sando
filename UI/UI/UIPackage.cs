@@ -41,10 +41,10 @@ namespace Sando.UI
     public sealed class UIPackage : Package
     {    	
     	
-		private SolutionMonitor CurrentMonitor;
+		private SolutionMonitor _currentMonitor;
 		
 		//For classloading... //TODO- eliminate the need for this
-    	private List<ProgramElement> list = new List<ProgramElement>();
+    	private List<ProgramElement> _list = new List<ProgramElement>();
 
     	/// <summary>
         /// Default constructor of the package.
@@ -92,34 +92,37 @@ namespace Sando.UI
             base.Initialize();
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if ( null != mcs )
             {
                 // Create the command for the tool window
-                CommandID toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.sandoSearch);
-                MenuCommand menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
+                var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.sandoSearch);
+                var menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand( menuToolWin );
             }
 
-			DTE2 dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-			var solutionEvents = dte.Events.SolutionEvents;
-			solutionEvents.Opened += SolutionHasBeenOpened;
-			solutionEvents.AfterClosing += SolutionHasBeenClosed;
+			var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+			if(dte != null)
+			{
+				var solutionEvents = dte.Events.SolutionEvents;
+				solutionEvents.Opened += SolutionHasBeenOpened;
+				solutionEvents.AfterClosing += SolutionHasBeenClosed;
+			}
         }
 
 		private void SolutionHasBeenClosed()
 		{
 		
-			if(CurrentMonitor != null)
+			if(_currentMonitor != null)
 			{
-				CurrentMonitor.Dispose();
-				CurrentMonitor = null;
+				_currentMonitor.Dispose();
+				_currentMonitor = null;
 			}
 		}
 
 		private void SolutionHasBeenOpened()
 		{
-			CurrentMonitor = SolutionMonitorFactory.CreateMonitor();
+			_currentMonitor = SolutionMonitorFactory.CreateMonitor();
 		}
 
   

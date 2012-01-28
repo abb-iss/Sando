@@ -21,19 +21,19 @@ namespace Sando.UI
 
 	class SolutionMonitor : IVsRunningDocTableEvents
 	{
-		private Solution openSolution;
-		private DocumentIndexer CurrentIndexer;
-		private bool Monitoring;
-		private IVsRunningDocumentTable documentTable;
-		private uint documentTableItemId = 0;
-		private ParserInterface Parser = new SrcMLParser();
+		private readonly Solution _openSolution;
+		private DocumentIndexer _currentIndexer;
+		private bool _monitoring;
+		private IVsRunningDocumentTable _documentTable;
+		private uint _documentTableItemId = 0;
+		private readonly ParserInterface _parser = new SrcMLParser();
 
 
-		public SolutionMonitor(Solution openSolution, DocumentIndexer CurrentIndexer)
+		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer)
 		{
-			this.openSolution = openSolution;
-			this.CurrentIndexer = CurrentIndexer;			
-			Monitoring = false;
+			this._openSolution = openSolution;
+			this._currentIndexer = currentIndexer;			
+			_monitoring = false;
 		}
 
 
@@ -42,7 +42,7 @@ namespace Sando.UI
 
 		private void DocumentSaved(Document document)
 		{
-			if(Monitoring)
+			if(_monitoring)
 			{
 				//CurrentIndexer.AddDocument();?			
 				Debug.WriteLine("processed: " + document.Name);
@@ -52,21 +52,21 @@ namespace Sando.UI
 		public void StartMonitoring()
 		{
 				
-			var allProjects = openSolution.Projects;
+			var allProjects = _openSolution.Projects;
 			var enumerator = allProjects.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
 				var project = (Project)enumerator.Current;
 				ProcessItems(project.ProjectItems.GetEnumerator());
 			}
-			CurrentIndexer.CommitChanges();
+			_currentIndexer.CommitChanges();
  
 			// Register events for doc table
-			documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
-			documentTable.AdviseRunningDocTableEvents(this, out documentTableItemId);
+			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
+			_documentTable.AdviseRunningDocTableEvents(this, out _documentTableItemId);
 
 
-			Monitoring = true;
+			_monitoring = true;
 		}
 
 		private void ProcessItems(IEnumerator items)
@@ -98,13 +98,13 @@ namespace Sando.UI
 				try
 				{
 					var path = item.FileNames[0];
-					var parsed = Parser.Parse(path);
+					var parsed = _parser.Parse(path);
 					foreach (var programElement in parsed)
 					{
 						//TODO - only processing methods for now
 						if(programElement as MethodElement != null)
 						{
-							CurrentIndexer.AddDocument(MethodDocument.Create(programElement as MethodElement));
+							_currentIndexer.AddDocument(MethodDocument.Create(programElement as MethodElement));
 						}	
 					}
 				}
@@ -126,56 +126,53 @@ namespace Sando.UI
 
 		public void Dispose()
 		{
-			documentTable.UnadviseRunningDocTableEvents(documentTableItemId);
+			_documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
 			
 			//shut down the current indexer
-			if(CurrentIndexer != null)
+			if(_currentIndexer != null)
 			{
-				CurrentIndexer.Dispose();
-				CurrentIndexer = null;
+				_currentIndexer.Dispose();
+				_currentIndexer = null;
 			}
 		}
 
-		public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+		public int OnAfterFirstDocumentLock(uint cookie, uint lockType, uint readLocksLeft, uint editLocksLeft)
 		{
 			//throw new NotImplementedException();
 			return VSConstants.S_OK;
 		}
 
-		public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining, uint dwEditLocksRemaining)
+		public int OnBeforeLastDocumentUnlock(uint cookie, uint lockType, uint readLocksLeft, uint editLocksLeft)
 		{
 			//throw new NotImplementedException();
 			return VSConstants.S_OK;
 		}
 
-		public int OnAfterSave(uint docCookie)
+		public int OnAfterSave(uint cookie)
 		{
 			uint  readingLocks, edittingLocks, flags; IVsHierarchy hierarchy; IntPtr documentData; string name;	 uint documentId;
-			documentTable.GetDocumentInfo(docCookie, out flags, out readingLocks, out edittingLocks, out name, out hierarchy, out documentId, out documentData);
-			var projectItem = openSolution.FindProjectItem(name);
+			_documentTable.GetDocumentInfo(cookie, out flags, out readingLocks, out edittingLocks, out name, out hierarchy, out documentId, out documentData);
+			var projectItem = _openSolution.FindProjectItem(name);
 			if(projectItem!=null)
 			{
 				ProcessItem(projectItem);
-				CurrentIndexer.CommitChanges();
+				_currentIndexer.CommitChanges();
 			}
 			return VSConstants.S_OK;
 		}
 
-		public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
+		public int OnAfterAttributeChange(uint cookie, uint grfAttribs)
 		{
-			//throw new NotImplementedException();
 			return VSConstants.S_OK;
 		}
 
-		public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
+		public int OnBeforeDocumentWindowShow(uint cookie, int fFirstShow, IVsWindowFrame pFrame)
 		{
-			//throw new NotImplementedException();
 			return VSConstants.S_OK;
 		}
 
 		public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 		{
-			//throw new NotImplementedException();
 			return VSConstants.S_OK;
 		}
 	}
@@ -183,7 +180,7 @@ namespace Sando.UI
 	class SolutionMonitorFactory
 	{
 		private const string Lucene = "\\lucene";
-		private static string LuceneFolder = CreateLuceneFolder();
+		private static readonly string LuceneFolder = CreateLuceneFolder();
 
 		public static SolutionMonitor CreateMonitor()
 		{
