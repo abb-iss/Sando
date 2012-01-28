@@ -60,6 +60,7 @@
     <Compile Include="Documents\ClassDocument.cs" />
     <Compile Include="Documents\CommentDocument.cs" />
     <Compile Include="Documents\DocCommentDocument.cs" />
+    <Compile Include="Documents\DocumentFactory.cs" />
     <Compile Include="Documents\EnumDocument.cs" />
     <Compile Include="Documents\FieldDocument.cs" />
     <Compile Include="Documents\PropertyDocument.cs" />

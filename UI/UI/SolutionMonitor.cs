@@ -83,11 +83,7 @@ namespace Sando.UI
 					var parsed = _parser.Parse(path);
 					foreach (var programElement in parsed)
 					{
-						//TODO - only processing methods for now
-						if(programElement as MethodElement != null)
-						{
-							_currentIndexer.AddDocument(MethodDocument.Create(programElement as MethodElement));
-						}	
+						_currentIndexer.AddDocument(DocumentFactory.Create(programElement));
 					}
 				}
 				catch (ArgumentException argumentException)
@@ -96,10 +92,12 @@ namespace Sando.UI
 				}catch(XmlException xmlException)
 				{
 					//TODO - should fix this if it happens too often
+					//TODO - need to investigate why this is happening during parsing
 					Debug.WriteLine(xmlException);
 				}catch(NullReferenceException nre)
 				{
 					//TODO - these need to be handled
+					//TODO - need to investigate why this is happening during parsing
 					Debug.WriteLine(nre);
 				}
 			}
