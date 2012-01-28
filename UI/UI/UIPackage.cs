@@ -119,7 +119,7 @@ namespace Sando.UI
 
 		private void SolutionHasBeenOpened()
 		{
-			CurrentMonitor = SolutionMonitor.CreateMonitor();
+			CurrentMonitor = SolutionMonitorFactory.CreateMonitor();
 		}
 
   
