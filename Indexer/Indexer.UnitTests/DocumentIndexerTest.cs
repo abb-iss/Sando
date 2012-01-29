@@ -10,14 +10,36 @@ namespace Sando.Indexer.UnitTests
 	public class DocumentIndexerTest
 	{
 		[Test]
-		public void DocumentIndexerConstructorTest()
+		public void DocumentIndexer_ConstructorDoesNotThrowWhenValidData()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			Assert.DoesNotThrow(() => new DocumentIndexer("C:/Windows/Temp", analyzer).Dispose());
+			DocumentIndexer documentIndexer = null;
+			Assert.DoesNotThrow(() => documentIndexer = new DocumentIndexer("C:/Windows/Temp", analyzer));
+			if(documentIndexer != null)
+				documentIndexer.Dispose();
 		}
 
 		[Test]
-		public void AddDocumentTest()
+		public void DocumentIndexer_ConstructorThrowsWhenInvalidDirectoryPath()
+		{
+			Analyzer analyzer = new SimpleAnalyzer();
+			DocumentIndexer documentIndexer = null;
+			Assert.Throws(typeof(ArgumentException), () => documentIndexer = new DocumentIndexer(null, analyzer));
+			if(documentIndexer != null)
+				documentIndexer.Dispose();
+		}
+
+		[Test]
+		public void DocumentIndexer_ConstructorThrowsWhenAnalyzerIsNull()
+		{
+			DocumentIndexer documentIndexer = null;
+			Assert.Throws(typeof(ArgumentException), () => documentIndexer = new DocumentIndexer("C:/Windows/Temp", null));
+			if(documentIndexer != null)
+				documentIndexer.Dispose();
+		}
+
+		[Test]
+		public void DocumentIndexer_AddDocumentDoesNotThrowWhenValidData()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer target = new DocumentIndexer("C:/Windows/Temp", analyzer);
@@ -38,6 +60,15 @@ namespace Sando.Indexer.UnitTests
 			Assert.NotNull(sandoDocument.GetDocument());
 			Assert.DoesNotThrow(() => target.AddDocument(sandoDocument));
 			Assert.DoesNotThrow(() => target.CommitChanges());
+			target.Dispose();
+		}
+
+		[Test]
+		public void DocumentIndexer_AddDocumentThrowsWhenProgramElementIsNull()
+		{
+			Analyzer analyzer = new SimpleAnalyzer();
+			DocumentIndexer target = new DocumentIndexer("C:/Windows/Temp", analyzer);
+			Assert.Throws(typeof(ArgumentException), () => target.AddDocument(null));
 			target.Dispose();
 		}
 	}

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DB482A0E-4294-4008-BC79-D22505B5B661}</ProjectGuid>
+    <ProjectGuid>{F6BE05E2-F499-443B-84F5-962915723BA8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sando.Core</RootNamespace>
-    <AssemblyName>Core</AssemblyName>
+    <RootNamespace>Configuration.UnitTests</RootNamespace>
+    <AssemblyName>Configuration.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,14 +30,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\libs\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,26 +44,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessLevel.cs" />
-    <Compile Include="ClassElement.cs" />
-    <Compile Include="CommentElement.cs" />
-    <Compile Include="DocCommentElement.cs" />
-    <Compile Include="EnumElement.cs" />
-    <Compile Include="Exceptions\SandoException.cs" />
-    <Compile Include="ProgramElementType.cs" />
-    <Compile Include="PropertyElement.cs" />
-    <Compile Include="FieldElement.cs" />
-    <Compile Include="MethodElement.cs" />
-    <Compile Include="ProgramElement.cs" />
+    <Compile Include="Configuration\ConfigurationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sandoKey.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Translation\Translation\Translation.csproj">
-      <Project>{8DD830F7-7923-4E90-8CD3-6D4313A20FE8}</Project>
-      <Name>Translation</Name>
+    <ProjectReference Include="..\Configuration\Configuration.csproj">
+      <Project>{483A35BF-139D-46C1-A6E3-87DEFAE90470}</Project>
+      <Name>Configuration</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
