@@ -22,14 +22,17 @@ namespace Sando.SearchEngine.UnitTests
     	[Test]
         public void TestCreateCodeSearcher()
         {
-            SimpleAnalyzer analyzer = new SimpleAnalyzer();           
-            Assert.DoesNotThrow(() => new CodeSearcher( System.IO.Path.GetTempPath() +"luceneindexer", analyzer));
+            SimpleAnalyzer analyzer = new SimpleAnalyzer();
+    		var indexer = DocumentIndexerFactory.CreateIndexer(System.IO.Path.GetTempPath() + "luceneindexer", AnalyzerType.Standard);
+			//TODO - How do we get an instance of IIndexerSearcher?
+            Assert.DoesNotThrow(() => new CodeSearcher( null ));
         }
 
         [Test]     
         public void PerformBasicSearch()
         {        	
-        	CodeSearcher cs = new CodeSearcher(IndexerPath, new SimpleAnalyzer());            
+			//TODO - get an IIndexerSearcher from the Indexer project
+        	CodeSearcher cs = new CodeSearcher(null);            
             List<CodeSearchResult> result = cs.Search("SimpleName");
             Assert.AreEqual(2, result.Count);                                 
         }
@@ -37,14 +40,8 @@ namespace Sando.SearchEngine.UnitTests
 		[TestFixtureSetUp]
     	public void CreateIndexer()
     	{
-    		Analyzer analyzer = new SimpleAnalyzer();
-    		IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
-    		if (System.IO.Directory.Exists(IndexerPath))
-    		{
-    			System.IO.Directory.Delete(IndexerPath, true);
-    		}
 
-    		Indexer = new DocumentIndexer(IndexerPath, analyzer);
+			Indexer = DocumentIndexerFactory.CreateIndexer(System.IO.Path.GetTempPath() + "luceneindexer", AnalyzerType.Standard);
     		ClassElement classElement = new ClassElement()
     		                            	{
     		                            		AccessLevel = Core.AccessLevel.Public,

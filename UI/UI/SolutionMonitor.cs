@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -164,17 +165,17 @@ namespace Sando.UI
 		public static SolutionMonitor CreateMonitor()
 		{
 			var openSolution = GetOpenSolution();
-			if(openSolution != null)
-			{
-				var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
-				                                                          AnalyzerType.Snowball);
-				var currentMonitor = new SolutionMonitor(openSolution, currentIndexer);
-				currentMonitor.StartMonitoring();
-				return currentMonitor;
-			}else
-			{
-				return null;
-			}
+			return CreateMonitor(openSolution);
+		}
+
+		private static SolutionMonitor CreateMonitor(Solution openSolution)
+		{
+			Contract.Requires<ArgumentNullException>(openSolution != null, "A solution must be open");
+			var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
+			                                                          AnalyzerType.Snowball);
+			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer);
+			currentMonitor.StartMonitoring();
+			return currentMonitor;
 		}
 
 		private static string CreateLuceneFolder()
