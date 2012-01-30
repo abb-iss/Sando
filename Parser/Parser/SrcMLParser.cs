@@ -44,7 +44,7 @@ namespace Sando.Parser
 		private void ParseClasses(List<ProgramElement> programElements, XElement elements, String filename)
 		{
 			IEnumerable<XElement> classes =
-				from el in elements.Descendants(SourceNamespace + "class")
+				from el in elements.Descendants(SourceNamespace + "class") 
 				select el;
 			foreach(XElement cls in classes)
 			{
@@ -76,14 +76,21 @@ namespace Sando.Parser
 					classElement.Namespace = classElement.Namespace + spc.Value + " ";
 				}
 			}
-			if(classElement.Namespace.Length > 0) 
+			if(classElement.Namespace != null && classElement.Namespace.Length > 0) 
 				classElement.Namespace = classElement.Namespace.TrimEnd();
 
 			//assign filenames
 			classElement.FullFilePath = System.IO.Path.GetFullPath(filename);
 			classElement.FileName = System.IO.Path.GetFileName(filename);
 
-			//parse extended classes and implemented interfaces
+			//parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
+			XElement super = cls.Element(SourceNamespace + "super");
+			if(super != null){
+				XElement extends = super.Element(SourceNamespace + "extends");
+				if(extends != null) {
+					classElement.ExtendedClasses = extends.Element(SourceNamespace + "name").Value;
+				}
+			}
 
 			return classElement;
 		}
