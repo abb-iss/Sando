@@ -1,12 +1,14 @@
-﻿
-namespace Sando.Parser { 
+﻿using System;
+using Sando.Core.Exceptions;
+using Sando.Translation;
 
-	class ParserException : System.Exception
+namespace Sando.Parser
+{
+	public class ParserException : SandoException
 	{
-		public ParserException(string message)
-        : base(message)
+		public ParserException(TranslationCode translationCode, String exceptionMessageFormatArg)
+			: base(translationCode, null, exceptionMessageFormatArg)
 		{
 		}
 	}
-
 }

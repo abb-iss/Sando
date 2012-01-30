@@ -61,6 +61,10 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Translation\Translation\Translation.csproj">
+      <Project>{8DD830F7-7923-4E90-8CD3-6D4313A20FE8}</Project>
+      <Name>Translation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
