@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
@@ -24,7 +25,14 @@ namespace Sando.Indexer.UnitTests
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer documentIndexer = null;
-			Assert.Throws(typeof(ArgumentException), () => documentIndexer = new DocumentIndexer(null, analyzer));
+			try
+			{
+				documentIndexer = new DocumentIndexer(null, analyzer);
+			}
+			catch 
+			{
+			}
+			Assert.True(contractFailed, "Contract should fail!");
 			if(documentIndexer != null)
 				documentIndexer.Dispose();
 		}
@@ -33,7 +41,14 @@ namespace Sando.Indexer.UnitTests
 		public void DocumentIndexer_ConstructorThrowsWhenAnalyzerIsNull()
 		{
 			DocumentIndexer documentIndexer = null;
-			Assert.Throws(typeof(ArgumentException), () => documentIndexer = new DocumentIndexer("C:/Windows/Temp", null));
+			try
+			{
+				documentIndexer = new DocumentIndexer("C:/Windows/Temp", null);
+			}
+			catch
+			{
+			}
+			Assert.True(contractFailed, "Contract should fail!");
 			if(documentIndexer != null)
 				documentIndexer.Dispose();
 		}
@@ -68,8 +83,29 @@ namespace Sando.Indexer.UnitTests
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer target = new DocumentIndexer("C:/Windows/Temp", analyzer);
-			Assert.Throws(typeof(ArgumentException), () => target.AddDocument(null));
+			try
+			{
+				target.AddDocument(null);
+			}
+			catch
+			{
+			}
+			Assert.True(contractFailed, "Contract should fail!");
 			target.Dispose();
 		}
+
+		[SetUp]
+		public void resetContract()
+		{
+			contractFailed = false;
+			Contract.ContractFailed += (sender, e) =>
+			{
+				e.SetHandled();
+				e.SetUnwind();
+				contractFailed = true;
+			};
+		}
+
+		private bool contractFailed;
 	}
 }

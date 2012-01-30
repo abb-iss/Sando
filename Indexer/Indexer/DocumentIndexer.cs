@@ -15,9 +15,9 @@ namespace Sando.Indexer
 	{
 		public DocumentIndexer(string luceneTempIndexesDirectory, Analyzer analyzer)
 		{
-			Contract.Requires<ArgumentException>(!String.IsNullOrWhiteSpace(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory cannot be null or an empty string!");
-			Contract.Requires<ArgumentException>(System.IO.Directory.Exists(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory does not point to a valid directory!");
-			Contract.Requires<ArgumentException>(analyzer != null, "DocumentIndexer:Constructor - analyzer cannot be null!");
+			Contract.Requires(!String.IsNullOrWhiteSpace(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory cannot be null or an empty string!");
+			Contract.Requires(System.IO.Directory.Exists(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory does not point to a valid directory!");
+			Contract.Requires(analyzer != null, "DocumentIndexer:Constructor - analyzer cannot be null!");
 
 			try
 			{
@@ -42,7 +42,7 @@ namespace Sando.Indexer
 
 		public virtual void AddDocument(SandoDocument sandoDocument)
 		{
-			Contract.Requires<ArgumentException>(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
+			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
 
 			IndexWriter.AddDocument(sandoDocument.GetDocument());
 		}
