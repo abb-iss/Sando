@@ -109,6 +109,7 @@
     <Compile Include="Searching\Criteria\NotSearchCriteria.cs" />
     <Compile Include="Searching\IIndexerSearcher.cs" />
     <Compile Include="Searching\Criteria\SearchCriteria.cs" />
+    <Compile Include="Searching\IndexerSearcher.cs" />
     <Compile Include="Searching\UsageType.cs" />
   </ItemGroup>
   <ItemGroup>

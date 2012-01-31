@@ -27,12 +27,14 @@ namespace Sando.UI
 		private IVsRunningDocumentTable _documentTable;
 		private uint _documentTableItemId;
 		private readonly ParserInterface _parser = new SrcMLParser();
+		private string _currentPath;
 
 
-		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer)
+		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer, string getLuceneDirectoryForSolution)
 		{
 			this._openSolution = openSolution;
-			this._currentIndexer = currentIndexer;			
+			this._currentIndexer = currentIndexer;
+			this._currentPath = getLuceneDirectoryForSolution;
 		}
 
 		public void StartMonitoring()
@@ -84,7 +86,9 @@ namespace Sando.UI
 					var parsed = _parser.Parse(path);
 					foreach (var programElement in parsed)
 					{
-						_currentIndexer.AddDocument(DocumentFactory.Create(programElement));
+						var document = DocumentFactory.Create(programElement);
+						if(document !=null)
+							_currentIndexer.AddDocument(document);
 					}
 				}
 				catch (ArgumentException argumentException)
@@ -155,6 +159,12 @@ namespace Sando.UI
 		{
 			return VSConstants.S_OK;
 		}
+
+
+		public string GetCurrentDirectory()
+		{
+			return _currentPath;
+		}
 	}
 
 	class SolutionMonitorFactory
@@ -172,8 +182,8 @@ namespace Sando.UI
 		{
 			Contract.Requires<ArgumentNullException>(openSolution != null, "A solution must be open");
 			var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
-			                                                          AnalyzerType.Snowball);
-			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer);
+			                                                          AnalyzerType.Standard);
+			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer, GetLuceneDirectoryForSolution(openSolution));
 			currentMonitor.StartMonitoring();
 			return currentMonitor;
 		}

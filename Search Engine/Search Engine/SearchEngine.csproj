@@ -37,6 +37,9 @@
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lucene.Net">
+      <HintPath>..\..\Indexer\Lucene.Net-2.9.4\bin\Lucene.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -47,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeSearcher.cs" />
+    <Compile Include="CodeSearcherFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CodeSearchResult.cs" />
   </ItemGroup>
@@ -57,10 +61,6 @@
     <ProjectReference Include="..\..\Core\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
-      <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
-      <Name>Indexer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

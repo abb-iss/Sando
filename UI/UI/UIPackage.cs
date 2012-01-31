@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 using Sando.Core;
 using Sando.Indexer;
+using Sando.SearchEngine;
 
 namespace Sando.UI
 {
@@ -45,6 +46,13 @@ namespace Sando.UI
 		
 		//For classloading... //TODO- eliminate the need for this
     	private List<ProgramElement> _list = new List<ProgramElement>();
+		private List<CodeSearchResult> _stuff = new List<CodeSearchResult>();
+
+		private static UIPackage MyPackage
+		{
+			get;
+			set;
+		}
 
     	/// <summary>
         /// Default constructor of the package.
@@ -56,6 +64,7 @@ namespace Sando.UI
         public UIPackage()
         {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+    		MyPackage = this;
         }
 
         /// <summary>
@@ -127,13 +136,18 @@ namespace Sando.UI
 
   
 
+		public static UIPackage GetInstance()
+		{
+			return MyPackage;
+		}
 
 
 
+    	#endregion
 
-
-        #endregion
-
-	
+    	public string GetCurrentDirectory()
+    	{
+			return _currentMonitor.GetCurrentDirectory();
+    	}
     }
 }

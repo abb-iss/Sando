@@ -113,6 +113,10 @@ namespace Sando.Parser
 			var method = new MethodElement();
 			method.Id = System.Guid.NewGuid();
 
+			//TODO - remove once parsing works fully, just setting defaults for now...
+			method.FileName = "";
+			method.FullFilePath = "";
+
 			//parse name etc.
 			XElement name = function.Element(SourceNamespace + "name");
 			method.Name = name.Value;

@@ -77,11 +77,12 @@ namespace Sando.Indexer
             Dispose(false);
         }
 
-		protected virtual Directory LuceneIndexesDirectory { get; set; }
+		public virtual Directory LuceneIndexesDirectory { get; set; }
 		protected virtual Analyzer Analyzer { get; set; }
 		protected virtual IndexWriter IndexWriter { get; set; }
 
 		private bool disposed = false;
+		
 	}
 
 	public enum AnalyzerType

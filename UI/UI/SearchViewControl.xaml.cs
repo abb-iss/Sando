@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using Sando.Core;
+using Sando.Indexer.Searching;
+using Sando.SearchEngine;
 
 namespace Sando.UI
 {
@@ -14,13 +17,28 @@ namespace Sando.UI
     	public SearchViewControl()
         {
             this.DataContext = this; //so we can show results
+    		//InitFake();
             InitializeComponent();            
         }
 
-    	public List<ProgramElement> SearchResults
-    	{
-    		get; private set;
-    	}
+		public ObservableCollection<CodeSearchResult> SearchResults
+		{
+			get
+			{
+				return (ObservableCollection<CodeSearchResult>)GetValue(SearchResultsProperty);
+			}
+			set
+			{
+				SetValue(SearchResultsProperty, value);
+			}
+		}
+
+		public static readonly DependencyProperty SearchResultsProperty =
+			DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+   
+
+    
 
 		public String SearchString
 		{
@@ -32,6 +50,16 @@ namespace Sando.UI
         {
 			MessageBox.Show(string.Format(System.Globalization.CultureInfo.CurrentUICulture, "We are inside {0}", "Sando Search: " + SearchString),
                             "Sando Search");
+        	var myPackage = UIPackage.GetInstance();        	
+			var searcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentDirectory()));
+			if(SearchResults==null)
+				SearchResults = new ObservableCollection<CodeSearchResult>();				
+			else
+				SearchResults.Clear();
+			foreach(var result in searcher.Search(SearchString))
+        	{
+        		SearchResults.Add(result);
+        	}        	
         }
     }
 }
