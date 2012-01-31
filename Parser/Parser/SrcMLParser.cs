@@ -50,7 +50,7 @@ namespace Sando.Parser
 			{
 				programElements.Add(ParseClass(cls,filename));
 			}
-		}
+		} 
 
 		private ClassElement ParseClass(XElement cls, String filename)
 		{
@@ -95,27 +95,27 @@ namespace Sando.Parser
 			return classElement;
 		}
 
-		private void ParseFunctions(List<ProgramElement> programElements, XElement elements)
+		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, String filename)
 		{
 			IEnumerable<XElement> functions =
 				from el in elements.Descendants(SourceNamespace + "function")
 				select el;
 			foreach(XElement func in functions)
 			{
-				MethodElement methodElement = ParseFunction(func);
+				MethodElement methodElement = ParseFunction(func,filename);
 				AssociateMethodWithClass(methodElement, func, programElements);
 				programElements.Add(methodElement);
 			}
 		}
 
-		private MethodElement ParseFunction(XElement function)
+		private MethodElement ParseFunction(XElement function, String filename)
 		{
 			var method = new MethodElement();
 			method.Id = System.Guid.NewGuid();
 
-			//TODO - remove once parsing works fully, just setting defaults for now...
-			method.FileName = "";
-			method.FullFilePath = "";
+			//assign filenames
+			method.FullFilePath = System.IO.Path.GetFullPath(filename);
+			method.FileName = System.IO.Path.GetFileName(filename);
 
 			//parse name etc.
 			XElement name = function.Element(SourceNamespace + "name");
