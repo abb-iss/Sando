@@ -103,33 +103,7 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(seenClass);
 		}
 
-		[Test]
-		public void ClassInheritanceTest()
-		{
-			bool seenClass = false;
-			var parser = new SrcMLParser();
-			var elements = parser.Parse("..\\..\\TestFiles\\InheritanceCSharpFile.txt");
-			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length > 0);
-			foreach(ProgramElement pe in elements)
-			{
-				if(pe is ClassElement)
-				{
-					ClassElement classElem = (ClassElement)pe;
-					if(classElem.Name == "IndexerException")
-					{
-						seenClass = true;
-						Assert.AreEqual(classElem.DefinitionLineNumber, 8);
-						Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
-						Assert.AreEqual(classElem.Namespace, "Sando Indexer Exceptions");
-						Assert.AreEqual(classElem.FileName, "InheritanceCSharpFile.txt");
-						Assert.AreEqual(classElem.FullFilePath, "C:\\Users\\kosta\\sando\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
-						Assert.AreEqual(classElem.ExtendedClasses, "SandoException");
-					}
-				}
-			}
-			Assert.IsTrue(seenClass);
-		}
+	
 
 		[Test]
 		public void BasicParserTest()

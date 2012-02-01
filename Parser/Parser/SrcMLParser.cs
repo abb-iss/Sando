@@ -36,7 +36,7 @@ namespace Sando.Parser
 			XElement sourceElements = XElement.Parse(srcml);
 			
 			ParseClasses(programElements, sourceElements, filename);
-			ParseFunctions(programElements, sourceElements);
+			ParseFunctions(programElements, sourceElements, filename);
 
 			return programElements.ToArray();
 		}
