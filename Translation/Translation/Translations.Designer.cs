@@ -70,6 +70,15 @@ namespace Sando.Translation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unrecognized enum value for enum: {0}.
+        /// </summary>
+        internal static string Exception_General_UnrecognizedEnumValue {
+            get {
+                return ResourceManager.GetString("Exception_General_UnrecognizedEnumValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lucene index directory is already opened.
         /// </summary>
         internal static string Exception_Indexer_LuceneIndexAlreadyOpened {

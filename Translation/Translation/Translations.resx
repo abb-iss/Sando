@@ -120,6 +120,9 @@
   <data name="Exception_General_IOException" xml:space="preserve">
     <value>Input-ouput exception occurred: {0}</value>
   </data>
+  <data name="Exception_General_UnrecognizedEnumValue" xml:space="preserve">
+    <value>Unrecognized enum value for enum: {0}</value>
+  </data>
   <data name="Exception_Indexer_LuceneIndexAlreadyOpened" xml:space="preserve">
     <value>Lucene index directory is already opened</value>
   </data>
