@@ -52,10 +52,18 @@ namespace Sando.Parser.UnitTests
 				{
 					seenClass = true;
 					var classElement = programElement as ClassElement;
+					int numParents = 0;
 					//TODO - not sure how we will be able to determine which are interfaces and which are classes
 					//might have to just put all but the first one in interfaces?
-					//TODO - currently fails with NRE
-					Assert.IsTrue(classElement.ExtendedClasses.Count()+classElement.ImplementedInterfaces.Count()==4);
+					if(classElement.ImplementedInterfaces != null)
+					{
+						numParents += classElement.ImplementedInterfaces.Split(' ').Count();
+					}
+					if(classElement.ExtendedClasses != null)
+					{
+						numParents += classElement.ExtendedClasses.Split(' ').Count();
+					}
+					Assert.IsTrue(numParents==4);
 				}
 			}
 			Assert.IsTrue(seenClass);			
@@ -83,7 +91,7 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(classElem.FileName, "InheritanceCSharpFile.txt");
 						//TODO - make this not dependent upon your path...
 						//Assert.AreEqual(classElem.FullFilePath, "C:\\Users\\kosta\\sando\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
-						Assert.AreEqual(classElem.ExtendedClasses, "SandoException");
+						Assert.AreEqual(classElem.ImplementedInterfaces, "SandoException");
 					}
 				}
 			}

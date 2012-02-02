@@ -84,10 +84,19 @@ namespace Sando.Parser
 
 			//parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
 			XElement super = cls.Element(SourceNamespace + "super");
-			if(super != null){
-				XElement extends = super.Element(SourceNamespace + "extends");
-				if(extends != null) {
-					classElement.ExtendedClasses = extends.Element(SourceNamespace + "name").Value;
+			if(super != null)
+			{
+				XElement implements = super.Element(SourceNamespace + "implements");
+				if(implements != null)
+				{
+					IEnumerable<XElement> impNames =
+						from el in implements.Descendants(SourceNamespace + "name")
+						select el;
+					foreach(XElement impName in impNames)
+					{
+						classElement.ImplementedInterfaces = classElement.ImplementedInterfaces + impName.Value + " ";
+					}
+					classElement.ImplementedInterfaces = classElement.ImplementedInterfaces.TrimEnd();
 				}
 			}
 

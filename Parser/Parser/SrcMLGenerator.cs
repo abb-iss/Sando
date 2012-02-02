@@ -105,7 +105,7 @@ namespace Sando.Parser
 		private String AdaptCSharpToJavaParsing(String inputCode)
 		{
 			//replace ':' with extends in class definitions 
-			return Regex.Replace(inputCode, @"class (\w+) : (\w+)", "class $1 extends $2");
+			return Regex.Replace(inputCode, @"class (\w+) : (\w+)", "class $1 implements $2");
 		}
 
 
