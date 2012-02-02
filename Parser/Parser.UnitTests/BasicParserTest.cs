@@ -123,6 +123,20 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(hasClass && hasMethod);
 		}
 
+		[Test]
+		public void EnumParserTest()
+		{
+			SrcMLParser parser = new SrcMLParser(Generator);
+			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			bool hasEnum = false;
+			foreach(var programElement in elements)
+			{
+				if(programElement as EnumElement!= null)
+					hasEnum = true;
+			}
+			Assert.IsTrue(hasEnum);
+		}
+
 		[TearDown]
 		public static void CleanUp()
 		{
