@@ -41,6 +41,27 @@ namespace Sando.Parser.UnitTests
 		}
 
 		[Test]
+		public void ParseMultipleParents()
+		{
+			var parser = new SrcMLParser();
+			var elements = parser.Parse("..\\..\\TestFiles\\MultiParentTest.txt");
+			bool seenClass = false;
+			foreach(var programElement in elements)
+			{
+				if(programElement.ProgramElementType == ProgramElementType.Class)
+				{
+					seenClass = true;
+					var classElement = programElement as ClassElement;
+					//TODO - not sure how we will be able to determine which are interfaces and which are classes
+					//might have to just put all but the first one in interfaces?
+					//TODO - currently fails with NRE
+					Assert.IsTrue(classElement.ExtendedClasses.Count()+classElement.ImplementedInterfaces.Count()==4);
+				}
+			}
+			Assert.IsTrue(seenClass);			
+		}
+
+		[Test]
 		public void ClassInheritanceTest()
 		{
 			bool seenClass = false;

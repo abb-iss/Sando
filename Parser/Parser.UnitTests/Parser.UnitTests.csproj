@@ -62,6 +62,7 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="TestFiles\InheritanceCSharpFile.txt" />
+    <Content Include="TestFiles\MultiParentTest.txt" />
     <Content Include="TestFiles\ShortCSharpFile.txt" />
     <Content Include="TestFiles\ShortestCSharpFile.txt" />
     <Content Include="TestFiles\ShortInheritance.txt" />
