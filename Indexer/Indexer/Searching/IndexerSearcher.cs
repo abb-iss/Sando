@@ -50,7 +50,6 @@ namespace Sando.Indexer.Searching
 					methodElement.Body = "the body";
 					methodElement.ClassId = Guid.Empty;
 					methodElement.DefinitionLineNumber = 0;
-					methodElement.FileName = "myfile";
 					methodElement.FullFilePath = "full path";
 					methodElement.Id = Guid.Empty;
 					methodElement.Name = hitDocument.GetField("Name").StringValue();

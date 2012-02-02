@@ -63,7 +63,6 @@ namespace Sando.Indexer.UnitTests
 											AccessLevel = Core.AccessLevel.Public,
 											DefinitionLineNumber = 11,
 											ExtendedClasses = "SimpleClassBase",
-											FileName = "SimpleClass.cs",
 											FullFilePath = "C:/Projects/SimpleClass.cs",
 											Id = Guid.NewGuid(),
 											ImplementedInterfaces = "IDisposable",

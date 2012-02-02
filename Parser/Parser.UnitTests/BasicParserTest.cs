@@ -95,8 +95,7 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(classElem.DefinitionLineNumber, 14);
 						Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
 						Assert.AreEqual(classElem.Namespace, "Sando Parser");
-						Assert.AreEqual(classElem.FileName, "ShortCSharpFile.txt");
-						Assert.AreEqual(classElem.FullFilePath,"C:\\Users\\kosta\\sando\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+						Assert.True(classElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt"));
 					}
 				}
 			}

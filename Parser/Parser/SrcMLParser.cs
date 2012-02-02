@@ -80,7 +80,6 @@ namespace Sando.Parser
 
 			//assign filenames
 			classElement.FullFilePath = System.IO.Path.GetFullPath(filename);
-			classElement.FileName = System.IO.Path.GetFileName(filename);
 
 			//parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
 			XElement super = cls.Element(SourceNamespace + "super");
@@ -123,7 +122,6 @@ namespace Sando.Parser
 
 			//assign filenames
 			method.FullFilePath = System.IO.Path.GetFullPath(filename);
-			method.FileName = System.IO.Path.GetFileName(filename);
 
 			//parse name etc.
 			XElement name = function.Element(SourceNamespace + "name");

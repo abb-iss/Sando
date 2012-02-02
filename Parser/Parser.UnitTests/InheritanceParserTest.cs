@@ -88,7 +88,6 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(classElem.DefinitionLineNumber, 8);
 						Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
 						Assert.AreEqual(classElem.Namespace, "Sando Indexer Exceptions");
-						Assert.AreEqual(classElem.FileName, "InheritanceCSharpFile.txt");
 						//TODO - make this not dependent upon your path...
 						//Assert.AreEqual(classElem.FullFilePath, "C:\\Users\\kosta\\sando\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
 						Assert.AreEqual(classElem.ImplementedInterfaces, "SandoException");

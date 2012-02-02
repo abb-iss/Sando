@@ -10,7 +10,6 @@ namespace Sando.Core
 		public virtual string Name{ get;set; }
 		public virtual Guid Id { get; set; }
 		public virtual int DefinitionLineNumber { get; set; }
-		public virtual string FileName { get; set; }
 		public virtual string FullFilePath { get; set; }
 		public abstract ProgramElementType ProgramElementType { get; }
     }
