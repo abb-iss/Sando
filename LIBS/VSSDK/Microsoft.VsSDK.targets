@@ -746,15 +746,15 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
     <CreatePkgDef AssemblyToProcess="$(TargetPath)"
               ProductVersion="$(TargetVSVersion)"
               SDKVersion="$(VsSDKVersion)"
-              OutputFile="$(IntermediateOutputPath)$(TargetName).pkgdef"
+              OutputFile="$(IntermediateOutputPath)$(TargetName).latest.pkgdef"
               UseCodebase="$(UseCodebase)" 
               ReferencedAssemblies="@(ReferencePath)"  />
-    <CopyIfChanged Condition="Exists('$(IntermediateOutputPath)$(TargetName).pkgdef')"
-                   SourceFile="$(IntermediateOutputPath)$(TargetName).pkgdef"
+    <CopyIfChanged Condition="Exists('$(IntermediateOutputPath)$(TargetName).latest.pkgdef')"
+                   SourceFile="$(IntermediateOutputPath)$(TargetName).latest.pkgdef"
                    DestinationFile="$(IntermediateOutputPath)$(TargetName).pkgdef" />
     <ItemGroup>
       <FileWrites Include="$(IntermediateOutputPath)$(TargetName).pkgdef" Condition="Exists('$(IntermediateOutputPath)$(TargetName).pkgdef')"/>
-      <FileWrites Include="$(IntermediateOutputPath)$(TargetName).pkgdef" Condition="Exists('$(IntermediateOutputPath)$(TargetName).pkgdef')"/>
+      <FileWrites Include="$(IntermediateOutputPath)$(TargetName).latest.pkgdef" Condition="Exists('$(IntermediateOutputPath)$(TargetName).latest.pkgdef')"/>
     </ItemGroup>
   </Target>
 
