@@ -137,8 +137,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 7);
 					Assert.AreEqual(enumElem.Namespace, "Sando Parser");
 					Assert.AreEqual(enumElem.Values, "Java C CSharp");
-					//SrcML doesn't properly parse access level specs for C# enums, for now
-					//Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
+					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
 					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt"));
 					hasEnum = true;
 				}
