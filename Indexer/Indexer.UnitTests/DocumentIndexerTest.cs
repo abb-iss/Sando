@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
@@ -11,14 +10,7 @@ namespace Sando.Indexer.UnitTests
     [TestFixture]
 	public class DocumentIndexerTest
 	{
-    	private const string _luceneTempIndexesDirectory = ".\\Windows\\Temp\\";
-
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			Directory.CreateDirectory(_luceneTempIndexesDirectory);
-			
-		}
+    	private const string _luceneTempIndexesDirectory = "C:/Windows/Temp";
 
     	[Test]
 		public void DocumentIndexer_ConstructorDoesNotThrowWhenValidData()
