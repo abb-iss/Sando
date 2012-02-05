@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
@@ -10,12 +11,21 @@ namespace Sando.Indexer.UnitTests
     [TestFixture]
 	public class DocumentIndexerTest
 	{
-		[Test]
+    	private const string _luceneTempIndexesDirectory = ".\\Windows\\Temp\\";
+
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			Directory.CreateDirectory(_luceneTempIndexesDirectory);
+			
+		}
+
+    	[Test]
 		public void DocumentIndexer_ConstructorDoesNotThrowWhenValidData()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer documentIndexer = null;
-			Assert.DoesNotThrow(() => documentIndexer = new DocumentIndexer("C:/Windows/Temp", analyzer));
+			Assert.DoesNotThrow(() => documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer));
 			if(documentIndexer != null)
 				documentIndexer.Dispose();
 		}
@@ -43,7 +53,7 @@ namespace Sando.Indexer.UnitTests
 			DocumentIndexer documentIndexer = null;
 			try
 			{
-				documentIndexer = new DocumentIndexer("C:/Windows/Temp", null);
+				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, null);
 			}
 			catch
 			{
@@ -57,7 +67,7 @@ namespace Sando.Indexer.UnitTests
 		public void DocumentIndexer_AddDocumentDoesNotThrowWhenValidData()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			DocumentIndexer target = new DocumentIndexer("C:/Windows/Temp", analyzer);
+			DocumentIndexer target = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
 			ClassElement classElement = new ClassElement()
 										{
 											AccessLevel = Core.AccessLevel.Public,
@@ -81,7 +91,7 @@ namespace Sando.Indexer.UnitTests
 		public void DocumentIndexer_AddDocumentThrowsWhenProgramElementIsNull()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			DocumentIndexer target = new DocumentIndexer("C:/Windows/Temp", analyzer);
+			DocumentIndexer target = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
 			try
 			{
 				target.AddDocument(null);
