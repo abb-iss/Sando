@@ -12,6 +12,7 @@ namespace Sando.Parser
 
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
+		private static readonly int SnippetSize = 5;
 
 		public SrcMLParser()
 		{
@@ -21,7 +22,7 @@ namespace Sando.Parser
 			Generator.SetSrcMLLocation(currentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");			
 		}
 
-		public SrcMLParser(SrcMLGenerator gen )
+		public SrcMLParser(SrcMLGenerator gen)
 		{
 			Generator = gen;
 		}
@@ -42,6 +43,7 @@ namespace Sando.Parser
 			foreach(ProgramElement pe in programElements) 
 			{
 				pe.FullFilePath = System.IO.Path.GetFullPath(filename);
+				pe.Snippet = RetrieveSnippet(filename, pe.DefinitionLineNumber, SnippetSize);
 			}
 
 			return programElements.ToArray();
@@ -289,6 +291,17 @@ namespace Sando.Parser
 				//field is not contained by a class
 				return System.Guid.Empty;
 			}
+		}
+
+		private string RetrieveSnippet(String filename, int line, int snippetNumLines)
+		{
+			string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetFullPath(filename));
+
+			//for now have snippet just surround the line the program element is defined
+			//TODO: think about enhancing this in a way that it always includes all of the program element
+			int startLine = line - (snippetNumLines / 2);
+
+			return String.Concat(lines.Skip(startLine).Take(snippetNumLines));
 		}
 
 		private AccessLevel StrToAccessLevel(String level)
