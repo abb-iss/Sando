@@ -37,6 +37,7 @@ namespace Sando.Parser
 			ParseEnums(programElements, sourceElements);
 			ParseClasses(programElements, sourceElements);
 			ParseFunctions(programElements, sourceElements);
+			ParseProperties(programElements, sourceElements);
 
 			foreach(ProgramElement pe in programElements) 
 			{
@@ -44,6 +45,56 @@ namespace Sando.Parser
 			}
 
 			return programElements.ToArray();
+		}
+
+		private void ParseProperties(List<ProgramElement> programElements, XElement elements)
+		{
+			IEnumerable<XElement> props =
+				from el in elements.Descendants(SourceNamespace + "decl")
+				where el.Element(SourceNamespace + "name") != null &&
+					  el.Element(SourceNamespace + "type") != null &&
+					  el.Element(SourceNamespace + "block") != null &&
+					  el.Elements().Count() == 3
+				select el;
+			foreach(XElement prop in props)
+			{
+				PropertyElement propElem = new PropertyElement();
+				propElem.Id = System.Guid.NewGuid();
+
+				//parse name, and definition line number
+				XElement name = prop.Element(SourceNamespace + "name");
+				propElem.Name = name.Value;
+				propElem.DefinitionLineNumber = Int32.Parse(name.Attribute(PositionNamespace + "line").Value);
+
+				//get the class guid
+				propElem.ClassId = RetrieveClassGuid(prop, programElements);
+
+				//parse access level and type
+				XElement access = prop.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
+				if(access != null)
+				{
+					propElem.AccessLevel = StrToAccessLevel(access.Value);
+				}
+				IEnumerable<XElement> types = prop.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+				foreach(XElement type in types)
+				{
+					propElem.PropertyType = propElem.PropertyType + type.Value + " ";
+				}
+				propElem.PropertyType = propElem.PropertyType.TrimEnd();
+
+				//parse property body
+				XElement block = prop.Element(SourceNamespace + "block");
+				IEnumerable<XElement> bodyNames =
+					from el in block.Descendants(SourceNamespace + "name")
+					select el;
+				foreach(XElement bodyname in bodyNames)
+				{
+					propElem.Body = propElem.Body + bodyname.Value + " ";
+				}
+				propElem.Body = propElem.Body.TrimEnd();
+
+				programElements.Add(propElem);
+			}
 		}
 
 		private void ParseEnums(List<ProgramElement> programElements, XElement elements)
@@ -167,7 +218,7 @@ namespace Sando.Parser
 			foreach(XElement func in functions)
 			{
 				MethodElement methodElement = ParseFunction(func);
-				AssociateMethodWithClass(methodElement, func, programElements);
+				methodElement.ClassId = RetrieveClassGuid(func, programElements);
 				programElements.Add(methodElement);
 			}
 		}
@@ -212,31 +263,31 @@ namespace Sando.Parser
 			return method;
 		}
 
-		private void AssociateMethodWithClass(MethodElement method, XElement function, List<ProgramElement> programElements)
+		private Guid RetrieveClassGuid(XElement field, List<ProgramElement> programElements)
 		{
 			IEnumerable<XElement> ownerClasses =
-				from el in function.Ancestors(SourceNamespace + "class")
+				from el in field.Ancestors(SourceNamespace + "class")
 				select el;
 			if(ownerClasses.Count() > 0)
 			{
-				//this ignores the possibility that a method may be part of an inner class
+				//this ignores the possibility that a field may be part of an inner class
 				XElement name = ownerClasses.First().Element(SourceNamespace + "name");
 				String ownerClassName = name.Value;
 				//now find the ClassElement object corresponding to ownerClassName, since those should have been gen'd by now
 				ProgramElement ownerClass = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerClassName);
 				if(ownerClass != null)
 				{
-					method.ClassId = ownerClass.Id;
+					return ownerClass.Id;
 				}
 				else
 				{
-					method.ClassId = System.Guid.Empty;
+					return System.Guid.Empty;
 				}
 			}
 			else
 			{
-				//method is not contained by a class
-				method.ClassId = System.Guid.Empty;
+				//field is not contained by a class
+				return System.Guid.Empty;
 			}
 		}
 
