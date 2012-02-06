@@ -26,7 +26,10 @@ namespace Sando.SearchEngine
 		{
 			get; set; 
 		}
-
+		private LRUCache<SearchCriteria, List<CodeSearchResult>> lruCache
+		{
+			get; set;
+		}
     	#endregion
 
         #region Constructor
@@ -37,6 +40,9 @@ namespace Sando.SearchEngine
 		public CodeSearcher(IIndexerSearcher searcher)
         {
             this.searcher = searcher;
+			int capacity = 50; //TODO: max capacity of the cache, need to determine its value
+			                   //from configuration or default value (50)
+			lruCache = new LRUCache<SearchCriteria, List<CodeSearchResult>>(capacity);
         }
         #endregion       
         #region Public Methods
@@ -48,7 +54,24 @@ namespace Sando.SearchEngine
         /// <returns>List of Search Result</returns>
         public virtual List<CodeSearchResult> Search(string searchString)
         {
-		 return this.searcher.Search(this.GetCriteria(searchString)).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+			//return this.searcher.Search(this.GetCriteria(searchString)).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+			SearchCriteria searchCrit = this.GetCriteria(searchString);
+			//test cache hits
+			bool indexingChanged = false;//TODO: need API to get the status of the indexing
+			List<CodeSearchResult> res = lruCache.get(searchCrit);
+			if(res!=null && !indexingChanged)
+			{
+				//cache hits and index not changed
+				return res;
+			}
+			else
+			{
+				//no cache hits, new search and update the cache
+				res = this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+				//add into cache even the res contains no contents
+				lruCache.put(searchCrit, res);
+				return res;
+			}
         }
 
         #endregion	

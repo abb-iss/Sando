@@ -12,6 +12,8 @@ namespace Sando.SearchEngine.UnitTests
     using Sando.Indexer;
     using Sando.Indexer.Documents;
     using Lucene.Net.Search;
+	using Sando.Indexer.Searching;
+
     [TestFixture]
     public class CodeSearcherFixture
     {
@@ -36,6 +38,20 @@ namespace Sando.SearchEngine.UnitTests
             List<CodeSearchResult> result = cs.Search("SimpleName");
             Assert.AreEqual(2, result.Count);                                 
         }
+
+		[Test]
+		public void TestSearchWithCache()
+		{
+			SimpleAnalyzer analyzer = new SimpleAnalyzer();
+			var indexer = DocumentIndexerFactory.CreateIndexer(System.IO.Path.GetTempPath() + "luceneindexer", AnalyzerType.Standard);
+			string directoryPath = System.IO.Path.GetTempPath() + "luceneindexer";
+			CodeSearcher cs = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(directoryPath));
+			List<CodeSearchResult> result = cs.Search("SimpleName");
+			result = cs.Search("SimpleName");
+			result = cs.Search("Simple Name 3");
+			result = cs.Search("Simple Name 4");
+			result = cs.Search("Simple Name 5");
+		}
 
 		[TestFixtureSetUp]
     	public void CreateIndexer()
@@ -65,7 +81,7 @@ namespace Sando.SearchEngine.UnitTests
     		                              	};
     		sandoDocument = MethodDocument.Create(methodElement);
     		Indexer.AddDocument(sandoDocument);
-    		Indexer.CommitChanges();    		
+    		Indexer.CommitChanges();
     	}
 
 		[TestFixtureTearDown]
