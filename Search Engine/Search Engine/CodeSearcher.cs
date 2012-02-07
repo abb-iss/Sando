@@ -84,7 +84,7 @@ namespace Sando.SearchEngine
         private SearchCriteria GetCriteria(string searchString)
         {
             var criteria = new SimpleSearchCriteria();
-            criteria.SearchTerms = searchString.Split(' ').ToList();
+            criteria.SearchTerms = new SortedSet<string>(searchString.Split(' ').ToList());
             return criteria;
         }
         #endregion

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using Sando.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Text;
+using Sando.Core;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
-using System.Diagnostics.Contracts;
 
 namespace Sando.Indexer.Searching.Criteria
 {
@@ -11,18 +12,17 @@ namespace Sando.Indexer.Searching.Criteria
 	{
 		public SimpleSearchCriteria()
 		{
-			SearchTerms = new List<string>();
+			SearchTerms = new SortedSet<string>();
 			MatchCase = false;
 			MatchWholeWord = false;
 			ExactMode = true;
-			SearchWithinComments = false;
 			SearchByAccessType = false;
-			AccessLevels = new List<AccessLevel>();
+			AccessLevels = new SortedSet<AccessLevel>();
 			SearchByProgramElementType = false;
-			ProgramElementTypes = new List<ProgramElementType>();
+			ProgramElementTypes = new SortedSet<ProgramElementType>();
 			SearchByUsageType = false;
-			UsageTypes = new List<UsageType>();
-			Locations = new List<string>();
+			UsageTypes = new SortedSet<UsageType>();
+			Locations = new SortedSet<string>();
 		}
 
 		public override string ToQueryString()
@@ -31,134 +31,186 @@ namespace Sando.Indexer.Searching.Criteria
 			stringBuilder.Append("(");
 			if(SearchByAccessType)
 			{
-				stringBuilder.Append(AccessLevelCriteriaToString());
+				AccessLevelCriteriaToString(stringBuilder);
 				stringBuilder.Append(" AND ");
 			}
 			if(SearchByProgramElementType)
 			{
-				stringBuilder.Append(ProgramElementTypeCriteriaToString());
+				ProgramElementTypeCriteriaToString(stringBuilder);
 				stringBuilder.Append(" AND ");
 			}
 			if(SearchByLocation)
 			{
-				stringBuilder.Append(LocationCriteriaToString());
+				LocationCriteriaToString(stringBuilder);
 				stringBuilder.Append(" AND ");
 			}
-			if(SearchByUsageType)
-			{
-				//TODO search for the terms within the chosen usage types
-				stringBuilder.Append(UsageTypeCriteriaToString());
-				stringBuilder.Append(" AND ");
-			}
-			else
-			{
-				//TODO search for the terms without the chosen usage types
-			}
+			UsageTypeCriteriaToString(stringBuilder, SearchByUsageType);
 			stringBuilder.Append(")");
 			return stringBuilder.ToString();
 		}
 
-		protected string AccessLevelCriteriaToString()
+		private void AccessLevelCriteriaToString(StringBuilder stringBuilder)
 		{
 			Contract.Requires(AccessLevels != null, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be null!");
+			Contract.Requires(AccessLevels.Count > 0, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be empty!");
 
-			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append("(");
-			for(int i = 0; i < AccessLevels.Count; ++i)
+			int collectionSize = AccessLevels.Count;
+			foreach(AccessLevel accessLevel in AccessLevels)
 			{
 				stringBuilder.Append("AccessLevel:");
-				stringBuilder.Append(AccessLevels[i].ToString());
-				if(i < AccessLevels.Count - 1)
+				stringBuilder.Append(accessLevel.ToString());
+				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
 				}
+				--collectionSize;
 			}
 			stringBuilder.Append(")");
-			return stringBuilder.ToString();
 		}
 
-		protected string ProgramElementTypeCriteriaToString()
+		private void ProgramElementTypeCriteriaToString(StringBuilder stringBuilder)
 		{
 			Contract.Requires(ProgramElementTypes != null, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be null!");
+			Contract.Requires(ProgramElementTypes.Count > 0, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be empty!");
 
-			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append("(");
-			for(int i = 0; i < ProgramElementTypes.Count; ++i)
+			int collectionSize = ProgramElementTypes.Count;
+			foreach(ProgramElementType programElementType in ProgramElementTypes)
 			{
 				stringBuilder.Append("ProgramElementType:");
-				stringBuilder.Append(ProgramElementTypes[i].ToString());
-				if(i < ProgramElementTypes.Count - 1)
+				stringBuilder.Append(programElementType.ToString());
+				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
 				}
+				--collectionSize;
 			}
 			stringBuilder.Append(")");
-			return stringBuilder.ToString();
 		}
 
-		protected string LocationCriteriaToString()
+		private void LocationCriteriaToString(StringBuilder stringBuilder)
 		{
 			Contract.Requires(Locations != null, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be null!");
+			Contract.Requires(Locations.Count > 0, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be empty!");
 
-			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append("(");
-			for(int i = 0; i < Locations.Count; ++i)
+			int collectionSize = Locations.Count;
+			foreach(string location in Locations)
 			{
 				stringBuilder.Append("FullFilePath:");
-				stringBuilder.Append(Locations[i].ToString());
-				if(i < Locations.Count - 1)
+				stringBuilder.Append(location);
+				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
 				}
+				--collectionSize;
 			}
 			stringBuilder.Append(")");
-			return stringBuilder.ToString();
 		}
 
-		protected string UsageTypeCriteriaToString()
+		private void UsageTypeCriteriaToString(StringBuilder stringBuilder, bool searchByUsageType)
 		{
 			Contract.Requires(UsageTypes != null, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be null!");
+			Contract.Requires(!SearchByUsageType || UsageTypes.Count > 0, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be empty!");
 
-			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.Append("(");
-			for(int i = 0; i < UsageTypes.Count; ++i)
+			if(SearchByUsageType)
 			{
-				switch(UsageTypes[i])
+				int collectionSize = UsageTypes.Count;
+				foreach(UsageType usageType in UsageTypes)
 				{
-					case UsageType.Definition:
+					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+					if(collectionSize > 1)
+					{
+						stringBuilder.Append(" OR ");
+					}
+					--collectionSize;
+				}
+			}
+			else //all usage types are used
+			{
+				int collectionSize = Enum.GetValues(typeof(UsageType)).Length;
+				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
+				{
+					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+					if(collectionSize > 1)
+					{
+						stringBuilder.Append(" OR ");
+					}
+					--collectionSize;
+				}
+			}
+			stringBuilder.Append(")");
+		}
+
+		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType)
+		{
+			stringBuilder.Append("(");
+			int collectionSize = SearchTerms.Count;
+			foreach(string searchTerm in SearchTerms)
+			{
+				switch(usageType)
+				{
+					case UsageType.Bodies:
+						stringBuilder.Append("Body:");
+						stringBuilder.Append(searchTerm);
 						break;
-					case UsageType.MethodArgument:
+					case UsageType.Definitions:
+						stringBuilder.Append("Name:");
+						stringBuilder.Append(searchTerm);
 						break;
-					case UsageType.MethodBody:
+					case UsageType.EnumValues:
+						stringBuilder.Append("Values:");
+						stringBuilder.Append(searchTerm);
 						break;
-					case UsageType.MethodReturnType:
+					case UsageType.ExtendedClasses:
+						stringBuilder.Append("ExtendedClasses:");
+						stringBuilder.Append(searchTerm);
 						break;
-					case UsageType.PropertyOrFieldType:
+					case UsageType.ImplementedInterfaces:
+						stringBuilder.Append("ImplementedInterfaces:");
+						stringBuilder.Append(searchTerm);
+						break;
+					case UsageType.MethodArguments:
+						stringBuilder.Append("Arguments:");
+						stringBuilder.Append(searchTerm);
+						break;
+					case UsageType.MethodReturnTypes:
+						stringBuilder.Append("ReturnType:");
+						stringBuilder.Append(searchTerm);
+						break;
+					case UsageType.NamespaceNames:
+						stringBuilder.Append("Namespace:");
+						stringBuilder.Append(searchTerm);
+						break;
+					case UsageType.PropertyOrFieldTypes:
+						stringBuilder.Append("DataType:");
+						stringBuilder.Append(searchTerm);
 						break;
 					default:
 						throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
 				}
-				if(i < UsageTypes.Count - 1)
+				if(collectionSize > 1)
 				{
-					stringBuilder.Append(" OR ");
+					stringBuilder.Append(" AND "); //every term must be present in the results
 				}
+				--collectionSize;
 			}
 			stringBuilder.Append(")");
-			return stringBuilder.ToString();
 		}
 
-		public virtual List<string> SearchTerms { get; set; }
+		public virtual SortedSet<string> SearchTerms { get; set; }
 		public virtual bool MatchCase { get; set; }
 		public virtual bool MatchWholeWord { get; set; }
 		public virtual bool ExactMode { get; set; }
-		public virtual bool SearchWithinComments { get; set; }
 		public virtual bool SearchByAccessType { get; set; }
-		public virtual List<AccessLevel> AccessLevels { get; set; }
+		public virtual SortedSet<AccessLevel> AccessLevels { get; set; }
 		public virtual bool SearchByProgramElementType { get; set; }
-		public virtual List<ProgramElementType> ProgramElementTypes { get; set; }
+		public virtual SortedSet<ProgramElementType> ProgramElementTypes { get; set; }
 		public virtual bool SearchByUsageType { get; set; }
-		public virtual List<UsageType> UsageTypes { get; set; }
+		public virtual SortedSet<UsageType> UsageTypes { get; set; }
 		public virtual bool SearchByLocation { get; set; }
-		public virtual List<string> Locations { get; set; }
+		public virtual SortedSet<string> Locations { get; set; }
 	}
 }

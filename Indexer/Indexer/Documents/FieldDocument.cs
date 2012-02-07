@@ -25,7 +25,7 @@ namespace Sando.Indexer.Documents
 			FieldElement fieldElement = (FieldElement) programElement;
 			document.Add(new Field("Name", fieldElement.Name, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("AccessLevel", fieldElement.AccessLevel.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
-			document.Add(new Field("FieldType", fieldElement.FieldType, Field.Store.NO, Field.Index.ANALYZED));
+			document.Add(new Field("DataType", fieldElement.FieldType, Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field("ClassId", fieldElement.ClassId.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
 		}
 

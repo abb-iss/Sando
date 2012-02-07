@@ -6,7 +6,10 @@
 		
 		public override bool Equals(object obj)
 		{
-			return this.ToQueryString().Equals(obj);
+			if(obj is SearchCriteria)
+				return this.ToQueryString().Equals(((SearchCriteria)obj).ToQueryString());
+			else
+				return false;
 		}
 
 		public override int GetHashCode()

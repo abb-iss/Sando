@@ -7,10 +7,14 @@ namespace Sando.Indexer.Searching
 {
 	public enum UsageType
 	{
-		Definition,
-		MethodArgument,
-		MethodReturnType,
-		PropertyOrFieldType,
-		MethodBody //most commmon usage
+		Bodies, //comment, doc comment, method, property
+		Definitions,
+		EnumValues,
+		ExtendedClasses,
+		ImplementedInterfaces,
+		MethodArguments,
+		MethodReturnTypes,
+		NamespaceNames,
+		PropertyOrFieldTypes
 	}
 }
