@@ -38,6 +38,8 @@ namespace Sando.Indexer
 			{
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
+
+			LastUpdatedAt = DateTime.Now;
 		}
 
 		public virtual void AddDocument(SandoDocument sandoDocument)
@@ -50,6 +52,7 @@ namespace Sando.Indexer
 		public void CommitChanges()
 		{
 			IndexWriter.Commit();
+			LastUpdatedAt = DateTime.Now;
 		}
 
 		public void Dispose()
@@ -78,11 +81,11 @@ namespace Sando.Indexer
         }
 
 		public virtual Directory LuceneIndexesDirectory { get; set; }
+		public virtual DateTime LastUpdatedAt { get; set; }
 		protected virtual Analyzer Analyzer { get; set; }
 		protected virtual IndexWriter IndexWriter { get; set; }
 
 		private bool disposed = false;
-		
 	}
 
 	public enum AnalyzerType
