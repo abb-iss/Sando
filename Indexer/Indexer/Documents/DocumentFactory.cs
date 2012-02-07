@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics.Contracts;
 using Sando.Core;
 
 namespace Sando.Indexer.Documents
@@ -10,11 +7,8 @@ namespace Sando.Indexer.Documents
 	{
 		public static SandoDocument Create(ProgramElement programElement)
 		{
-			//TODO - should we use contracts or assertions here instead?
-			if(programElement == null)
-			{
-				return null;
-			}
+			Contract.Requires(programElement != null, "DocumentFactory:Create - programElement cannot be null!");
+			Contract.Ensures(Contract.Result<SandoDocument>() != null, "DocumentFactory:Create - an object must be returned from this method!");
 
 			//TODO - only processing methods for now
 			var method = programElement as MethodElement;
@@ -23,7 +17,7 @@ namespace Sando.Indexer.Documents
 				return MethodDocument.Create(programElement as MethodElement);
 			}
 
-			//TODO - should this return null or throw an exception?
+			//if this code is reached, contract will fail
 			return null;
 		}
 	}
