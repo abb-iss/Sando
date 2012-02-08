@@ -23,7 +23,7 @@ namespace Sando.SearchEngine
 		}
 		//return the value related to key if key is in lruMap, and update its order to most recently used; 
 		//return default(V) if key is not in lruMap
-		public V get(K key)
+		public V Get(K key)
 		{ 
 			LinkedListNode<CacheItem<K, V>> node;
 			//check whether the key is in lruMap,
@@ -43,7 +43,7 @@ namespace Sando.SearchEngine
 		}
 
 		// add the <Key, value> into the lruMap and lruList
-		public void put(K key, V value)
+		public void Put(K key, V value)
 		{
 			LinkedListNode<CacheItem<K, V>> node;
 			//if the key is already in lruMap

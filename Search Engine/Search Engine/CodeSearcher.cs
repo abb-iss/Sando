@@ -53,12 +53,11 @@ namespace Sando.SearchEngine
         /// <param name="searchString">The search string.</param>
         /// <returns>List of Search Result</returns>
         public virtual List<CodeSearchResult> Search(string searchString)
-        {
-			//return this.searcher.Search(this.GetCriteria(searchString)).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+        {			
 			SearchCriteria searchCrit = this.GetCriteria(searchString);
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
-			List<CodeSearchResult> res = lruCache.get(searchCrit);
+			List<CodeSearchResult> res = lruCache.Get(searchCrit);
 			if(res!=null && !indexingChanged)
 			{
 				//cache hits and index not changed
@@ -69,7 +68,7 @@ namespace Sando.SearchEngine
 				//no cache hits, new search and update the cache
 				res = this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
 				//add into cache even the res contains no contents
-				lruCache.put(searchCrit, res);
+				lruCache.Put(searchCrit, res);
 				return res;
 			}
         }

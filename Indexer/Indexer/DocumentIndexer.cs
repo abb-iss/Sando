@@ -95,18 +95,18 @@ namespace Sando.Indexer
 
 	public class DocumentIndexerFactory
 	{
-		public static DocumentIndexer CreateIndexer(string luceneTempIndexesDirectory, AnalyzerType analyzerType)
+		public static DocumentIndexer CreateIndexer(string luceneIndex, AnalyzerType analyzerType)
 		{
 			switch (analyzerType)
 			{
 				case AnalyzerType.Simple: 
-					return new DocumentIndexer(luceneTempIndexesDirectory,new SimpleAnalyzer());
+					return new DocumentIndexer(luceneIndex,new SimpleAnalyzer());
 				case AnalyzerType.Snowball:
-					return new DocumentIndexer(luceneTempIndexesDirectory, new SnowballAnalyzer("English"));
+					return new DocumentIndexer(luceneIndex, new SnowballAnalyzer("English"));
 				case AnalyzerType.Standard:
-					return new DocumentIndexer(luceneTempIndexesDirectory, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+					return new DocumentIndexer(luceneIndex, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
 			}
-			return new DocumentIndexer(luceneTempIndexesDirectory,new SimpleAnalyzer());
+			return new DocumentIndexer(luceneIndex,new SimpleAnalyzer());
 		}
 		
 	}
