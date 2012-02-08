@@ -297,11 +297,12 @@ namespace Sando.Parser
 		{
 			string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetFullPath(filename));
 
-			//for now have snippet just surround the line the program element is defined
-			//TODO: think about enhancing this in a way that it always includes all of the program element
-			int startLine = line - (snippetNumLines / 2);
+			//start at one line above the definition of the program element
+			int linesAbove = 1;
 
-			return String.Concat(lines.Skip(startLine).Take(snippetNumLines));
+			int startLine = line - linesAbove - 1;
+			IEnumerable<string> snipLines = lines.Skip(startLine).Take(snippetNumLines - linesAbove);
+			return snipLines.Aggregate((snip, nextLine) => snip + Environment.NewLine + nextLine);
 		}
 
 		private AccessLevel StrToAccessLevel(String level)
