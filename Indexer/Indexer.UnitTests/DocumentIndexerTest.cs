@@ -16,7 +16,6 @@ namespace Sando.Indexer.UnitTests
 		public void DocumentIndexer_ConstructorDoesNotThrowWhenValidData()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			DocumentIndexer documentIndexer = null;
 			try
 			{
 				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
@@ -25,29 +24,19 @@ namespace Sando.Indexer.UnitTests
 			{
 				Assert.Fail(ex.Message + ". " + ex.StackTrace);
 			}
-			finally
-			{
-				if(documentIndexer != null)
-					documentIndexer.Dispose();
-			}
 		}
 
 		[Test]
 		public void DocumentIndexer_ConstructorThrowsWhenInvalidDirectoryPath()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			DocumentIndexer documentIndexer = null;
 			try
 			{
 				documentIndexer = new DocumentIndexer(null, analyzer);
 			}
 			catch 
 			{
-			}
-			finally
-			{
-				if(documentIndexer != null)
-					documentIndexer.Dispose();
+				//contract exception catched here
 			}
 			Assert.True(contractFailed, "Contract should fail!");
 		}
@@ -55,18 +44,13 @@ namespace Sando.Indexer.UnitTests
 		[Test]
 		public void DocumentIndexer_ConstructorThrowsWhenAnalyzerIsNull()
 		{
-			DocumentIndexer documentIndexer = null;
 			try
 			{
 				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, null);
 			}
 			catch
 			{
-			}
-			finally
-			{
-				if(documentIndexer != null)
-					documentIndexer.Dispose();
+				//contract exception catched here
 			}
 			Assert.True(contractFailed, "Contract should fail!");
 		}
@@ -74,34 +58,30 @@ namespace Sando.Indexer.UnitTests
 		[Test]
 		public void DocumentIndexer_AddDocumentDoesNotThrowWhenValidData()
 		{
-			Analyzer analyzer = new SimpleAnalyzer();
-			DocumentIndexer target = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
-			ClassElement classElement = new ClassElement()
-										{
-											AccessLevel = Core.AccessLevel.Public,
-											DefinitionLineNumber = 11,
-											ExtendedClasses = "SimpleClassBase",
-											FullFilePath = "C:/Projects/SimpleClass.cs",
-											Id = Guid.NewGuid(),
-											ImplementedInterfaces = "IDisposable",
-											Name = "SimpleClassName",
-											Namespace = "Sanod.Indexer.UnitTests"
-										};
-			SandoDocument sandoDocument = ClassDocument.Create(classElement);
-			Assert.NotNull(sandoDocument);
-			Assert.NotNull(sandoDocument.GetDocument());
 			try
 			{
-				target.AddDocument(sandoDocument);
-				target.CommitChanges();
+				Analyzer analyzer = new SimpleAnalyzer();
+				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+				ClassElement classElement = new ClassElement()
+				{
+					AccessLevel = Core.AccessLevel.Public,
+					DefinitionLineNumber = 11,
+					ExtendedClasses = "SimpleClassBase",
+					FullFilePath = "C:/Projects/SimpleClass.cs",
+					Id = Guid.NewGuid(),
+					ImplementedInterfaces = "IDisposable",
+					Name = "SimpleClassName",
+					Namespace = "Sanod.Indexer.UnitTests"
+				};
+				SandoDocument sandoDocument = ClassDocument.Create(classElement);
+				Assert.NotNull(sandoDocument);
+				Assert.NotNull(sandoDocument.GetDocument());
+				documentIndexer.AddDocument(sandoDocument);
+				documentIndexer.CommitChanges();
 			}
 			catch(Exception ex)
 			{
 				Assert.Fail(ex.Message + ". " + ex.StackTrace);
-			}
-			finally
-			{
-				target.Dispose();
 			}
 		}
 
@@ -109,23 +89,20 @@ namespace Sando.Indexer.UnitTests
 		public void DocumentIndexer_AddDocumentThrowsWhenProgramElementIsNull()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			DocumentIndexer target = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+			documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
 			try
 			{
-				target.AddDocument(null);
+				documentIndexer.AddDocument(null);
 			}
 			catch
 			{
-			}
-			finally
-			{
-				target.Dispose();
+				//contract exception catched here
 			}
 			Assert.True(contractFailed, "Contract should fail!");
 		}
 
 		[SetUp]
-		public void resetContract()
+		public void ResetContract()
 		{
 			contractFailed = false;
 			Contract.ContractFailed += (sender, e) =>
@@ -136,6 +113,14 @@ namespace Sando.Indexer.UnitTests
 			};
 		}
 
+		[TearDown]
+		public void CloseDocumentIndexer()
+		{
+			if(documentIndexer != null)
+				documentIndexer.Dispose();
+		}
+
 		private bool contractFailed;
+		private DocumentIndexer documentIndexer;
 	}
 }
