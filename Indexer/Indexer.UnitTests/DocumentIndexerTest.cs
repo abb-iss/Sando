@@ -17,18 +17,19 @@ namespace Sando.Indexer.UnitTests
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer documentIndexer = null;
-			//Assert.DoesNotThrow(() => documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer));
 			try
 			{
 				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
-				Assert.Pass();
 			}
 			catch(Exception ex)
 			{
 				Assert.Fail(ex.Message + ". " + ex.StackTrace);
 			}
-			if(documentIndexer != null)
-				documentIndexer.Dispose();
+			finally
+			{
+				if(documentIndexer != null)
+					documentIndexer.Dispose();
+			}
 		}
 
 		[Test]
@@ -43,9 +44,12 @@ namespace Sando.Indexer.UnitTests
 			catch 
 			{
 			}
+			finally
+			{
+				if(documentIndexer != null)
+					documentIndexer.Dispose();
+			}
 			Assert.True(contractFailed, "Contract should fail!");
-			if(documentIndexer != null)
-				documentIndexer.Dispose();
 		}
 
 		[Test]
@@ -59,9 +63,12 @@ namespace Sando.Indexer.UnitTests
 			catch
 			{
 			}
+			finally
+			{
+				if(documentIndexer != null)
+					documentIndexer.Dispose();
+			}
 			Assert.True(contractFailed, "Contract should fail!");
-			if(documentIndexer != null)
-				documentIndexer.Dispose();
 		}
 
 		[Test]
@@ -83,9 +90,19 @@ namespace Sando.Indexer.UnitTests
 			SandoDocument sandoDocument = ClassDocument.Create(classElement);
 			Assert.NotNull(sandoDocument);
 			Assert.NotNull(sandoDocument.GetDocument());
-			Assert.DoesNotThrow(() => target.AddDocument(sandoDocument));
-			Assert.DoesNotThrow(() => target.CommitChanges());
-			target.Dispose();
+			try
+			{
+				target.AddDocument(sandoDocument);
+				target.CommitChanges();
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message + ". " + ex.StackTrace);
+			}
+			finally
+			{
+				target.Dispose();
+			}
 		}
 
 		[Test]
@@ -100,8 +117,11 @@ namespace Sando.Indexer.UnitTests
 			catch
 			{
 			}
+			finally
+			{
+				target.Dispose();
+			}
 			Assert.True(contractFailed, "Contract should fail!");
-			target.Dispose();
 		}
 
 		[SetUp]
