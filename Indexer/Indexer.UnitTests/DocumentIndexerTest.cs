@@ -17,7 +17,16 @@ namespace Sando.Indexer.UnitTests
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
 			DocumentIndexer documentIndexer = null;
-			Assert.DoesNotThrow(() => documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer));
+			//Assert.DoesNotThrow(() => documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer));
+			try
+			{
+				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+				Assert.Pass();
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message + ". " + ex.StackTrace);
+			}
 			if(documentIndexer != null)
 				documentIndexer.Dispose();
 		}
