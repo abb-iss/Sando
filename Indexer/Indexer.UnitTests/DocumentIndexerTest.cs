@@ -73,7 +73,7 @@ namespace Sando.Indexer.UnitTests
 					Name = "SimpleClassName",
 					Namespace = "Sanod.Indexer.UnitTests"
 				};
-				SandoDocument sandoDocument = ClassDocument.Create(classElement);
+				SandoDocument sandoDocument = DocumentFactory.Create(classElement);
 				Assert.NotNull(sandoDocument);
 				Assert.NotNull(sandoDocument.GetDocument());
 				documentIndexer.AddDocument(sandoDocument);
