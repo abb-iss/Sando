@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer.Documents;
@@ -120,5 +121,55 @@ namespace Sando.Indexer.UnitTests
 				Assert.Fail(ex.Message + ". " + ex.StackTrace);
 			}
 		}
+
+		[Test]
+		public void DocumentFactory_CreateThrowsContractExceptionIfProgramElementIsNull()
+		{
+			try
+			{
+				SandoDocument sandoDocument = DocumentFactory.Create(null);
+			}
+			catch
+			{
+				//contract exception catched here
+			}
+			Assert.True(contractFailed, "Contract should fail!");
+		}
+
+		[Test]
+		public void DocumentFactory_CreateThrowsContractExceptionIfUnsportedProgramElementSubclassObjectPassed()
+		{
+			try
+			{
+				SandoDocument sandoDocument = DocumentFactory.Create(new TestElement());
+			}
+			catch
+			{
+				//contract exception catched here
+			}
+			Assert.True(contractFailed, "Contract should fail!");
+		}
+
+		[SetUp]
+		public void ResetContract()
+		{
+			contractFailed = false;
+			Contract.ContractFailed += (sender, e) =>
+			{
+				e.SetHandled();
+				e.SetUnwind();
+				contractFailed = true;
+			};
+		}
+
+		private class TestElement : ProgramElement
+		{
+			public override ProgramElementType ProgramElementType
+			{
+				get { throw new NotImplementedException(); }
+			}
+		}
+
+		private bool contractFailed;
 	}
 }
