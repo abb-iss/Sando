@@ -47,8 +47,9 @@ namespace Sando.UI
 		//For classloading... //TODO- eliminate the need for this
     	private List<ProgramElement> _list = new List<ProgramElement>();
 		private List<CodeSearchResult> _stuff = new List<CodeSearchResult>();
+    	private SolutionEvents _solutionEvents;
 
-		private static UIPackage MyPackage
+    	private static UIPackage MyPackage
 		{
 			get;
 			set;
@@ -113,9 +114,9 @@ namespace Sando.UI
 			var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
 			if(dte != null)
 			{
-				var solutionEvents = dte.Events.SolutionEvents;
-				solutionEvents.Opened += SolutionHasBeenOpened;
-				solutionEvents.AfterClosing += SolutionHasBeenClosed;
+				_solutionEvents = dte.Events.SolutionEvents;
+				_solutionEvents.Opened += SolutionHasBeenOpened;
+				_solutionEvents.AfterClosing += SolutionHasBeenClosed;
 			}
         }
 
