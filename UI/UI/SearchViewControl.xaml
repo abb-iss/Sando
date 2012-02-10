@@ -30,7 +30,7 @@
                                 <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="2" Grid.Column="0" >
                                 </TextBlock>
                             </Grid>
-                            <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" >
+                            <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Snippet}" >
                             </TextBlock>
                         </StackPanel>
                     </Border>

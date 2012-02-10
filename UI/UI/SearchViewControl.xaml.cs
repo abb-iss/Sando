@@ -48,8 +48,6 @@ namespace Sando.UI
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
-			MessageBox.Show(string.Format(System.Globalization.CultureInfo.CurrentUICulture, "We are inside {0}", "Sando Search: " + SearchString),
-                            "Sando Search");
         	var myPackage = UIPackage.GetInstance();        	
 			var searcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentDirectory()));
 			if(SearchResults==null)

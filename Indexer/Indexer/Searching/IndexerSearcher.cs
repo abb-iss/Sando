@@ -38,9 +38,15 @@ namespace Sando.Indexer.Searching
 			if(simple !=null)
 			{
 				List<Tuple<ProgramElement, float>> searchResults = new List<Tuple<ProgramElement, float>>();
-				var methodDocuments = MySearcher.Search(new TermQuery(new Term("ProgramElementType", "Method")), 10);
+				var query = new TermQuery(new Term("Body", ((SimpleSearchCriteria) simple).SearchTerms.First()));
+				var query2 = new TermQuery(new Term("ProgramElementType", "Method"));
+				var both = new BooleanQuery();
+				both.Add(query,BooleanClause.Occur.MUST);
+				both.Add(query2,BooleanClause.Occur.MUST);
+				var methodDocuments = MySearcher.Search(both, 10);
 				for (int i = 0; i < methodDocuments.ScoreDocs.Length; i++)
 				{
+					
 					//TODO - need to return the real information, only thing being returned now is the "Name"
 					var hitDocument = MySearcher.Doc(methodDocuments.ScoreDocs[i].doc);
 					var score = methodDocuments.ScoreDocs[i].score;
@@ -55,6 +61,7 @@ namespace Sando.Indexer.Searching
 					methodElement.Name = hitDocument.GetField("Name").StringValue();
 					methodElement.ReturnType = "Object";
 					searchResults.Add(Tuple.Create(methodElement as ProgramElement, score));
+						
 				}
 				return searchResults;
 			}
