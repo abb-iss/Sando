@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
+using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
+using Lucene.Net.QueryParsers;
 
 namespace Sando.Indexer
 {
@@ -25,6 +28,8 @@ namespace Sando.Indexer
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = analyzer;
 				IndexWriter = new IndexWriter(LuceneIndexesDirectory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
+				IndexSearcher = new IndexSearcher(LuceneIndexesDirectory, true);
+				QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), analyzer);
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -55,6 +60,11 @@ namespace Sando.Indexer
 			LastUpdatedAt = DateTime.Now;
 		}
 
+		public bool IsUsable()
+		{
+			return !this.disposed;
+		}
+
 		public void Dispose()
         {
             Dispose(true);
@@ -82,6 +92,8 @@ namespace Sando.Indexer
 
 		public virtual Directory LuceneIndexesDirectory { get; set; }
 		public virtual DateTime LastUpdatedAt { get; set; }
+		public virtual IndexSearcher IndexSearcher { get; protected set; }
+		public virtual QueryParser QueryParser { get; protected set; }
 		protected virtual Analyzer Analyzer { get; set; }
 		protected virtual IndexWriter IndexWriter { get; set; }
 
@@ -90,24 +102,43 @@ namespace Sando.Indexer
 
 	public enum AnalyzerType
 	{
-		Simple,Snowball,Standard
+		Simple, Snowball, Standard, Default
 	}
 
 	public class DocumentIndexerFactory
 	{
 		public static DocumentIndexer CreateIndexer(string luceneIndex, AnalyzerType analyzerType)
 		{
-			switch (analyzerType)
+			if(documentIndexers.ContainsKey(luceneIndex))
 			{
-				case AnalyzerType.Simple: 
-					return new DocumentIndexer(luceneIndex,new SimpleAnalyzer());
+				if(!documentIndexers[luceneIndex].IsUsable())
+				{
+					documentIndexers[luceneIndex] = CreateInstance(luceneIndex, analyzerType);
+				}
+			}
+			else
+			{
+				documentIndexers.Add(luceneIndex, CreateInstance(luceneIndex, analyzerType));
+			}
+			return documentIndexers[luceneIndex];
+		}
+
+		private static DocumentIndexer CreateInstance(string luceneIndex, AnalyzerType analyzerType)
+		{
+			switch(analyzerType)
+			{
+				case AnalyzerType.Simple:
+					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
 				case AnalyzerType.Snowball:
 					return new DocumentIndexer(luceneIndex, new SnowballAnalyzer("English"));
 				case AnalyzerType.Standard:
 					return new DocumentIndexer(luceneIndex, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
-			}
-			return new DocumentIndexer(luceneIndex,new SimpleAnalyzer());
+				case AnalyzerType.Default:
+				default:
+					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
+			}			
 		}
-		
+
+		private static Dictionary<string, DocumentIndexer> documentIndexers = new Dictionary<string, DocumentIndexer>();
 	}
 }

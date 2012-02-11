@@ -14,11 +14,10 @@ namespace Sando.Indexer.Documents
 		protected override void AddDocumentFields()
 		{
 			PropertyElement propertyElement = (PropertyElement) programElement;
-			document.Add(new Field("Name", propertyElement.Name, Field.Store.NO, Field.Index.ANALYZED));
-			document.Add(new Field("AccessLevel", propertyElement.AccessLevel.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
-			document.Add(new Field("Body", propertyElement.Body, Field.Store.NO, Field.Index.ANALYZED));
-			document.Add(new Field("DataType", propertyElement.PropertyType, Field.Store.NO, Field.Index.ANALYZED));
-			document.Add(new Field("ClassId", propertyElement.ClassId.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+			document.Add(new Field("AccessLevel", propertyElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			document.Add(new Field("Body", propertyElement.Body, Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field("DataType", propertyElement.PropertyType, Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field("ClassId", propertyElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 	}
 }

@@ -5,6 +5,7 @@ namespace Sando.Core
 {
 	public class DocCommentElement : ProgramElement
 	{
+		[Obsolete]
 		public DocCommentElement()
 			: base("temp", 1, "path", "snippet")
 		{

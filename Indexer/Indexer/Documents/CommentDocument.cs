@@ -13,7 +13,7 @@ namespace Sando.Indexer.Documents
 		protected override void AddDocumentFields()
 		{
 			CommentElement commentElement = (CommentElement) programElement;
-			document.Add(new Field("Body", commentElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+			document.Add(new Field("Body", commentElement.Body, Field.Store.YES, Field.Index.ANALYZED));
 		}
 	}
 }

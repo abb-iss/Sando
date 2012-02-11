@@ -5,6 +5,7 @@ namespace Sando.Core
 {
 	public class MethodElement : ProgramElement
 	{
+		[Obsolete]
 		public MethodElement()
 			: base("temp", 1, "path", "snippet")
 		{

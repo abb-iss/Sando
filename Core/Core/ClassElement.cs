@@ -1,9 +1,11 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Sando.Core
 {
 	public class ClassElement : ProgramElement
 	{
+		[Obsolete]
 		public ClassElement()
 			: base("temp", 1, "path", "snippet")
 		{

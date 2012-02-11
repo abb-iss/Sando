@@ -5,6 +5,7 @@ namespace Sando.Core
 {
 	public class PropertyElement : ProgramElement
 	{
+		[Obsolete]
 		public PropertyElement()
 			: base("temp", 1, "path", "snippet")
 		{
