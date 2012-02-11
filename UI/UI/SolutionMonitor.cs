@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -28,27 +29,36 @@ namespace Sando.UI
 		private uint _documentTableItemId;
 		private readonly ParserInterface _parser = new SrcMLParser();
 		private string _currentPath;
-
+		private System.ComponentModel.BackgroundWorker _runStartupInBackground;
 
 		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer, string getLuceneDirectoryForSolution)
 		{
 			this._openSolution = openSolution;
 			this._currentIndexer = currentIndexer;
 			this._currentPath = getLuceneDirectoryForSolution;
+			_runStartupInBackground = new System.ComponentModel.BackgroundWorker();		
+			_runStartupInBackground.DoWork +=
+				new DoWorkEventHandler(_runStartupInBackground_DoWork);
+		}		
+
+		private void _runStartupInBackground_DoWork(object sender,
+			DoWorkEventArgs e)
+		{
+			var allProjects = _openSolution.Projects;
+			var enumerator = allProjects.GetEnumerator();
+			while(enumerator.MoveNext())
+			{
+				var project = (Project)enumerator.Current;
+				ProcessItems(project.ProjectItems.GetEnumerator());
+				_currentIndexer.CommitChanges();
+			}			
 		}
 
 		public void StartMonitoring()
 		{
-				
-			var allProjects = _openSolution.Projects;
-			var enumerator = allProjects.GetEnumerator();
-			while (enumerator.MoveNext())
-			{
-				var project = (Project)enumerator.Current;
-				ProcessItems(project.ProjectItems.GetEnumerator());
-			}
-			_currentIndexer.CommitChanges();
- 
+
+			_runStartupInBackground.RunWorkerAsync();
+
 			// Register events for doc table
 			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
 			_documentTable.AdviseRunningDocTableEvents(this, out _documentTableItemId);
