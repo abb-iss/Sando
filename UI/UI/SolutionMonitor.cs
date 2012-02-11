@@ -180,7 +180,7 @@ namespace Sando.UI
 
 		private static SolutionMonitor CreateMonitor(Solution openSolution)
 		{
-			Contract.Requires<ArgumentNullException>(openSolution != null, "A solution must be open");
+			Contract.Requires(openSolution != null, "A solution must be open");
 			var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
 			                                                          AnalyzerType.Standard);
 			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer, GetLuceneDirectoryForSolution(openSolution));
@@ -190,15 +190,20 @@ namespace Sando.UI
 
 		private static string CreateLuceneFolder()
 		{
-			var current = Directory.GetCurrentDirectory();
-			if(!File.Exists(current + Lucene))
+			var current = Directory.GetCurrentDirectory();			
+			return CreateFolder(Lucene, current);
+		}
+
+		private static string CreateFolder(string name, string current)
+		{
+			if (!File.Exists(current + name))
 			{
-				var directoryInfo = Directory.CreateDirectory(current + Lucene);
+				var directoryInfo = Directory.CreateDirectory(current + name);
 				return directoryInfo.FullName;
 			}
 			else
 			{
-				return current + Lucene;
+				return name + Lucene;
 			}
 		}
 
@@ -224,6 +229,7 @@ namespace Sando.UI
 
 		private static string GetLuceneDirectoryForSolution(Solution openSolution)
 		{
+			CreateFolder(GetName(openSolution), LuceneFolder + "\\");
 			return LuceneFolder + "\\" + GetName(openSolution);
 		}
 	}
