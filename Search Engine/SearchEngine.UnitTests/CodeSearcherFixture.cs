@@ -13,6 +13,7 @@ namespace Sando.SearchEngine.UnitTests
     using Sando.Indexer.Documents;
     using Lucene.Net.Search;
 	using Sando.Indexer.Searching;
+	using Sando.UnitTestHelpers;
 
     [TestFixture]
     public class CodeSearcherFixture
@@ -63,29 +64,24 @@ namespace Sando.SearchEngine.UnitTests
 		{
 			IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
 			Indexer = DocumentIndexerFactory.CreateIndexer(IndexerPath, AnalyzerType.Standard);
-    		ClassElement classElement = new ClassElement()
-    		                            	{
-    		                            		AccessLevel = Core.AccessLevel.Public,
-    		                            		DefinitionLineNumber = 11,
-    		                            		ExtendedClasses = "SimpleClassBase",
-    		                            		FullFilePath = "C:/Projects/SimpleClass.cs",
-    		                            		Id = Guid.NewGuid(),
-    		                            		ImplementedInterfaces = "IDisposable",
-    		                            		Name = "SimpleName",
-    		                            		Namespace = "Sanod.Indexer.UnitTests"
-    		                            	};
-    		SandoDocument sandoDocument = ClassDocument.Create(classElement);
+    		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
+				accessLevel: Core.AccessLevel.Public,
+				definitionLineNumber: 11,
+				extendedClasses: "SimpleClassBase",
+				fullFilePath: "C:/Projects/SimpleClass.cs",
+				implementedInterfaces: "IDisposable",
+				name: "SimpleName",
+				namespaceName: "Sanod.Indexer.UnitTests"
+    		);
+    		SandoDocument sandoDocument = DocumentFactory.Create(classElement);
     		Indexer.AddDocument(sandoDocument);
-    		MethodElement methodElement = new MethodElement()
-    		                              	{
-    		                              		AccessLevel = Core.AccessLevel.Protected,
-    		                              		Name = "SimpleName",
-    		                              		Id = Guid.NewGuid(),
-    		                              		ReturnType = "Void",
-    		                              		ClassId = Guid.NewGuid(),
-												FullFilePath = "C:/stuff"
-    		                              	};
-    		sandoDocument = MethodDocument.Create(methodElement);
+			MethodElement methodElement = SampleProgramElementFactory.GetSampleMethodElement(
+				accessLevel: Core.AccessLevel.Protected,
+    		    name: "SimpleName",
+				returnType: "Void",
+				fullFilePath: "C:/stuff"
+			);
+    		sandoDocument = DocumentFactory.Create(methodElement);
     		Indexer.AddDocument(sandoDocument);
     		Indexer.CommitChanges();
     	}

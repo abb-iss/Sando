@@ -11,3 +11,6 @@ Indexer/Indexer.vsmdi
 *.orig
 Search Engine/Search Engine/StyleCop.Cache
 *.suo
+Sando/Local.testsettings
+Sando/Sando.vsmdi
+Sando/TraceAndTestImpact.testsettings

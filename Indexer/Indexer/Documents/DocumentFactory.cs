@@ -12,31 +12,31 @@ namespace Sando.Indexer.Documents
 
 			if(programElement as ClassElement != null)
 			{
-				return ClassDocument.Create(programElement as ClassElement);
+				return new ClassDocument(programElement as ClassElement);
 			}
 			if(programElement as CommentElement != null)
 			{
-				return CommentDocument.Create(programElement as CommentElement);
+				return new CommentDocument(programElement as CommentElement);
 			}
 			if(programElement as DocCommentElement != null)
 			{
-				return DocCommentDocument.Create(programElement as DocCommentElement);
+				return new DocCommentDocument(programElement as DocCommentElement);
 			}
 			if(programElement as EnumElement != null)
 			{
-				return EnumDocument.Create(programElement as EnumElement);
+				return new EnumDocument(programElement as EnumElement);
 			}
 			if(programElement as FieldElement != null)
 			{
-				return FieldDocument.Create(programElement as FieldElement);
+				return new FieldDocument(programElement as FieldElement);
 			}
 			if(programElement as MethodElement != null)
 			{
-				return MethodDocument.Create(programElement as MethodElement);
+				return new MethodDocument(programElement as MethodElement);
 			}
 			if(programElement as PropertyElement != null)
 			{
-				return PropertyDocument.Create(programElement as PropertyElement);
+				return new PropertyDocument(programElement as PropertyElement);
 			}
 
 			//if this code is reached, contract will fail

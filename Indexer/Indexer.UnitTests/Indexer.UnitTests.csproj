@@ -133,7 +133,6 @@
   <ItemGroup>
     <Compile Include="DocumentIndexerTest.cs" />
     <Compile Include="Documents\DocumentFactoryTest.cs" />
-    <Compile Include="Helpers\SampleProgramElementFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Searching\Criteria\SearchCriteriaTest.cs" />
   </ItemGroup>
@@ -141,6 +140,10 @@
     <ProjectReference Include="..\..\Core\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
+      <Project>{A4567112-2AAE-4C67-9EC6-4625924EA118}</Project>
+      <Name>UnitTestHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>

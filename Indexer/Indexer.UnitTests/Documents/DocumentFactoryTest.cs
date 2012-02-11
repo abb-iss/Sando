@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer.Documents;
-using Sando.Indexer.UnitTests.Helpers;
+using Sando.UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -141,7 +141,7 @@ namespace Sando.Indexer.UnitTests
 		{
 			try
 			{
-				SandoDocument sandoDocument = DocumentFactory.Create(new TestElement());
+				SandoDocument sandoDocument = DocumentFactory.Create(new TestElement("name", 12, "full path", "snippet"));
 			}
 			catch
 			{
@@ -164,6 +164,11 @@ namespace Sando.Indexer.UnitTests
 
 		private class TestElement : ProgramElement
 		{
+			public TestElement(string name, int definitionLineNumber, string fullFilePath, string snippet)
+				: base(name, definitionLineNumber, fullFilePath, snippet)
+			{
+			}
+
 			public override ProgramElementType ProgramElementType
 			{
 				get { throw new NotImplementedException(); }

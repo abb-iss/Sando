@@ -50,16 +50,17 @@ namespace Sando.Indexer.Searching
 					//TODO - need to return the real information, only thing being returned now is the "Name"
 					var hitDocument = MySearcher.Doc(methodDocuments.ScoreDocs[i].doc);
 					var score = methodDocuments.ScoreDocs[i].score;
-					MethodElement methodElement = new MethodElement();
-					methodElement.AccessLevel = AccessLevel.Public;
-					methodElement.Arguments = "";
-					methodElement.Body = "the body";
-					methodElement.ClassId = Guid.Empty;
-					methodElement.DefinitionLineNumber = 0;
-					methodElement.FullFilePath = "full path";
-					methodElement.Id = Guid.Empty;
-					methodElement.Name = hitDocument.GetField("Name").StringValue();
-					methodElement.ReturnType = "Object";
+					MethodElement methodElement = new MethodElement(
+						accessLevel: AccessLevel.Public,
+						arguments: String.Empty,
+						body: "the body",
+						classId: Guid.NewGuid(),
+						definitionLineNumber: 0,
+						fullFilePath: "full path",
+						name: hitDocument.GetField("Name").StringValue(),
+						returnType: "Object",
+						snippet: "public Object " + hitDocument.GetField("Name").StringValue() + "(){the body}"
+					);
 					searchResults.Add(Tuple.Create(methodElement as ProgramElement, score));
 						
 				}

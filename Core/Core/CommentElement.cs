@@ -1,14 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics.Contracts;
 
 namespace Sando.Core
 {
 	public class CommentElement : ProgramElement
 	{
+		public CommentElement()
+			: base("temp", 1, "path", "snippet")
+		{
+		}
+
+		public CommentElement(string name, int definitionLineNumber, string fullFilePath, string snippet, string body) 
+			: base(name, definitionLineNumber, fullFilePath, snippet)
+		{
+			Contract.Requires(!String.IsNullOrWhiteSpace(body), "CommentElement:Constructor - body cannot be null or an empty string!");
+			
+			Body = body;
+		}
+
 		public virtual string Body { get; set; }
-		public virtual Guid MethodId { get; set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Comment; } }
 	}
 }

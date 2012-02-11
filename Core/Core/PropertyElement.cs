@@ -1,12 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics.Contracts;
 
 namespace Sando.Core
 {
 	public class PropertyElement : ProgramElement
-	{		
+	{
+		public PropertyElement()
+			: base("temp", 1, "path", "snippet")
+		{
+		}
+
+		public PropertyElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
+			string propertyType, string body, Guid classId) 
+			: base(name, definitionLineNumber, fullFilePath, snippet)
+		{
+			Contract.Requires(!String.IsNullOrWhiteSpace(propertyType), "PropertyElement:Constructor - property type cannot be null!");
+			Contract.Requires(body != null, "FieldElement:Constructor - body cannot be null!");
+			Contract.Requires(classId != null, "PropertyElement:Constructor - class id cannot be null!");
+			Contract.Requires(classId != Guid.Empty, "PropertyElement:Constructor - class id cannot be an empty Guid!");
+
+			AccessLevel = accessLevel;
+			PropertyType = propertyType;
+			Body = body;
+			ClassId = classId;
+		}
+
 		public virtual AccessLevel AccessLevel { get; set; }
 		public virtual string PropertyType { get; set; }
 		public virtual string Body { get; set; }

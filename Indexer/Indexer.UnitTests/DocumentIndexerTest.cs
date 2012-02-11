@@ -4,6 +4,7 @@ using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer.Documents;
+using Sando.UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -62,17 +63,7 @@ namespace Sando.Indexer.UnitTests
 			{
 				Analyzer analyzer = new SimpleAnalyzer();
 				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
-				ClassElement classElement = new ClassElement()
-				{
-					AccessLevel = Core.AccessLevel.Public,
-					DefinitionLineNumber = 11,
-					ExtendedClasses = "SimpleClassBase",
-					FullFilePath = "C:/Projects/SimpleClass.cs",
-					Id = Guid.NewGuid(),
-					ImplementedInterfaces = "IDisposable",
-					Name = "SimpleClassName",
-					Namespace = "Sanod.Indexer.UnitTests"
-				};
+				ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement();
 				SandoDocument sandoDocument = DocumentFactory.Create(classElement);
 				Assert.NotNull(sandoDocument);
 				Assert.NotNull(sandoDocument.GetDocument());
