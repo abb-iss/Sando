@@ -17,7 +17,8 @@ namespace Sando.Indexer.Documents
 			{
 				document = new Document();
 				document.Add(new Field("Id", programElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
-				document.Add(new Field("ProgramElementType", programElement.ProgramElementType.ToString(), Field.Store.NO, Field.Index.NOT_ANALYZED));
+				document.Add(new Field("Name", programElement.Name, Field.Store.YES, Field.Index.ANALYZED));
+				document.Add(new Field("ProgramElementType", programElement.ProgramElementType.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				document.Add(new Field("FullFilePath", programElement.FullFilePath, Field.Store.YES, Field.Index.NO));
 				document.Add(new Field("DefinitionLineNumber", programElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
 				AddDocumentFields();

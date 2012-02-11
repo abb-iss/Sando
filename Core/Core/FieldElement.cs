@@ -5,6 +5,7 @@ namespace Sando.Core
 {
 	public class FieldElement : ProgramElement
 	{
+		[Obsolete]
 		public FieldElement()
 			: base("temp", 1, "path", "snippet")
 		{
