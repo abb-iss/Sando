@@ -5,12 +5,6 @@ namespace Sando.Core
 {
 	public class MethodElement : ProgramElement
 	{
-		[Obsolete]
-		public MethodElement()
-			: base("temp", 1, "path", "snippet")
-		{
-		}
-
 		public MethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string arguments, string returnType, string body, Guid classId) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
@@ -28,11 +22,11 @@ namespace Sando.Core
 			ClassId = classId;
 		}
 
-		public virtual AccessLevel AccessLevel { get; set; }
-		public virtual string Arguments { get; set; }
-		public virtual string ReturnType { get; set; }
-		public virtual string Body { get; set; }
-		public virtual Guid ClassId { get; set; }
+		public virtual AccessLevel AccessLevel { get; private set; }
+		public virtual string Arguments { get; private set; }
+		public virtual string ReturnType { get; private set; }
+		public virtual string Body { get; private set; }
+		public virtual Guid ClassId { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Method; } }
 	}
 }

@@ -5,12 +5,6 @@ namespace Sando.Core
 {
 	public class PropertyElement : ProgramElement
 	{
-		[Obsolete]
-		public PropertyElement()
-			: base("temp", 1, "path", "snippet")
-		{
-		}
-
 		public PropertyElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string propertyType, string body, Guid classId) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
@@ -26,10 +20,10 @@ namespace Sando.Core
 			ClassId = classId;
 		}
 
-		public virtual AccessLevel AccessLevel { get; set; }
-		public virtual string PropertyType { get; set; }
-		public virtual string Body { get; set; }
-		public virtual Guid ClassId { get; set; }
+		public virtual AccessLevel AccessLevel { get; private set; }
+		public virtual string PropertyType { get; private set; }
+		public virtual string Body { get; private set; }
+		public virtual Guid ClassId { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Property; } }
 	}
 }

@@ -55,11 +55,11 @@ namespace Sando.Parser.UnitTests
 					int numParents = 0;
 					//TODO - not sure how we will be able to determine which are interfaces and which are classes
 					//might have to just put all but the first one in interfaces?
-					if(classElement.ImplementedInterfaces != null)
+					if(classElement.ImplementedInterfaces != String.Empty)
 					{
 						numParents += classElement.ImplementedInterfaces.Split(' ').Count();
 					}
-					if(classElement.ExtendedClasses != null)
+					if(classElement.ExtendedClasses != String.Empty)
 					{
 						numParents += classElement.ExtendedClasses.Split(' ').Count();
 					}
@@ -90,7 +90,7 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(classElem.Namespace, "Sando Indexer Exceptions");
 						//TODO - make this not dependent upon your path...
 						//Assert.AreEqual(classElem.FullFilePath, "C:\\Users\\kosta\\sando\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
-						Assert.AreEqual(classElem.ImplementedInterfaces, "SandoException");
+						Assert.AreEqual(classElem.ExtendedClasses, "SandoException");
 					}
 				}
 			}

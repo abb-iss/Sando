@@ -5,12 +5,6 @@ namespace Sando.Core
 {
 	public class CommentElement : ProgramElement
 	{
-		[Obsolete]
-		public CommentElement()
-			: base("temp", 1, "path", "snippet")
-		{
-		}
-
 		public CommentElement(string name, int definitionLineNumber, string fullFilePath, string snippet, string body) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
@@ -19,7 +13,7 @@ namespace Sando.Core
 			Body = body;
 		}
 
-		public virtual string Body { get; set; }
+		public virtual string Body { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Comment; } }
 	}
 }

@@ -5,12 +5,6 @@ namespace Sando.Core
 {
 	public class FieldElement : ProgramElement
 	{
-		[Obsolete]
-		public FieldElement()
-			: base("temp", 1, "path", "snippet")
-		{
-		}
-
 		public FieldElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string fieldType, Guid classId) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
@@ -24,9 +18,9 @@ namespace Sando.Core
 			ClassId = classId;
 		}
 
-		public virtual AccessLevel AccessLevel { get; set; }
-		public virtual string FieldType { get; set; }
-		public virtual Guid ClassId { get; set; }
+		public virtual AccessLevel AccessLevel { get; private set; }
+		public virtual string FieldType { get; private set; }
+		public virtual Guid ClassId { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Field; } }
 	}
 }

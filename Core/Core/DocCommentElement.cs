@@ -5,12 +5,6 @@ namespace Sando.Core
 {
 	public class DocCommentElement : ProgramElement
 	{
-		[Obsolete]
-		public DocCommentElement()
-			: base("temp", 1, "path", "snippet")
-		{
-		}
-
 		public DocCommentElement(string name, int definitionLineNumber, string fullFilePath, string snippet, string body, Guid documentedElementId) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
@@ -22,8 +16,8 @@ namespace Sando.Core
 			DocumentedElementId = documentedElementId;
 		}
 
-		public virtual string Body { get; set; }
-		public virtual Guid DocumentedElementId { get; set; }
+		public virtual string Body { get; private set; }
+		public virtual Guid DocumentedElementId { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.DocComment; } }
 	}
 }

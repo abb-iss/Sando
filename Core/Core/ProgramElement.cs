@@ -22,11 +22,11 @@ namespace Sando.Core
 			Snippet = snippet;
 		}
 
-		public virtual string Name{ get; set; }
-		public virtual Guid Id { get; set; }
-		public virtual int DefinitionLineNumber { get; set; }
-		public virtual string FullFilePath { get; set; }
-		public virtual string Snippet { get; set; }
+		public virtual string Name { get; private set; }
+		public virtual Guid Id { get; private set; }
+		public virtual int DefinitionLineNumber { get; private set; }
+		public virtual string FullFilePath { get; private set; }
+		public virtual string Snippet { get; private set; }
 		public abstract ProgramElementType ProgramElementType { get; }
     }
 }
