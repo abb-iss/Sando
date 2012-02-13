@@ -30,16 +30,27 @@ namespace Sando.UI
 		private readonly ParserInterface _parser = new SrcMLParser();
 		private string _currentPath;
 		private System.ComponentModel.BackgroundWorker _runStartupInBackground;
+		private System.ComponentModel.BackgroundWorker _processFileInBackground;
 
 		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer, string getLuceneDirectoryForSolution)
 		{
 			this._openSolution = openSolution;
 			this._currentIndexer = currentIndexer;
 			this._currentPath = getLuceneDirectoryForSolution;
+			
 			_runStartupInBackground = new System.ComponentModel.BackgroundWorker();		
 			_runStartupInBackground.DoWork +=
 				new DoWorkEventHandler(_runStartupInBackground_DoWork);
-		}		
+
+			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
+			_processFileInBackground.DoWork +=
+				new DoWorkEventHandler(_processFileInBackground_DoWork);
+		}
+
+		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
+		{
+			
+		}
 
 		private void _runStartupInBackground_DoWork(object sender,
 			DoWorkEventArgs e)

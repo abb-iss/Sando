@@ -36,11 +36,11 @@ namespace Sando.UI
 		public static readonly DependencyProperty SearchResultsProperty =
 			DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
-   
+    	private CodeSearcher _currentSearcher;
+    	private string _currentDirectory="";
 
-    
 
-		public String SearchString
+    	public String SearchString
 		{
 			get; set;
 		}		
@@ -49,15 +49,26 @@ namespace Sando.UI
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
         	var myPackage = UIPackage.GetInstance();        	
-			var searcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentDirectory()));
+			_currentSearcher = GetSearcher(myPackage);
 			if(SearchResults==null)
 				SearchResults = new ObservableCollection<CodeSearchResult>();				
 			else
 				SearchResults.Clear();
-			foreach(var result in searcher.Search(SearchString))
+			foreach(var result in _currentSearcher.Search(SearchString))
         	{
         		SearchResults.Add(result);
         	}        	
         }
+
+    	private CodeSearcher GetSearcher(UIPackage myPackage)
+    	{
+    		CodeSearcher codeSearcher = _currentSearcher;
+			if(codeSearcher == null || !myPackage.GetCurrentDirectory().Equals(_currentDirectory))
+			{
+				_currentDirectory = myPackage.GetCurrentDirectory();
+				codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(_currentDirectory));
+			}
+    		return codeSearcher;
+    	}
     }
 }

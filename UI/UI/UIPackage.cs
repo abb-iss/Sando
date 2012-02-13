@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Shell;
 using Sando.Core;
 using Sando.Indexer;
 using Sando.SearchEngine;
+using Sando.Translation;
 
 namespace Sando.UI
 {
@@ -44,9 +45,14 @@ namespace Sando.UI
     	
 		private SolutionMonitor _currentMonitor;
 		
-		//For classloading... //TODO- eliminate the need for this
+		//For classloading... //TODO- eliminate the need for these
     	private List<ProgramElement> _list = new List<ProgramElement>();
 		private List<CodeSearchResult> _stuff = new List<CodeSearchResult>();
+		private string _other = Configuration.Configuration.GetValue("stuff");
+    	private TranslationCode _mycode = TranslationCode.Exception_General_IOException;
+
+
+
     	private SolutionEvents _solutionEvents;
 
     	private static UIPackage MyPackage
