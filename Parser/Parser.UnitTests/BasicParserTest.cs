@@ -43,7 +43,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void GenerateSrcMLShortestFileTest()
 		{			
-			var parser = new SrcMLParser();
+			var parser = new SrcMLParser(Generator);
 			var srcML = parser.Parse("..\\..\\TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsTrue(srcML!=null);
 		}	
@@ -52,7 +52,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseMethodTest()
 		{
 			bool seenSetLanguageMethod = false;
-			var parser = new SrcMLParser();
+			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
@@ -80,7 +80,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseClassTest()
 		{
 			bool seenClass = false;
-			var parser = new SrcMLParser();
+			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length > 0);

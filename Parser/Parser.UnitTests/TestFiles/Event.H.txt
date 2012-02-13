@@ -1,0 +1,28 @@
+#ifndef EVENT_H
+#define EVENT_H
+
+#include "message.h"
+
+enum EventType { 
+  SENSED_DATA_READY = 1,
+  SENDING_DONE = 2,
+  RECEIVING_DONE = 3
+};
+
+class Event
+{
+public:
+    Event(const EventType type, const double time, const int node, const Message& message);
+    EventType getType() const;
+    double getTime() const;
+    int getNode() const;
+    Message getMessage() const;
+    bool operator<(const Event& rhs) const; 
+
+private:
+    EventType _type;
+    double _time;
+    int _node;
+    Message _message;
+};
+#endif

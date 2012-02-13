@@ -10,18 +10,18 @@ namespace Sando.Parser
 	{
 		public static string[] split(string word) 
 		{
-			word = camelTypeToUnderscore(word);
-			return SplitUnderscores(word);
+			word = CamelTypeToUnderscore(word);
+			return SplitOnDelimiters(word);
 		}
 
-		private static string camelTypeToUnderscore(string word)
+		private static string CamelTypeToUnderscore(string word)
 		{
 			return Regex.Replace(word, @"([A-Z][a-z]+)", "_$1");
 		}
 
-		private static string[] SplitUnderscores(string word) 
+		private static string[] SplitOnDelimiters(string word) 
 		{
-			char[] delimiters = new char[] { '_' };
+			char[] delimiters = new char[] { '_' , ':' };
 			return word.Split(delimiters,StringSplitOptions.RemoveEmptyEntries);
 		}
 

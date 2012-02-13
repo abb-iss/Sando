@@ -55,10 +55,9 @@ namespace Sando.Parser
 
 			foreach(XElement prop in props)
 			{
-				//parse name, and definition line number
-				XElement nameElement = prop.Element(SourceNamespace + "name");
-				string name = nameElement.Value;
-				int definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
+				string name;
+				int definitionLineNumber;
+				ParseName(prop, out name, out definitionLineNumber);
 
 				//get the class guid
 				Guid classId = RetrieveClassGuid(prop, programElements);
@@ -105,10 +104,9 @@ namespace Sando.Parser
 				//SrcML doesn't parse access level specifiers for enums, so just pretend they are all public for now
 				AccessLevel accessLevel = AccessLevel.Public;
 
-				//parse name, and definition line number
-				XElement nameElement = enm.Element(SourceNamespace + "name");
-				string name = nameElement.Value;
-				int definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
+				string name;
+				int definitionLineNumber;
+				ParseName(enm, out name, out definitionLineNumber);
 
 				//parse namespace
 				IEnumerable<XElement> ownerNamespaces =
@@ -160,13 +158,16 @@ namespace Sando.Parser
 
 		private ClassElement ParseClass(XElement cls, string fileName)
 		{
-			//parse stuff in class definition
-			XElement nameElement = cls.Element(SourceNamespace + "name");
-			string name = nameElement.Value;
-			int definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
-			
+			string name;
+			int definitionLineNumber;
+			ParseName(cls, out name, out definitionLineNumber);
+
+			AccessLevel accessLevel = AccessLevel.Public; //default
 			XElement accessElement = cls.Element(SourceNamespace + "specifier");
-			AccessLevel accessLevel = StrToAccessLevel(accessElement.Value);
+			if(accessElement != null)
+			{
+				accessLevel = StrToAccessLevel(accessElement.Value);
+			}
 
 			//parse namespace
 			IEnumerable<XElement> ownerNamespaces =
@@ -224,13 +225,16 @@ namespace Sando.Parser
 
 		private MethodElement ParseFunction(XElement function, List<ProgramElement> programElements, string fileName)
 		{
-			//parse name etc.
-			XElement nameElement = function.Element(SourceNamespace + "name");
-			string name = nameElement.Value;
-			int definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
-			
+			string name;
+			int definitionLineNumber;
+			ParseName(function, out name, out definitionLineNumber);
+
+			AccessLevel accessLevel = AccessLevel.Protected; //default
 			XElement access = function.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-			AccessLevel accessLevel = StrToAccessLevel(access.Value);
+			if(access != null)
+			{
+				accessLevel = StrToAccessLevel(access.Value);
+			}
 			
 			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
 			string returnType = type.Value;
@@ -265,6 +269,27 @@ namespace Sando.Parser
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
 			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
+		}
+
+		private static void ParseName(XElement function, out string name, out int definitionLineNumber)
+		{
+			XElement nameElement = function.Element(SourceNamespace + "name");
+			name = nameElement.Value;
+
+			if(nameElement.Attribute(PositionNamespace + "line") != null)
+			{
+				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
+			}
+			else if(nameElement.Element(SourceNamespace + "name") != null)
+			{
+				//doubly nested <name> tags are possible in C++ (e.g. for X::Y)
+				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
+			}
+			else
+			{
+				//i can't find the line number
+				definitionLineNumber = 0;
+			}
 		}
 
 		private Guid RetrieveClassGuid(XElement field, List<ProgramElement> programElements)

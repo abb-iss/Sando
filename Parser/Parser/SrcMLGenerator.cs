@@ -9,6 +9,7 @@ namespace Sando.Parser
 	{
 		Java,
 		C,
+		CPP,
 		CSharp,
 		FakeJava
 	};
@@ -64,11 +65,17 @@ namespace Sando.Parser
 			string srcML = "";
 
 			String inputCode = System.IO.File.ReadAllText(filename);
-			//temporary, otherwise very ugly
+			String langText = Language.ToString();
+
 			if(Language == LanguageEnum.FakeJava)
 			{
+				//temporary, otherwise very ugly
 				inputCode = AdaptCSharpToJavaParsing(inputCode);
-				Language = LanguageEnum.Java;
+				langText = "Java";
+			}
+			else if(Language == LanguageEnum.CPP)
+			{
+				langText = "C++";
 			}
 
 
@@ -79,7 +86,7 @@ namespace Sando.Parser
 			startInfo.RedirectStandardInput = true;
 			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "--position -l "+Language.ToString();
+			startInfo.Arguments = "--position -l "+langText;
 
 			try
 			{
