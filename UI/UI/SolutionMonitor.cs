@@ -49,7 +49,10 @@ namespace Sando.UI
 
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 		{
-			
+			ProjectItem projectItem = e.Argument as ProjectItem;
+			ProcessItem(projectItem);
+			_currentIndexer.CommitChanges();
+
 		}
 
 		private void _runStartupInBackground_DoWork(object sender,
@@ -160,8 +163,7 @@ namespace Sando.UI
 			var projectItem = _openSolution.FindProjectItem(name);
 			if(projectItem!=null)
 			{
-				ProcessItem(projectItem);
-				_currentIndexer.CommitChanges();
+				_processFileInBackground.RunWorkerAsync(projectItem);
 			}
 			return VSConstants.S_OK;
 		}

@@ -212,6 +212,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Configuration\Configuration\Configuration.csproj">
+      <Project>{483A35BF-139D-46C1-A6E3-87DEFAE90470}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
@@ -227,6 +231,10 @@
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
       <Name>Search Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Translation\Translation\Translation.csproj">
+      <Project>{8DD830F7-7923-4E90-8CD3-6D4313A20FE8}</Project>
+      <Name>Translation</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
