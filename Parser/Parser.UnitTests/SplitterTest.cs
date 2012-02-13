@@ -23,5 +23,12 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(parts.Length == 7);
 		}
 
+		[Test]
+		public void TestUnsplittable()
+		{
+			string[] parts = WordSplitter.split("unsplittable");
+			Assert.IsTrue(parts.Length == 1);
+		}
+
 	}
 }

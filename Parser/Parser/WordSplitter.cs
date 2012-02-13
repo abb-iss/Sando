@@ -10,16 +10,8 @@ namespace Sando.Parser
 	{
 		public static string[] split(string word) 
 		{
-			List<string> splits = new List<string>();
-
 			word = camelTypeToUnderscore(word);
-
-			if(word.Contains("_"))
-			{
-				splits.AddRange(SplitUnderscores(word).ToList());
-			}
-
-			return splits.ToArray();
+			return SplitUnderscores(word);
 		}
 
 		private static string camelTypeToUnderscore(string word)
