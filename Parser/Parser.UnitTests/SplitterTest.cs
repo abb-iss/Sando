@@ -10,11 +10,18 @@ namespace Sando.Parser.UnitTests
 	class SplitterTest
 	{
 		[Test]
-		public void TestSplitter()
+		public void TestSplitCamelCase()
 		{
-			//Splitter split = new Splitter();
-			//String[] parts = split.split("aLongVariableNameInCamelCase");
-			//Assert.IsTrue(parts.Length()==7);
+			string[] parts = WordSplitter.split("aLongVariableNameInCamelCase");
+			Assert.IsTrue(parts.Length == 7);
 		}
+
+		[Test]
+		public void TestSplitUnderscores()
+		{
+			string[] parts = WordSplitter.split("a_name_separated_by_lots_of_underscores");
+			Assert.IsTrue(parts.Length == 7);
+		}
+
 	}
 }
