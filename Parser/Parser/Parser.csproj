@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WordSplitter.cs" />
     <Compile Include="ParserException.cs" />
     <Compile Include="ParserInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
