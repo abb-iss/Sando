@@ -92,6 +92,25 @@ namespace Sando.Indexer.UnitTests
 			Assert.True(contractFailed, "Contract should fail!");
 		}
 
+		[Test]
+		public void DocumentIndexer_CommitChangesTriggersNotifyAboutIndexUpdateOnIndexUpdateListeners()
+		{
+			Analyzer analyzer = new SimpleAnalyzer();
+			try
+			{
+				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+				TestIndexUpdateListener testIndexUpdateListener = new TestIndexUpdateListener();
+				documentIndexer.AddIndexUpdateListener(testIndexUpdateListener);
+				Assert.True(testIndexUpdateListener.NotifyCalled == false, "Notify flag set without NotifyAboutIndexUpdate call!");
+				documentIndexer.CommitChanges();
+				Assert.True(testIndexUpdateListener.NotifyCalled == true, "NotifyAboutIndexUpdate wasn't called!");
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message + ". " + ex.StackTrace);
+			}
+		}
+
 		[SetUp]
 		public void ResetContract()
 		{

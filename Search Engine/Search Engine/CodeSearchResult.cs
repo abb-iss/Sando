@@ -1,4 +1,6 @@
-﻿namespace Sando.SearchEngine
+﻿using System.IO;
+
+namespace Sando.SearchEngine
 {
     using Sando.Core;
     using System;
@@ -31,6 +33,31 @@
            get;
            private set;
        }
+
+    	public string FileName
+    	{
+    		get
+    		{
+    			var fileName = Path.GetFileName(Element.FullFilePath);
+    			return fileName;
+    		}    		
+    	}
+
+    	public string Parent
+    	{
+    		get
+    		{
+    			var method = Element as MethodElement;
+				if(method !=null)
+				{
+					return method.ClassId.ToString().Substring(0,5);
+				}else
+				{
+					return "";
+				}
+
+    		}
+    	}
        #endregion
        #region Constructor
        /// <summary>

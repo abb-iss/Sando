@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
-             xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine" mc:Ignorable="d" 
+             xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
+             xmlns:local="clr-namespace:Sando.UI" mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="300"
              Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
-    <Grid>
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">    
+    <Grid>        
         <StackPanel Margin="10,10,10,10" >
             <StackPanel.Resources>                
                 <DataTemplate DataType="{x:Type SearchEngine:CodeSearchResult}">
@@ -21,13 +22,13 @@
                                     <RowDefinition Height="20" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="150" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="0" Grid.Column="0" >
                                 </TextBlock>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="1" Grid.Column="0" >
+                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
                                 </TextBlock>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="2" Grid.Column="0" >
+                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
                                 </TextBlock>
                             </Grid>
                             <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Snippet}" >
@@ -41,7 +42,7 @@
                 </Style>
             </StackPanel.Resources>
             <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="5,5,5,5">
-                <TextBox Width="200" Height="30" AcceptsReturn="True" Text="{Binding Path=SearchString}"></TextBox>
+                <TextBox Width="200" Height="30" KeyDown="OnKeyDownHandler" Text="{Binding Path=SearchString}"></TextBox>
                 <Button Content="Search" Width="60" Height="30" Name="searchButton" Click="SearchButtonClick" />
             </StackPanel>
 

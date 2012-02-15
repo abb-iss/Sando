@@ -83,6 +83,7 @@
     <Compile Include="AccessLevel.cs" />
     <Compile Include="ClassElement.cs" />
     <Compile Include="CommentElement.cs" />
+    <Compile Include="ISolutionKey.cs" />
     <Compile Include="DocCommentElement.cs" />
     <Compile Include="EnumElement.cs" />
     <Compile Include="Exceptions\SandoException.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="MethodElement.cs" />
     <Compile Include="ProgramElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SolutionKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

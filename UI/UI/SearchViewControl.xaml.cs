@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Sando.Core;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
@@ -36,28 +37,42 @@ namespace Sando.UI
 		public static readonly DependencyProperty SearchResultsProperty =
 			DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
-    	private CodeSearcher _currentSearcher;
-    	private string _currentDirectory="";
+		public static readonly DependencyProperty SearchStringProperty =
+			DependencyProperty.Register("SearchString", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
 
-    	public String SearchString
+		public string SearchString
 		{
-			get; set;
-		}		
+			get
+			{
+				return (string)GetValue(SearchStringProperty);
+			}
+			set
+			{
+				SetValue(SearchStringProperty, value);
+			}
+		}
+	
+
+    	private CodeSearcher _currentSearcher;
+    	private string _currentDirectory="";    	
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
-        	var myPackage = UIPackage.GetInstance();        	
-			_currentSearcher = GetSearcher(myPackage);
-			if(SearchResults==null)
-				SearchResults = new ObservableCollection<CodeSearchResult>();				
-			else
-				SearchResults.Clear();
-			foreach(var result in _currentSearcher.Search(SearchString))
-        	{
-        		SearchResults.Add(result);
-        	}        	
+			if(!string.IsNullOrEmpty(SearchString))
+			{
+				var myPackage = UIPackage.GetInstance();
+				_currentSearcher = GetSearcher(myPackage);
+				if (SearchResults == null)
+					SearchResults = new ObservableCollection<CodeSearchResult>();
+				else
+					SearchResults.Clear();
+				foreach (var result in _currentSearcher.Search(SearchString))
+				{
+					SearchResults.Add(result);
+				}
+			}
         }
 
     	private CodeSearcher GetSearcher(UIPackage myPackage)
@@ -69,6 +84,19 @@ namespace Sando.UI
 				codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(_currentDirectory));
 			}
     		return codeSearcher;
+    	}
+
+    	private void OnKeyDownHandler(object sender, KeyEventArgs e)
+    	{
+			if(e.Key == Key.Return)
+			{
+				var text = sender as TextBox;
+				if(text!=null)
+				{
+					SearchString = text.Text;
+				}
+				SearchButtonClick(null,null);
+			}
     	}
     }
 }
