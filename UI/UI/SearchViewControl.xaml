@@ -21,13 +21,13 @@
                                     <RowDefinition Height="20" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="150" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="0" Grid.Column="0" >
                                 </TextBlock>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="1" Grid.Column="0" >
+                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
                                 </TextBlock>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="2" Grid.Column="0" >
+                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
                                 </TextBlock>
                             </Grid>
                             <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Snippet}" >
