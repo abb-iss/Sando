@@ -30,6 +30,7 @@ namespace Sando.Indexer
 				IndexWriter = new IndexWriter(LuceneIndexesDirectory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
 				IndexSearcher = new IndexSearcher(LuceneIndexesDirectory, true);
 				QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), analyzer);
+				indexUpdateListeners = new List<IIndexUpdateListener>();
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -43,8 +44,6 @@ namespace Sando.Indexer
 			{
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
-
-			LastUpdatedAt = DateTime.Now;
 		}
 
 		public virtual void AddDocument(SandoDocument sandoDocument)
@@ -57,8 +56,28 @@ namespace Sando.Indexer
 		public void CommitChanges()
 		{
 			IndexWriter.Commit();
-			LastUpdatedAt = DateTime.Now;
+			NotifyIndexUpdateListeners();
 		}
+
+
+		public void AddIndexUpdateListener(IIndexUpdateListener indexUpdateListener)
+		{
+			this.indexUpdateListeners.Add(indexUpdateListener);
+		}
+
+		public void RemoveIndexUpdateListener(IIndexUpdateListener indexUpdateListener)
+		{
+			this.indexUpdateListeners.Remove(indexUpdateListener);
+		}
+
+		private void NotifyIndexUpdateListeners()
+		{
+			foreach(IIndexUpdateListener listener in this.indexUpdateListeners)
+			{
+				listener.NotifyAboutIndexUpdate();
+			}
+		}
+
 
 		public bool IsUsable()
 		{
@@ -91,12 +110,12 @@ namespace Sando.Indexer
         }
 
 		public virtual Directory LuceneIndexesDirectory { get; set; }
-		public virtual DateTime LastUpdatedAt { get; set; }
 		public virtual IndexSearcher IndexSearcher { get; protected set; }
 		public virtual QueryParser QueryParser { get; protected set; }
 		protected virtual Analyzer Analyzer { get; set; }
 		protected virtual IndexWriter IndexWriter { get; set; }
 
+		private List<IIndexUpdateListener> indexUpdateListeners;
 		private bool disposed = false;
 	}
 

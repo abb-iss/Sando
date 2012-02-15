@@ -133,6 +133,7 @@
   <ItemGroup>
     <Compile Include="DocumentIndexerTest.cs" />
     <Compile Include="Documents\DocumentFactoryTest.cs" />
+    <Compile Include="TestIndexUpdateListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Searching\Criteria\SearchCriteriaTest.cs" />
   </ItemGroup>
