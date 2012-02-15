@@ -24,6 +24,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void ParseCPPSourceTest()
 		{
+			bool seenGetTimeMethod = false;
 			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse("..\\..\\TestFiles\\Event.CPP.txt");
 			Assert.IsNotNull(elements);
@@ -33,19 +34,20 @@ namespace Sando.Parser.UnitTests
 				if(pe is MethodElement)
 				{
 					MethodElement method = (MethodElement)pe;
-					/*
-					if(method.Name == "SetLanguage")
+					
+					if(method.Name == "Event::getTime")
 					{
-						seenSetLanguageMethod = true;
-						Assert.AreEqual(method.DefinitionLineNumber, 26);
-						Assert.AreEqual(method.ReturnType, "void");
-						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
-						Assert.AreEqual(method.Arguments, "LanguageEnum language");
-						Assert.AreEqual(method.Body, "Language language language LanguageEnum CSharp Language LanguageEnum Java");
-						Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
-					}*/
+						seenGetTimeMethod = true;
+						Assert.AreEqual(method.DefinitionLineNumber, 13);
+						Assert.AreEqual(method.ReturnType, "double");
+						//Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
+						Assert.AreEqual(method.Arguments, String.Empty);
+						Assert.AreEqual(method.Body, "time");
+						//Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
+					}
 				}
 			}
+			Assert.IsTrue(seenGetTimeMethod);
 		}
 
 

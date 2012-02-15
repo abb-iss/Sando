@@ -74,17 +74,7 @@ namespace Sando.Parser
 				}
 				propertyType = propertyType.TrimEnd();
 
-				//parse property body
-				XElement block = prop.Element(SourceNamespace + "block");
-				IEnumerable<XElement> bodyNames =
-					from el in block.Descendants(SourceNamespace + "name")
-					select el;
-				string body = String.Empty;
-				foreach(XElement bodyname in bodyNames)
-				{
-					body += bodyname.Value + " ";
-				}
-				body = body.TrimEnd();
+				string body = ParseBody(prop);
 				
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
 				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
@@ -251,17 +241,7 @@ namespace Sando.Parser
 			}
 			arguments = arguments.TrimEnd();
 
-			//parse function body
-			XElement block = function.Element(SourceNamespace + "block");
-			IEnumerable<XElement> bodyNames =
-				from el in block.Descendants(SourceNamespace + "name")
-				select el;
-			string body = String.Empty;
-			foreach(XElement elem in bodyNames)
-			{
-				body += elem.Value + " ";
-			}
-			body = body.TrimEnd();
+			string body = ParseBody(function);
 
 			Guid classId = RetrieveClassGuid(function, programElements);
 
@@ -269,6 +249,21 @@ namespace Sando.Parser
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
 			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
+		}
+
+		private static string ParseBody(XElement function)
+		{
+			XElement block = function.Element(SourceNamespace + "block");
+			IEnumerable<XElement> bodyNames =
+				from el in block.Descendants(SourceNamespace + "name")
+				select el;
+			string body = String.Empty;
+			foreach(XElement elem in bodyNames)
+			{
+				body += String.Join(" ",WordSplitter.split(elem.Value)) + " "; 
+			}
+			body = body.TrimEnd();
+			return body;
 		}
 
 		private static void ParseName(XElement function, out string name, out int definitionLineNumber)
