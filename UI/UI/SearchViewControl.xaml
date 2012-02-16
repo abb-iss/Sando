@@ -47,7 +47,7 @@
             </StackPanel>
 
             <ListBox ItemsSource="{Binding Path=SearchResults}"
-                Margin="10" SelectedIndex="0" Height="400"/>            
+                Margin="10" SelectedIndex="0" Height="400" MouseDoubleClick="UIElement_OnMouseDown"/>            
             
 
         </StackPanel>

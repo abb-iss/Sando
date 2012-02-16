@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 using Sando.Core;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
@@ -97,6 +100,47 @@ namespace Sando.UI
 				}
 				SearchButtonClick(null,null);
 			}
+    	}
+
+    	private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
+    	{
+    		var result = sender as ListBox;
+			if(result!=null)
+			{
+				var myResult = result.SelectedItem as CodeSearchResult;
+				FileOpener.OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);	
+			}
+			
+    	}
+
+    	private static class FileOpener
+    	{
+			
+			private static DTE2 dte = null;
+
+    		public static void OpenFile(string filePath, int lineNumber)
+    		{
+    			InitDte2();
+    			dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindCode);
+    			try
+    			{
+    				var selection = (TextSelection) dte.ActiveDocument.Selection;
+    				selection.GotoLine(lineNumber);
+    				selection.SelectLine();
+    			}
+    			catch (Exception)
+    			{
+    				//ignore, we don't want this feature ever causing a crash
+    			}
+    		}    	
+
+    		private static void InitDte2()
+    		{
+    			if (dte == null)
+    			{
+    				dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+    			}
+    		}
     	}
     }
 }
