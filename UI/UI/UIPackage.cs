@@ -154,7 +154,19 @@ namespace Sando.UI
 
     	public string GetCurrentDirectory()
     	{
-			return _currentMonitor.GetCurrentDirectory();
+			if(_currentMonitor != null)
+				return _currentMonitor.GetCurrentDirectory();
+			else
+				return null;
     	}
+
+
+		public SolutionKey GetCurrentSolutionKey()
+		{
+			if(_currentMonitor != null)
+				return _currentMonitor.GetSolutionKey();
+			else
+				return null;
+		}
     }
 }

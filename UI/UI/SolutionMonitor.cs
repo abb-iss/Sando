@@ -31,20 +31,22 @@ namespace Sando.UI
 		private string _currentPath;
 		private System.ComponentModel.BackgroundWorker _runStartupInBackground;
 		private System.ComponentModel.BackgroundWorker _processFileInBackground;
+		private SolutionKey _solutionKey;
 
 		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer, string getLuceneDirectoryForSolution)
 		{
 			this._openSolution = openSolution;
 			this._currentIndexer = currentIndexer;
 			this._currentPath = getLuceneDirectoryForSolution;
-			
+			_solutionKey = new SolutionKey(_openSolution.FileName, _currentPath);
+
 			_runStartupInBackground = new System.ComponentModel.BackgroundWorker();		
 			_runStartupInBackground.DoWork +=
 				new DoWorkEventHandler(_runStartupInBackground_DoWork);
 
 			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
 			_processFileInBackground.DoWork +=
-				new DoWorkEventHandler(_processFileInBackground_DoWork);
+				new DoWorkEventHandler(_processFileInBackground_DoWork);			
 		}
 
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
@@ -187,6 +189,11 @@ namespace Sando.UI
 		public string GetCurrentDirectory()
 		{
 			return _currentPath;
+		}
+
+		public SolutionKey GetSolutionKey()
+		{
+			return _solutionKey;
 		}
 	}
 
