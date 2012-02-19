@@ -84,7 +84,7 @@ namespace Sando.UI
 			if(codeSearcher == null || !myPackage.GetCurrentDirectory().Equals(_currentDirectory))
 			{
 				_currentDirectory = myPackage.GetCurrentDirectory();
-				codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(_currentDirectory));
+				codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentSolutionKey()));
 			}
     		return codeSearcher;
     	}

@@ -33,12 +33,13 @@ namespace Sando.UI
 		private System.ComponentModel.BackgroundWorker _processFileInBackground;
 		private SolutionKey _solutionKey;
 
-		public SolutionMonitor(Solution openSolution, DocumentIndexer currentIndexer, string getLuceneDirectoryForSolution)
+		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
 			this._openSolution = openSolution;
 			this._currentIndexer = currentIndexer;
-			this._currentPath = getLuceneDirectoryForSolution;
-			_solutionKey = new SolutionKey(_openSolution.FileName, _currentPath);
+			this._currentPath = solutionKey.GetIndexPath();
+			
+			_solutionKey = solutionKey;
 
 			_runStartupInBackground = new System.ComponentModel.BackgroundWorker();		
 			_runStartupInBackground.DoWork +=
@@ -211,9 +212,12 @@ namespace Sando.UI
 		private static SolutionMonitor CreateMonitor(Solution openSolution)
 		{
 			Contract.Requires(openSolution != null, "A solution must be open");
-			var currentIndexer = DocumentIndexerFactory.CreateIndexer(GetLuceneDirectoryForSolution(openSolution),
+
+			//TODO if solution is reopen - the guid should be read from file - future change
+			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
+			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey,
 			                                                          AnalyzerType.Standard);
-			var currentMonitor = new SolutionMonitor(openSolution, currentIndexer, GetLuceneDirectoryForSolution(openSolution));
+			var currentMonitor = new SolutionMonitor(openSolution, solutionKey, currentIndexer);
 			currentMonitor.StartMonitoring();
 			return currentMonitor;
 		}

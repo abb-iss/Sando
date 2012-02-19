@@ -20,13 +20,14 @@ namespace Sando.SearchEngine.UnitTests
     {
 		private DocumentIndexer Indexer;
     	private string IndexerPath;
+		private SolutionKey solutionKey;
 
 
     	[Test]
         public void TestCreateCodeSearcher()
         {
             SimpleAnalyzer analyzer = new SimpleAnalyzer();
-    		var indexer = DocumentIndexerFactory.CreateIndexer(System.IO.Path.GetTempPath() + "luceneindexer", AnalyzerType.Standard);
+    		var indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
 			//TODO - How do we get an instance of IIndexerSearcher?
 			//FYI - use this IndexerSearcherFactory.CreateSearcher
             Assert.DoesNotThrow(() => new CodeSearcher( null ));
@@ -36,7 +37,7 @@ namespace Sando.SearchEngine.UnitTests
         [Test]     
         public void PerformBasicSearch()
         {
-			var indexerSearcher = IndexerSearcherFactory.CreateSearcher(System.IO.Path.GetTempPath() + "luceneindexer");
+			var indexerSearcher = IndexerSearcherFactory.CreateSearcher(solutionKey);
         	CodeSearcher cs = new CodeSearcher(indexerSearcher);            
             List<CodeSearchResult> result = cs.Search("SimpleName");
             Assert.True(result.Count > 0);                                 
@@ -45,7 +46,7 @@ namespace Sando.SearchEngine.UnitTests
 		[Test]
 		public void TestSearchWithCache()
 		{			
-			var cs = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(IndexerPath));
+			var cs = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(solutionKey));
 			List<CodeSearchResult> result = cs.Search("SimpleName");
 			var sameResult = cs.Search("SimpleName");
 			Assert.IsTrue(result==sameResult);
@@ -62,7 +63,8 @@ namespace Sando.SearchEngine.UnitTests
     	public void CreateIndexer()
 		{
 			IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
-			Indexer = DocumentIndexerFactory.CreateIndexer(IndexerPath, AnalyzerType.Standard);
+			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath);
+			Indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
 				accessLevel: Core.AccessLevel.Public,
 				definitionLineNumber: 11,

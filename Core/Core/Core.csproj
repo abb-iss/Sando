@@ -83,7 +83,6 @@
     <Compile Include="AccessLevel.cs" />
     <Compile Include="ClassElement.cs" />
     <Compile Include="CommentElement.cs" />
-    <Compile Include="ISolutionKey.cs" />
     <Compile Include="DocCommentElement.cs" />
     <Compile Include="EnumElement.cs" />
     <Compile Include="Exceptions\SandoException.cs" />

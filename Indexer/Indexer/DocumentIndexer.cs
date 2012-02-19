@@ -5,12 +5,13 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
+using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
+using Sando.Core;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
-using Lucene.Net.QueryParsers;
 
 namespace Sando.Indexer
 {
@@ -126,20 +127,21 @@ namespace Sando.Indexer
 
 	public class DocumentIndexerFactory
 	{
-		public static DocumentIndexer CreateIndexer(string luceneIndex, AnalyzerType analyzerType)
+		public static DocumentIndexer CreateIndexer(SolutionKey solutionKey, AnalyzerType analyzerType)
 		{
-			if(documentIndexers.ContainsKey(luceneIndex))
+			Guid solutionId = solutionKey.GetSolutionId();
+			if(documentIndexers.ContainsKey(solutionId))
 			{
-				if(!documentIndexers[luceneIndex].IsUsable())
+				if(!documentIndexers[solutionId].IsUsable())
 				{
-					documentIndexers[luceneIndex] = CreateInstance(luceneIndex, analyzerType);
+					documentIndexers[solutionId] = CreateInstance(solutionKey.GetIndexPath(), analyzerType);
 				}
 			}
 			else
 			{
-				documentIndexers.Add(luceneIndex, CreateInstance(luceneIndex, analyzerType));
+				documentIndexers.Add(solutionId, CreateInstance(solutionKey.GetIndexPath(), analyzerType));
 			}
-			return documentIndexers[luceneIndex];
+			return documentIndexers[solutionId];
 		}
 
 		private static DocumentIndexer CreateInstance(string luceneIndex, AnalyzerType analyzerType)
@@ -158,6 +160,6 @@ namespace Sando.Indexer
 			}			
 		}
 
-		private static Dictionary<string, DocumentIndexer> documentIndexers = new Dictionary<string, DocumentIndexer>();
+		private static Dictionary<Guid, DocumentIndexer> documentIndexers = new Dictionary<Guid, DocumentIndexer>();
 	}
 }

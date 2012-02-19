@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Lucene.Net.Documents;
-using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Lucene.Net.Store;
 using Sando.Core;
 using Sando.Indexer.Searching.Criteria;
-using Lucene.Net.QueryParsers;
 
 namespace Sando.Indexer.Searching
 {
 	public class IndexerSearcher: IIndexerSearcher
 	{
-		public IndexerSearcher(String directoryPath)
+		public IndexerSearcher(SolutionKey solutionKey)
 		{
-			documentIndexer = DocumentIndexerFactory.CreateIndexer(directoryPath, AnalyzerType.Default);
+			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Default);
 		}
 
 		public List<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria)
@@ -56,9 +50,9 @@ namespace Sando.Indexer.Searching
 
 	public class IndexerSearcherFactory
 	{
-		public static IIndexerSearcher CreateSearcher(String directoryPath)
+		public static IIndexerSearcher CreateSearcher(SolutionKey solutionKey)
 		{
-			return new IndexerSearcher(directoryPath);	
+			return new IndexerSearcher(solutionKey);	
 		}
 	}
 }
