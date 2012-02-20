@@ -57,7 +57,20 @@ namespace Sando.Indexer
 		public void CommitChanges()
 		{
 			IndexWriter.Commit();
+			UpdateReader();
 			NotifyIndexUpdateListeners();
+		}
+
+		private void UpdateReader()
+		{
+			//TODO - please check this out and see if you agree tha we need this
+			var oldReader = IndexSearcher.GetIndexReader();
+			IndexReader newReader = oldReader.Reopen(true);
+			if (newReader != IndexSearcher.GetIndexReader())
+			{
+				oldReader.Close();
+				IndexSearcher = new IndexSearcher(newReader);
+			}
 		}
 
 
@@ -140,7 +153,7 @@ namespace Sando.Indexer
 			else
 			{
 				documentIndexers.Add(solutionId, CreateInstance(solutionKey.GetIndexPath(), analyzerType));
-			}
+			}			
 			return documentIndexers[solutionId];
 		}
 

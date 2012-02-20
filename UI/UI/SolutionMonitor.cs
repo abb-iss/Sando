@@ -31,7 +31,7 @@ namespace Sando.UI
 		private string _currentPath;
 		private System.ComponentModel.BackgroundWorker _runStartupInBackground;
 		private System.ComponentModel.BackgroundWorker _processFileInBackground;
-		private SolutionKey _solutionKey;
+		private SolutionKey _solutionKey;		
 
 		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
@@ -195,6 +195,17 @@ namespace Sando.UI
 		public SolutionKey GetSolutionKey()
 		{
 			return _solutionKey;
+		}
+
+
+		public void AddUpdateListener(IIndexUpdateListener listener)
+		{
+			_currentIndexer.AddIndexUpdateListener(listener);
+		}
+
+		public void RemoveUpdateListener(IIndexUpdateListener listener)
+		{
+			_currentIndexer.RemoveIndexUpdateListener(listener);
 		}
 	}
 

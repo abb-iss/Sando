@@ -8,6 +8,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Sando.Core;
+using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 
@@ -16,10 +17,13 @@ namespace Sando.UI
     /// <summary>
     /// Interaction logic for SearchViewControl.xaml
     /// </summary>
-    public partial class SearchViewControl : UserControl
+    public partial class SearchViewControl : UserControl, IIndexUpdateListener
     {
+		private static IIndexUpdateListener _instance;
+
     	public SearchViewControl()
-        {
+    	{
+    		_instance = this;
             this.DataContext = this; //so we can show results
     		//InitFake();
             InitializeComponent();            
@@ -58,9 +62,11 @@ namespace Sando.UI
 	
 
     	private CodeSearcher _currentSearcher;
-    	private string _currentDirectory="";    	
+    	private string _currentDirectory="";
+    	private bool _invalidated = true;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
+
+    	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
 			if(!string.IsNullOrEmpty(SearchString))
@@ -81,8 +87,9 @@ namespace Sando.UI
     	private CodeSearcher GetSearcher(UIPackage myPackage)
     	{
     		CodeSearcher codeSearcher = _currentSearcher;
-			if(codeSearcher == null || !myPackage.GetCurrentDirectory().Equals(_currentDirectory))
+			if(codeSearcher == null || !myPackage.GetCurrentDirectory().Equals(_currentDirectory) || _invalidated )
 			{
+				_invalidated = false;
 				_currentDirectory = myPackage.GetCurrentDirectory();
 				codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentSolutionKey()));
 			}
@@ -142,5 +149,23 @@ namespace Sando.UI
     			}
     		}
     	}
+
+    	public static IIndexUpdateListener GetInstance()
+    	{
+			if(_instance==null)
+			{
+				UIPackage.GetInstance().EnsureSandoRunning();
+			}
+    		return _instance;
+    	}
+
+    	#region Implementation of IIndexUpdateListener
+
+    	public void NotifyAboutIndexUpdate()
+    	{
+    		_invalidated = true;
+    	}
+
+    	#endregion
     }
 }

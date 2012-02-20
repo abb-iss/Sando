@@ -40,7 +40,7 @@ namespace Sando.UI
     [Guid(GuidList.guidUIPkgString)]
 	// This attribute starts up our extension early so that it can listen to solution events
 	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
-    public sealed class UIPackage : Package
+	public sealed class UIPackage: Package
     {    	
     	
 		private SolutionMonitor _currentMonitor;
@@ -93,6 +93,10 @@ namespace Sando.UI
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
+		public void EnsureSandoRunning()
+		{
+			ShowToolWindow(null,null);
+		}
 
         /////////////////////////////////////////////////////////////////////////////
         // Overriden Package Implementation
@@ -131,6 +135,7 @@ namespace Sando.UI
 		
 			if(_currentMonitor != null)
 			{
+				_currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
 				_currentMonitor.Dispose();
 				_currentMonitor = null;
 			}
@@ -139,6 +144,7 @@ namespace Sando.UI
 		private void SolutionHasBeenOpened()
 		{
 			_currentMonitor = SolutionMonitorFactory.CreateMonitor();
+			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
 		}
 
   
@@ -168,5 +174,14 @@ namespace Sando.UI
 			else
 				return null;
 		}
+
+    	#region Implementation of IIndexUpdateListener
+
+    	public void NotifyAboutIndexUpdate()
+    	{
+    		throw new NotImplementedException();
+    	}
+
+    	#endregion
     }
 }
