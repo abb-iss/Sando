@@ -4,7 +4,7 @@ using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer.Searching.Criteria;
 
-namespace Sando.Indexer.UnitTests
+namespace Sando.Indexer.UnitTests.Searching.Criteria
 {
     [TestFixture]
 	public class SearchCriteriaTest

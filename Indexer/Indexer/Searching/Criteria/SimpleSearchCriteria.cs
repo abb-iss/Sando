@@ -16,7 +16,7 @@ namespace Sando.Indexer.Searching.Criteria
 			MatchCase = false;
 			MatchWholeWord = false;
 			ExactMode = true;
-			SearchByAccessType = false;
+			SearchByAccessLevel = false;
 			AccessLevels = new SortedSet<AccessLevel>();
 			SearchByProgramElementType = false;
 			ProgramElementTypes = new SortedSet<ProgramElementType>();
@@ -28,24 +28,23 @@ namespace Sando.Indexer.Searching.Criteria
 		public override string ToQueryString()
 		{
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append("(");
-			if(SearchByAccessType)
+			if(SearchByAccessLevel)
 			{
 				AccessLevelCriteriaToString(stringBuilder);
-				stringBuilder.Append(" AND ");
 			}
 			if(SearchByProgramElementType)
 			{
+				if(stringBuilder.Length > 0)
+					stringBuilder.Append(" AND ");
 				ProgramElementTypeCriteriaToString(stringBuilder);
-				stringBuilder.Append(" AND ");
 			}
 			if(SearchByLocation)
 			{
+				if(stringBuilder.Length > 0)
+					stringBuilder.Append(" AND ");
 				LocationCriteriaToString(stringBuilder);
-				stringBuilder.Append(" AND ");
 			}
 			UsageTypeCriteriaToString(stringBuilder, SearchByUsageType);
-			stringBuilder.Append(")");
 			return stringBuilder.ToString();
 		}
 
@@ -99,7 +98,7 @@ namespace Sando.Indexer.Searching.Criteria
 			foreach(string location in Locations)
 			{
 				stringBuilder.Append("FullFilePath:");
-				stringBuilder.Append(location);
+				stringBuilder.Append(String.IsNullOrWhiteSpace(location) ? "*" : '\"' + location + '\"');
 				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
@@ -114,6 +113,12 @@ namespace Sando.Indexer.Searching.Criteria
 			Contract.Requires(UsageTypes != null, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be null!");
 			Contract.Requires(!SearchByUsageType || UsageTypes.Count > 0, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be empty!");
 
+			if(SearchTerms.Count == 0)
+				return;
+			
+			if(stringBuilder.Length > 0)
+				stringBuilder.Append(" AND ");
+			
 			stringBuilder.Append("(");
 			if(SearchByUsageType)
 			{
@@ -146,7 +151,6 @@ namespace Sando.Indexer.Searching.Criteria
 
 		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType)
 		{
-			stringBuilder.Append("(");
 			int collectionSize = SearchTerms.Count;
 			foreach(string searchTerm in SearchTerms)
 			{
@@ -197,14 +201,13 @@ namespace Sando.Indexer.Searching.Criteria
 				}
 				--collectionSize;
 			}
-			stringBuilder.Append(")");
 		}
 
 		public virtual SortedSet<string> SearchTerms { get; set; }
 		public virtual bool MatchCase { get; set; }
 		public virtual bool MatchWholeWord { get; set; }
 		public virtual bool ExactMode { get; set; }
-		public virtual bool SearchByAccessType { get; set; }
+		public virtual bool SearchByAccessLevel { get; set; }
 		public virtual SortedSet<AccessLevel> AccessLevels { get; set; }
 		public virtual bool SearchByProgramElementType { get; set; }
 		public virtual SortedSet<ProgramElementType> ProgramElementTypes { get; set; }
