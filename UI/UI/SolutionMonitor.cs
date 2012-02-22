@@ -7,6 +7,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using EnvDTE;
 using EnvDTE80;
@@ -17,6 +18,8 @@ using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Microsoft.VisualStudio;
 using Sando.Parser;
+using System.Threading;
+using Thread = System.Threading.Thread;
 
 namespace Sando.UI
 {
@@ -28,10 +31,10 @@ namespace Sando.UI
 		private IVsRunningDocumentTable _documentTable;
 		private uint _documentTableItemId;
 		private readonly ParserInterface _parser = new SrcMLParser();
-		private string _currentPath;
-		private System.ComponentModel.BackgroundWorker _runStartupInBackground;
-		private System.ComponentModel.BackgroundWorker _processFileInBackground;
-		private SolutionKey _solutionKey;		
+		private readonly string _currentPath;		
+		private readonly System.ComponentModel.BackgroundWorker _processFileInBackground;
+		private readonly SolutionKey _solutionKey;
+		private Thread _startupThread;
 
 		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
@@ -40,10 +43,6 @@ namespace Sando.UI
 			this._currentPath = solutionKey.GetIndexPath();
 			
 			_solutionKey = solutionKey;
-
-			_runStartupInBackground = new System.ComponentModel.BackgroundWorker();		
-			_runStartupInBackground.DoWork +=
-				new DoWorkEventHandler(_runStartupInBackground_DoWork);
 
 			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
 			_processFileInBackground.DoWork +=
@@ -58,8 +57,7 @@ namespace Sando.UI
 
 		}
 
-		private void _runStartupInBackground_DoWork(object sender,
-			DoWorkEventArgs e)
+		private void _runStartupInBackground_DoWork()
 		{
 			var allProjects = _openSolution.Projects;
 			var enumerator = allProjects.GetEnumerator();
@@ -73,8 +71,10 @@ namespace Sando.UI
 
 		public void StartMonitoring()
 		{
-
-			_runStartupInBackground.RunWorkerAsync();
+			
+			_startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
+			_startupThread.Priority = ThreadPriority.Lowest;
+			_startupThread.Start();
 
 			// Register events for doc table
 			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
@@ -139,6 +139,12 @@ namespace Sando.UI
 		{
 			_documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
 			
+			//shut down any current indexing from the startup thread
+			if(_startupThread!=null)
+			{
+				_startupThread.Abort();
+			}
+
 			//shut down the current indexer
 			if(_currentIndexer != null)
 			{
