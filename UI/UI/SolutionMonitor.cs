@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Xml;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
-using Microsoft.VisualStudio;
+using Sando.Indexer.IndexState;
 using Sando.Parser;
-using System.Threading;
 using Thread = System.Threading.Thread;
 
 namespace Sando.UI
@@ -35,6 +32,8 @@ namespace Sando.UI
 		private readonly System.ComponentModel.BackgroundWorker _processFileInBackground;
 		private readonly SolutionKey _solutionKey;
 		private Thread _startupThread;
+		private FileOperationResolver _fileOperationResolver;
+		private IndexFilesStatesManager _indexFilesStatesManager;
 
 		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
@@ -46,7 +45,12 @@ namespace Sando.UI
 
 			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
 			_processFileInBackground.DoWork +=
-				new DoWorkEventHandler(_processFileInBackground_DoWork);			
+				new DoWorkEventHandler(_processFileInBackground_DoWork);
+
+			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath());
+			_indexFilesStatesManager.ReadIndexFilesStates();
+
+			_fileOperationResolver = new FileOperationResolver();
 		}
 
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
@@ -66,6 +70,7 @@ namespace Sando.UI
 				var project = (Project)enumerator.Current;
 				ProcessItems(project.ProjectItems.GetEnumerator());
 				_currentIndexer.CommitChanges();
+				_indexFilesStatesManager.SaveIndexFilesStates();
 			}			
 		}
 
@@ -110,13 +115,29 @@ namespace Sando.UI
 				try
 				{
 					var path = item.FileNames[0];
+
+					IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
+			
+					IndexOperation requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(path, indexFileState);
+					if(requiredIndexOperation == IndexOperation.DoNothing)
+						return;
+					if(requiredIndexOperation == IndexOperation.Update)
+						_currentIndexer.DeleteDocuments(path);
+
+					DateTime lastModificationDate = _fileOperationResolver.GetDateOfLastModification(path);
+					if(indexFileState == null)
+						indexFileState = new IndexFileState(lastModificationDate);
+					else
+						indexFileState.LastIndexingDate = lastModificationDate;
+
 					var parsed = _parser.Parse(path);
 					foreach (var programElement in parsed)
 					{
 						var document = DocumentFactory.Create(programElement);
-						if(document !=null)
+						if(document != null)//TODO - do we need this check? Contract exception will be thrown if null is returned from factory
 							_currentIndexer.AddDocument(document);
 					}
+					_indexFilesStatesManager.UpdateIndexFileState(path, indexFileState);
 				}
 				catch (ArgumentException argumentException)
 				{

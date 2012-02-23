@@ -54,6 +54,15 @@ namespace Sando.Indexer
 			IndexWriter.AddDocument(sandoDocument.GetDocument());
 		}
 
+		public virtual void DeleteDocuments(string fullFilePath)
+		{
+			if(String.IsNullOrWhiteSpace(fullFilePath))
+				return;
+
+			Query deleteQuery = QueryParser.Parse("FullFilePath:\"" + fullFilePath + "\"");
+			IndexWriter.DeleteDocuments(deleteQuery);
+		}
+
 		public void CommitChanges()
 		{
 			IndexWriter.Commit();
