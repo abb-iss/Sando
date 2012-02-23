@@ -1,4 +1,4 @@
-#include "event.h"
+#include "Event.H.txt"
 
 Event::Event(const EventType type, const double time, const int node, const Message& message)
   : _type(type),_time(time),_node(node),_message(message)

@@ -18,7 +18,7 @@ namespace Sando.Parser.UnitTests
 			CurrentDirectory = Environment.CurrentDirectory;
 			Generator = new SrcMLGenerator();
 			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
-			Generator.SetLanguage(LanguageEnum.CPP);
+			Generator.Language = LanguageEnum.CPP;
 		}
 
 		[Test]
@@ -35,12 +35,12 @@ namespace Sando.Parser.UnitTests
 				{
 					MethodElement method = (MethodElement)pe;
 					
-					if(method.Name == "Event::getTime")
+					if(method.Name == "getTime")
 					{
 						seenGetTimeMethod = true;
 						Assert.AreEqual(method.DefinitionLineNumber, 13);
 						Assert.AreEqual(method.ReturnType, "double");
-						//Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
+						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 						Assert.AreEqual(method.Arguments, String.Empty);
 						Assert.AreEqual(method.Body, "time");
 						//Assert.AreNotEqual(method.ClassId, System.Guid.Empty);

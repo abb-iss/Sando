@@ -10,31 +10,23 @@ namespace Sando.Parser
 		Java,
 		C,
 		CPP,
-		CSharp,
-		FakeJava
+		CSharp
 	};
 
     public class SrcMLGenerator
     {
 		
     	private const string Src2SrcmlExe = "\\src2srcml.exe";
-    	private String SrcMLFolderPath;
-    	private LanguageEnum Language;
+    	private string SrcMLFolderPath;
+
+		public LanguageEnum Language { get; set; }
 
 		public SrcMLGenerator()
 		{
-			Language = LanguageEnum.FakeJava;
+			Language = LanguageEnum.CSharp;
 		}
 
-		public void SetLanguage(LanguageEnum language)
-		{
-			Language = language;
-			//temporary
-			if(language==LanguageEnum.CSharp)
-				Language = LanguageEnum.FakeJava;
-		}
-
-		public void SetSrcMLLocation(String location)
+		public void SetSrcMLLocation(string location)
 		{
 			SrcMLFolderPath = location;
 
@@ -48,7 +40,7 @@ namespace Sando.Parser
 		//
 		// run srcML and return the generated sourceXML as a string
 		//
-		public String GenerateSrcML(String filename)
+		public string GenerateSrcML(string filename)
 		{
 			//check whether filename exists
 			if(!System.IO.File.Exists(filename))
@@ -60,14 +52,14 @@ namespace Sando.Parser
 		}
 
 		
-		private String LaunchSrcML(String filename)
+		private string LaunchSrcML(string filename)
 		{
 			string srcML = "";
 
-			String inputCode = System.IO.File.ReadAllText(filename);
-			String langText = Language.ToString();
+			string inputCode = System.IO.File.ReadAllText(filename);
+			string langText = Language.ToString();
 
-			if(Language == LanguageEnum.FakeJava)
+			if(Language == LanguageEnum.CSharp)
 			{
 				//temporary, otherwise very ugly
 				inputCode = AdaptCSharpToJavaParsing(inputCode);
@@ -109,7 +101,7 @@ namespace Sando.Parser
 			return srcML;
 		}
 
-		private String AdaptCSharpToJavaParsing(String inputCode)
+		private string AdaptCSharpToJavaParsing(string inputCode)
 		{
 			//replace ':' with extends in class definitions 
 			return Regex.Replace(inputCode, @"class (\w+) : (\w+)", "class $1 implements $2");
