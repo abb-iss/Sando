@@ -34,6 +34,7 @@ namespace Sando.UI
 		private Thread _startupThread;
 		private FileOperationResolver _fileOperationResolver;
 		private IndexFilesStatesManager _indexFilesStatesManager;
+		private PhysicalFilesStatesManager _physicalFilesStatesManager;
 
 		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
@@ -49,6 +50,8 @@ namespace Sando.UI
 
 			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath());
 			_indexFilesStatesManager.ReadIndexFilesStates();
+
+			_physicalFilesStatesManager = new PhysicalFilesStatesManager();
 
 			_fileOperationResolver = new FileOperationResolver();
 		}
@@ -117,16 +120,17 @@ namespace Sando.UI
 					var path = item.FileNames[0];
 
 					IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
-			
-					IndexOperation requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(path, indexFileState);
+					PhysicalFileState physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);
+
+					IndexOperation requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(physicalFileState, indexFileState);
 					if(requiredIndexOperation == IndexOperation.DoNothing)
 						return;
 					if(requiredIndexOperation == IndexOperation.Update)
 						_currentIndexer.DeleteDocuments(path);
 
-					DateTime lastModificationDate = _fileOperationResolver.GetDateOfLastModification(path);
+					DateTime? lastModificationDate = physicalFileState.LastModificationDate;
 					if(indexFileState == null)
-						indexFileState = new IndexFileState(lastModificationDate);
+						indexFileState = new IndexFileState(path, lastModificationDate);
 					else
 						indexFileState.LastIndexingDate = lastModificationDate;
 

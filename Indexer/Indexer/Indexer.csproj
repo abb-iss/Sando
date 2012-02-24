@@ -135,6 +135,8 @@
     <Compile Include="DocumentIndexer.cs" />
     <Compile Include="Documents\SandoDocument.cs" />
     <Compile Include="Exceptions\IndexerException.cs" />
+    <Compile Include="IndexState\PhysicalFilesStatesManager.cs" />
+    <Compile Include="IndexState\PhysicalFileState.cs" />
     <Compile Include="IndexState\FileOperationResolver.cs" />
     <Compile Include="IndexState\IndexFilesStatesManager.cs" />
     <Compile Include="IndexState\IndexFileState.cs" />

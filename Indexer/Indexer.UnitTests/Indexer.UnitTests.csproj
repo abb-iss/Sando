@@ -133,6 +133,9 @@
   <ItemGroup>
     <Compile Include="DocumentIndexerTest.cs" />
     <Compile Include="Documents\DocumentFactoryTest.cs" />
+    <Compile Include="IndexState\IndexFilesStatesManagerTest.cs" />
+    <Compile Include="IndexState\PhysicalFilesStatesManagerTest.cs" />
+    <Compile Include="IndexState\FileOperationResolverTest.cs" />
     <Compile Include="Searching\Criteria\AndSearchCriteriaTest.cs" />
     <Compile Include="Searching\Criteria\ParenthesisSearchCriteriaTest.cs" />
     <Compile Include="Searching\Criteria\NotSearchCriteriaTest.cs" />

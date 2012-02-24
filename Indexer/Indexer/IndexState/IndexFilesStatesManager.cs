@@ -29,14 +29,25 @@ namespace Sando.Indexer.IndexState
 			TextReader textReader = null;
 			try
 			{
-				xmlSerializer = new XmlSerializer(indexFilesStates.GetType());
+				xmlSerializer = new XmlSerializer(typeof(List<IndexFileState>));
 				textReader = new StreamReader(indexFilesStatesPath);
-				indexFilesStates = (Dictionary<string, IndexFileState>)xmlSerializer.Deserialize(textReader);
+				indexFilesStates = ConvertDeserializedListToIndexFilesStates((List<IndexFileState>)xmlSerializer.Deserialize(textReader));
 			}
 			finally
 			{
-				textReader.Close();
+				if(textReader != null)
+					textReader.Close();
 			}
+		}
+
+		private Dictionary<string, IndexFileState> ConvertDeserializedListToIndexFilesStates(List<IndexFileState> deserializedData)
+		{
+			Dictionary<string, IndexFileState> convertedDeserializedData = new Dictionary<string, IndexFileState>();
+			foreach(IndexFileState indexFileState in deserializedData)
+			{
+				convertedDeserializedData.Add(indexFileState.FilePath, indexFileState);
+			}
+			return convertedDeserializedData;
 		}
 
 		public void SaveIndexFilesStates()
@@ -48,20 +59,31 @@ namespace Sando.Indexer.IndexState
 			TextWriter textWriter = null;
 			try
 			{
-				xmlSerializer = new XmlSerializer(indexFilesStates.GetType());
+				List<IndexFileState> serializationData = ConvertIndexFilesStatesToSerializableList();
+				xmlSerializer = new XmlSerializer(serializationData.GetType());
 				textWriter = new StreamWriter(indexFilesStatesPath);
-				xmlSerializer.Serialize(textWriter, indexFilesStates);
+				xmlSerializer.Serialize(textWriter, serializationData);
 			}
 			finally
 			{
-				textWriter.Close();
+				if(textWriter != null)
+					textWriter.Close();
 			}
+		}
+
+		private List<IndexFileState> ConvertIndexFilesStatesToSerializableList()
+		{
+			List<IndexFileState> serializationData = new List<IndexFileState>();
+			foreach(IndexFileState indexFileState in indexFilesStates.Values)
+			{
+				serializationData.Add(indexFileState);
+			}
+			return serializationData;
 		}
 
 		public IndexFileState GetIndexFileState(string fullFilePath)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fullFilePath), "IndexFilesStatesManager:GetIndexFileState - full file path cannot be null or an empty string!");
-			Contract.Requires(File.Exists(fullFilePath), "IndexFilesStatesManager:GetIndexFileState - full file path does not point to a valid file!");
 
 			if(indexFilesStates == null)
 				ReadIndexFilesStates();
