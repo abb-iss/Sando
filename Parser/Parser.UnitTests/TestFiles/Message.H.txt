@@ -1,0 +1,17 @@
+#ifndef MESSAGE_H
+#define MESSAGE_H
+
+class Message
+{
+public:
+    Message(const double createdTime, const double payload);
+    double getCreatedTime() const;
+    double getPayload() const;
+
+private:
+    double _payload;
+    double _createdTime;
+};
+
+
+#endif

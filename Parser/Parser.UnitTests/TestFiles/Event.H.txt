@@ -1,7 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "message.h"
+#include "Message.H.txt"
 
 enum EventType { 
   SENSED_DATA_READY = 1,

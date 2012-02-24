@@ -25,16 +25,16 @@ namespace Sando.Parser.UnitTests
 		public void ParseCPPSourceTest()
 		{
 			bool seenGetTimeMethod = false;
+			int numMethods = 0;
 			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse("..\\..\\TestFiles\\Event.CPP.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length>0);
+			Assert.AreEqual(elements.Length, 5);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is MethodElement)
 				{
 					MethodElement method = (MethodElement)pe;
-					
 					if(method.Name == "getTime")
 					{
 						seenGetTimeMethod = true;
@@ -45,8 +45,10 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(method.Body, "time");
 						//Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 					}
+					numMethods++;
 				}
 			}
+			Assert.AreEqual(numMethods, 5);
 			Assert.IsTrue(seenGetTimeMethod);
 		}
 
@@ -54,30 +56,39 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void ParseCPPHeaderTest()
 		{
+			bool hasClass = false;
+			bool hasEnum = false;
 			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse("..\\..\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length > 0);
+			Assert.AreEqual(elements.Length, 2);
 			foreach(ProgramElement pe in elements)
 			{
-				if(pe is MethodElement)
+				if(pe is ClassElement)
 				{
-					MethodElement method = (MethodElement)pe;
-					/*
-					if(method.Name == "SetLanguage")
-					{
-						seenSetLanguageMethod = true;
-						Assert.AreEqual(method.DefinitionLineNumber, 26);
-						Assert.AreEqual(method.ReturnType, "void");
-						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
-						Assert.AreEqual(method.Arguments, "LanguageEnum language");
-						Assert.AreEqual(method.Body, "Language language language LanguageEnum CSharp Language LanguageEnum Java");
-						Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
-					}*/
+					ClassElement classElem = (ClassElement)pe;
+					Assert.AreEqual(classElem.Name, "Event");
+					Assert.AreEqual(classElem.DefinitionLineNumber, 12);
+					Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
+					Assert.AreEqual(classElem.Namespace, String.Empty);
+					Assert.True(classElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt"));
+					hasClass = true;
+				}
+				else if(pe is EnumElement)
+				{
+					EnumElement enumElem = (EnumElement)pe;
+					Assert.AreEqual(enumElem.Name, "EventType");
+					Assert.AreEqual(enumElem.DefinitionLineNumber, 6);
+					Assert.AreEqual(enumElem.Namespace, String.Empty);
+					Assert.AreEqual(enumElem.Values, "SENSED_DATA_READY SENDING_DONE RECEIVING_DONE");
+					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public); //TODO: make sure this is an okay default
+					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt"));
+					hasEnum = true;
 				}
 			}
+			Assert.IsTrue(hasClass);
+			Assert.IsTrue(hasEnum);
 		}
-
 
 	}
 }
