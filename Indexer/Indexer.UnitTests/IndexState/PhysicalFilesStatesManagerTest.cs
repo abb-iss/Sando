@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using NUnit.Framework;
 using Sando.Indexer.IndexState;
+using System.Threading;
 
 namespace Sando.Indexer.UnitTests.IndexState
 {
@@ -76,6 +77,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 			{
 				PhysicalFilesStatesManager physicalFilesStatesManager = new PhysicalFilesStatesManager();
 				PhysicalFileState physicalFileStateBeforeChange = physicalFilesStatesManager.GetPhysicalFileState(filePath);
+				Thread.Sleep(2000);
 				WriteToTemporaryFile();
 				PhysicalFileState physicalFileStateAfterChange = physicalFilesStatesManager.GetPhysicalFileState(filePath);
 				Assert.True(physicalFileStateBeforeChange.LastModificationDate < physicalFileStateAfterChange.LastModificationDate, "GetPhysicalFileState should return object with greated LastModificationDate when file has changed than it returns before the change!");
