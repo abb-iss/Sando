@@ -157,6 +157,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndexUpdateManager.cs" />
     <Compile Include="SearchViewControl.xaml.cs">
       <DependentUpon>SearchViewControl.xaml</DependentUpon>
     </Compile>

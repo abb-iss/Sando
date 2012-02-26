@@ -14,7 +14,8 @@ using Sando.Parser;
 namespace Sando.UI
 {
 	class IndexUpdateManager
-	{
+	{ 
+
 		private FileOperationResolver _fileOperationResolver;
 		private IndexFilesStatesManager _indexFilesStatesManager;
 		private PhysicalFilesStatesManager _physicalFilesStatesManager;
