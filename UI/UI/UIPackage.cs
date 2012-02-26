@@ -14,6 +14,8 @@ using Sando.Core;
 using Sando.Indexer;
 using Sando.SearchEngine;
 using Sando.Translation;
+using Sando.UI.Monitoring;
+using Sando.UI.View;
 
 namespace Sando.UI
 {

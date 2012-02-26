@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,12 +6,11 @@ using System.Windows.Input;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using Sando.Core;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 
-namespace Sando.UI
+namespace Sando.UI.View
 {
     /// <summary>
     /// Interaction logic for SearchViewControl.xaml

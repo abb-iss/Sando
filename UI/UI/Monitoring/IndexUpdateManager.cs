@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using EnvDTE;
 using Sando.Core;
@@ -11,7 +8,7 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
 using Sando.Parser;
 
-namespace Sando.UI
+namespace Sando.UI.Monitoring
 {
 	class IndexUpdateManager
 	{ 

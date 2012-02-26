@@ -2,23 +2,16 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.IO;
 using System.Threading;
-using System.Xml;
 using EnvDTE;
-using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Indexer;
-using Sando.Indexer.Documents;
-using Sando.Indexer.IndexState;
-using Sando.Parser;
 using Thread = System.Threading.Thread;
 
-namespace Sando.UI
+namespace Sando.UI.Monitoring
 {
 
 	class SolutionMonitor : IVsRunningDocTableEvents
@@ -37,19 +30,15 @@ namespace Sando.UI
 
 		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
-			this._openSolution = openSolution;
-			this._currentIndexer = currentIndexer;
-			this._currentPath = solutionKey.GetIndexPath();
-			
+			_openSolution = openSolution;
+			_currentIndexer = currentIndexer;
+			_currentPath = solutionKey.GetIndexPath();			
 			_solutionKey = solutionKey;
+			_indexUpdateManager = new IndexUpdateManager(solutionKey, _currentIndexer);
 
 			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
 			_processFileInBackground.DoWork +=
-				new DoWorkEventHandler(_processFileInBackground_DoWork);
-
-			_indexUpdateManager = new IndexUpdateManager(solutionKey,_currentIndexer);
-
-
+				new DoWorkEventHandler(_processFileInBackground_DoWork);		
 		}
 
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
@@ -57,7 +46,6 @@ namespace Sando.UI
 			ProjectItem projectItem = e.Argument as ProjectItem;
 			ProcessItem(projectItem);
 			_currentIndexer.CommitChanges();
-
 		}
 
 		private void _runStartupInBackground_DoWork()
@@ -193,76 +181,6 @@ namespace Sando.UI
 		public void RemoveUpdateListener(IIndexUpdateListener listener)
 		{
 			_currentIndexer.RemoveIndexUpdateListener(listener);
-		}
-	}
-
-	class SolutionMonitorFactory
-	{
-		private const string Lucene = "\\lucene";
-		private static readonly string LuceneFolder = CreateLuceneFolder();
-
-		public static SolutionMonitor CreateMonitor()
-		{
-			var openSolution = GetOpenSolution();
-			return CreateMonitor(openSolution);
-		}
-
-		private static SolutionMonitor CreateMonitor(Solution openSolution)
-		{
-			Contract.Requires(openSolution != null, "A solution must be open");
-
-			//TODO if solution is reopen - the guid should be read from file - future change
-			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
-			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey,
-			                                                          AnalyzerType.Standard);
-			var currentMonitor = new SolutionMonitor(openSolution, solutionKey, currentIndexer);
-			currentMonitor.StartMonitoring();
-			return currentMonitor;
-		}
-
-		private static string CreateLuceneFolder()
-		{
-			var current = Directory.GetCurrentDirectory();			
-			return CreateFolder(Lucene, current);
-		}
-
-		private static string CreateFolder(string name, string current)
-		{
-			if (!File.Exists(current + name))
-			{
-				var directoryInfo = Directory.CreateDirectory(current + name);
-				return directoryInfo.FullName;
-			}
-			else
-			{
-				return name + Lucene;
-			}
-		}
-
-		private static string GetName(Solution openSolution)
-		{
-			var fullName = openSolution.FullName;
-			var split = fullName.Split('\\');
-			return split[split.Length - 1];
-		}
-
-		private static Solution GetOpenSolution()
-		{
-			var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-			if(dte != null)
-			{
-				var openSolution = dte.Solution;
-				return openSolution;
-			}else
-			{
-				return null;
-			}
-		}
-
-		private static string GetLuceneDirectoryForSolution(Solution openSolution)
-		{
-			CreateFolder(GetName(openSolution), LuceneFolder + "\\");
-			return LuceneFolder + "\\" + GetName(openSolution);
 		}
 	}
 }
