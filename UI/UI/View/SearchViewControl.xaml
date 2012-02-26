@@ -43,7 +43,7 @@
             </StackPanel.Resources>
             <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal" Margin="5,5,5,5">
                 <TextBox Width="200" Height="30" KeyDown="OnKeyDownHandler" Text="{Binding Path=SearchString}"></TextBox>
-                <Button Content="Search" Width="60" Height="30" Name="searchButton" Click="SearchButtonClick" />
+                <Button Content="{Binding Path=SearchLabel}" Width="60" Height="30" Name="searchButton" Click="SearchButtonClick" />
             </StackPanel>
 
             <ListBox ItemsSource="{Binding Path=SearchResults}"

@@ -10,6 +10,7 @@
 			Exception_General_UnrecognizedEnumValue,
 			//Indexer
 			Exception_Indexer_LuceneIndexIsCorrupt,
-			Exception_Indexer_LuceneIndexAlreadyOpened
+			Exception_Indexer_LuceneIndexAlreadyOpened,
+			SearchLabel
 	}
 }

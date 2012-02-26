@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Shell;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
+using Sando.Translation;
 
 namespace Sando.UI.View
 {
@@ -17,15 +18,8 @@ namespace Sando.UI.View
     /// </summary>
     public partial class SearchViewControl : UserControl, IIndexUpdateListener
     {
+		
 		private static IIndexUpdateListener _instance;
-
-    	public SearchViewControl()
-    	{
-    		_instance = this;
-            this.DataContext = this; //so we can show results
-    		//InitFake();
-            InitializeComponent();            
-        }
 
 		public ObservableCollection<CodeSearchResult> SearchResults
 		{
@@ -39,13 +33,6 @@ namespace Sando.UI.View
 			}
 		}
 
-		public static readonly DependencyProperty SearchResultsProperty =
-			DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
-
-		public static readonly DependencyProperty SearchStringProperty =
-			DependencyProperty.Register("SearchString", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
-
-
 		public string SearchString
 		{
 			get
@@ -57,71 +44,103 @@ namespace Sando.UI.View
 				SetValue(SearchStringProperty, value);
 			}
 		}
-	
 
-    	private CodeSearcher _currentSearcher;
-    	private string _currentDirectory="";
-    	private bool _invalidated = true;
+		public string SearchLabel
+		{
+			get
+			{
+				return Translator.GetTranslation(TranslationCode.SearchLabel);
+			}
+		}
 
+		public static readonly DependencyProperty SearchResultsProperty =
+			DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+		public static readonly DependencyProperty SearchStringProperty =
+			DependencyProperty.Register("SearchString", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+		private CodeSearcher _currentSearcher;
+		private string _currentDirectory = "";
+		private bool _invalidated = true;
+
+    	public SearchViewControl()
+    	{
+    		_instance = this;
+            this.DataContext = this; //so we can show results
+            InitializeComponent();            
+        }
 
     	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
-        {
-			if(!string.IsNullOrEmpty(SearchString))
-			{
-				var myPackage = UIPackage.GetInstance();
-				_currentSearcher = GetSearcher(myPackage);
-				if (SearchResults == null)
-					SearchResults = new ObservableCollection<CodeSearchResult>();
-				else
-					SearchResults.Clear();
-				foreach (var result in _currentSearcher.Search(SearchString))
-				{
-					SearchResults.Add(result);
-				}
-			}
-        }
-
-    	private CodeSearcher GetSearcher(UIPackage myPackage)
     	{
-    		CodeSearcher codeSearcher = _currentSearcher;
-			if(codeSearcher == null || !myPackage.GetCurrentDirectory().Equals(_currentDirectory) || _invalidated )
+    		Search();
+    	}
+
+    	private void OnKeyDownHandler(object sender, KeyEventArgs e)
+    	{
+    		SearchOnReturn(sender, e);
+    	}
+
+    	private void SearchOnReturn(object sender, KeyEventArgs e)
+    	{
+    		if (e.Key == Key.Return)
+    		{
+    			var text = sender as TextBox;
+    			if (text != null)
+    			{
+    				SearchString = text.Text;
+    			}
+    			Search();
+    		}
+    	}
+		private CodeSearcher GetSearcher(UIPackage myPackage)
+		{
+			CodeSearcher codeSearcher = _currentSearcher;
+			if(codeSearcher == null || !myPackage.GetCurrentDirectory().Equals(_currentDirectory) || _invalidated)
 			{
 				_invalidated = false;
 				_currentDirectory = myPackage.GetCurrentDirectory();
 				codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentSolutionKey()));
 			}
-    		return codeSearcher;
-    	}
+			return codeSearcher;
+		}
 
-    	private void OnKeyDownHandler(object sender, KeyEventArgs e)
-    	{
-			if(e.Key == Key.Return)
+		private void Search()
+		{
+			if(!string.IsNullOrEmpty(SearchString))
 			{
-				var text = sender as TextBox;
-				if(text!=null)
+				var myPackage = UIPackage.GetInstance();
+				_currentSearcher = GetSearcher(myPackage);
+				if(SearchResults == null)
+					SearchResults = new ObservableCollection<CodeSearchResult>();
+				else
+					SearchResults.Clear();
+				foreach(var result in _currentSearcher.Search(SearchString))
 				{
-					SearchString = text.Text;
+					SearchResults.Add(result);
 				}
-				SearchButtonClick(null,null);
 			}
-    	}
+		}
 
     	private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
-    		var result = sender as ListBox;
-			if(result!=null)
-			{
-				var myResult = result.SelectedItem as CodeSearchResult;
-				FileOpener.OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);	
-			}
-			
+    		FileOpener.OpenItem(sender);
     	}
 
     	private static class FileOpener
     	{
 			
 			private static DTE2 dte = null;
+
+    		public static void OpenItem(object sender)
+    		{
+    			var result = sender as ListBox;
+    			if(result != null)
+    			{
+    				var myResult = result.SelectedItem as CodeSearchResult;
+    				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
+    			}
+    		}
 
     		public static void OpenFile(string filePath, int lineNumber)
     		{

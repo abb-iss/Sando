@@ -129,6 +129,9 @@
   <data name="Exception_Indexer_LuceneIndexIsCorrupt" xml:space="preserve">
     <value>Lucene index directory is corrupted</value>
   </data>
+  <data name="SearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
   <data name="TestResource" xml:space="preserve">
     <value>Test resource</value>
   </data>
