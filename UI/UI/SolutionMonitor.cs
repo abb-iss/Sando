@@ -27,14 +27,13 @@ namespace Sando.UI
 		private DocumentIndexer _currentIndexer;
 		private IVsRunningDocumentTable _documentTable;
 		private uint _documentTableItemId;
-		private readonly ParserInterface _parser = new SrcMLParser();
+		
 		private readonly string _currentPath;		
 		private readonly System.ComponentModel.BackgroundWorker _processFileInBackground;
 		private readonly SolutionKey _solutionKey;
 		private Thread _startupThread;
-		private FileOperationResolver _fileOperationResolver;
-		private IndexFilesStatesManager _indexFilesStatesManager;
-		private PhysicalFilesStatesManager _physicalFilesStatesManager;
+
+		private readonly IndexUpdateManager _indexUpdateManager;
 
 		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
@@ -48,12 +47,9 @@ namespace Sando.UI
 			_processFileInBackground.DoWork +=
 				new DoWorkEventHandler(_processFileInBackground_DoWork);
 
-			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath());
-			_indexFilesStatesManager.ReadIndexFilesStates();
+			_indexUpdateManager = new IndexUpdateManager(solutionKey,_currentIndexer);
 
-			_physicalFilesStatesManager = new PhysicalFilesStatesManager();
 
-			_fileOperationResolver = new FileOperationResolver();
 		}
 
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
@@ -73,7 +69,7 @@ namespace Sando.UI
 				var project = (Project)enumerator.Current;
 				ProcessItems(project.ProjectItems.GetEnumerator());
 				_currentIndexer.CommitChanges();
-				_indexFilesStatesManager.SaveIndexFilesStates();
+				_indexUpdateManager.SaveFileStates();
 			}			
 		}
 
@@ -115,50 +111,10 @@ namespace Sando.UI
 			Debug.WriteLine("processed: " + item.Name);
 			if (item.Name.EndsWith(".cs"))
 			{
-				try
-				{
-					var path = item.FileNames[0];
-
-					IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
-					PhysicalFileState physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);
-
-					IndexOperation requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(physicalFileState, indexFileState);
-					if(requiredIndexOperation == IndexOperation.DoNothing)
-						return;
-					if(requiredIndexOperation == IndexOperation.Update)
-						_currentIndexer.DeleteDocuments(path);
-
-					DateTime? lastModificationDate = physicalFileState.LastModificationDate;
-					if(indexFileState == null)
-						indexFileState = new IndexFileState(path, lastModificationDate);
-					else
-						indexFileState.LastIndexingDate = lastModificationDate;
-
-					var parsed = _parser.Parse(path);
-					foreach (var programElement in parsed)
-					{
-						var document = DocumentFactory.Create(programElement);
-						if(document != null)//TODO - do we need this check? Contract exception will be thrown if null is returned from factory
-							_currentIndexer.AddDocument(document);
-					}
-					_indexFilesStatesManager.UpdateIndexFileState(path, indexFileState);
-				}
-				catch (ArgumentException argumentException)
-				{
-					//ignore items with no associated file
-				}catch(XmlException xmlException)
-				{
-					//TODO - should fix this if it happens too often
-					//TODO - need to investigate why this is happening during parsing
-					Debug.WriteLine(xmlException);
-				}catch(NullReferenceException nre)
-				{
-					//TODO - these need to be handled
-					//TODO - need to investigate why this is happening during parsing
-					Debug.WriteLine(nre);
-				}
+				_indexUpdateManager.UpdateFile(item);
 			}
 		}
+
 
 		public void Dispose()
 		{
