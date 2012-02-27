@@ -158,6 +158,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
+    <Compile Include="View\FileOpener.cs" />
+    <Compile Include="View\ISearchResultListener.cs" />
+    <Compile Include="View\SearchManager.cs" />
     <Compile Include="View\SearchViewControl.xaml.cs">
       <DependentUpon>SearchViewControl.xaml</DependentUpon>
     </Compile>
