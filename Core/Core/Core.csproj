@@ -81,6 +81,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessLevel.cs" />
+    <Compile Include="MethodPrototypeElement.cs" />
+    <Compile Include="CppUnresolvedMethodElement.cs" />
     <Compile Include="ClassElement.cs" />
     <Compile Include="CommentElement.cs" />
     <Compile Include="DocCommentElement.cs" />

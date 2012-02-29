@@ -32,9 +32,15 @@ namespace Sando.Parser.UnitTests
 			Assert.AreEqual(elements.Length, 5);
 			foreach(ProgramElement pe in elements)
 			{
-				if(pe is MethodElement)
+				if(pe is CppUnresolvedMethodElement)
 				{
-					MethodElement method = (MethodElement)pe;
+					numMethods++;
+
+					//Resolve
+					CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)pe;
+					MethodElement method = unresolvedMethod.Resolve(parser.Parse("..\\..\\TestFiles\\Event.H.txt"));
+					Assert.IsNotNull(method);
+
 					if(method.Name == "getTime")
 					{
 						seenGetTimeMethod = true;
@@ -43,9 +49,8 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 						Assert.AreEqual(method.Arguments, String.Empty);
 						Assert.AreEqual(method.Body, "time");
-						//Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
+						Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 					}
-					numMethods++;
 				}
 			}
 			Assert.AreEqual(numMethods, 5);
@@ -61,7 +66,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse("..\\..\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 2);
+			Assert.AreEqual(elements.Length, 7);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is ClassElement)

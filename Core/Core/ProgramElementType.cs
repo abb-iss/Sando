@@ -13,6 +13,7 @@ namespace Sando.Core
 		Enum,
 		Field,
 		Method,
-		Property
+		Property,
+		MethodPrototype
 	}
 }

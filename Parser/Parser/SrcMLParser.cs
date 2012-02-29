@@ -35,27 +35,61 @@ namespace Sando.Parser
 			//now Parse the important parts of the srcml and generate program elements
 			XElement sourceElements = XElement.Parse(srcml);
 
-			List<XElement> includeElements = new List<XElement>();
-			if(Generator.Language == LanguageEnum.CPP)
-			{
-				includeElements = ParseCppIncludes(sourceElements, System.IO.Path.GetDirectoryName(fileName));
-			}
-
 			ParseEnums(programElements, sourceElements, fileName);
 			ParseClasses(programElements, sourceElements, fileName);
-			ParseFunctions(programElements, sourceElements, includeElements, fileName);
+			ParseFunctions(programElements, sourceElements, fileName);
 
 			if(Generator.Language == LanguageEnum.CSharp)
 			{
 				ParseProperties(programElements, sourceElements, fileName);
 			}
+			else if(Generator.Language == LanguageEnum.CPP || Generator.Language == LanguageEnum.C) 
+			{
+				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
+			}
 
 			return programElements.ToArray();
 		}
 
-		private List<XElement> ParseCppIncludes(XElement sourceElements, string directory)
+		private void ParseCppFunctionPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)
 		{
-			List<XElement> includeElements = new List<XElement>();
+			IEnumerable<XElement> functions =
+				from el in sourceElements.Descendants(SourceNamespace + "function_decl")
+				select el;
+			foreach(XElement function in functions)
+			{
+				string name;
+				int definitionLineNumber;
+				ParseName(function, out name, out definitionLineNumber);
+
+				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
+
+				XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
+				string returnType = type.Value;
+
+				XElement paramlist = function.Element(SourceNamespace + "parameter_list");
+				IEnumerable<XElement> argumentElements =
+					from el in paramlist.Descendants(SourceNamespace + "name")
+					select el;
+				string arguments = String.Empty;
+				foreach(XElement elem in argumentElements)
+				{
+					arguments += elem.Value + " ";
+				}
+				arguments = arguments.TrimEnd();
+
+				Guid classId = RetrieveClassGuid(function, programElements);
+
+				string fullFilePath = System.IO.Path.GetFullPath(fileName);
+				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+
+				programElements.Add(new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet));
+			}
+		}
+
+		private string[] ParseCppIncludes(XElement sourceElements, string directory)
+		{
+			List<string> includeFileNames = new List<string>();
 			XNamespace CppNamespace = "http://www.sdml.info/srcML/cpp";
 			IEnumerable<XElement> includeStatements =
 				from el in sourceElements.Descendants(CppNamespace + "include")
@@ -66,18 +100,10 @@ namespace Sando.Parser
 				string filename = include.Element(CppNamespace + "file").Value;
 				filename = filename.Substring(1, filename.Length - 2);	//remove quotes or brackets			
 				filename = directory + "\\" + filename;
-				try
-				{
-					string srcml = Generator.GenerateSrcML(filename);
-					includeElements.Add(XElement.Parse(srcml));
-				}
-				catch(ParserException)
-				{
-					//most likely because the file isn't found, so do nothing
-				}
+				includeFileNames.Add(filename);
 			}
 
-			return includeElements;
+			return includeFileNames.ToArray();
 		}
 
 		private void ParseProperties(List<ProgramElement> programElements, XElement elements, string fileName)
@@ -238,7 +264,7 @@ namespace Sando.Parser
 			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces);
 		}
 
-		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, List<XElement> includeElements, string fileName)
+		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
 			IEnumerable<XElement> functions =
 				from el in elements.Descendants(SourceNamespace + "function")
@@ -247,7 +273,8 @@ namespace Sando.Parser
 			{
 				if(Generator.Language == LanguageEnum.CPP)
 				{
-					MethodElement methodElement = ParseCppFunction(func, programElements, includeElements, fileName);
+					string[] includedFiles = ParseCppIncludes(elements, System.IO.Path.GetDirectoryName(fileName));
+					MethodElement methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
 					programElements.Add(methodElement);
 				}
 				else
@@ -297,37 +324,11 @@ namespace Sando.Parser
 			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
 		}
 
-		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, List<XElement> includeElements, string fileName)
+		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles)
 		{
-			string funcName;
-			string className;
+			MethodElement methodElement;
+			string snippet;
 			int definitionLineNumber;
-			AccessLevel accessLevel = AccessLevel.Protected;
-			Guid classId = Guid.Empty;
-
-			XElement nameElement = function.Element(SourceNamespace + "name");
-			string wholeName = nameElement.Value;
-			if(wholeName.Contains("::"))
-			{
-				//class function
-				string[] twonames = wholeName.Split("::".ToCharArray());
-				funcName = twonames[2];
-				className = twonames[0];
-				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
-				RetrieveCppFunctionAccessType(className, funcName, includeElements, out accessLevel);
-			}
-			else
-			{
-				//regular C-type function, or an inlined class function
-				funcName = wholeName;
-				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
-
-				XElement access = function.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = StrToAccessLevel(access.Value);
-				}
-			}
 
 			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
 			string returnType = type.Value;
@@ -344,12 +345,35 @@ namespace Sando.Parser
 			arguments = arguments.TrimEnd();
 
 			string body = ParseBody(function);
-
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
-			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
 
+			XElement nameElement = function.Element(SourceNamespace + "name");
+			string wholeName = nameElement.Value;
+			if(wholeName.Contains("::"))
+			{
+				//class function
+				string[] twonames = wholeName.Split("::".ToCharArray());
+				string funcName = twonames[2];
+				string className = twonames[0];
+				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
+				snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+
+				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, includedFiles);
+			}
+			else
+			{
+				//regular C-type function, or an inlined class function
+				string funcName = wholeName;
+				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
+				snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
+				Guid classId = RetrieveClassGuid(function, programElements);
+
+				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
+			}
+
+			return methodElement;
 		}
 
 		private static string ParseBody(XElement function)
@@ -383,30 +407,21 @@ namespace Sando.Parser
 			}
 		}
 
-		private void RetrieveCppFunctionAccessType(string className, string funcName, List<XElement> includeElements, out AccessLevel accessLevel)
+		private AccessLevel RetrieveCppAccessLevel(XElement field)
 		{
-			accessLevel = AccessLevel.Protected;
-			XElement includeElem = includeElements.First();
-			IEnumerable<XElement> funcDecls =
-				from el in includeElem.Descendants(SourceNamespace + "function_decl")
-				where el.Element(SourceNamespace + "name").Value == funcName
-				select el;
+			AccessLevel accessLevel = AccessLevel.Protected;
 
-			if(funcDecls.Count() > 0)
+			XElement parent = field.Parent;
+			if(parent.Name == (SourceNamespace + "public"))
 			{
-				if(funcDecls.First().Ancestors(SourceNamespace + "public").Count() > 0)
-				{
-					accessLevel = AccessLevel.Public;
-				}
-				if(funcDecls.First().Ancestors(SourceNamespace + "private").Count() > 0)
-				{
-					accessLevel = AccessLevel.Private;
-				}
-				if(funcDecls.First().Ancestors(SourceNamespace + "protected").Count() > 0)
-				{
-					accessLevel = AccessLevel.Protected;
-				}
+				accessLevel = AccessLevel.Public;
 			}
+			else if(parent.Name == (SourceNamespace + "private"))
+			{
+				accessLevel = AccessLevel.Private;
+			}
+
+			return accessLevel;
 		}
 
 		private Guid RetrieveClassGuid(XElement field, List<ProgramElement> programElements)
