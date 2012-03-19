@@ -35,11 +35,11 @@ namespace Sando.UI.Monitoring
 			_indexFilesStatesManager.SaveIndexFilesStates();			
 		}
 
-		public void UpdateFile(ProjectItem item)
+		public void UpdateFile(String path)
 		{
 			try
 			{
-				var path = item.FileNames[0];
+				
 
 				IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
 				PhysicalFileState physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);

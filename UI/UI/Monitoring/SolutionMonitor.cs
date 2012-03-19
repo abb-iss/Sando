@@ -14,9 +14,9 @@ using Thread = System.Threading.Thread;
 namespace Sando.UI.Monitoring
 {
 
-	class SolutionMonitor : IVsRunningDocTableEvents
+	public class SolutionMonitor : IVsRunningDocTableEvents
 	{
-		private readonly Solution _openSolution;
+        private readonly SolutionWrapper _openSolution;
 		private DocumentIndexer _currentIndexer;
 		private IVsRunningDocumentTable _documentTable;
 		private uint _documentTableItemId;
@@ -28,7 +28,7 @@ namespace Sando.UI.Monitoring
 
 		private readonly IndexUpdateManager _indexUpdateManager;
 
-		public SolutionMonitor(Solution openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
+		public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
 			_openSolution = openSolution;
 			_currentIndexer = currentIndexer;
@@ -44,24 +44,29 @@ namespace Sando.UI.Monitoring
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 		{
 			ProjectItem projectItem = e.Argument as ProjectItem;
-			ProcessItem(projectItem);
-			_currentIndexer.CommitChanges();
+			ProcessItem(projectItem);			
+            UpdateAfterAdditions();
 		}
 
 		private void _runStartupInBackground_DoWork()
 		{
-			var allProjects = _openSolution.Projects;
+			var allProjects = _openSolution.getProjects();
 			var enumerator = allProjects.GetEnumerator();
 			while(enumerator.MoveNext())
 			{
 				var project = (Project)enumerator.Current;
 				ProcessItems(project.ProjectItems.GetEnumerator());
-				_currentIndexer.CommitChanges();
-				_indexUpdateManager.SaveFileStates();
+				UpdateAfterAdditions();
 			}			
 		}
 
-		public void StartMonitoring()
+	    public void UpdateAfterAdditions()
+	    {
+	        _currentIndexer.CommitChanges();
+	        _indexUpdateManager.SaveFileStates();
+	    }
+
+	    public void StartMonitoring()
 		{
 			
 			_startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
@@ -99,16 +104,35 @@ namespace Sando.UI.Monitoring
 			Debug.WriteLine("processed: " + item.Name);
 			if (item.Name.EndsWith(".cs"))
 			{
-				_indexUpdateManager.UpdateFile(item);
+                try
+                {
+                    var path = item.FileNames[0];
+                    ProcessFileForTesting(path);
+                }catch(Exception e)
+                {
+                    Debug.WriteLine(e.StackTrace);
+                }
 			}
 		}
 
+	    public void ProcessFileForTesting(string path)
+	    {
+	        _indexUpdateManager.UpdateFile(path);
+	    }
 
-		public void Dispose()
+        public void StopMonitoring()
+        {
+            Dispose();
+        }
+
+	    public void Dispose()
 		{
-			_documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
-			
-			//shut down any current indexing from the startup thread
+            if (_documentTable != null)
+            {
+                _documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
+            }
+
+	        //shut down any current indexing from the startup thread
 			if(_startupThread!=null)
 			{
 				_startupThread.Abort();
@@ -182,5 +206,6 @@ namespace Sando.UI.Monitoring
 		{
 			_currentIndexer.RemoveIndexUpdateListener(listener);
 		}
+	   
 	}
 }
