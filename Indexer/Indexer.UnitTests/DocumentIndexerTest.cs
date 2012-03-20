@@ -127,7 +127,6 @@ namespace Sando.Indexer.UnitTests
                         File.Delete(file);
                     }
                 }
-
                 documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
