@@ -118,7 +118,6 @@ namespace Sando.Indexer.UnitTests
             Analyzer analyzer = new SimpleAnalyzer();
             try
             {
-                //
                 //clear all docs
                 if (Directory.Exists(_luceneTempIndexesDirectory))
                 {
