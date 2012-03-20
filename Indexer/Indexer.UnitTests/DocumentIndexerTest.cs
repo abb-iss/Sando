@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
@@ -11,7 +12,7 @@ namespace Sando.Indexer.UnitTests
     [TestFixture]
 	public class DocumentIndexerTest
 	{
-    	private const string _luceneTempIndexesDirectory = "C:/Windows/Temp";
+    	private const string _luceneTempIndexesDirectory = "C:/Windows/Temp/basic";
 
     	[Test]
 		public void DocumentIndexer_ConstructorDoesNotThrowWhenValidData()
@@ -111,17 +112,51 @@ namespace Sando.Indexer.UnitTests
 			}
 		}
 
-		[SetUp]
-		public void ResetContract()
-		{
-			contractFailed = false;
-			Contract.ContractFailed += (sender, e) =>
-			{
-				e.SetHandled();
-				e.SetUnwind();
-				contractFailed = true;
-			};
-		}
+        [Test]
+        public void DocumentIndexer_DeleteDocuments()
+        {
+            Analyzer analyzer = new SimpleAnalyzer();
+            try
+            {
+                //clear all docs
+                if (Directory.Exists(_luceneTempIndexesDirectory))
+                {
+                    var files = Directory.GetFiles(_luceneTempIndexesDirectory);
+                    foreach (var file in files)
+                    {
+                        File.Delete(file);
+                    }
+                }
+
+                documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+                MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
+                documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
+                documentIndexer.CommitChanges();
+                int numDocs = documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
+                Assert.IsTrue(numDocs == 1);
+                documentIndexer.DeleteDocuments(sampleMethodElement.FullFilePath);
+                documentIndexer.CommitChanges();
+                int docs = documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
+                Assert.IsTrue(docs == 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message + ". " + ex.StackTrace);
+            }
+        }
+
+        [SetUp]
+        public void ResetContract()
+        {
+            Directory.CreateDirectory(_luceneTempIndexesDirectory);
+            contractFailed = false;
+            Contract.ContractFailed += (sender, e) =>
+            {
+                e.SetHandled();
+                e.SetUnwind();
+                contractFailed = true;
+            };
+        }
 
 		[TearDown]
 		public void CloseDocumentIndexer()
