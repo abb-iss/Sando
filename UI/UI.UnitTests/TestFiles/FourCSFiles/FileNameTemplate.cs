@@ -1,4 +1,4 @@
-#region License Information
+
 
 /**********************************************************************************
 Shared Source License for Cropper
@@ -53,200 +53,200 @@ In return, we simply require that you agree:
 
 **********************************************************************************/
 
-#endregion
 
-#region Using Directives
+
+
 
 using System;
 using System.IO;
 using System.Windows.Forms;
 using Fusion8.Cropper.Extensibility;
 
-#endregion
+
 
 namespace Fusion8.Cropper.Core
 {
-	/// <summary>
-	/// Summary description for FileNameTemplate.
-	/// </summary>
-	public class FileNameTemplate
-	{
-		#region Member Fields
+    /// <summary>
+    /// Summary description for FileNameTemplate.
+    /// </summary>
+    public class FileNameTemplate
+    {
 
-		private string fileExtension;
-		private int lastIncrement = 1;
 
-		public static readonly string DefaultFullImageTemplate = "CropperCapture[{increment}]";
-		public static readonly string DefaultThumbImageTemplate = "CropperCapture[{increment}]Thumbnail";
+        private string fileExtension;
+        private int lastIncrement = 1;
 
-		#endregion 
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="extension"></param>
-		/// <returns></returns>
-		public ImagePairNames Parse(string extension)
-		{
-			fileExtension = extension;
-			string fullImageTemplate = GetFullImageTemplate();
-			string thumbImageTemplate = GetThumbImageTemplate();
+        public static readonly string DefaultFullImageTemplate = "CropperCapture[{increment}]";
+        public static readonly string DefaultThumbImageTemplate = "CropperCapture[{increment}]Thumbnail";
 
-			ImagePairNames names = new
-				ImagePairNames(fullImageTemplate, thumbImageTemplate);
 
-			names = TryAddTemplateDateOrTime(names);
-			names = TryAddTemplateExtension(names);
-			names = TryAddTemplateUser(names);
-			names = TryAddTemplateDomain(names);
-			names = TryAddTemplateMachine(names);
-			names = SetFileExtension(names);
-			names = SetFullPath(names);
-			names = TryAddTemplatePrompt(names);
-			names = GetNextImagePairNames(names);
-			return names;
-		}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="extension"></param>
+        /// <returns></returns>
+        public ImagePairNames Parse(string extension)
+        {
+            fileExtension = extension;
+            string fullImageTemplate = GetFullImageTemplate();
+            string thumbImageTemplate = GetThumbImageTemplate();
+
+            ImagePairNames names = new
+                ImagePairNames(fullImageTemplate, thumbImageTemplate);
+
+            names = TryAddTemplateDateOrTime(names);
+            names = TryAddTemplateExtension(names);
+            names = TryAddTemplateUser(names);
+            names = TryAddTemplateDomain(names);
+            names = TryAddTemplateMachine(names);
+            names = SetFileExtension(names);
+            names = SetFullPath(names);
+            names = TryAddTemplatePrompt(names);
+            names = GetNextImagePairNames(names);
+            return names;
+        }
 
         public void ResetIncrement()
         {
             this.lastIncrement = 1;
         }
 
-		private static string GetThumbImageTemplate()
-		{
-			string thumbImageTemplate;
-			if (Configuration.Current.ThumbImageTemplate != null && Configuration.Current.ThumbImageTemplate.Length > 0)
+        private static string GetThumbImageTemplate()
+        {
+            string thumbImageTemplate;
+            if (Configuration.Current.ThumbImageTemplate != null && Configuration.Current.ThumbImageTemplate.Length > 0)
                 thumbImageTemplate = Configuration.Current.ThumbImageTemplate;
-			else
+            else
                 thumbImageTemplate = DefaultThumbImageTemplate;
-			return thumbImageTemplate;
-		}
+            return thumbImageTemplate;
+        }
 
-		private static string GetFullImageTemplate()
-		{
-			string fullImageTemplate;
-			if (Configuration.Current.FullImageTemplate != null && Configuration.Current.FullImageTemplate.Length > 0)
-				fullImageTemplate = Configuration.Current.FullImageTemplate;
-			else
-				fullImageTemplate = DefaultFullImageTemplate;
-			return fullImageTemplate;
-		}
+        private static string GetFullImageTemplate()
+        {
+            string fullImageTemplate;
+            if (Configuration.Current.FullImageTemplate != null && Configuration.Current.FullImageTemplate.Length > 0)
+                fullImageTemplate = Configuration.Current.FullImageTemplate;
+            else
+                fullImageTemplate = DefaultFullImageTemplate;
+            return fullImageTemplate;
+        }
 
-		private static ImagePairNames TryAddTemplatePrompt(ImagePairNames startNames)
-		{
-			if (startNames.FullSize.IndexOf(Templates.Prompt) >= 0 || startNames.Thumbnail.IndexOf(Templates.Prompt) >= 0)
-			{
-				Prompt prompt = new Prompt();
-				prompt.TopMost = true;
-				prompt.StartPosition = FormStartPosition.CenterParent;
+        private static ImagePairNames TryAddTemplatePrompt(ImagePairNames startNames)
+        {
+            if (startNames.FullSize.IndexOf(Templates.Prompt) >= 0 || startNames.Thumbnail.IndexOf(Templates.Prompt) >= 0)
+            {
+                Prompt prompt = new Prompt();
+                prompt.TopMost = true;
+                prompt.StartPosition = FormStartPosition.CenterParent;
                 if (prompt.ShowDialog(Configuration.Current.ActiveCropWindow) == DialogResult.OK)
-				{
-					startNames.FullSize = startNames.FullSize.Replace(Templates.Prompt, prompt.Value);
-					startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Prompt, prompt.Value);
-				}
-				else
-				{
-					startNames.FullSize = startNames.FullSize.Replace(Templates.Prompt, string.Empty);
-					startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Prompt, String.Empty);
-				}
-			}
-			return startNames;
-		}
+                {
+                    startNames.FullSize = startNames.FullSize.Replace(Templates.Prompt, prompt.Value);
+                    startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Prompt, prompt.Value);
+                }
+                else
+                {
+                    startNames.FullSize = startNames.FullSize.Replace(Templates.Prompt, string.Empty);
+                    startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Prompt, String.Empty);
+                }
+            }
+            return startNames;
+        }
 
-		private ImagePairNames TryAddTemplateExtension(ImagePairNames startNames)
-		{
-			startNames.FullSize = startNames.FullSize.Replace(Templates.Extension, fileExtension);
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Extension, fileExtension);
-			return startNames;
-		}
+        private ImagePairNames TryAddTemplateExtension(ImagePairNames startNames)
+        {
+            startNames.FullSize = startNames.FullSize.Replace(Templates.Extension, fileExtension);
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Extension, fileExtension);
+            return startNames;
+        }
 
-		private static ImagePairNames TryAddTemplateUser(ImagePairNames startNames)
-		{
-			startNames.FullSize = startNames.FullSize.Replace(Templates.User, Environment.UserName);
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.User, Environment.UserName);
-			return startNames;
-		}
+        private static ImagePairNames TryAddTemplateUser(ImagePairNames startNames)
+        {
+            startNames.FullSize = startNames.FullSize.Replace(Templates.User, Environment.UserName);
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.User, Environment.UserName);
+            return startNames;
+        }
 
-		private static ImagePairNames TryAddTemplateDomain(ImagePairNames startNames)
-		{
-			startNames.FullSize = startNames.FullSize.Replace(Templates.Domain, Environment.UserDomainName);
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Domain, Environment.UserDomainName);
-			return startNames;
-		}
+        private static ImagePairNames TryAddTemplateDomain(ImagePairNames startNames)
+        {
+            startNames.FullSize = startNames.FullSize.Replace(Templates.Domain, Environment.UserDomainName);
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Domain, Environment.UserDomainName);
+            return startNames;
+        }
 
-		private static ImagePairNames TryAddTemplateMachine(ImagePairNames startNames)
-		{
-			startNames.FullSize = startNames.FullSize.Replace(Templates.Machine, Environment.MachineName);
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Machine, Environment.MachineName);
-			return startNames;
-		}
+        private static ImagePairNames TryAddTemplateMachine(ImagePairNames startNames)
+        {
+            startNames.FullSize = startNames.FullSize.Replace(Templates.Machine, Environment.MachineName);
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Machine, Environment.MachineName);
+            return startNames;
+        }
 
-		private static ImagePairNames TryAddTemplateDateOrTime(ImagePairNames startNames)
-		{
-			var now = DateTime.Now;
+        private static ImagePairNames TryAddTemplateDateOrTime(ImagePairNames startNames)
+        {
+            var now = DateTime.Now;
 
-			startNames.FullSize = startNames.FullSize.Replace(Templates.Date, now.ToString("MM-dd-yyyy"));
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Date, now.ToString("MM-dd-yyyy"));
+            startNames.FullSize = startNames.FullSize.Replace(Templates.Date, now.ToString("MM-dd-yyyy"));
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Date, now.ToString("MM-dd-yyyy"));
 
-			startNames.FullSize = startNames.FullSize.Replace(Templates.Time, now.ToString("hh-mm-ss tt"));
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Time, now.ToString("hh-mm-ss tt"));
+            startNames.FullSize = startNames.FullSize.Replace(Templates.Time, now.ToString("hh-mm-ss tt"));
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Time, now.ToString("hh-mm-ss tt"));
 
-			startNames.FullSize = startNames.FullSize.Replace(Templates.Timestamp, now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff"));
-			startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Timestamp, now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff"));
+            startNames.FullSize = startNames.FullSize.Replace(Templates.Timestamp, now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff"));
+            startNames.Thumbnail = startNames.Thumbnail.Replace(Templates.Timestamp, now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff"));
 
-			return startNames;
-		}
+            return startNames;
+        }
 
-		private ImagePairNames SetFileExtension(ImagePairNames names)
-		{
-			names.FullSize = String.Format("{0}.{1}", names.FullSize, fileExtension);
-			names.Thumbnail = String.Format("{0}.{1}", names.Thumbnail, fileExtension);
-			return names;
-		}
+        private ImagePairNames SetFileExtension(ImagePairNames names)
+        {
+            names.FullSize = String.Format("{0}.{1}", names.FullSize, fileExtension);
+            names.Thumbnail = String.Format("{0}.{1}", names.Thumbnail, fileExtension);
+            return names;
+        }
 
-		private static ImagePairNames SetFullPath(ImagePairNames names)
-		{
-			names.FullSize = Path.Combine(Configuration.Current.OutputPath, names.FullSize);
-			names.Thumbnail = Path.Combine(Configuration.Current.OutputPath, names.Thumbnail);
-			return names;
-		}
+        private static ImagePairNames SetFullPath(ImagePairNames names)
+        {
+            names.FullSize = Path.Combine(Configuration.Current.OutputPath, names.FullSize);
+            names.Thumbnail = Path.Combine(Configuration.Current.OutputPath, names.Thumbnail);
+            return names;
+        }
 
-		private ImagePairNames GetNextImagePairNames(ImagePairNames startNames)
-		{
-			if (!Directory.Exists(Path.GetDirectoryName(startNames.FullSize)))
-				Directory.CreateDirectory(Path.GetDirectoryName(startNames.FullSize));
+        private ImagePairNames GetNextImagePairNames(ImagePairNames startNames)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(startNames.FullSize)))
+                Directory.CreateDirectory(Path.GetDirectoryName(startNames.FullSize));
 
-			if (!Directory.Exists(Path.GetDirectoryName(startNames.Thumbnail)))
-				Directory.CreateDirectory(
-					Path.GetDirectoryName(startNames.Thumbnail));
+            if (!Directory.Exists(Path.GetDirectoryName(startNames.Thumbnail)))
+                Directory.CreateDirectory(
+                    Path.GetDirectoryName(startNames.Thumbnail));
 
-			string fullTemplate = startNames.FullSize;
-			string thumbTemplate = startNames.Thumbnail;
+            string fullTemplate = startNames.FullSize;
+            string thumbTemplate = startNames.Thumbnail;
 
-			startNames.FullSize = fullTemplate.Replace(Templates.Increment, lastIncrement.ToString());
-			startNames.Thumbnail = thumbTemplate.Replace(Templates.Increment, lastIncrement.ToString());
+            startNames.FullSize = fullTemplate.Replace(Templates.Increment, lastIncrement.ToString());
+            startNames.Thumbnail = thumbTemplate.Replace(Templates.Increment, lastIncrement.ToString());
 
-			if (!File.Exists(startNames.FullSize) && !File.Exists(startNames.Thumbnail))
-			{
-				ResetIncrement();
-				startNames.FullSize = fullTemplate.Replace(Templates.Increment, lastIncrement.ToString());
-				startNames.Thumbnail = thumbTemplate.Replace(Templates.Increment, lastIncrement.ToString());
-			}
+            if (!File.Exists(startNames.FullSize) && !File.Exists(startNames.Thumbnail))
+            {
+                ResetIncrement();
+                startNames.FullSize = fullTemplate.Replace(Templates.Increment, lastIncrement.ToString());
+                startNames.Thumbnail = thumbTemplate.Replace(Templates.Increment, lastIncrement.ToString());
+            }
 
-			while (File.Exists(startNames.FullSize) || File.Exists(startNames.Thumbnail))
-			{
-				lastIncrement++;
+            while (File.Exists(startNames.FullSize) || File.Exists(startNames.Thumbnail))
+            {
+                lastIncrement++;
 
-				if (fullTemplate.IndexOf(Templates.Increment) < 0)
-					fullTemplate = fullTemplate.Insert(fullTemplate.LastIndexOf('.'), " [" + Templates.Increment + "]");
-				if (thumbTemplate.IndexOf(Templates.Increment) < 0)
-					thumbTemplate = thumbTemplate.Insert(thumbTemplate.LastIndexOf('.'), " [" + Templates.Increment + "]");
+                if (fullTemplate.IndexOf(Templates.Increment) < 0)
+                    fullTemplate = fullTemplate.Insert(fullTemplate.LastIndexOf('.'), " [" + Templates.Increment + "]");
+                if (thumbTemplate.IndexOf(Templates.Increment) < 0)
+                    thumbTemplate = thumbTemplate.Insert(thumbTemplate.LastIndexOf('.'), " [" + Templates.Increment + "]");
 
-				startNames.FullSize = fullTemplate.Replace(Templates.Increment, lastIncrement.ToString());
-				startNames.Thumbnail = thumbTemplate.Replace(Templates.Increment, lastIncrement.ToString());
-			}
+                startNames.FullSize = fullTemplate.Replace(Templates.Increment, lastIncrement.ToString());
+                startNames.Thumbnail = thumbTemplate.Replace(Templates.Increment, lastIncrement.ToString());
+            }
 
-			return startNames;
-		}
-	}
+            return startNames;
+        }
+    }
 }

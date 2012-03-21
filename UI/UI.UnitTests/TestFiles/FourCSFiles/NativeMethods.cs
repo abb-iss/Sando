@@ -1,4 +1,4 @@
-#region License Information
+
 
 /**********************************************************************************
 Shared Source License for Cropper
@@ -53,9 +53,9 @@ In return, we simply require that you agree:
 
 **********************************************************************************/
 
-#endregion
 
-#region Using Directives
+
+
 
 using System;
 using System.Drawing;
@@ -63,7 +63,7 @@ using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Text;
 
-#endregion
+
 
 
 namespace Fusion8.Cropper.Core
@@ -77,35 +77,35 @@ namespace Fusion8.Cropper.Core
     /// the desktop in order to keep Cropper as small as possible.</remarks>
     internal static class NativeMethods
     {
-        #region Dll Imports
 
-        [DllImport("user32.dll", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=false)]
+
+        [DllImport("user32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = false)]
         internal static extern IntPtr WindowFromPoint(POINT point);
 
         [DllImport("user32.dll")]
         internal static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32.dll", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=false)]
+        [DllImport("user32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = false)]
         internal static extern IntPtr GetDesktopWindow();
 
-        [DllImport("user32.dll", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=false)]
+        [DllImport("user32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = false)]
         internal static extern IntPtr GetWindowDC(IntPtr hwnd);
 
         [DllImport("user32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = false)]
         internal static extern IntPtr GetDC(IntPtr hwnd);
 
-        [DllImport("user32.dll", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=false)]
+        [DllImport("user32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = false)]
         internal static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
 
-        [DllImport("gdi32.dll", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=false)]
-        [return : MarshalAs(UnmanagedType.Bool)]
+        [DllImport("gdi32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = false)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool BitBlt(IntPtr hDestDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, Int32 dwRop);
 
         [DllImport("user32.dll")]
         internal static extern int GetWindowRgn(IntPtr hWnd, IntPtr hRgn);
 
         [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect); 
+        internal static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("gdi32.dll")]
         internal static extern IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nReghtRect, int nBottomRect);
@@ -124,7 +124,7 @@ namespace Fusion8.Cropper.Core
 
         [DllImport("user32.dll", EntryPoint = "SendMessageA", CharSet = CharSet.Ansi, SetLastError = false)]
         internal static extern IntPtr SendMessage(IntPtr hWnd, Int32 msg, IntPtr wParam, IntPtr lParam);
-        
+
         [DllImport("user32.dll")]
         internal static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
@@ -238,9 +238,9 @@ namespace Fusion8.Cropper.Core
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool DestroyIcon(IntPtr hIcon);
 
-        #endregion
 
-        #region Fields
+
+
 
         private const int SRCCOPY = 0x00CC0020;
         private const int CAPTUREBLT = 1073741824;
@@ -268,9 +268,8 @@ namespace Fusion8.Cropper.Core
         internal const Int32 MAPVK_VSC_TO_VK_EX = 3;
         internal const uint KLF_NOTELLSHELL = 0x00000080;
 
-        #endregion
 
-         public enum InvalidHotKeyModifiers
+        public enum InvalidHotKeyModifiers
         {
             HKCOMB_NONE = 1,
             HKCOMB_S = 2,
@@ -282,7 +281,6 @@ namespace Fusion8.Cropper.Core
             HKCOMB_SCA = 128
         }
 
-        #region Structures
 
         [StructLayout(LayoutKind.Sequential)]
         public struct RECT
@@ -305,7 +303,7 @@ namespace Fusion8.Cropper.Core
             {
                 return new Rectangle(Left, Top, Right - Left, Bottom - Top);
             }
-        } 
+        }
 
 
         [StructLayout(LayoutKind.Sequential)]
@@ -380,9 +378,6 @@ namespace Fusion8.Cropper.Core
             public IntPtr hbmColor;
         }
 
-        #endregion
-
-        #region Methods
 
         /// <summary>
         /// Gets a segment of the desktop as an image.
@@ -518,7 +513,7 @@ namespace Fusion8.Cropper.Core
 
                     if ((GetWindowLongA(hWnd, GWL_STYLE) & TARGETWINDOW) == TARGETWINDOW)
                     {
-                        IntPtr windowRegion = CreateRoundRectRgn(0, 0, (int) bounds.Width + 1, (int) bounds.Height + 1, 9, 9);
+                        IntPtr windowRegion = CreateRoundRectRgn(0, 0, (int)bounds.Width + 1, (int)bounds.Height + 1, 9, 9);
                         Region r = Region.FromHrgn(windowRegion);
 
                         r.Complement(bounds);
@@ -531,7 +526,7 @@ namespace Fusion8.Cropper.Core
                     drawGraphics.FillRegion(brush, region);
                 }
 
-                finalCapture = new Bitmap((int) bounds.Width, (int) bounds.Height);
+                finalCapture = new Bitmap((int)bounds.Width, (int)bounds.Height);
                 using (Graphics finalGraphics = Graphics.FromImage(finalCapture))
                 {
                     finalGraphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -541,6 +536,5 @@ namespace Fusion8.Cropper.Core
             return finalCapture;
         }
 
-        #endregion
     }
 }
