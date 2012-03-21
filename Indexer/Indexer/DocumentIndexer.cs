@@ -120,6 +120,8 @@ namespace Sando.Indexer
                 {
 					IndexWriter.Close();
 					LuceneIndexesDirectory.Close();
+                    IndexSearcher.GetIndexReader().Close();
+                    IndexSearcher.Close();
                 }
 
                 disposed = true;

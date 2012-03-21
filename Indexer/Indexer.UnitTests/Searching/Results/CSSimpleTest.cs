@@ -43,7 +43,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
 
         [Test]
         public void CSSimple_OneFile_Passing()
-        {
+        {            
             SearchTester.Create().CheckFolderForExpectedResults("plugin",  "EnsureOutputsLoaded",".\\TestFiles\\CS_1");
             SearchTester.Create().CheckFolderForExpectedResults("capture", "Capture", ".\\TestFiles\\CS_1");
         }

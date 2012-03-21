@@ -35,7 +35,7 @@ namespace Sando.Indexer.Searching
 						body: "the body",
 						classId: Guid.NewGuid(),
 						definitionLineNumber: 0,
-						fullFilePath: "full path",
+                        fullFilePath: hitDocument.GetField("FullFilePath").StringValue(),
 						name: hitDocument.GetField("Name").StringValue(),
 						returnType: "Object",
 						snippet: "public Object " + hitDocument.GetField("Name").StringValue() + "(){the body}"

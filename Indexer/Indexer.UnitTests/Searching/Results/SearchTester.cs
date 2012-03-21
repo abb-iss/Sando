@@ -53,12 +53,13 @@ namespace Sando.Indexer.UnitTests.Searching.Results
 
         public  List<Tuple<ProgramElement, float>> GetResults(string searchString, SolutionKey key)
         {
-            var searcher = IndexerSearcherFactory.CreateSearcher(key);
-            var criteria = new SimpleSearchCriteria();
-            criteria.SearchTerms = new SortedSet<string>(searchString.Split(' ').ToList());
-            var results = searcher.Search(criteria);
-            return results;
+                var searcher = IndexerSearcherFactory.CreateSearcher(key);
+                var criteria = new SimpleSearchCriteria();
+                criteria.SearchTerms = new SortedSet<string>(searchString.Split(' ').ToList());
+                var results = searcher.Search(criteria);
+                return results;            
         }
+
 
         public  SolutionKey IndexFilesInDirectory(string solutionPath, out DocumentIndexer indexer)
         {
@@ -106,5 +107,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
         {
             return new SearchTester();
         }
+
+     
     }
 }
