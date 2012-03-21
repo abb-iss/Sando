@@ -251,7 +251,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(Body:SimpleClass OR Name:SimpleClass OR Values:SimpleClass OR ExtendedClasses:SimpleClass OR ImplementedInterfaces:SimpleClass OR Arguments:SimpleClass OR ReturnType:SimpleClass OR Namespace:SimpleClass OR DataType:SimpleClass)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "((Body:SimpleClass) OR (Name:SimpleClass) OR (Values:SimpleClass) OR (ExtendedClasses:SimpleClass) OR (ImplementedInterfaces:SimpleClass) OR (Arguments:SimpleClass) OR (ReturnType:SimpleClass) OR (Namespace:SimpleClass) OR (DataType:SimpleClass))", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "Name", new SimpleAnalyzer()).Parse(queryString);

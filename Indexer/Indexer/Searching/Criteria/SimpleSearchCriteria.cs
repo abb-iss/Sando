@@ -138,7 +138,9 @@ namespace Sando.Indexer.Searching.Criteria
 				int collectionSize = Enum.GetValues(typeof(UsageType)).Length;
 				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
 				{
+					stringBuilder.Append("(");
 					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+					stringBuilder.Append(")");
 					if(collectionSize > 1)
 					{
 						stringBuilder.Append(" OR ");
