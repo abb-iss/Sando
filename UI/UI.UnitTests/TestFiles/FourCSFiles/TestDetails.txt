@@ -1,0 +1,6 @@
+﻿Project: http://cropper.codeplex.com
+Language: C#
+Purpose: Basic C# parsing
+
+Search: extension
+Top 5: FileNameTemplate.SetFileExtension()

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
+using UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -117,16 +118,8 @@ namespace Sando.Indexer.UnitTests
         {
             Analyzer analyzer = new SimpleAnalyzer();
             try
-            {
-                //clear all docs
-                if (Directory.Exists(_luceneTempIndexesDirectory))
-                {
-                    var files = Directory.GetFiles(_luceneTempIndexesDirectory);
-                    foreach (var file in files)
-                    {
-                        File.Delete(file);
-                    }
-                }
+            {                                
+                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
                 documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
@@ -143,6 +136,8 @@ namespace Sando.Indexer.UnitTests
                 Assert.Fail(ex.Message + ". " + ex.StackTrace);
             }
         }
+
+ 
 
         [SetUp]
         public void ResetContract()

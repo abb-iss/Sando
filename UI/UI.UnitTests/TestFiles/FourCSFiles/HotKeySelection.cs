@@ -1,4 +1,4 @@
-#region License Information
+
 
 /**********************************************************************************
 Shared Source License for Cropper
@@ -53,15 +53,12 @@ In return, we simply require that you agree:
 
 **********************************************************************************/
 
-#endregion
-
-#region Using Directives
 
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-#endregion
+
 
 namespace Fusion8.Cropper.Core
 {
@@ -70,7 +67,7 @@ namespace Fusion8.Cropper.Core
         public HotKeySelection()
         {
             InitializeComponent();
-//            shortcutList.Items[0].Selected = true;
+            //            shortcutList.Items[0].Selected = true;
         }
 
         ///<summary>
@@ -476,7 +473,7 @@ namespace Fusion8.Cropper.Core
             if (items.Count == 0 || items[0] == null || items[0].Tag == null)
                 return;
 
-            shortcut.KeyData = (Keys) items[0].Tag;
+            shortcut.KeyData = (Keys)items[0].Tag;
         }
 
         private void HandleShortcutPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)

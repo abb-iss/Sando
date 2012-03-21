@@ -65,6 +65,14 @@
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
+      <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
+      <Name>Search Engine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
+      <Project>{A4567112-2AAE-4C67-9EC6-4625924EA118}</Project>
+      <Name>UnitTestHelpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UI\UI.csproj">
       <Project>{301DCCF5-C559-4CB2-BF1A-CE167B3BF33A}</Project>
       <Name>UI</Name>
@@ -75,6 +83,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\FourCSFiles\TestDetails.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
