@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Lucene.Net.Search;
 using Sando.Core;
+using Sando.Indexer.Documents;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.Searching
@@ -35,10 +36,10 @@ namespace Sando.Indexer.Searching
 						body: "the body",
 						classId: Guid.NewGuid(),
 						definitionLineNumber: 0,
-                        fullFilePath: hitDocument.GetField("FullFilePath").StringValue(),
-						name: hitDocument.GetField("Name").StringValue(),
+						fullFilePath: hitDocument.GetField(SandoField.FullFilePath.ToString()).StringValue(),
+						name: hitDocument.GetField(SandoField.Name.ToString()).StringValue(),
 						returnType: "Object",
-						snippet: "public Object " + hitDocument.GetField("Name").StringValue() + "(){the body}"
+						snippet: "public Object " + hitDocument.GetField(SandoField.Name.ToString()).StringValue() + "(){the body}"
 					);
 				searchResults.Add(Tuple.Create(methodElement as ProgramElement, score));
 			}

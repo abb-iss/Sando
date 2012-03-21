@@ -6,6 +6,7 @@ using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Indexer.Documents;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.UnitTests.Searching.Criteria
@@ -62,8 +63,8 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			{
 				SearchCriteria andSearchCriteria = new AndSearchCriteria(simpleSearchCriteria1, simpleSearchCriteria2);
 				string queryString = andSearchCriteria.ToQueryString();
-				Assert.AreEqual(queryString, "(ProgramElementType:Class) AND (FullFilePath:\"C:/Project/*.cs\")", "Created query string is invalid!");
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "ProgramElementType", new SimpleAnalyzer()).Parse(queryString);
+				Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":Class) AND (" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\")", "Created query string is invalid!");
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ProgramElementType.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
