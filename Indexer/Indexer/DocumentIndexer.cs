@@ -119,6 +119,10 @@ namespace Sando.Indexer
                 if(disposing)
                 {
 					IndexWriter.Close();
+					IndexReader indexReader = IndexSearcher.GetIndexReader();
+					if(indexReader != null)
+						indexReader.Close();
+					IndexSearcher.Close();
 					LuceneIndexesDirectory.Close();
                     IndexSearcher.GetIndexReader().Close();
                     IndexSearcher.Close();

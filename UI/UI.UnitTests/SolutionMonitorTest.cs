@@ -24,13 +24,13 @@ namespace Sando.UI.UnitTests
 
 
         [TearDown]
-        private static void TearDown()
+		public void TearDown()
         {
             monitor.StopMonitoring();
         }
 
         [SetUp]
-        private static void Setup()
+        public void Setup()
         {
             Directory.CreateDirectory(_luceneTempIndexesDirectory + "/basic/");
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory + "/basic/");
@@ -51,24 +51,23 @@ namespace Sando.UI.UnitTests
      
         }
 
-        //TODO - make this pass 
-        //[Test]
-        //public void SolutionMonitor_SearchTwoWords()
-        //{
-        //    var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
-        //    string ensureLoaded = "extension file";
-        //    List<CodeSearchResult> codeSearchResults = codeSearcher.Search(ensureLoaded);
-        //    foreach (var codeSearchResult in codeSearchResults)
-        //    {
-        //        var method = codeSearchResult.Element as MethodElement;
-        //        if (method != null)
-        //        {
-        //            if (method.Name.Equals("SetFileExtension"))
-        //                return;
-        //        }
-        //    }
-        //    Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
-        //}
+		[Test]
+		public void SolutionMonitor_SearchTwoWords()
+		{
+		    var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+		    string ensureLoaded = "extension file";
+		    List<CodeSearchResult> codeSearchResults = codeSearcher.Search(ensureLoaded);
+		    foreach (var codeSearchResult in codeSearchResults)
+		    {
+		        var method = codeSearchResult.Element as MethodElement;
+		        if (method != null)
+		        {
+		            if (method.Name.Equals("SetFileExtension"))
+		                return;
+		        }
+		    }
+		    Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
+		}
 
         [Test]
         public void SolutionMonitor_SearchForExtension()

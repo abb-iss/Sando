@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
 using Sando.Core;
+using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
 
@@ -57,7 +58,7 @@ namespace Sando.Indexer.Searching.Criteria
 			int collectionSize = AccessLevels.Count;
 			foreach(AccessLevel accessLevel in AccessLevels)
 			{
-				stringBuilder.Append("AccessLevel:");
+				stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
 				stringBuilder.Append(accessLevel.ToString());
 				if(collectionSize > 1)
 				{
@@ -77,7 +78,7 @@ namespace Sando.Indexer.Searching.Criteria
 			int collectionSize = ProgramElementTypes.Count;
 			foreach(ProgramElementType programElementType in ProgramElementTypes)
 			{
-				stringBuilder.Append("ProgramElementType:");
+				stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
 				stringBuilder.Append(programElementType.ToString());
 				if(collectionSize > 1)
 				{
@@ -97,7 +98,7 @@ namespace Sando.Indexer.Searching.Criteria
 			int collectionSize = Locations.Count;
 			foreach(string location in Locations)
 			{
-				stringBuilder.Append("FullFilePath:");
+				stringBuilder.Append(SandoField.FullFilePath.ToString() + ":");
 				stringBuilder.Append(String.IsNullOrWhiteSpace(location) ? "*" : '\"' + location + '\"');
 				if(collectionSize > 1)
 				{
@@ -125,7 +126,9 @@ namespace Sando.Indexer.Searching.Criteria
 				int collectionSize = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
 				{
+					stringBuilder.Append("(");
 					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+					stringBuilder.Append(")");
 					if(collectionSize > 1)
 					{
 						stringBuilder.Append(" OR ");
@@ -138,7 +141,9 @@ namespace Sando.Indexer.Searching.Criteria
 				int collectionSize = Enum.GetValues(typeof(UsageType)).Length;
 				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
 				{
+					stringBuilder.Append("(");
 					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+					stringBuilder.Append(")");
 					if(collectionSize > 1)
 					{
 						stringBuilder.Append(" OR ");
@@ -157,39 +162,39 @@ namespace Sando.Indexer.Searching.Criteria
 				switch(usageType)
 				{
 					case UsageType.Bodies:
-						stringBuilder.Append("Body:");
+						stringBuilder.Append(SandoField.Body.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.Definitions:
-						stringBuilder.Append("Name:");
+						stringBuilder.Append(SandoField.Name.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.EnumValues:
-						stringBuilder.Append("Values:");
+						stringBuilder.Append(SandoField.Values.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.ExtendedClasses:
-						stringBuilder.Append("ExtendedClasses:");
+						stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.ImplementedInterfaces:
-						stringBuilder.Append("ImplementedInterfaces:");
+						stringBuilder.Append(SandoField.ImplementedInterfaces.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.MethodArguments:
-						stringBuilder.Append("Arguments:");
+						stringBuilder.Append(SandoField.Arguments.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.MethodReturnTypes:
-						stringBuilder.Append("ReturnType:");
+						stringBuilder.Append(SandoField.ReturnType.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.NamespaceNames:
-						stringBuilder.Append("Namespace:");
+						stringBuilder.Append(SandoField.Namespace.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					case UsageType.PropertyOrFieldTypes:
-						stringBuilder.Append("DataType:");
+						stringBuilder.Append(SandoField.DataType.ToString() + ":");
 						stringBuilder.Append(searchTerm);
 						break;
 					default:

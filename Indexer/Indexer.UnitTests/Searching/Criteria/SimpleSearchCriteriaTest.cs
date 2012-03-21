@@ -6,6 +6,7 @@ using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 
@@ -102,10 +103,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(AccessLevel:Private)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.AccessLevel.ToString() + ":Private)", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "AccessLevel", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.AccessLevel.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -127,10 +128,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(AccessLevel:Protected OR AccessLevel:Public)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.AccessLevel.ToString() + ":Protected OR AccessLevel:Public)", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "AccessLevel", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.AccessLevel.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -151,10 +152,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																	}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(FullFilePath:\"C:/Project/*.cs\")", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\")", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "FullFilePath", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.FullFilePath.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -176,10 +177,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																	}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(FullFilePath:\"C:/Project/*.cs\" OR FullFilePath:\"C:/Project2/*.cs\")", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\")", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "FullFilePath", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.FullFilePath.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -200,10 +201,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																				}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(ProgramElementType:Class)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":Class)", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "ProgramElementType", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ProgramElementType.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -227,10 +228,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																				}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(ProgramElementType:Class OR ProgramElementType:DocComment OR ProgramElementType:Enum OR ProgramElementType:Property)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":Class OR " + SandoField.ProgramElementType.ToString() + ":DocComment OR " + SandoField.ProgramElementType.ToString() + ":Enum OR " + SandoField.ProgramElementType.ToString() + ":Property)", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "ProgramElementType", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ProgramElementType.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -251,10 +252,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(Body:SimpleClass OR Name:SimpleClass OR Values:SimpleClass OR ExtendedClasses:SimpleClass OR ImplementedInterfaces:SimpleClass OR Arguments:SimpleClass OR ReturnType:SimpleClass OR Namespace:SimpleClass OR DataType:SimpleClass)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "((" + SandoField.Body.ToString() + ":SimpleClass) OR (" + SandoField.Name.ToString() + ":SimpleClass) OR (" + SandoField.Values.ToString() + ":SimpleClass) OR (" + SandoField.ExtendedClasses.ToString() + ":SimpleClass) OR (" + SandoField.ImplementedInterfaces.ToString() + ":SimpleClass) OR (" + SandoField.Arguments.ToString() + ":SimpleClass) OR (" + SandoField.ReturnType.ToString() + ":SimpleClass) OR (" + SandoField.Namespace.ToString() + ":SimpleClass) OR (" + SandoField.DataType.ToString() + ":SimpleClass))", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "Name", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -279,10 +280,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(ExtendedClasses:SimpleClass)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "((" + SandoField.ExtendedClasses.ToString() + ":SimpleClass))", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "ExtendedClasses", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ExtendedClasses.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -309,10 +310,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(Name:SimpleClass OR ExtendedClasses:SimpleClass OR Namespace:SimpleClass)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "((" + SandoField.Name.ToString() + ":SimpleClass) OR (" + SandoField.ExtendedClasses.ToString() + ":SimpleClass) OR (" + SandoField.Namespace.ToString() + ":SimpleClass))", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "Name", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)
@@ -359,13 +360,13 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(AccessLevel:Protected OR AccessLevel:Public) AND " +
-										"(ProgramElementType:Class OR ProgramElementType:DocComment OR ProgramElementType:Enum OR ProgramElementType:Property) AND " +
-										"(FullFilePath:\"C:/Project/*.cs\" OR FullFilePath:\"C:/Project2/*.cs\") AND " +
-										"(Name:SimpleClass OR ExtendedClasses:SimpleClass OR Namespace:SimpleClass)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.AccessLevel.ToString() + ":Protected OR " + SandoField.AccessLevel.ToString() + ":Public) AND " +
+										"(" + SandoField.ProgramElementType.ToString() + ":Class OR " + SandoField.ProgramElementType.ToString() + ":DocComment OR " + SandoField.ProgramElementType.ToString() + ":Enum OR " + SandoField.ProgramElementType.ToString() + ":Property) AND " +
+										"(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\") AND " +
+										"((" + SandoField.Name.ToString() + ":SimpleClass) OR (" + SandoField.ExtendedClasses.ToString() + ":SimpleClass) OR (" + SandoField.Namespace.ToString() + ":SimpleClass))", "Created query string is invalid!");
 			try
 			{
-				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, "Name", new SimpleAnalyzer()).Parse(queryString);
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
 			catch(Exception ex)

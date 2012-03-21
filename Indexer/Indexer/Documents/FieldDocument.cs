@@ -13,9 +13,9 @@ namespace Sando.Indexer.Documents
 		protected override void AddDocumentFields()
 		{
 			FieldElement fieldElement = (FieldElement) programElement;
-			document.Add(new Field("AccessLevel", fieldElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			document.Add(new Field("DataType", fieldElement.FieldType, Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field("ClassId", fieldElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			document.Add(new Field(SandoField.AccessLevel.ToString(), fieldElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			document.Add(new Field(SandoField.DataType.ToString(), fieldElement.FieldType, Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field(SandoField.ClassId.ToString(), fieldElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 	}
 }
