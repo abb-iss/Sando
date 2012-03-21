@@ -147,6 +147,24 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(hasEnum);
 		}
 
+		[Test]
+		public void CSharpRegionTest()
+		{
+			SrcMLParser parser = new SrcMLParser(Generator);
+			var elements = parser.Parse("..\\..\\TestFiles\\RegionTest.txt");
+			Assert.IsNotNull(elements);
+			Assert.IsTrue(elements.Length == 2);
+			bool hasClass = false, hasMethod = false;
+			foreach(var programElement in elements)
+			{
+				if(programElement as MethodElement != null)
+					hasMethod = true;
+				if(programElement as ClassElement != null)
+					hasClass = true;
+			}
+			Assert.IsTrue(hasClass && hasMethod);
+		}
+
 		[TearDown]
 		public static void CleanUp()
 		{
