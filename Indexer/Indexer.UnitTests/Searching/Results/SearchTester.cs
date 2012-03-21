@@ -29,6 +29,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
                 _generator.SetSrcMLLocation(_currentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
                 _parser = new SrcMLParser(_generator);
                 Directory.CreateDirectory(_luceneTempIndexesDirectory);
+                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
          
         }
 

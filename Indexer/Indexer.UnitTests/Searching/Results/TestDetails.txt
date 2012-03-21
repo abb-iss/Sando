@@ -1,0 +1,3 @@
+﻿Project: http://cropper.codeplex.com
+Language: C#
+Purpose: Basic C# searching
