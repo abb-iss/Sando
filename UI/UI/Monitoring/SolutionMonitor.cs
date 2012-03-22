@@ -55,8 +55,14 @@ namespace Sando.UI.Monitoring
 			while(enumerator.MoveNext())
 			{
 				var project = (Project)enumerator.Current;
-				ProcessItems(project.ProjectItems.GetEnumerator());
-				UpdateAfterAdditions();
+                if (project != null)
+                {
+                    if (project.ProjectItems != null)
+                    {
+                        ProcessItems(project.ProjectItems.GetEnumerator());
+                        UpdateAfterAdditions();
+                    }
+                }
 			}			
 		}
 

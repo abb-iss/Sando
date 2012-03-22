@@ -8,12 +8,12 @@ namespace Sando.UI.Monitoring
 {
     public class SolutionWrapper
     {
-        public ProjectItem FindProjectItem(string name)
+        public virtual ProjectItem FindProjectItem(string name)
         {
             throw new NotImplementedException();
         }
 
-        public Projects getProjects()
+        public virtual Projects getProjects()
         {
             throw new NotImplementedException();
         }
@@ -32,12 +32,12 @@ namespace Sando.UI.Monitoring
             _mySolution = s;
         }
 
-        public ProjectItem FindProjectItem(string name)
+        public override ProjectItem FindProjectItem(string name)
         {
             return _mySolution.FindProjectItem(name);
         }
 
-        public Projects getProjects()
+        public override Projects getProjects()
         {
             return _mySolution.Projects;
         }
