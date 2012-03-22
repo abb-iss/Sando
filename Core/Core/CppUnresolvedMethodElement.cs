@@ -18,39 +18,48 @@ namespace Sando.Core
 			IsResolved = false;
 		}
 
-		public MethodElement Resolve(ProgramElement[] headerElements) 
+		public bool TryResolve(ProgramElement[] headerElements, out MethodElement outMethodElement) 
 		{
-			AccessLevel accessLevel = ResolveAccessType(Name, headerElements);
-			Guid classId = ResolveClassId(ClassName, headerElements);		
-			IsResolved = true;
+			AccessLevel accessLevel; 
+			Guid classId;
 
-			return new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, classId);
+			outMethodElement = null;
+			if(ResolveClassId(ClassName, headerElements, out classId) == false) return false;
+			if(ResolveAccessType(Name, headerElements, out accessLevel) == false) return false;
+
+			IsResolved = true;
+			outMethodElement = new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, classId);
+			return true;
 		}
 
-		private Guid ResolveClassId(string className, ProgramElement[] includeElements)
+		private bool ResolveClassId(string className, ProgramElement[] includeElements, out Guid outGuid)
 		{
 			foreach(ProgramElement element in includeElements)
 			{
 				if(element is ClassElement && element.Name == ClassName)
 				{
-					return ((ClassElement)element).Id;
+					outGuid = ((ClassElement)element).Id;
+					return true;
 				}
 			}
 
-			return Guid.Empty;
+			outGuid = Guid.Empty;
+			return false;
 		}
 
-		private AccessLevel ResolveAccessType(string funcName, ProgramElement[] includeElements)
+		private bool ResolveAccessType(string funcName, ProgramElement[] includeElements, out AccessLevel outAccessLevel)
 		{
 			foreach(ProgramElement element in includeElements)
 			{
 				if(element is MethodPrototypeElement && element.Name == funcName) 
 				{
-					return ((MethodPrototypeElement)element).AccessLevel;
+					outAccessLevel = ((MethodPrototypeElement)element).AccessLevel;
+					return true;
 				}
 			}
 
-			return AccessLevel.Protected;
+			outAccessLevel = AccessLevel.Protected;
+			return false;
 		}
 		
 

@@ -26,8 +26,9 @@ namespace Sando.Parser.UnitTests
 		{
 			bool seenGetTimeMethod = false;
 			int numMethods = 0;
+			string sourceFile = @"..\..\TestFiles\Event.CPP.txt";
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\Event.CPP.txt");
+			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Length, 5);
 			foreach(ProgramElement pe in elements)
@@ -37,8 +38,20 @@ namespace Sando.Parser.UnitTests
 					numMethods++;
 
 					//Resolve
+					bool isResolved = false;
+					MethodElement method = null;
 					CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)pe;
-					MethodElement method = unresolvedMethod.Resolve(parser.Parse("..\\..\\TestFiles\\Event.H.txt"));
+					foreach(String headerFile in unresolvedMethod.DefinitionFileNames) {
+						//for now, it's reasonable to assume that the header file path is relative from the cpp file
+						string sourcePath = System.IO.Path.GetDirectoryName(sourceFile);
+
+						//TODO: at some later point we need to get the include path from VisualStudio and search in
+						//      those directories as well
+
+						isResolved = unresolvedMethod.TryResolve(parser.Parse(sourcePath + "\\" + headerFile), out method);
+						if(isResolved == true) break;
+					}
+					Assert.IsTrue(isResolved);
 					Assert.IsNotNull(method);
 
 					if(method.Name == "getTime")
