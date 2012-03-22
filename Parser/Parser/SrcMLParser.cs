@@ -87,7 +87,7 @@ namespace Sando.Parser
 			}
 		}
 
-		private string[] ParseCppIncludes(XElement sourceElements, string directory)
+		private string[] ParseCppIncludes(XElement sourceElements)
 		{
 			List<string> includeFileNames = new List<string>();
 			XNamespace CppNamespace = "http://www.sdml.info/srcML/cpp";
@@ -98,8 +98,8 @@ namespace Sando.Parser
 			foreach(XElement include in includeStatements)
 			{
 				string filename = include.Element(CppNamespace + "file").Value;
-				filename = filename.Substring(1, filename.Length - 2);	//remove quotes or brackets			
-				filename = directory + "\\" + filename;
+				if(filename.Substring(0, 1) == "<") continue; //ignore includes of system files -> they start with a bracket
+				filename = filename.Substring(1, filename.Length - 2);	//remove quotes	
 				includeFileNames.Add(filename);
 			}
 
@@ -273,7 +273,7 @@ namespace Sando.Parser
 			{
 				if(Generator.Language == LanguageEnum.CPP)
 				{
-					string[] includedFiles = ParseCppIncludes(elements, System.IO.Path.GetDirectoryName(fileName));
+					string[] includedFiles = ParseCppIncludes(elements);
 					MethodElement methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
 					programElements.Add(methodElement);
 				}
