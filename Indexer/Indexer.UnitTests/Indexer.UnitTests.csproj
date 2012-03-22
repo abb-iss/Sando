@@ -142,6 +142,7 @@
     <Compile Include="Searching\Criteria\NotSearchCriteriaTest.cs" />
     <Compile Include="Searching\Criteria\OrSearchCriteriaTest.cs" />
     <Compile Include="Searching\Criteria\SimpleSearchCriteriaTest.cs" />
+    <Compile Include="Searching\ProgramElementReaderTest.cs" />
     <Compile Include="Searching\Results\CsSimpleTest.cs" />
     <Compile Include="Searching\Results\SearchTester.cs" />
     <Compile Include="TestIndexUpdateListener.cs" />
