@@ -90,6 +90,8 @@ namespace Sando.SearchEngine.UnitTests
 		[TestFixtureTearDown]
     	public void ShutdownIndexer()
     	{
+			Indexer.ClearIndex();
+			Indexer.CommitChanges();
 			Indexer.Dispose();   
     	}
     }

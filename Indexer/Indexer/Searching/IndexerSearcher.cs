@@ -30,18 +30,8 @@ namespace Sando.Indexer.Searching
 			{
 				var hitDocument = documentIndexer.IndexSearcher.Doc(hits[i].doc);
 				var score = hits[i].score;
-				MethodElement methodElement = new MethodElement(
-						accessLevel: AccessLevel.Public,
-						arguments: String.Empty,
-						body: "the body",
-						classId: Guid.NewGuid(),
-						definitionLineNumber: 0,
-						fullFilePath: hitDocument.GetField(SandoField.FullFilePath.ToString()).StringValue(),
-						name: hitDocument.GetField(SandoField.Name.ToString()).StringValue(),
-						returnType: "Object",
-						snippet: "public Object " + hitDocument.GetField(SandoField.Name.ToString()).StringValue() + "(){the body}"
-					);
-				searchResults.Add(Tuple.Create(methodElement as ProgramElement, score));
+				ProgramElement programElement = ProgramElementReader.ReadProgramElementFromDocument(hitDocument);
+				searchResults.Add(Tuple.Create(programElement, score));
 			}
 			return searchResults;
 		}

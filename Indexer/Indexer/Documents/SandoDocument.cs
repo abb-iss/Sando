@@ -10,6 +10,11 @@ namespace Sando.Indexer.Documents
 		{
 			this.programElement = programElement;
 		}
+		
+		protected SandoDocument(Document document)
+		{
+			this.document = document;
+		}
 
 		public Document GetDocument()
 		{
@@ -21,12 +26,26 @@ namespace Sando.Indexer.Documents
 				document.Add(new Field(SandoField.ProgramElementType.ToString(), programElement.ProgramElementType.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				document.Add(new Field(SandoField.FullFilePath.ToString(), StandardizeFilePath(programElement.FullFilePath), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), programElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
+				document.Add(new Field(SandoField.Snippet.ToString(), programElement.Snippet, Field.Store.YES, Field.Index.NO));
 				AddDocumentFields();
 			}
 			return document;
 		}
 
+		public ProgramElement ReadProgramElementFromDocument()
+		{
+			//Guid id = new Guid(document.GetField(SandoField.Id.ToString()).StringValue());
+			string name = document.GetField(SandoField.Name.ToString()).StringValue();
+			ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue());
+			string fullFilePath = document.GetField(SandoField.FullFilePath.ToString()).StringValue();
+			int definitionLineNumber = int.Parse(document.GetField(SandoField.DefinitionLineNumber.ToString()).StringValue());
+			string snippet = document.GetField(SandoField.Snippet.ToString()).StringValue();
+			programElement = ReadProgramElementFromDocument(name, type, fullFilePath, definitionLineNumber, snippet, document);
+			return programElement;
+		}
+
 		protected abstract void AddDocumentFields();
+		protected abstract ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document);
 
 		protected ProgramElement programElement;
 		protected Document document;

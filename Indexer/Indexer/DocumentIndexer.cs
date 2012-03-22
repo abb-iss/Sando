@@ -69,6 +69,11 @@ namespace Sando.Indexer
 			NotifyIndexUpdateListeners();
 		}
 
+		public void ClearIndex()
+		{
+			IndexWriter.DeleteAll();
+		}
+
 		private void UpdateReader()
 		{
 			//TODO - please check this out and see if you agree tha we need this

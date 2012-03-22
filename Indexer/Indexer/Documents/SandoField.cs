@@ -13,6 +13,7 @@ namespace Sando.Indexer.Documents
 		ClassId,
 		DataType,
 		DefinitionLineNumber,
+		DocumentedElementId,
 		ExtendedClasses,
 		FullFilePath,
 		Id,
@@ -21,6 +22,7 @@ namespace Sando.Indexer.Documents
 		Namespace,
 		ProgramElementType,
 		ReturnType,
+		Snippet,
 		Values
 	}
 }
