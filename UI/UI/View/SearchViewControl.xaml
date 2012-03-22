@@ -6,36 +6,44 @@
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
              xmlns:local="clr-namespace:Sando.UI" mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="300"
+             d:DesignHeight="*" d:DesignWidth="300"
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">    
-    <Grid>        
-        <StackPanel Margin="10,10,10,10" >
-            <StackPanel.Resources>                
-                <DataTemplate DataType="{x:Type SearchEngine:CodeSearchResult}">
-                    <Border Margin="3">
-                        <StackPanel Margin="0,5,0,5" Orientation="Horizontal"  >
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
-                                    <RowDefinition Height="20" />
-                                    <RowDefinition Height="20" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150" />
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="0" Grid.Column="0" >
-                                </TextBlock>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
-                                </TextBlock>
-                                <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
-                                </TextBlock>
-                            </Grid>
-                            <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Snippet}" >
+         
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>            
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type SearchEngine:CodeSearchResult}">
+                <Border Margin="3">
+                    <StackPanel Margin="0,5,0,5" Orientation="Horizontal"  >
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="20" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Name}" Grid.Row="0" Grid.Column="0" >
                             </TextBlock>
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
+                            <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
+                            </TextBlock>
+                            <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
+                            </TextBlock>
+                        </Grid>
+                        <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Element.Snippet}" >
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </DataTemplate>
+
+        </Grid.Resources>
+        <StackPanel Margin="10,10,10,10" Grid.Row="0" >
+            <StackPanel.Resources>                
                 <Style TargetType="{x:Type StackPanel}">
                     <Setter Property="Margin" Value="0,10,0,0"/>
                     
@@ -45,11 +53,9 @@
                 <TextBox Width="200" Height="30" KeyDown="OnKeyDownHandler" Text="{Binding Path=SearchString}"></TextBox>
                 <Button Content="{Binding Path=SearchLabel}" Width="60" Height="30" Name="searchButton" Click="SearchButtonClick" />
             </StackPanel>
-
-            <ListBox ItemsSource="{Binding Path=SearchResults}"
-                Margin="10" SelectedIndex="0" Height="400" MouseDoubleClick="UIElement_OnMouseDown"/>            
-            
-
-        </StackPanel>
+            </StackPanel>
+                    
+            <ListBox Grid.Row="1" ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                Margin="10" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" MouseDoubleClick="UIElement_OnMouseDown"/>                        
     </Grid>
 </UserControl>
