@@ -14,7 +14,7 @@ namespace Sando.Core
 			Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
 
 			ClassName = className;
-			DefinitionFileNames = headerFiles;
+			IncludeFileNames = headerFiles;
 			IsResolved = false;
 		}
 
@@ -64,7 +64,7 @@ namespace Sando.Core
 		
 
 		public virtual string ClassName { get; private set; }
-		public virtual string[] DefinitionFileNames { get; private set; }
+		public virtual string[] IncludeFileNames { get; private set; }
 		public virtual bool IsResolved { get; set; }
 	}
 }

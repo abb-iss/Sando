@@ -41,14 +41,14 @@ namespace Sando.Parser.UnitTests
 					bool isResolved = false;
 					MethodElement method = null;
 					CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)pe;
-					foreach(String headerFile in unresolvedMethod.DefinitionFileNames) {
-						//for now, it's reasonable to assume that the header file path is relative from the cpp file
-						string sourcePath = System.IO.Path.GetDirectoryName(sourceFile);
+					foreach(String headerFile in unresolvedMethod.IncludeFileNames) {
+						//it's reasonable to assume that the header file path is relative from the cpp file,
+						//as other included files are unlikely to be part of the same project and therefore 
+						//should not need to be parsed
+						string headerPath = System.IO.Path.GetDirectoryName(sourceFile) + "\\" + headerFile;
+						if(!System.IO.File.Exists(headerPath)) continue;
 
-						//TODO: at some later point we need to get the include path from VisualStudio and search in
-						//      those directories as well
-
-						isResolved = unresolvedMethod.TryResolve(parser.Parse(sourcePath + "\\" + headerFile), out method);
+						isResolved = unresolvedMethod.TryResolve(parser.Parse(headerPath), out method);
 						if(isResolved == true) break;
 					}
 					Assert.IsTrue(isResolved);
