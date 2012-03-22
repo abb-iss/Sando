@@ -26,6 +26,8 @@ namespace Sando.UI.Monitoring
 		private readonly SolutionKey _solutionKey;
 		private Thread _startupThread;
 
+
+
 		private readonly IndexUpdateManager _indexUpdateManager;
 
 		public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
@@ -75,9 +77,9 @@ namespace Sando.UI.Monitoring
 	    public void StartMonitoring()
 		{
 			
-			_startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
-			_startupThread.Priority = ThreadPriority.Lowest;
-			_startupThread.Start();
+            _startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
+            _startupThread.Priority = ThreadPriority.Lowest;                 
+            _startupThread.Start();
 
 			// Register events for doc table
 			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
