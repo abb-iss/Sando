@@ -146,6 +146,7 @@ namespace Sando.UI
 		private void SolutionHasBeenOpened()
 		{
 			_currentMonitor = SolutionMonitorFactory.CreateMonitor();
+            _currentMonitor.StartMonitoring();		    
 			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
 		}
 
