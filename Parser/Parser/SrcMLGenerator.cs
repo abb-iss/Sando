@@ -107,7 +107,7 @@ namespace Sando.Parser
 			inputCode = Regex.Replace(inputCode, @"class (\w+) : (\w+)", "class $1 implements $2");
 
 			//erase #region #endregion lines
-			inputCode = Regex.Replace(inputCode, @"#region.*\n", "");
+			inputCode = Regex.Replace(inputCode, @"#region(\w| )*", "");
 			inputCode = Regex.Replace(inputCode, @"#endregion", "");
 
 			return inputCode;
