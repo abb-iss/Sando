@@ -11,6 +11,7 @@ namespace Sando.Indexer.Documents
 		Arguments,
 		Body,
 		ClassId,
+		ClassName,
 		DataType,
 		DefinitionLineNumber,
 		DocumentedElementId,

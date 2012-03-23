@@ -23,6 +23,7 @@ namespace Sando.Indexer.Documents
 			document.Add(new Field(SandoField.Arguments.ToString(), methodElement.Arguments, Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.Body.ToString(), methodElement.Body, Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.ClassId.ToString(), methodElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			document.Add(new Field(SandoField.ClassName.ToString(), methodElement.ClassName, Field.Store.YES, Field.Index.NOT_ANALYZED));
 			document.Add(new Field(SandoField.ReturnType.ToString(), methodElement.ReturnType, Field.Store.YES, Field.Index.ANALYZED));
 		}
 
@@ -33,7 +34,8 @@ namespace Sando.Indexer.Documents
 			string returnType = document.GetField(SandoField.ReturnType.ToString()).StringValue();
 			string body = document.GetField(SandoField.Body.ToString()).StringValue();
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
+			string className = document.GetField(SandoField.ClassName.ToString()).StringValue();
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className);
 		}
 	}
 }

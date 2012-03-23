@@ -78,8 +78,6 @@ namespace Sando.Parser
 				}
 				arguments = arguments.TrimEnd();
 
-				Guid classId = RetrieveClassGuid(function, programElements);
-
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
 				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
@@ -122,8 +120,9 @@ namespace Sando.Parser
 				int definitionLineNumber;
 				ParseName(prop, out name, out definitionLineNumber);
 
-				//get the class guid
-				Guid classId = RetrieveClassGuid(prop, programElements);
+				ClassElement classElement = RetrieveClassElement(prop, programElements);
+				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+				string className = classElement != null ? classElement.Name : String.Empty;
 
 				//parse access level and type
 				XElement accessElement = prop.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
@@ -142,7 +141,7 @@ namespace Sando.Parser
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
 				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-				programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId));
+				programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className));
 			}
 		}
 
@@ -316,12 +315,14 @@ namespace Sando.Parser
 
 			string body = ParseBody(function);
 
-			Guid classId = RetrieveClassGuid(function, programElements);
+			ClassElement classElement = RetrieveClassElement(function, programElements);
+			Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+			string className = classElement != null ? classElement.Name : String.Empty;
 
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className);
 		}
 
 		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles)
@@ -368,9 +369,12 @@ namespace Sando.Parser
 				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
 				snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
-				Guid classId = RetrieveClassGuid(function, programElements);
 
-				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId);
+				ClassElement classElement = RetrieveClassElement(function, programElements);
+				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+				string className = classElement != null ? classElement.Name : String.Empty;
+
+				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className);
 			}
 
 			return methodElement;
@@ -424,7 +428,7 @@ namespace Sando.Parser
 			return accessLevel;
 		}
 
-		private Guid RetrieveClassGuid(XElement field, List<ProgramElement> programElements)
+		private ClassElement RetrieveClassElement(XElement field, List<ProgramElement> programElements)
 		{
 			IEnumerable<XElement> ownerClasses =
 				from el in field.Ancestors(SourceNamespace + "class")
@@ -436,19 +440,12 @@ namespace Sando.Parser
 				string ownerClassName = name.Value;
 				//now find the ClassElement object corresponding to ownerClassName, since those should have been gen'd by now
 				ProgramElement ownerClass = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerClassName);
-				if(ownerClass != null)
-				{
-					return ownerClass.Id;
-				}
-				else
-				{
-					return System.Guid.Empty;
-				}
+				return ownerClass as ClassElement;
 			}
 			else
 			{
 				//field is not contained by a class
-				return System.Guid.Empty;
+				return null;
 			}
 		}
 

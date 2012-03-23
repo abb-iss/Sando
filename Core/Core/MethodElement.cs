@@ -6,7 +6,7 @@ namespace Sando.Core
 	public class MethodElement : ProgramElement
 	{
 		public MethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
-			string arguments, string returnType, string body, Guid classId) 
+			string arguments, string returnType, string body, Guid classId, string className) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(arguments != null, "MethodElement:Constructor - arguments cannot be null!");
@@ -14,12 +14,14 @@ namespace Sando.Core
 			Contract.Requires(body != null, "MethodElement:Constructor - body cannot be null!");
 			Contract.Requires(classId != null, "MethodElement:Constructor - class id cannot be null!");
 			Contract.Requires(classId != Guid.Empty, "MethodElement:Constructor - class id cannot be an empty Guid!");
+			Contract.Requires(className != null, "MethodElement:Constructor - class name cannot be null!");
 
 			AccessLevel = accessLevel;
 			Arguments = arguments;
 			ReturnType = returnType;
 			Body = body;
 			ClassId = classId;
+			ClassName = className;
 		}
 
 		public virtual AccessLevel AccessLevel { get; private set; }
@@ -27,6 +29,7 @@ namespace Sando.Core
 		public virtual string ReturnType { get; private set; }
 		public virtual string Body { get; private set; }
 		public virtual Guid ClassId { get; private set; }
+		public virtual string ClassName { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Method; } }
 	}
 }

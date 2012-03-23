@@ -58,6 +58,7 @@ namespace Sando.UnitTestHelpers
 		public static FieldElement GetSampleFieldElement(
 			AccessLevel accessLevel = AccessLevel.Private,
 			string classId = "0f8fad5b-d9cb-469f-a165-70867728950e",
+			string className = "SampleCLass",
 			int definitionLineNumber = 11,
 			string fieldType = "int",
 			string fullFilePath = "C:/Projects/SampleClass.cs",
@@ -65,7 +66,7 @@ namespace Sando.UnitTestHelpers
 			string snippet = "private int maxCollectionLength;"
 		)
 		{
-			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId));
+			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className);
 		}
 
 		public static MethodElement GetSampleMethodElement(
@@ -73,6 +74,7 @@ namespace Sando.UnitTestHelpers
 			string arguments = "int number, int factor",
 			string body = "return number * factor;",
 			string classId = "0f8fad5b-d9cb-469f-a165-70867728950e",
+			string className = "SampleCLass",
 			int definitionLineNumber = 12,
 			string fullFilePath = "C:/Projects/SampleClass.cs",
 			string name = "multiply",
@@ -80,13 +82,14 @@ namespace Sando.UnitTestHelpers
 			string snippet = "private int multiply(int number, int factor)\n{\nreturn number * factor;\n};"
 		)
 		{
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId));
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId), className);
 		}
 
 		public static PropertyElement GetSamplePropertyElement(
 			AccessLevel accessLevel = AccessLevel.Private,
 			string body = "",
 			string classId = "0f8fad5b-d9cb-469f-a165-70867728950e",
+			string className = "SampleCLass",
 			int definitionLineNumber = 3,
 			string propertyType = "double",
 			string fullFilePath = "C:/Projects/SampleClass.cs",
@@ -94,7 +97,7 @@ namespace Sando.UnitTestHelpers
 			string snippet = "protected double StockValue{get; set;};"
 		)
 		{
-			return new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId));
+			return new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId), className);
 		}
 	}
 }
