@@ -108,5 +108,14 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(hasEnum);
 		}
 
+        [Test]
+        public void ParseAboutDlgTest()
+        {
+            bool seenGetTimeMethod = false;
+            int numMethods = 0;            
+            var parser = new SrcMLParser(Generator);
+            var elements = parser.Parse("..\\..\\TestFiles\\AboutDlg.cpp");
+            Assert.IsTrue(true);
+        }
 	}
 }
