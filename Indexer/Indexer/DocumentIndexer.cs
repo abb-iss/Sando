@@ -73,6 +73,7 @@ namespace Sando.Indexer
 			NotifyIndexUpdateListeners();
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void ClearIndex()
 		{
 			IndexWriter.DeleteAll();
