@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using Lucene.Net.Analysis.Standard;
@@ -47,6 +48,7 @@ namespace Sando.Indexer
 			}
 		}
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
 		public virtual void AddDocument(SandoDocument sandoDocument)
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
@@ -54,6 +56,7 @@ namespace Sando.Indexer
 			IndexWriter.AddDocument(sandoDocument.GetDocument());
 		}
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void DeleteDocuments(string fullFilePath)
         {
             if (String.IsNullOrWhiteSpace(fullFilePath))
@@ -62,6 +65,7 @@ namespace Sando.Indexer
             IndexWriter.DeleteDocuments(new TermQuery(term));
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
 		public void CommitChanges()
 		{
 			IndexWriter.Commit();

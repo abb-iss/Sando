@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 
 namespace Sando.Indexer.IndexState
@@ -17,6 +18,7 @@ namespace Sando.Indexer.IndexState
 			this.indexFilesStatesPath = Path.Combine(indexDirectoryPath, IndexFilesStatesFileName);
 		}
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
 		public void ReadIndexFilesStates()
 		{
 			indexFilesStates = new Dictionary<string, IndexFileState>();
@@ -50,6 +52,7 @@ namespace Sando.Indexer.IndexState
 			return convertedDeserializedData;
 		}
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
 		public void SaveIndexFilesStates()
 		{
 			if(indexFilesStates == null)
