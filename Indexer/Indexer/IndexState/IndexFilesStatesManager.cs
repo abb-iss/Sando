@@ -84,6 +84,7 @@ namespace Sando.Indexer.IndexState
 			return serializationData;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public IndexFileState GetIndexFileState(string fullFilePath)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fullFilePath), "IndexFilesStatesManager:GetIndexFileState - full file path cannot be null or an empty string!");
@@ -94,6 +95,7 @@ namespace Sando.Indexer.IndexState
 			return indexFilesStates.ContainsKey(fullFilePath) ? indexFilesStates[fullFilePath] : null;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void UpdateIndexFileState(string fullFilePath, IndexFileState indexFileState)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fullFilePath), "IndexFilesStatesManager:UpdateIndexFileState - full file path cannot be null or an empty string!");

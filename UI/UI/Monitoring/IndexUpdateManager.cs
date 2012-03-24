@@ -10,7 +10,7 @@ using Sando.Parser;
 
 namespace Sando.UI.Monitoring
 {
-	class IndexUpdateManager
+	public class IndexUpdateManager
 	{ 
 
 		private FileOperationResolver _fileOperationResolver;
