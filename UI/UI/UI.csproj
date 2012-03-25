@@ -157,6 +157,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="View\FileOpener.cs" />
