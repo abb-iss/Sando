@@ -80,6 +80,9 @@ namespace Fusion8.Cropper.Core
         public static readonly string DefaultThumbImageTemplate = "CropperCapture[{increment}]Thumbnail";
 
 
+		public FileNameTemplate()
+		{
+		}
 
         /// <summary>
         /// 
