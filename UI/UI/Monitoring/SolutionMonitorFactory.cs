@@ -28,8 +28,7 @@ namespace Sando.UI.Monitoring
 			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
 			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey,
 			                                                          AnalyzerType.Standard);
-			var currentMonitor = new SolutionMonitor(SolutionWrapper.Create(openSolution), solutionKey, currentIndexer);
-			currentMonitor.StartMonitoring();
+			var currentMonitor = new SolutionMonitor(SolutionWrapper.Create(openSolution), solutionKey, currentIndexer);			
 			return currentMonitor;
 		}
 
