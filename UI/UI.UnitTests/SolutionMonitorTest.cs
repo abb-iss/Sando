@@ -27,6 +27,7 @@ namespace Sando.UI.UnitTests
 		public void TearDown()
         {
             monitor.StopMonitoring();
+			Directory.Delete(_luceneTempIndexesDirectory + "/basic/", true);
         }
 
         [SetUp]
