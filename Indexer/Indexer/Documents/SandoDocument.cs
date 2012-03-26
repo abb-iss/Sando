@@ -39,7 +39,7 @@ namespace Sando.Indexer.Documents
 			ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue());
 			string fullFilePath = document.GetField(SandoField.FullFilePath.ToString()).StringValue();
 			int definitionLineNumber = int.Parse(document.GetField(SandoField.DefinitionLineNumber.ToString()).StringValue());
-			string snippet = document.GetField(SandoField.Snippet.ToString()).StringValue();
+			string snippet = document.GetField(SandoField.Snippet.ToString()).StringValue();		    
 			programElement = ReadProgramElementFromDocument(name, type, fullFilePath, definitionLineNumber, snippet, document);
 			return programElement;
 		}

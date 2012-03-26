@@ -34,23 +34,45 @@ namespace Sando.SearchEngine
            private set;
        }
 
+       public String Snippet
+       {
+           get
+           {
+               var snip = Element.Snippet;
+               if(snip.StartsWith("\r\n"))
+               {
+                   snip = snip.Substring(2);
+               }
+               return snip.Replace("\t", "     ");
+           }           
+       }
     	public string FileName
     	{
     		get
     		{
     			var fileName = Path.GetFileName(Element.FullFilePath);
+                fileName = Shorten(fileName);
     			return fileName;
     		}    		
     	}
 
-    	public string Parent
+        private static string Shorten(string fileName)
+        {
+            if (fileName.Length > 20)
+            {
+                fileName = fileName.Substring(0, 20) + "...";
+            }
+            return fileName;
+        }
+
+        public string Parent
     	{
     		get
     		{
     			var method = Element as MethodElement;
 				if(method !=null)
 				{
-					return method.ClassId.ToString().Substring(0,5);
+					return Shorten(method.ClassName);
 				}else
 				{
 					return "";

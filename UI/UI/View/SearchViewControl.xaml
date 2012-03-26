@@ -17,9 +17,10 @@
         </Grid.RowDefinitions>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type SearchEngine:CodeSearchResult}">
-                <Border Margin="3">
+                <Border Margin="0,3,3,0">
+                    <StackPanel Margin="0,0,0,0" Orientation="Vertical">
                     <StackPanel Margin="0,0,0,0" Orientation="Horizontal"  >
-                        <Grid>
+                        <Grid Margin="3,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="20" />
@@ -34,9 +35,15 @@
                             </TextBlock>
                             <TextBlock Width="Auto" Height="60" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
                             </TextBlock>
-                        </Grid>
-                        <TextBlock TextAlignment="Left" Width="Auto"  Height="60" Text="{Binding Mode=OneWay, Path=Element.Snippet}" >
-                        </TextBlock>
+                        </Grid>                                                
+                        <TextBlock TextAlignment="Left" VerticalAlignment="Top" Width="Auto"  Height="60" Text="{Binding Mode=OneWay, Path=Snippet}" >
+                        </TextBlock>                        
+                    </StackPanel>
+                        <Canvas Height="1" HorizontalAlignment="Stretch" Margin="-4,5,0,0">                            
+                            <Line  X1="1" Y1="1"
+                                    X2="1000" Y2="1"
+                                Stroke="DarkSlateGray" StrokeThickness="1"  HorizontalAlignment="Stretch" ></Line>
+                        </Canvas>                        
                     </StackPanel>
                 </Border>
             </DataTemplate>
