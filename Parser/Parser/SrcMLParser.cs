@@ -453,8 +453,8 @@ namespace Sando.Parser
 		{
 			string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetFullPath(filename));
 
-			//start at one line above the definition of the program element
-			int linesAbove = 1;
+			//start at a number of lines above the definition of the program element
+			int linesAbove = 0;
 
 			int startLine = line - linesAbove - 1;
 			IEnumerable<string> snipLines = lines.Skip(startLine).Take(snippetNumLines - linesAbove);
