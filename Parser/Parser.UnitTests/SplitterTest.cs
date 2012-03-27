@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics;
 using NUnit.Framework;
+using Sando.Core;
 
 namespace Sando.Parser.UnitTests
 {
@@ -13,49 +10,49 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void TestSplitCamelCase()
 		{
-			string[] parts = WordSplitter.split("aLongVariableNameInCamelCase");
+			string[] parts = WordSplitter.Split("aLongVariableNameInCamelCase");
 			Assert.IsTrue(parts.Length == 7);
 		}
 
 		[Test]
 		public void TestSplitUnderscores()
 		{
-			string[] parts = WordSplitter.split("a_name_separated_by_lots_of_underscores");
+			string[] parts = WordSplitter.Split("a_name_separated_by_lots_of_underscores");
 			Assert.IsTrue(parts.Length == 7);
 		}
 
 		[Test]
 		public void TestUnsplittable()
 		{
-			string[] parts = WordSplitter.split("unsplittable");
+			string[] parts = WordSplitter.Split("unsplittable");
 			Assert.IsTrue(parts.Length == 1);
 		}
 
 		[Test]
 		public void TestAbbreviations()
 		{
-			string[] parts = WordSplitter.split("whatAboutALM");
+			string[] parts = WordSplitter.Split("whatAboutALM");
 			Assert.IsTrue(parts.Length == 3);
 		}
 
 		[Test]
 		public void TestAllCaps()
 		{
-			string[] parts = WordSplitter.split("WHATIFALLINCAPS");
+			string[] parts = WordSplitter.Split("WHATIFALLINCAPS");
 			Assert.IsTrue(parts.Length == 1);
 		}
 
 		[Test]
 		public void TestAllCapsUnderscore()
 		{
-			string[] parts = WordSplitter.split("WHAT_IF_ALL_IN_CAPS");
+			string[] parts = WordSplitter.Split("WHAT_IF_ALL_IN_CAPS");
 			Assert.IsTrue(parts.Length == 5);
 		}
 
 		[Test]
 		public void TestBeginUnderscore()
 		{
-			string[] parts = WordSplitter.split("_beginInUnderscore");
+			string[] parts = WordSplitter.Split("_beginInUnderscore");
 			Assert.IsTrue(parts.Length == 3);
 		}
 
@@ -67,7 +64,7 @@ namespace Sando.Parser.UnitTests
 			watch.Start();
 			for(int i = 0; i < 500; i++)
 			{
-				string[] parts = WordSplitter.split("_beginInUnderscore");
+				string[] parts = WordSplitter.Split("_beginInUnderscore");
 				Assert.IsTrue(parts.Length == 3);
 			}
 			watch.Stop();

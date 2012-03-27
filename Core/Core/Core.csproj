@@ -95,6 +95,7 @@
     <Compile Include="ProgramElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SolutionKey.cs" />
+    <Compile Include="WordSplitter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

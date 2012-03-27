@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Lucene.Net.Analysis;
+﻿using System.Diagnostics.Contracts;
 using NUnit.Framework;
-using Sando.Core;
-using Sando.Indexer.Documents;
-using Sando.Indexer.Searching;
-using Sando.Indexer.Searching.Criteria;
-using Sando.Parser;
-using Sando.UnitTestHelpers;
-using UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests.Searching.Results
 {

@@ -389,7 +389,7 @@ namespace Sando.Parser
 			string body = String.Empty;
 			foreach(XElement elem in bodyNames)
 			{
-				body += String.Join(" ", WordSplitter.split(elem.Value)) + " ";
+				body += String.Join(" ", WordSplitter.Split(elem.Value)) + " ";
 			}
 			body = body.TrimEnd();
 			return body;
