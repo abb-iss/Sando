@@ -27,6 +27,7 @@ namespace Sando.UI.UnitTests
 		public void TearDown()
         {
             monitor.StopMonitoring();
+			Directory.Delete(_luceneTempIndexesDirectory + "/basic/", true);
         }
 
         [SetUp]
@@ -68,6 +69,24 @@ namespace Sando.UI.UnitTests
 		    }
 		    Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
 		}
+
+		//[Test]
+		//public void SolutionMonitor_SearchResultsContainsConstructor()
+		//{
+		//    var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+		//    string ensureLoaded = "file name template";
+		//    List<CodeSearchResult> codeSearchResults = codeSearcher.Search(ensureLoaded);
+		//    foreach(var codeSearchResult in codeSearchResults)
+		//    {
+		//        var method = codeSearchResult.Element as MethodElement;
+		//        if(method != null)
+		//        {
+		//            if(method.Name.Equals("FileNameTemplate"))
+		//                return;
+		//        }
+		//    }
+		//    Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
+		//}
 
         [Test]
         public void SolutionMonitor_SearchForExtension()
