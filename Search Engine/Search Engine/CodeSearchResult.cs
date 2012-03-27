@@ -6,7 +6,8 @@ namespace Sando.SearchEngine
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;    
+    using System.Text;
+
 
     /// <summary>
     /// Class defined to create return result from Lucene indexer
@@ -58,9 +59,9 @@ namespace Sando.SearchEngine
 
         private static string Shorten(string fileName)
         {
-            if (fileName.Length > 20)
+            if (fileName.Length > 17)
             {
-                fileName = fileName.Substring(0, 20) + "...";
+                fileName = fileName.Substring(0, 17) + "..";
             }
             return fileName;
         }
@@ -80,6 +81,20 @@ namespace Sando.SearchEngine
 
     		}
     	}
+
+        public string Type
+        {
+            get { return Element.ProgramElementType.ToString();}
+        }
+
+        public string Name
+        {
+            get
+            {                
+              return Shorten(Element.Name);
+            }
+        }
+
        #endregion
        #region Constructor
        /// <summary>
