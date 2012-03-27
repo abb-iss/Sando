@@ -21,7 +21,7 @@ namespace Sando.Indexer.Documents
 			PropertyElement propertyElement = (PropertyElement) programElement;
 			document.Add(new Field(SandoField.AccessLevel.ToString(), propertyElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 			document.Add(new Field(SandoField.Body.ToString(), propertyElement.Body, Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.DataType.ToString(), propertyElement.PropertyType, Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field(SandoField.DataType.ToString(), propertyElement.PropertyType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.ClassId.ToString(), propertyElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 			document.Add(new Field(SandoField.ClassName.ToString(), propertyElement.ClassName, Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
@@ -29,7 +29,7 @@ namespace Sando.Indexer.Documents
 		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue());
-			string propertyType = document.GetField(SandoField.DataType.ToString()).StringValue();
+			string propertyType = document.GetField(SandoField.DataType.ToString()).StringValue().ToSandoDisplayable();
 			string body = document.GetField(SandoField.Body.ToString()).StringValue();
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue();

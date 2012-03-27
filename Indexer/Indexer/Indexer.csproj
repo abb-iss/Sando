@@ -134,6 +134,7 @@
     <Compile Include="Documents\MethodDocument.cs" />
     <Compile Include="DocumentIndexer.cs" />
     <Compile Include="Documents\SandoDocument.cs" />
+    <Compile Include="Documents\SandoDocumentStringExtension.cs" />
     <Compile Include="Documents\SandoField.cs" />
     <Compile Include="Exceptions\IndexerException.cs" />
     <Compile Include="IndexState\PhysicalFilesStatesManager.cs" />

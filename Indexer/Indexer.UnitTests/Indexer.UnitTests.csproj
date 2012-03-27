@@ -134,6 +134,7 @@
   <ItemGroup>
     <Compile Include="DocumentIndexerTest.cs" />
     <Compile Include="Documents\DocumentFactoryTest.cs" />
+    <Compile Include="Documents\SandoDocumentStringExtensionTest.cs" />
     <Compile Include="IndexState\IndexFilesStatesManagerTest.cs" />
     <Compile Include="IndexState\PhysicalFilesStatesManagerTest.cs" />
     <Compile Include="IndexState\FileOperationResolverTest.cs" />

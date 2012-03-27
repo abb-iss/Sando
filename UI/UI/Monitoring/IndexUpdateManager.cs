@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Xml;
-using EnvDTE;
 using Sando.Core;
 using Sando.Indexer;
 using Sando.Indexer.Documents;

@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translation.UnitTests", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestHelpers", "..\UnitTestHelpers\UnitTestHelpers.csproj", "{A4567112-2AAE-4C67-9EC6-4625924EA118}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,6 +195,16 @@ Global
 		{A4567112-2AAE-4C67-9EC6-4625924EA118}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A4567112-2AAE-4C67-9EC6-4625924EA118}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A4567112-2AAE-4C67-9EC6-4625924EA118}.Release|x86.ActiveCfg = Release|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
