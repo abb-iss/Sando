@@ -142,27 +142,24 @@ namespace Sando.Indexer.Searching.Criteria
 			    int count = 0;
 				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
 				{
-                    if (usageType == UsageType.Bodies || usageType == UsageType.Definitions || usageType == UsageType.MethodArguments)
+                    stringBuilder.Append("(");
+                    SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+                    stringBuilder.Append(")");
+                    switch (usageType)
                     {
-                        stringBuilder.Append("(");
-                        SingleUsageTypeCriteriaToString(stringBuilder, usageType);
-                        stringBuilder.Append(")");
-                        switch (usageType)
-                        {
-                            case UsageType.Definitions:
-                                stringBuilder.Append("^4");
-                                break;
-                            case UsageType.MethodArguments:
-                                stringBuilder.Append("^1");
-                                break;
-                            default:
-                                break;
-                        }
-                        if (collectionSize > 1 && count<2)
-                        {
-                            count++;
-                            stringBuilder.Append(" OR ");
-                        }
+                        case UsageType.Definitions:
+                            stringBuilder.Append("^4");
+                            break;
+                        case UsageType.MethodArguments:
+                            stringBuilder.Append("^1");
+                            break;
+                        default:
+                            break;
+                    }
+                    if (collectionSize > 1)
+                    {
+                        count++;
+                        stringBuilder.Append(" OR ");
                     }
 				    --collectionSize;
 				}                
