@@ -139,17 +139,33 @@ namespace Sando.Indexer.Searching.Criteria
 			else //all usage types are used
 			{
 				int collectionSize = Enum.GetValues(typeof(UsageType)).Length;
+			    int count = 0;
 				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
 				{
-					stringBuilder.Append("(");
-					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
-					stringBuilder.Append(")");
-					if(collectionSize > 1)
-					{
-						stringBuilder.Append(" OR ");
-					}
-					--collectionSize;
-				}
+                    if (usageType == UsageType.Bodies || usageType == UsageType.Definitions || usageType == UsageType.MethodArguments)
+                    {
+                        stringBuilder.Append("(");
+                        SingleUsageTypeCriteriaToString(stringBuilder, usageType);
+                        stringBuilder.Append(")");
+                        switch (usageType)
+                        {
+                            case UsageType.Definitions:
+                                stringBuilder.Append("^4");
+                                break;
+                            case UsageType.MethodArguments:
+                                stringBuilder.Append("^1");
+                                break;
+                            default:
+                                break;
+                        }
+                        if (collectionSize > 1 && count<2)
+                        {
+                            count++;
+                            stringBuilder.Append(" OR ");
+                        }
+                    }
+				    --collectionSize;
+				}                
 			}
 			stringBuilder.Append(")");
 		}
@@ -205,7 +221,7 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(" AND "); //every term must be present in the results
 				}
 				--collectionSize;
-			}
+			}     
 		}
 
 		public virtual SortedSet<string> SearchTerms { get; set; }

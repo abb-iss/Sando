@@ -80,10 +80,10 @@ namespace Fusion8.Cropper.Core
 		/// when the stream is retrieved and the image to pass to the callback.</param>
 		/// <param name="fileName">The image's file name.</param>
 		/// <param name="image">The image to return to the callback method.</param>
-		public void FetchOutputStream(StreamHandler streamHandler, string fileName, Image image)
+		public void FetchOutputStream(A B, string fileName, Image image)
 		{
-			if (streamHandler == null)
-				throw new ArgumentNullException("streamHandler");
+			if (a == null)
+				throw new ArgumentNullException("b");
 
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -91,8 +91,8 @@ namespace Fusion8.Cropper.Core
 			if (image == null)
 				throw new ArgumentNullException("image");
 
-			using (FileStream stream = File.Open(fileName, FileMode.Create))
-				streamHandler(stream, image);
+			using (a a = File.Open(fileName, FileMode.Create))
+				a(a, image);
 		}
 	}
 }
