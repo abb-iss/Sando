@@ -156,7 +156,7 @@ namespace Sando.Indexer.Searching.Criteria
                         default:
                             break;
                     }
-                    if (collectionSize > 1 && count<2)
+                    if (collectionSize > 1)
                     {
                         count++;
                         stringBuilder.Append(" OR ");
