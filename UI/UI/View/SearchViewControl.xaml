@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
-             xmlns:local="clr-namespace:Sando.UI" mc:Ignorable="d" 
+             xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" mc:Ignorable="d" 
              d:DesignHeight="*" d:DesignWidth="300"
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">    
@@ -35,7 +35,7 @@
             </StackPanel>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                Margin="10,0,10,10" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" MouseDoubleClick="UIElement_OnMouseDown">
+                Margin="10,0,10,10" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" MouseDoubleClick="UIElement_OnMouseDown">           
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment"                            
@@ -45,8 +45,8 @@
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.View>
-                <GridView>                   
-                       <GridViewColumn  Header="Summary" Width="125">
+                <GridView>
+                    <GridViewColumn  Header="Summary" Width="125" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>                                
                                 <Grid Margin="0,0,0,0">
@@ -57,17 +57,17 @@
                                     <RowDefinition Height="0" />
                                  </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Width="125"  Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                                <TextBlock   Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
                                 </TextBlock>
-                                <TextBlock Width="125"  Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
+                                <TextBlock   Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
                                 </TextBlock>
-                                <TextBlock Width="125"  Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
+                                <TextBlock  Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
                                 </TextBlock>
-                                    <Canvas Width="135" HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0">
-                                        <Line X1="1" X2="135" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
-                                    </Canvas>
+                                <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0">
+                                        <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
+                                </Canvas>
                                 </Grid>                
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -80,7 +80,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Margin="0,0,0,0">
                                     <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
-                                        <Canvas Width="1" Height="60" Margin="-9,-11,0,0">
+                                        <Canvas Width="1" Height="60" Margin="0,-11,0,0">
                                             <Line X1="1" X2="1" Y1="1" Y2="71" Stroke="LightSlateGray" StrokeThickness="1"></Line>
                                         </Canvas>
                                         <TextBlock FontFamily="Consolas" MinWidth="200" FontSize="11" TextAlignment="Left" VerticalAlignment="Top" Width="Auto"  Height="60" Text="{Binding Mode=OneWay, Path=Snippet}" >
