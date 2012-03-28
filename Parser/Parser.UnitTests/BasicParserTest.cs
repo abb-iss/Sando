@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Parser;
 
 namespace Sando.Parser.UnitTests
 {
@@ -162,6 +163,45 @@ namespace Sando.Parser.UnitTests
 					hasClass = true;
 			}
 			Assert.IsTrue(hasClass && hasMethod);
+		}
+
+		[Test]
+		public void MethodLinksToClassTest()
+		{
+			SrcMLParser parser = new SrcMLParser(Generator);
+			var elements = parser.Parse("..\\..\\TestFiles\\ImageCaptureCS.txt");
+			ClassElement ImageCaptureClassElement = null;
+			bool foundMethod = false;
+
+			// first find the class element
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is ClassElement)
+				{
+					ClassElement cls = (ClassElement)pe;
+					if(cls.Name == "ImageCapture")
+					{
+						ImageCaptureClassElement = cls;
+					}
+				}
+			}
+
+			// then the method element that should link to it
+			foreach(ProgramElement pe in elements) 
+			{
+				if(pe is MethodElement)
+				{
+					MethodElement method = (MethodElement)pe;
+					if(method.Name == "CaptureByHdc")
+					{
+						foundMethod = true;
+						Assert.AreEqual(method.ClassId, ImageCaptureClassElement.Id);
+						Assert.AreEqual(method.ClassName, ImageCaptureClassElement.Name);
+					}
+				}
+			}
+
+			Assert.IsTrue(foundMethod);
 		}
 
 		[TearDown]
