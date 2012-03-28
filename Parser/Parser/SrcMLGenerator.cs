@@ -103,24 +103,27 @@ namespace Sando.Parser
 		private string AdaptCSharpToJavaParsing(string inputCode)
 		{
 			//replace ':' with extends in class definitions 
-			inputCode = Regex.Replace(inputCode, @"class\s*(\w+)\s*:\s*(\w+)", "class $1 implements $2");
+			inputCode = Regex.Replace(inputCode, @"class(\s*\w+\s*):(\s*\w+)", "class$1implements$2");
 
 			//erase #region #endregion lines
 			inputCode = Regex.Replace(inputCode, @"#region[\w\. ]*", "");
 			inputCode = Regex.Replace(inputCode, @"#endregion", "");
 
 			//place semicolons after set and get in C# properties
-			inputCode = Regex.Replace(inputCode, @"set\s*{", "set; {");
-			inputCode = Regex.Replace(inputCode, @"get\s*{", "get; {");
+			inputCode = Regex.Replace(inputCode, @"set(\s*){", "set;$1{");
+			inputCode = Regex.Replace(inputCode, @"get(\s*){", "get;$1{");
 
 			//converting foreach C# loops into regular fors (java 5 capability not yet in srcml)
-			inputCode = Regex.Replace(inputCode, @"foreach\s*\((\w+)\s*(\w+)\s*in\s*(\w+)\)", "for ($1 $2; $3; )");
+			inputCode = Regex.Replace(inputCode, @"foreach[ ]*\((\w+\s*)(\w+\s*)in(\s*\w+)\)", "for ($1 $2; $3; )");
 
-			//removing attributes
-			//note: this is probably too aggresive, so array indices etc. would also be clobbered
-			inputCode = Regex.Replace(inputCode, @"\[[^\[]*\]", "");
+			//removing attributes (hack!!!)
+			//---entire attribute is on one line
+			inputCode = Regex.Replace(inputCode, @"^[ \t]*\[[^\[\r\n]*\][ \t\r\n]*$", "", RegexOptions.Multiline);
+			//---attribute is comma delimited on multiple lines (preserve spaces)
+			inputCode = Regex.Replace(inputCode, @"^[ \t]*\[[^,\r\n]*,[ \t\r\n]*$", "", RegexOptions.Multiline);
+			inputCode = Regex.Replace(inputCode, @"^[ \t]*[^\]\r\n]*\][ \t\r\n]*$", "", RegexOptions.Multiline);
 
-			return inputCode;
+			  return inputCode;
 		}
 
 
