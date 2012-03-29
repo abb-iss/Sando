@@ -51,6 +51,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="TestFiles\MethodElementTestFiles\Searcher.cs" />
     <None Include="TestFiles\MethodElementTestFiles\ImageCapture.cs" />
+    <Compile Include="Search\AllElementSearchTest.cs" />
     <Compile Include="Search\MethodElementSearchTest.cs" />
   </ItemGroup>
   <ItemGroup>
