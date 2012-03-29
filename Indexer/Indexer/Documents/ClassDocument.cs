@@ -20,7 +20,7 @@ namespace Sando.Indexer.Documents
 		{
 			ClassElement classElement = (ClassElement) programElement;
 			document.Add(new Field(SandoField.Namespace.ToString(), classElement.Namespace.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.AccessLevel.ToString(), classElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			document.Add(new Field(SandoField.AccessLevel.ToString(), classElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.ExtendedClasses.ToString(), classElement.ExtendedClasses.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.ImplementedInterfaces.ToString(), classElement.ImplementedInterfaces.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 		}

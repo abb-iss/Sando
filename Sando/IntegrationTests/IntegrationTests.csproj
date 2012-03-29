@@ -49,8 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="TestFiles\ClassNameTestFiles\Searcher.cs" />
-    <None Include="TestFiles\ClassNameTestFiles\ImageCapture.cs" />
+    <None Include="TestFiles\MethodElementTestFiles\Searcher.cs" />
+    <None Include="TestFiles\MethodElementTestFiles\ImageCapture.cs" />
     <Compile Include="Search\MethodElementSearchTest.cs" />
   </ItemGroup>
   <ItemGroup>
