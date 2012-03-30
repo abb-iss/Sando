@@ -270,18 +270,22 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement func in functions)
 			{
+				MethodElement methodElement = null;
 				if(Generator.Language == LanguageEnum.CPP)
 				{
 					string[] includedFiles = ParseCppIncludes(elements);
-					MethodElement methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
-					programElements.Add(methodElement);
+					methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
 				}
 				else
 				{
-					MethodElement methodElement = ParseFunction(func, programElements, fileName);
-					programElements.Add(methodElement);
+					methodElement = ParseFunction(func, programElements, fileName);
 				}
-
+				programElements.Add(methodElement);
+				DocCommentElement methodCommentsElement = ParseFunctionComments(func, methodElement);
+				if(methodCommentsElement != null)
+				{
+					programElements.Add(methodCommentsElement);
+				}
 			}
 		}
 
@@ -395,9 +399,9 @@ namespace Sando.Parser
 			return body;
 		}
 
-		private static void ParseName(XElement function, out string name, out int definitionLineNumber)
+		private static void ParseName(XElement target, out string name, out int definitionLineNumber)
 		{
-			XElement nameElement = function.Element(SourceNamespace + "name");
+			XElement nameElement = target.Element(SourceNamespace + "name");
 			name = nameElement.Value;
 
 			if(nameElement.Attribute(PositionNamespace + "line") != null)
@@ -408,6 +412,43 @@ namespace Sando.Parser
 			{
 				//i can't find the line number
 				definitionLineNumber = 0;
+			}
+		}
+
+		private static DocCommentElement ParseFunctionComments(XElement function, MethodElement funcElement)
+		{
+			string commentBody = "";
+
+			//retrieve comments inside function
+			IEnumerable<XElement> inComments =
+				from el in function.Descendants(SourceNamespace + "comment")
+				select el;
+			foreach(XElement inComment in inComments)
+			{
+				commentBody += inComment.Value + " ";
+			}
+			commentBody = commentBody.TrimEnd();
+
+			//retrieve comments above function
+			XElement aboveComment = (function.PreviousNode is XElement) ? (XElement)function.PreviousNode : null;
+			while(aboveComment != null &&
+				  aboveComment.Name == (SourceNamespace + "comment"))
+			{
+				string commentText = aboveComment.Value;
+				if(commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
+				commentBody = " " + commentText + commentBody;
+				aboveComment = (aboveComment.PreviousNode is XElement) ? (XElement)aboveComment.PreviousNode : null;
+			}
+			commentBody = commentBody.TrimStart();
+
+			if(commentBody != "")
+			{
+				return new DocCommentElement(funcElement.Name, funcElement.DefinitionLineNumber, funcElement.FullFilePath,
+												funcElement.Snippet, commentBody, funcElement.Id);
+			}
+			else
+			{
+				return null; 
 			}
 		}
 

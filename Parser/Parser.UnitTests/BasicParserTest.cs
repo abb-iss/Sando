@@ -204,6 +204,50 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(foundMethod);
 		}
 
+
+		[Test]
+		public void CommentsTest()
+		{
+			SrcMLParser parser = new SrcMLParser(Generator);
+			var elements = parser.Parse("..\\..\\TestFiles\\ImageCaptureCS.txt");
+			MethodElement methodElement = null;
+			bool foundComment = false;
+
+			//find the method element
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is MethodElement)
+				{
+					MethodElement method = (MethodElement)pe;
+					if(method.Name == "InitializeComponent")
+					{
+						methodElement = method;
+					}
+
+				}
+			}
+			Assert.IsNotNull(methodElement);
+
+			//now see if the comment was properly associated to the method element
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is DocCommentElement)
+				{
+					DocCommentElement comment = (DocCommentElement)pe;
+					if(comment.DocumentedElementId == methodElement.Id)
+					{
+						foundComment = true;
+						Assert.AreEqual(comment.Body, "<summary>  Required method for Designer support - do not modify  the contents of this method with the code editor.  </summary>");
+						Assert.AreEqual(comment.DefinitionLineNumber, methodElement.DefinitionLineNumber);
+						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
+					}
+				}
+			}
+			Assert.IsTrue(foundComment);
+
+		}
+
+
 		[TearDown]
 		public static void CleanUp()
 		{
