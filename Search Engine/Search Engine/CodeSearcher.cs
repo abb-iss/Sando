@@ -73,6 +73,31 @@ namespace Sando.SearchEngine
 			}
         }
 
+		/// <summary>
+		/// Searches using the specified search criteria.
+		/// </summary>
+		/// <param name="searchCriteria">The search criteria.</param>
+		/// <returns>List of Search Result</returns>
+		public virtual List<CodeSearchResult> Search(SearchCriteria searchCriteria)
+		{
+			//test cache hits
+			bool indexingChanged = false;//TODO: need API to get the status of the indexing
+			List<CodeSearchResult> res = lruCache.Get(searchCriteria);
+			if(res != null && !indexingChanged)
+			{
+				//cache hits and index not changed
+				return res;
+			}
+			else
+			{
+				//no cache hits, new search and update the cache
+				res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+				//add into cache even the res contains no contents
+				lruCache.Put(searchCriteria, res);
+				return res;
+			}
+		}
+
         #endregion	
         #region Private Mthods
         /// <summary>
