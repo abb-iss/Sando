@@ -121,104 +121,82 @@ namespace Sando.Indexer.Searching.Criteria
 				stringBuilder.Append(" AND ");
 			
 			stringBuilder.Append("(");
-			if(SearchByUsageType)
+			if(!SearchByUsageType)
 			{
-				int collectionSize = UsageTypes.Count;
+				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
+				{
+					UsageTypes.Add(usageType);
+				}
+			}
+			int searchTermsLeft = SearchTerms.Count;
+			foreach(string searchTerm in SearchTerms)
+			{
+				stringBuilder.Append("(");
+				int usageTypesLeft = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
 				{
-					stringBuilder.Append("(");
-					SingleUsageTypeCriteriaToString(stringBuilder, usageType);
-					stringBuilder.Append(")");
-					if(collectionSize > 1)
+					SingleUsageTypeCriteriaToString(stringBuilder, usageType, searchTerm);
+					if(usageTypesLeft > 1)
 					{
 						stringBuilder.Append(" OR ");
 					}
-					--collectionSize;
+					--usageTypesLeft;
 				}
-			}
-			else //all usage types are used
-			{
-				int collectionSize = Enum.GetValues(typeof(UsageType)).Length;
-			    int count = 0;
-				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
+				stringBuilder.Append(")"); 
+				if(searchTermsLeft > 1)
 				{
-                    stringBuilder.Append("(");
-                    SingleUsageTypeCriteriaToString(stringBuilder, usageType);
-                    stringBuilder.Append(")");
-                    switch (usageType)
-                    {
-                        case UsageType.Definitions:
-                            stringBuilder.Append("^4");
-                            break;
-                        case UsageType.MethodArguments:
-                            stringBuilder.Append("^1");
-                            break;
-                        default:
-                            break;
-                    }
-                    if (collectionSize > 1)
-                    {
-                        count++;
-                        stringBuilder.Append(" OR ");
-                    }
-				    --collectionSize;
-				}                
+					stringBuilder.Append(" AND ");
+				}
+				--searchTermsLeft;
 			}
 			stringBuilder.Append(")");
 		}
 
-		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType)
+		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
 		{
-			int collectionSize = SearchTerms.Count;
-			foreach(string searchTerm in SearchTerms)
+			switch(usageType)
 			{
-				switch(usageType)
-				{
-					case UsageType.Bodies:
-						stringBuilder.Append(SandoField.Body.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.Definitions:
-						stringBuilder.Append(SandoField.Name.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.EnumValues:
-						stringBuilder.Append(SandoField.Values.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.ExtendedClasses:
-						stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.ImplementedInterfaces:
-						stringBuilder.Append(SandoField.ImplementedInterfaces.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.MethodArguments:
-						stringBuilder.Append(SandoField.Arguments.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.MethodReturnTypes:
-						stringBuilder.Append(SandoField.ReturnType.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.NamespaceNames:
-						stringBuilder.Append(SandoField.Namespace.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					case UsageType.PropertyOrFieldTypes:
-						stringBuilder.Append(SandoField.DataType.ToString() + ":");
-						stringBuilder.Append(searchTerm);
-						break;
-					default:
-						throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
-				}
-				if(collectionSize > 1)
-				{
-					stringBuilder.Append(" AND "); //every term must be present in the results
-				}
-				--collectionSize;
-			}     
+				case UsageType.Bodies:
+					stringBuilder.Append(SandoField.Body.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				case UsageType.Definitions:
+					stringBuilder.Append(SandoField.Name.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					stringBuilder.Append("^4");
+					break;
+				case UsageType.EnumValues:
+					stringBuilder.Append(SandoField.Values.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				case UsageType.ExtendedClasses:
+					stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				case UsageType.ImplementedInterfaces:
+					stringBuilder.Append(SandoField.ImplementedInterfaces.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				case UsageType.MethodArguments:
+					stringBuilder.Append(SandoField.Arguments.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					stringBuilder.Append("^1");
+					break;
+				case UsageType.MethodReturnTypes:
+					stringBuilder.Append(SandoField.ReturnType.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				case UsageType.NamespaceNames:
+					stringBuilder.Append(SandoField.Namespace.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				case UsageType.PropertyOrFieldTypes:
+					stringBuilder.Append(SandoField.DataType.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					break;
+				default:
+					throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
+			}
 		}
 
 		public virtual SortedSet<string> SearchTerms { get; set; }
