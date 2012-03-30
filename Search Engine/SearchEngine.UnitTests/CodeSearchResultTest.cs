@@ -10,10 +10,19 @@ namespace Sando.SearchEngine.UnitTests
     public class CodeSearchResultTest
     {
         [TestCase]
-        public void FixSnipTest()
+        public void FixSnipTabTest()
         {
-            var stuff = "	public void yo()\n		sasdfsadf\n		asdfasdf";
-            Assert.IsTrue(CodeSearchResult.FixSnip(stuff).Equals("public void yo()\n	sasdfsadf\n	asdfasdf"));
+            var stuff = "	public void yo()\n		sasdfsadf\n		asdfasdf\n";
+            string fixSnip = CodeSearchResult.FixSnip(stuff);
+            Assert.IsTrue(fixSnip.Equals("public void yo()\n\tsasdfsadf\n\tasdfasdf\n"));
+        }
+
+        [TestCase]
+        public void FixSnipSpacesTest()
+        {
+            var stuff = "      public void yo()\n            sasdfsadf\n            asdfasdf\n";
+            string fixSnip = CodeSearchResult.FixSnip(stuff);
+            Assert.IsTrue(fixSnip.Equals("public void yo()\n      sasdfsadf\n      asdfasdf\n"));
         }
     }
 }

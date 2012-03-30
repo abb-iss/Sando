@@ -40,28 +40,41 @@ namespace Sando.SearchEngine
            get
            {
                var snip = Element.Snippet;
-               //return FixSnip(snip);
-               return snip;
+               return FixSnip(snip);               
            }           
        }
 
        public static string FixSnip(string snip)
        {
-           if (snip.StartsWith("\t"))
+           int toRemove = 0;
+           if (snip.StartsWith("\t\t"))
+           {
+               toRemove = 2;
+           }
+           else if (snip.StartsWith("\t"))
+           {
+               toRemove = 1;
+           }
+           else if (snip.StartsWith(" "))
+           {
+               toRemove = snip.Length - snip.TrimStart(' ').Length;
+           }
+           if(toRemove>0)
            {
                var newSnip = "";
                var split = snip.Split('\n');
                foreach (var line in split)
                {
-                   newSnip += line.Remove(1);
+                   if(line.Length>toRemove+1)
+                   newSnip += line.Remove(0,toRemove)+"\n";
                }
                return newSnip;
            }
-           if (snip.StartsWith("\r\n"))
-           {
-               snip = snip.Substring(2);
-           }
-           return snip.Replace("\t", "     ");
+           //if (snip.StartsWith("\r\n"))
+           //{
+           //    snip = snip.Substring(2);
+           //}
+           return snip;
        }
     	public string FileName
     	{
