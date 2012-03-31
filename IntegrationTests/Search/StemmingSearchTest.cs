@@ -72,7 +72,7 @@ namespace Sando.IntegrationTests.Search
 			//Assert.AreEqual(methodElement.ReturnType, "ImagePairNames", "Method return type differs!");
 			//Assert.False(String.IsNullOrWhiteSpace(methodElement.Snippet), "Method snippet is invalid!");
 
-			//var fieldSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "TryAddTemplatePrompt");
+			//var fieldSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Field && el.Element.Name == "fileName");
 			//if(fieldSearchResult == null)
 			//{
 			//    Assert.Fail("Failed to find relevant search result for search: " + keywords);
@@ -83,7 +83,7 @@ namespace Sando.IntegrationTests.Search
 			//Assert.AreEqual(fieldElement.ClassName, "FileNameTemplate", "Field class name differs!");
 			//Assert.AreEqual(fieldElement.DefinitionLineNumber, 51, "Field definition line number differs!");
 			//Assert.True(fieldElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Field full file path is invalid!");
-			//Assert.AreEqual(fieldElement.Name, "TryAddTemplatePrompt", "Field name differs!");
+			//Assert.AreEqual(fieldElement.Name, "fileName", "Field name differs!");
 			//Assert.AreEqual(fieldElement.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			//Assert.AreEqual(fieldElement.FieldType, "string", "Field return type differs!");
 			//Assert.False(String.IsNullOrWhiteSpace(methodElement.Snippet), "Field snippet is invalid!");
