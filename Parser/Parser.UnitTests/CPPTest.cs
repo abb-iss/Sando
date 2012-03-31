@@ -16,7 +16,7 @@ namespace Sando.Parser.UnitTests
 			//set up generator
 			CurrentDirectory = Environment.CurrentDirectory;
 			Generator = new SrcMLGenerator();
-			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
+			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win");
 			Generator.Language = LanguageEnum.CPP;
 		}
 
@@ -25,7 +25,7 @@ namespace Sando.Parser.UnitTests
 		{
 			bool seenGetTimeMethod = false;
 			int numMethods = 0;
-			string sourceFile = @"..\..\TestFiles\Event.CPP.txt";
+			string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
 			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
@@ -76,7 +76,7 @@ namespace Sando.Parser.UnitTests
 			bool hasClass = false;
 			bool hasEnum = false;
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\Event.H.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Length, 7);
 			foreach(ProgramElement pe in elements)
@@ -113,7 +113,7 @@ namespace Sando.Parser.UnitTests
             bool seenGetTimeMethod = false;
             int numMethods = 0;            
             var parser = new SrcMLParser(Generator);
-            var elements = parser.Parse("..\\..\\TestFiles\\AboutDlg.cpp");
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\AboutDlg.cpp");
             Assert.IsTrue(true);
         }
 	}

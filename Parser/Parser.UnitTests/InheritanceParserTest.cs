@@ -17,14 +17,14 @@ namespace Sando.Parser.UnitTests
 			//set up generator
 			CurrentDirectory = Environment.CurrentDirectory;
 			Generator = new SrcMLGenerator();
-			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
+			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win");
 		}
 
 		[Test]
 		public void ParseProperties()
 		{
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ShortInheritance.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortInheritance.txt");
 			bool seenClass = false;
 			int countProperties = 0;
 			foreach (var programElement in elements)
@@ -42,7 +42,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseMultipleParents()
 		{
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\MultiParentTest.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MultiParentTest.txt");
 			bool seenClass = false;
 			foreach(var programElement in elements)
 			{
@@ -72,7 +72,7 @@ namespace Sando.Parser.UnitTests
 		{
 			bool seenClass = false;
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\InheritanceCSharpFile.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length > 0);
 			foreach(ProgramElement pe in elements)

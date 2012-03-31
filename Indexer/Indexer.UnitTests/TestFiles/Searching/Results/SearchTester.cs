@@ -25,7 +25,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
                 //set up generator
                 _currentDirectory = Environment.CurrentDirectory;
                 _generator = new SrcMLGenerator();
-                _generator.SetSrcMLLocation(_currentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
+				_generator.SetSrcMLLocation(_currentDirectory + "\\..\\..\\LIBS\\srcML-Win");
                 _parser = new SrcMLParser(_generator);
                 Directory.CreateDirectory(_luceneTempIndexesDirectory);
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);

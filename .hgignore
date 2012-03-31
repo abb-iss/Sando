@@ -14,3 +14,4 @@ Search Engine/Search Engine/StyleCop.Cache
 Sando/Local.testsettings
 Sando/Sando.vsmdi
 Sando/TraceAndTestImpact.testsettings
+bin/*
