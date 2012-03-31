@@ -23,7 +23,7 @@ namespace Sando.Parser.UnitTests
 			//set up generator
 			CurrentDirectory = Environment.CurrentDirectory;
 			Generator = new SrcMLGenerator();
-			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");
+			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win");
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void GenerateSrcMLShortFileTest()
 		{
-			String srcML = Generator.GenerateSrcML("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNullOrEmpty(srcML);
 		}
 
@@ -44,7 +44,7 @@ namespace Sando.Parser.UnitTests
 		public void GenerateSrcMLShortestFileTest()
 		{			
 			var parser = new SrcMLParser(Generator);
-			var srcML = parser.Parse("..\\..\\TestFiles\\ShortestCSharpFile.txt");
+			var srcML = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsTrue(srcML!=null);
 		}	
 
@@ -53,7 +53,7 @@ namespace Sando.Parser.UnitTests
 		{
 			bool seenSetLanguageMethod = false;
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
 			foreach(ProgramElement pe in elements)
@@ -81,7 +81,7 @@ namespace Sando.Parser.UnitTests
 		{
 			bool seenClass = false;
 			var parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length > 0);
 			foreach(ProgramElement pe in elements)
@@ -108,7 +108,7 @@ namespace Sando.Parser.UnitTests
 		public void BasicParserTest()
 		{
 			SrcMLParser parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
 			bool hasClass=false, hasMethod=false;
@@ -128,7 +128,7 @@ namespace Sando.Parser.UnitTests
 		public void EnumParserTest()
 		{
 			SrcMLParser parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ShortCSharpFile.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			bool hasEnum = false;
 			foreach(var programElement in elements)
 			{
@@ -151,7 +151,7 @@ namespace Sando.Parser.UnitTests
 		public void CSharpRegionTest()
 		{
 			SrcMLParser parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\RegionTest.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\RegionTest.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length == 2);
 			bool hasClass = false, hasMethod = false;
@@ -169,7 +169,7 @@ namespace Sando.Parser.UnitTests
 		public void MethodLinksToClassTest()
 		{
 			SrcMLParser parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ImageCaptureCS.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt");
 			ClassElement ImageCaptureClassElement = null;
 			bool foundMethod = false;
 
@@ -209,7 +209,7 @@ namespace Sando.Parser.UnitTests
 		public void CommentsTest()
 		{
 			SrcMLParser parser = new SrcMLParser(Generator);
-			var elements = parser.Parse("..\\..\\TestFiles\\ImageCaptureCS.txt");
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt");
 			MethodElement methodElement = null;
 			bool foundComment = false;
 

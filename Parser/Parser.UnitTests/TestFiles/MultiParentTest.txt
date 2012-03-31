@@ -19,7 +19,7 @@ namespace Sando.Parser
 			//try to set this up automatically
 			var currentDirectory = Environment.CurrentDirectory;
 			Generator = new SrcMLGenerator();
-			Generator.SetSrcMLLocation(currentDirectory + "\\..\\..\\..\\..\\LIBS\\srcML-Win");			
+			Generator.SetSrcMLLocation(currentDirectory + "\\..\\..\\LIBS\\srcML-Win");			
 		}
 
 		public SrcMLParser(SrcMLGenerator gen )

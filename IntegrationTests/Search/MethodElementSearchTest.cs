@@ -20,7 +20,7 @@ namespace Sando.IntegrationTests.Search
 			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
 			string keywords = "fetch output stream";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
+			Assert.AreEqual(codeSearchResults.Count, 3, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "FetchOutputStream");
 			if(methodSearchResult == null)
 			{
@@ -77,10 +77,10 @@ namespace Sando.IntegrationTests.Search
 		{
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(new Guid(), "..\\..\\TestFiles\\MethodElementTestFiles", indexPath);
+			key = new SolutionKey(new Guid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
 			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
 			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer);
-			string[] files = Directory.GetFiles("..\\..\\TestFiles\\MethodElementTestFiles");
+			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
 			foreach(var file in files)
 			{
 				string fullPath = Path.GetFullPath(file);

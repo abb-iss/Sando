@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translation.UnitTests", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestHelpers", "..\UnitTestHelpers\UnitTestHelpers.csproj", "{A4567112-2AAE-4C67-9EC6-4625924EA118}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "..\IntegrationTests\IntegrationTests.csproj", "{9433BCE6-5E3D-4EEA-BA4A-A2EEF3ADF219}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
