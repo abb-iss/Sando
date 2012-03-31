@@ -55,26 +55,29 @@
     <Compile Include="Search\MethodElementSearchTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+    <ProjectReference Include="..\Core\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
+    <ProjectReference Include="..\Indexer\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
+    <ProjectReference Include="..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
       <Name>Search Engine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\UI\UI\UI.csproj">
+    <ProjectReference Include="..\UI\UI\UI.csproj">
       <Project>{301DCCF5-C559-4CB2-BF1A-CE167B3BF33A}</Project>
       <Name>UI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
+    <ProjectReference Include="..\UnitTestHelpers\UnitTestHelpers.csproj">
       <Project>{A4567112-2AAE-4C67-9EC6-4625924EA118}</Project>
       <Name>UnitTestHelpers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestFiles\NamesWithNumbersTestFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
