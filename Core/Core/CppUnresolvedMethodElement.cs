@@ -8,7 +8,7 @@ namespace Sando.Core
 	{
 		public CppUnresolvedMethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, 
 			string returnType, string body, string className, string [] headerFiles)
-			: base(name, definitionLineNumber, fullFilePath, snippet, AccessLevel.Protected, arguments, returnType, body, Guid.NewGuid(), className)
+			: base(name, definitionLineNumber, fullFilePath, snippet, AccessLevel.Protected, arguments, returnType, body, Guid.NewGuid(), className, String.Empty)
 		{
 			Contract.Requires(className != null, "CppSplitMethodElement:Constructor - class name cannot be null!");
 			Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
@@ -28,7 +28,7 @@ namespace Sando.Core
 			if(ResolveAccessType(Name, headerElements, out accessLevel) == false) return false;
 
 			IsResolved = true;
-			outMethodElement = new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, classId, ClassName);
+			outMethodElement = new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, classId, ClassName, String.Empty);
 			return true;
 		}
 

@@ -141,7 +141,7 @@ namespace Sando.Parser
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
 				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-				programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className));
+				programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, String.Empty));
 			}
 		}
 
@@ -260,7 +260,7 @@ namespace Sando.Parser
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces);
+			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty);
 		}
 
 		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, string fileName)
@@ -326,7 +326,7 @@ namespace Sando.Parser
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className);
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, String.Empty);
 		}
 
 		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles)
@@ -378,7 +378,7 @@ namespace Sando.Parser
 				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
 				string className = classElement != null ? classElement.Name : String.Empty;
 
-				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className);
+				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, String.Empty);
 			}
 
 			return methodElement;

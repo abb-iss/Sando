@@ -25,6 +25,7 @@ namespace Sando.Indexer.Documents
 			document.Add(new Field(SandoField.ClassId.ToString(), methodElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 			document.Add(new Field(SandoField.ClassName.ToString(), methodElement.ClassName, Field.Store.YES, Field.Index.NOT_ANALYZED));
 			document.Add(new Field(SandoField.ReturnType.ToString(), methodElement.ReturnType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field(SandoField.Modifiers.ToString(), methodElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
 		}
 
 		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
@@ -35,7 +36,8 @@ namespace Sando.Indexer.Documents
 			string body = document.GetField(SandoField.Body.ToString()).StringValue();
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue();
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className);
+			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers);
 		}
 	}
 }

@@ -13,10 +13,11 @@ namespace Sando.UnitTestHelpers
 			string implementedInterfaces = "IDisposable",
 			string name = "SimpleClassName",
 			string namespaceName = "Sando.Indexer.UnitTests",
-			string snippet = "public class SimpleClass\n{private int field1;\nprotected void method(){}\n}"
+			string snippet = "public class SimpleClass\n{private int field1;\nprotected void method(){}\n}",
+			string modifiers = ""
 		)
 		{
-			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces);
+			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers);
 		}
 
 		public static CommentElement GetSampleCommentElement(
@@ -63,10 +64,11 @@ namespace Sando.UnitTestHelpers
 			string fieldType = "int",
 			string fullFilePath = "C:/Projects/SampleClass.cs",
 			string name = "maxCollectionLength",
-			string snippet = "private int maxCollectionLength;"
+			string snippet = "private int maxCollectionLength;",
+			string modifiers = ""
 		)
 		{
-			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className);
+			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className, modifiers);
 		}
 
 		public static MethodElement GetSampleMethodElement(
@@ -79,10 +81,11 @@ namespace Sando.UnitTestHelpers
 			string fullFilePath = "C:/Projects/SampleClass.cs",
 			string name = "multiply",
 			string returnType = "int",
-			string snippet = "private int multiply(int number, int factor)\n{\nreturn number * factor;\n};"
+			string snippet = "private int multiply(int number, int factor)\n{\nreturn number * factor;\n};",
+			string modifiers = ""
 		)
 		{
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId), className);
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId), className, modifiers);
 		}
 
 		public static PropertyElement GetSamplePropertyElement(
@@ -94,10 +97,11 @@ namespace Sando.UnitTestHelpers
 			string propertyType = "double",
 			string fullFilePath = "C:/Projects/SampleClass.cs",
 			string name = "StockValue",
-			string snippet = "protected double StockValue{get; set;};"
+			string snippet = "protected double StockValue{get; set;};",
+			string modifiers = ""
 		)
 		{
-			return new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId), className);
+			return new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId), className, modifiers);
 		}
 	}
 }

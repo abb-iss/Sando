@@ -49,7 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Search\StemmingSearchTest.cs" />
     <Compile Include="Search\NameWithNumbersSearchTest.cs" />
+    <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs" />
     <None Include="TestFiles\MethodElementTestFiles\Searcher.cs" />
     <None Include="TestFiles\MethodElementTestFiles\ImageCapture.cs" />
     <Compile Include="Search\AllElementSearchTest.cs" />

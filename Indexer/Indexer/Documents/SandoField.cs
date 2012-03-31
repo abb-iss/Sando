@@ -24,6 +24,7 @@ namespace Sando.Indexer.Documents
 		ProgramElementType,
 		ReturnType,
 		Snippet,
+		Modifiers,
 		Values
 	}
 }

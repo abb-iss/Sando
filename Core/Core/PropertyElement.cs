@@ -6,7 +6,7 @@ namespace Sando.Core
 	public class PropertyElement : ProgramElement
 	{
 		public PropertyElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
-			string propertyType, string body, Guid classId, string className) 
+			string propertyType, string body, Guid classId, string className, string modifiers) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(propertyType), "PropertyElement:Constructor - property type cannot be null!");
@@ -20,6 +20,7 @@ namespace Sando.Core
 			Body = body;
 			ClassId = classId;
 			ClassName = className;
+			Modifiers = modifiers;
 		}
 
 		public virtual AccessLevel AccessLevel { get; private set; }
@@ -27,6 +28,7 @@ namespace Sando.Core
 		public virtual string Body { get; private set; }
 		public virtual Guid ClassId { get; private set; }
 		public virtual string ClassName { get; private set; }
+		public virtual string Modifiers { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Property; } }
 	}
 }
