@@ -16,7 +16,7 @@ namespace Sando.Core
 
 		private static string CamelTypeToUnderscore(string word)
 		{
-			return Regex.Replace(word, @"([A-Z][a-z]+|[A-Z]+)", "_$1").Replace(" _", "_");
+			return Regex.Replace(word, @"([A-Z][a-z]+|[A-Z]+|[0-9]+)", "_$1").Replace(" _", "_");
 		}
 
 		private static string[] SplitOnDelimiters(string word) 
