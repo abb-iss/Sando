@@ -11,7 +11,7 @@ namespace Sando.Indexer.Searching
 	{
 		public IndexerSearcher(SolutionKey solutionKey)
 		{
-			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Default);
+			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Snowball);
 		}
 
 		public List<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria)

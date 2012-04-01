@@ -26,8 +26,7 @@ namespace Sando.UI.Monitoring
 
 			//TODO if solution is reopen - the guid should be read from file - future change
 			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
-			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey,
-			                                                          AnalyzerType.Standard);
+			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Snowball);
 			var currentMonitor = new SolutionMonitor(SolutionWrapper.Create(openSolution), solutionKey, currentIndexer);			
 			return currentMonitor;
 		}
