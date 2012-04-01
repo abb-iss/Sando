@@ -12,6 +12,8 @@ namespace Fusion8.Cropper.Core
 		private string fileName;
         private int lastIncrement = 1;
 
+		protected DateTime LastIncrementDate { get; set; }
+
         public ImagePairNames Parse(string extension)
         {
             fileExtension = extension;

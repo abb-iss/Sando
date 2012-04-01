@@ -38,6 +38,7 @@ namespace Sando.Parser
 			ParseEnums(programElements, sourceElements, fileName);
 			ParseClasses(programElements, sourceElements, fileName);
 			ParseFunctions(programElements, sourceElements, fileName);
+			ParseFields(programElements, sourceElements, fileName);
 
 			if(Generator.Language == LanguageEnum.CSharp)
 			{
@@ -142,6 +143,56 @@ namespace Sando.Parser
 				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
 				programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, String.Empty));
+			}
+		}
+
+		private void ParseFields(List<ProgramElement> programElements, XElement elements, string fileName)
+		{
+			IEnumerable<XElement> fields =
+				from el in elements.Descendants(SourceNamespace + "class")
+				select el.Element(SourceNamespace + "block");
+
+				fields =
+					from el in fields.Elements(SourceNamespace + "decl_stmt").Elements(SourceNamespace + "decl")
+					where	el.Element(SourceNamespace + "name") != null &&
+							el.Element(SourceNamespace + "type") != null &&
+							(
+								(el.Element(SourceNamespace + "init") != null && el.Elements().Count() == 3) ||
+								el.Elements().Count() == 2
+							)
+					select el;
+
+			foreach(XElement field in fields)
+			{
+				string name;
+				int definitionLineNumber;
+				ParseName(field, out name, out definitionLineNumber);
+
+				ClassElement classElement = RetrieveClassElement(field, programElements);
+				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+				string className = classElement != null ? classElement.Name : String.Empty;
+
+				//parse access level and type
+				XElement accessElement = field.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
+				AccessLevel accessLevel = accessElement != null ? StrToAccessLevel(accessElement.Value) : AccessLevel.Internal;
+
+				IEnumerable<XElement> types = field.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+				string fieldType = String.Empty;
+				foreach(XElement type in types)
+				{
+					fieldType += type.Value + " ";
+				}
+				fieldType = fieldType.TrimEnd();
+				
+				string initialValue = String.Empty;
+				XElement initialValueElement = field.Element(SourceNamespace + "init");
+				if(initialValueElement != null)
+					initialValue = initialValueElement.Element(SourceNamespace + "expr").Value;
+
+				string fullFilePath = System.IO.Path.GetFullPath(fileName);
+				string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+
+				programElements.Add(new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue));
 			}
 		}
 

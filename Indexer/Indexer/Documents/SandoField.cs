@@ -19,6 +19,7 @@ namespace Sando.Indexer.Documents
 		FullFilePath,
 		Id,
 		ImplementedInterfaces,
+		InitialValue,
 		Name,
 		Namespace,
 		ProgramElementType,

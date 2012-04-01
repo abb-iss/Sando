@@ -65,10 +65,11 @@ namespace Sando.UnitTestHelpers
 			string fullFilePath = "C:/Projects/SampleClass.cs",
 			string name = "maxCollectionLength",
 			string snippet = "private int maxCollectionLength;",
-			string modifiers = ""
+			string modifiers = "",
+			string initialValue = ""
 		)
 		{
-			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className, modifiers);
+			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className, modifiers, initialValue);
 		}
 
 		public static MethodElement GetSampleMethodElement(

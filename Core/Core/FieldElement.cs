@@ -6,7 +6,7 @@ namespace Sando.Core
 	public class FieldElement : ProgramElement
 	{
 		public FieldElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
-			string fieldType, Guid classId, string className, string modifiers) 
+			string fieldType, Guid classId, string className, string modifiers, string initialValue) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fieldType), "FieldElement:Constructor - field type cannot be null!");
@@ -19,6 +19,7 @@ namespace Sando.Core
 			ClassId = classId;
 			ClassName = className;
 			Modifiers = modifiers;
+			InitialValue = initialValue;
 		}
 
 		public virtual AccessLevel AccessLevel { get; private set; }
@@ -26,6 +27,7 @@ namespace Sando.Core
 		public virtual Guid ClassId { get; private set; }
 		public virtual string ClassName { get; private set; }
 		public virtual string Modifiers { get; private set; }
+		public virtual string InitialValue { get; private set; }
 		public override ProgramElementType ProgramElementType { get { return ProgramElementType.Field; } }
 	}
 }
