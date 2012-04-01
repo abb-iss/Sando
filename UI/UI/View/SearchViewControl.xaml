@@ -8,8 +8,13 @@
              xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" mc:Ignorable="d" 
              d:DesignHeight="*" d:DesignWidth="300"
              Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">    
-         
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
+
+    <UserControl.Resources>
+        <BitmapImage x:Key="IconClass" UriSource="../Resources/IconClass.png" />
+        <BitmapImage x:Key="IconFile" UriSource="../Resources/IconFile.png" />
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>            
@@ -56,16 +61,20 @@
                                     <RowDefinition Height="20" />
                                     <RowDefinition Height="0" />
                                  </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock   Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="0" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="{StaticResource ResourceKey=IconClass}" Width="20" Height="20" Grid.Row="0" Grid.Column="0" />
+                                    <Image Source="{StaticResource ResourceKey=IconFile}" Width="20" Height="20" Grid.Row="1" Grid.Column="0" />
+                                    <Image Source="{StaticResource ResourceKey=IconClass}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />
+                                    <TextBlock   Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="1" >
                                 </TextBlock>
-                                <TextBlock   Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="0" >
+                                <TextBlock   Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="1" >
                                 </TextBlock>
-                                <TextBlock  Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="0" >
+                                <TextBlock  Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="1" >
                                 </TextBlock>
-                                <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0">
+                                <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                                         <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
                                 </Canvas>
                                 </Grid>                
