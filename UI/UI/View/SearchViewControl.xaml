@@ -9,8 +9,8 @@
              d:DesignHeight="*" d:DesignWidth="300"
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
-
     <UserControl.Resources>
+        <view:StringToBitmapImage x:Key="StringToBitmapImage"/>
         <BitmapImage x:Key="IconClass" UriSource="../Resources/IconClass.png" />
         <BitmapImage x:Key="IconFile" UriSource="../Resources/IconFile.png" />
     </UserControl.Resources>
@@ -40,7 +40,7 @@
             </StackPanel>
 
         <ListView Grid.Row="1" ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                Margin="10,0,10,10" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" MouseDoubleClick="UIElement_OnMouseDown">           
+                Margin="10,0,10,10" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" MouseDoubleClick="UIElement_OnMouseDown">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment"                            
@@ -55,28 +55,28 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>                                
                                 <Grid Margin="0,2,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="20" />
-                                    <RowDefinition Height="20" />
-                                    <RowDefinition Height="20" />
-                                    <RowDefinition Height="0" />
-                                 </Grid.RowDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="20" />
+                                        <RowDefinition Height="0" />
+                                    </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="20"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="{StaticResource ResourceKey=IconClass}" Width="20" Height="20" Grid.Row="0" Grid.Column="0" />
+                                    
+                                    <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="1" />
+                                    <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="1" />
+                                    <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="1" />
+                                    <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                                        <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1" />
+                                    </Canvas>
+                                    <Image Source="{Binding Mode=OneWay, Path=Icon, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="0" Grid.Column="0" />
                                     <Image Source="{StaticResource ResourceKey=IconFile}" Width="20" Height="20" Grid.Row="1" Grid.Column="0" />
-                                    <Image Source="{StaticResource ResourceKey=IconClass}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />
-                                    <TextBlock   Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="1" >
-                                </TextBlock>
-                                <TextBlock   Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="1" >
-                                </TextBlock>
-                                <TextBlock  Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="1" >
-                                </TextBlock>
-                                <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-                                        <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
-                                </Canvas>
+                                    <!--I have no idea how to determine parent type without adding a new property IconParent to CodeSearchResult(Well, I don't know how to access parent type...)-->
+                                    <!--Assume that parent and children are of the same type then-->
+                                    <Image Source="{Binding Mode=OneWay, Path=Icon, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />
                                 </Grid>                
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -87,7 +87,23 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Vertical" Margin="0,0,0,0">
+                                <Grid Margin="0,2,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="62" />
+                                        <RowDefinition Height="0" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <!--<ColumnDefinition Width="Auto" />-->
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <!--<Label FontFamily="Cambria" Width="Auto" Height="Auto" MinWidth="20" FontSize="9" Grid.Row="0" Grid.Column="0" Content="{Binding Mode=OneWay, Path=Element.DefinitionLineNumber}" />-->
+                                    <TextBlock Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="9" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
+                                               Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="0" Grid.Column="1"/>
+                                    <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                        <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
+                                    </Canvas>
+                                </Grid>
+                                <!--<StackPanel Orientation="Vertical" Margin="0,0,0,0">
                                     <StackPanel Orientation="Horizontal" Margin="-6,0,0,0">
                                         <Canvas Width="1" Height="60" Margin="0,-11,0,0">
                                             <Line X1="1" X2="1" Y1="1" Y2="71" Stroke="LightSlateGray" StrokeThickness="1"></Line>
@@ -98,7 +114,7 @@
                                     <Canvas Width="Auto" Height="0" Margin="-5,0,0,0">
                                         <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
                                     </Canvas>
-                                </StackPanel>
+                                    </StackPanel>-->
                             </DataTemplate>                            
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

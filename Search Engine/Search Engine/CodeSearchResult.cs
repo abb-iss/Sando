@@ -124,6 +124,18 @@ namespace Sando.SearchEngine
             }
         }
 
+	   /// <summary>
+	   /// Used to represent the icon path of a CodeSearchResult
+	   /// </summary>
+		public string Icon
+		{
+			get
+			{
+				return string.Format("../Resources/VS2010Icons/VSObject_{0}.png", this.Type);
+			}
+		}
+	   
+
        #endregion
        #region Constructor
        /// <summary>
