@@ -65,6 +65,7 @@
     <Content Include="TestFiles\Event.CPP.txt" />
     <Content Include="TestFiles\Event.H.txt" />
     <Content Include="TestFiles\InheritanceCSharpFile.txt" />
+    <Content Include="TestFiles\LargeCppFile.txt" />
     <Content Include="TestFiles\MultiParentTest.txt" />
     <Content Include="TestFiles\ShortCSharpFile.txt" />
     <Content Include="TestFiles\ShortestCSharpFile.txt" />

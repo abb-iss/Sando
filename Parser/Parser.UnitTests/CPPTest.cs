@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Threading;
 using NUnit.Framework;
 using Sando.Core;
 
@@ -116,5 +118,22 @@ namespace Sando.Parser.UnitTests
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\AboutDlg.cpp");
             Assert.IsTrue(true);
         }
+
+        [Test]
+        public void ParseBigFileTest()
+        {
+            var _processFileInBackground = new System.ComponentModel.BackgroundWorker();
+            _processFileInBackground.DoWork +=
+                new DoWorkEventHandler(_processFileInBackground_DoWork);	
+            _processFileInBackground.RunWorkerAsync();
+            Thread.Sleep(10000);
+            //Assert.IsTrue(_processFileInBackground.IsBusy==false);
+        }
+
+	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
+	    {
+            var parser = new SrcMLParser(Generator);
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LargeCppFile.txt");     
+	    }
 	}
 }
