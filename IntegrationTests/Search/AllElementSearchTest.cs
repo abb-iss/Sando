@@ -69,6 +69,21 @@ namespace Sando.IntegrationTests.Search
 		}
 
 		[Test]
+		public void SearchWorksNormallyForTermsWhichEndsWithSpace()
+		{
+			try
+			{
+				var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+				string keywords = "  usage ";
+				List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
+
+		[Test]
 		public void SearchReturnsElementsUsingCrossFieldMatching()
 		{
 			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
