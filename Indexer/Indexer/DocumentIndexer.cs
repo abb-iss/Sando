@@ -75,7 +75,8 @@ namespace Sando.Indexer
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void ClearIndex()
-		{
+		{   
+            IndexWriter.GetDirectory().EnsureOpen();
 			IndexWriter.DeleteAll();
 		}
 

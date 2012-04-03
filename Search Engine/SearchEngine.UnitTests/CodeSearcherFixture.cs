@@ -1,4 +1,6 @@
 ﻿
+using System.IO;
+
 namespace Sando.SearchEngine.UnitTests
 {
     using System;
@@ -30,8 +32,7 @@ namespace Sando.SearchEngine.UnitTests
     		var indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
 			//TODO - How do we get an instance of IIndexerSearcher?
 			//FYI - use this IndexerSearcherFactory.CreateSearcher
-            Assert.DoesNotThrow(() => new CodeSearcher( null ));
-			indexer.Dispose();
+            Assert.DoesNotThrow(() => new CodeSearcher( null ));            
         }
 
         [Test]     
@@ -63,6 +64,7 @@ namespace Sando.SearchEngine.UnitTests
     	public void CreateIndexer()
 		{
 			IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
+		    Directory.CreateDirectory(IndexerPath);
 			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath);
 			Indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
