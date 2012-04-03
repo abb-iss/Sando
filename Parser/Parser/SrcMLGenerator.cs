@@ -20,12 +20,22 @@ namespace Sando.Parser
 
 		public LanguageEnum Language { get; set; }
 
+        public static SrcMLGenerator Generator(LanguageEnum language)
+        {
+            return new SrcMLGenerator(language);
+        }
+
+        public SrcMLGenerator(LanguageEnum language)
+        {
+            Language = language;
+        }
+
 		public SrcMLGenerator()
 		{
 			Language = LanguageEnum.CSharp;
 		}
 
-		public void SetSrcMLLocation(string location)
+		public SrcMLGenerator SetSrcMLLocation(string location)
 		{
 			SrcMLFolderPath = location;
 
@@ -33,6 +43,7 @@ namespace Sando.Parser
 			{
 				throw new ParserException(TranslationCode.Exception_General_IOException, "sr2srcml.exe cannot be found. looking in: " + SrcMLFolderPath);
 			}
+		    return this;
 		}
 		
 

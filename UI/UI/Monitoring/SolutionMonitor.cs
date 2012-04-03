@@ -109,13 +109,15 @@ namespace Sando.UI.Monitoring
 
 		private void ProcessSingleFile(ProjectItem item)
 		{
-			Debug.WriteLine("processed: " + item.Name);
-			if (item.Name.EndsWith(".cs"))
+
+            if (item.Name.EndsWith(".cs") || item.Name.EndsWith(".cpp") || item.Name.EndsWith(".h") || item.Name.EndsWith(".cxx"))
 			{
+                Debug.WriteLine("Start: " + item.Name);
                 try
                 {
                     var path = item.FileNames[0];
                     ProcessFileForTesting(path);
+                    Debug.WriteLine("End: " + item.Name);
                 }catch(Exception e)
                 {
                     Debug.WriteLine(e.StackTrace);
