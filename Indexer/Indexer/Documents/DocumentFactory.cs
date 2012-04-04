@@ -34,6 +34,10 @@ namespace Sando.Indexer.Documents
 			{
 				return new MethodDocument(programElement as MethodElement);
 			}
+			if(programElement as MethodPrototypeElement != null)
+			{
+				return new MethodPrototypeDocument(programElement as MethodPrototypeElement);
+			}
 			if(programElement as PropertyElement != null)
 			{
 				return new PropertyDocument(programElement as PropertyElement);
