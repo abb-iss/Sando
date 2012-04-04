@@ -63,17 +63,17 @@
                                         <RowDefinition Height="0" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="20"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Name="Icon" Width="20"/>
+                                        <ColumnDefinition Name="Summary" Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    
-                                    <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="1" />
-                                    <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="1" />
-                                    <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="1" />
+
+                                    <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="1" />
+                                    <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="2" Grid.Column="1" />
+                                    <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="1" />
                                     <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                                         <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1" />
                                     </Canvas>
-                                    <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="20" Height="20" Grid.Row="0" Grid.Column="0" />
+                                    <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="0" Grid.Column="0" />
                                     <!--Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" /-->
                                     <Image Source="{Binding Mode=OneWay, Path=Element.FullFilePath, Converter={StaticResource FileTypeToIcon}}" Width="20" Height="20" Grid.Row="1" Grid.Column="0" />
                                     <!--I have no idea how to determine parent type without adding a new property IconParent to CodeSearchResult(Well, I don't know how to access parent type...)-->
@@ -82,25 +82,22 @@
                                 </Grid>                
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
-                    </GridViewColumn>                    
-                    <GridViewColumn Width="Auto" >
-                        <GridViewColumn.Header>
-                            <GridViewColumnHeader MinWidth="250" Content="Code Snippet" HorizontalContentAlignment="Left"/>
-                        </GridViewColumn.Header>
+                    </GridViewColumn>
+                    <GridViewColumn Width="Auto" Header="Code Snippet">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,2,0,0">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="62" />
+                                        <RowDefinition Height="60" />
                                         <RowDefinition Height="0" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <!--<ColumnDefinition Width="Auto" />-->
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <!--<Label FontFamily="Cambria" Width="Auto" Height="Auto" MinWidth="20" FontSize="9" Grid.Row="0" Grid.Column="0" Content="{Binding Mode=OneWay, Path=Element.DefinitionLineNumber}" />-->
                                     <TextBlock Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="9" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
-                                               Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="0" Grid.Column="1"/>
+                                               Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="0" Grid.Column="1" TextTrimming="CharacterEllipsis"/>
                                     <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                                         <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
                                     </Canvas>

@@ -3,7 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer;
-using Sando.UI.Model;
+using Sando.UI.Monitoring;
 using System.Threading;
 using System.ComponentModel;
 using Sando.Indexer.IndexState;

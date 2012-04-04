@@ -13,7 +13,6 @@ using Thread = System.Threading.Thread;
 
 namespace Sando.UI.Monitoring
 {
-
 	public class SolutionMonitor : IVsRunningDocTableEvents
 	{
         private readonly SolutionWrapper _openSolution;

@@ -81,11 +81,10 @@ namespace Sando.SearchEngine
     		get
     		{
     			var fileName = Path.GetFileName(Element.FullFilePath);
-                fileName = Shorten(fileName);
     			return fileName;
     		}    		
     	}
-
+	   /*
         private static string Shorten(string fileName)
         {
             if (fileName.Length > 17)
@@ -93,7 +92,7 @@ namespace Sando.SearchEngine
                 fileName = fileName.Substring(0, 17) + "..";
             }
             return fileName;
-        }
+        }*/
 
         public string Parent
     	{
@@ -102,7 +101,7 @@ namespace Sando.SearchEngine
     			var method = Element as MethodElement;
 				if(method !=null)
 				{
-					return Shorten(method.ClassName);
+					return method.ClassName;
 				}else
 				{
 					return "";
@@ -119,8 +118,8 @@ namespace Sando.SearchEngine
         public string Name
         {
             get
-            {                
-              return Shorten(Element.Name);
+            {
+				return Element.Name;
             }
         }
 	   

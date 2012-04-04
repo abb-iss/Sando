@@ -5,7 +5,7 @@ using System.Text;
 using NUnit.Framework;
 using System.ComponentModel;
 using System.Threading;
-using Sando.UI.Model;
+using Sando.UI.Monitoring;
 
 namespace Sando.UI.UnitTests.Monitoring
 {

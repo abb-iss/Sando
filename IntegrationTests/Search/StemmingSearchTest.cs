@@ -6,7 +6,7 @@ using Sando.Core;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
-using Sando.UI.Model;
+using Sando.UI.Monitoring;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.IntegrationTests.Search
