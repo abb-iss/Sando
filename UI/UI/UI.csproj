@@ -211,11 +211,6 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\VS2010Icons\VSFolder_closed_hidden.png" />
-    <Resource Include="Resources\VS2010Icons\VSFolder_closed_virtual.png" />
-    <Resource Include="Resources\VS2010Icons\VSFolder_open.png" />
-    <Resource Include="Resources\VS2010Icons\VSFolder_open_hidden.png" />
-    <Resource Include="Resources\VS2010Icons\VSFolder_open_virtual.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_BSC.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class_Friend.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class_Private.png" />
@@ -377,10 +372,6 @@
     <Resource Include="Resources\VS2010Icons\VSObject_ValueType.png" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Resources\Icons.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="View\SearchViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

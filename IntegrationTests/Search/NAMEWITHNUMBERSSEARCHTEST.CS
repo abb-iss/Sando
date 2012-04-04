@@ -42,7 +42,7 @@ namespace Sando.IntegrationTests.Search
 		{
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(new Guid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);
+			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);
 			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
 			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles");

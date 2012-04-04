@@ -13,7 +13,7 @@ namespace Sando.Core
 			Contract.Requires(!String.IsNullOrWhiteSpace(returnType), "MethodElement:Constructor - return type cannot be null or an empty string!");
 			Contract.Requires(body != null, "MethodElement:Constructor - body cannot be null!");
 			Contract.Requires(classId != null, "MethodElement:Constructor - class id cannot be null!");
-			Contract.Requires(classId != Guid.Empty, "MethodElement:Constructor - class id cannot be an empty Guid!");
+			//Contract.Requires(classId != Guid.Empty, "MethodElement:Constructor - class id cannot be an empty Guid!");
 			Contract.Requires(className != null, "MethodElement:Constructor - class name cannot be null!");
 
 			AccessLevel = accessLevel;

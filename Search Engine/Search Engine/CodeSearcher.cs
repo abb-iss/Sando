@@ -1,13 +1,12 @@
-﻿using Sando.Indexer;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.SearchEngine
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
    
     /// <summary>
     /// Class defined to search the index using code searcher
@@ -53,7 +52,9 @@ namespace Sando.SearchEngine
         /// <param name="searchString">The search string.</param>
         /// <returns>List of Search Result</returns>
         public virtual List<CodeSearchResult> Search(string searchString)
-        {			
+        {
+			Contract.Requires(String.IsNullOrWhiteSpace(searchString), "CodeSearcher:Search - searchString cannot be null or an empty string!");
+
 			SearchCriteria searchCrit = this.GetCriteria(searchString);
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing

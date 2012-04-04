@@ -48,7 +48,6 @@
     <Compile Include="CPPTest.cs" />
     <Compile Include="InheritanceParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SplitterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Core\Core.csproj">

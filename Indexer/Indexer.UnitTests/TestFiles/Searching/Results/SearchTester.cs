@@ -63,7 +63,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
         public  SolutionKey IndexFilesInDirectory(string solutionPath, out DocumentIndexer indexer)
         {
             
-            var key = new SolutionKey(new Guid(), solutionPath, _luceneTempIndexesDirectory);
+            var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory);
             indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
 
             string[] files = Directory.GetFiles(solutionPath);

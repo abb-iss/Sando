@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Sando.Core;
+using Sando.Core.Tools;
 
 namespace Sando.Parser
 {
@@ -444,7 +445,7 @@ namespace Sando.Parser
 			string body = String.Empty;
 			foreach(XElement elem in bodyNames)
 			{
-				body += String.Join(" ", WordSplitter.Split(elem.Value)) + " ";
+				body += String.Join(" ", WordSplitter.ExtractWords(elem.Value)) + " ";
 			}
 			body = body.TrimEnd();
 			return body;

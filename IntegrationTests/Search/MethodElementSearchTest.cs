@@ -77,7 +77,7 @@ namespace Sando.IntegrationTests.Search
 		{
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(new Guid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
+			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
 			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
 			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
