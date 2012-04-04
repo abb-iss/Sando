@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Sando.Core.Tools;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 
@@ -109,7 +110,7 @@ namespace Sando.SearchEngine
         private SearchCriteria GetCriteria(string searchString)
         {
             var criteria = new SimpleSearchCriteria();
-            criteria.SearchTerms = new SortedSet<string>(searchString.Trim().Split(' ').ToList());
+            criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
             return criteria;
         }
         #endregion

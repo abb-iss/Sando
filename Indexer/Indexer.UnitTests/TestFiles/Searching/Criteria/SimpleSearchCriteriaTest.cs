@@ -9,6 +9,7 @@ using Sando.Core;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
+using Sando.Core.Tools;
 
 namespace Sando.Indexer.UnitTests.Searching.Criteria
 {
@@ -344,6 +345,31 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			string queryString = simpleSearchCriteria.ToQueryString();
 			Assert.AreEqual(queryString, "((" + SandoField.Name.ToString() + ":Class^4 OR " + SandoField.ExtendedClasses.ToString() + ":Class OR " + SandoField.Namespace.ToString() + ":Class) AND " + 
 											"(" + SandoField.Name.ToString() + ":Simple^4 OR " + SandoField.ExtendedClasses.ToString() + ":Simple OR " + SandoField.Namespace.ToString() + ":Simple))", "Created query string is invalid!");
+			try
+			{
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
+				Assert.NotNull(query, "Generated query object is null!");
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
+
+		[Test]
+		public void SimpleSearchCriteria_ToQueryStringCreatesValidQueryString_QuotedSearchTerm()
+		{
+			SearchCriteria simpleSearchCriteria = new SimpleSearchCriteria()
+			{
+				SearchByUsageType = true,
+				UsageTypes = new SortedSet<UsageType>()
+																		{
+																			UsageType.Definitions
+																		},
+				SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms("\"Class Simple\""))
+			};
+			string queryString = simpleSearchCriteria.ToQueryString();
+			Assert.AreEqual(queryString, "((" + SandoField.Name.ToString() + ":\"Class Simple\"^4))", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);

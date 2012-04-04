@@ -154,6 +154,10 @@ namespace Sando.Indexer.Searching.Criteria
 
 		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
 		{
+			if(searchTerm.IndexOf(" ") > 0)
+			{
+				searchTerm = "\"" + searchTerm + "\"";
+			}
 			switch(usageType)
 			{
 				case UsageType.Bodies:
