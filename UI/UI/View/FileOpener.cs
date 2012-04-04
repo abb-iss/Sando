@@ -7,10 +7,11 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Sando.SearchEngine;
+using Sando.UI.Model;
 
 namespace Sando.UI.View
 {
-		public   static class FileOpener
+		public static class FileOpener
     	{
 			
 			private static DTE2 dte = null;
@@ -20,7 +21,7 @@ namespace Sando.UI.View
     			var result = sender as ListBox;
     			if(result != null)
     			{
-    				var myResult = result.SelectedItem as CodeSearchResult;
+					var myResult = result.SelectedItem as CodeSearchResult;
     				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
     			}
     		}

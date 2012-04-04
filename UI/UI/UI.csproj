@@ -61,7 +61,7 @@
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DeployExtension>False</DeployExtension>
+    <DeployExtension>True</DeployExtension>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -157,6 +157,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
@@ -210,6 +211,143 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\VS2010Icons\VSFolder_closed_hidden.png" />
+    <Resource Include="Resources\VS2010Icons\VSFolder_closed_virtual.png" />
+    <Resource Include="Resources\VS2010Icons\VSFolder_open.png" />
+    <Resource Include="Resources\VS2010Icons\VSFolder_open_hidden.png" />
+    <Resource Include="Resources\VS2010Icons\VSFolder_open_virtual.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_BSC.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Class_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Class_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Class_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Class_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Class_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Constant_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Constant_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Constant_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Constant_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Constant_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Delegate_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Delegate_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Delegate_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Delegate_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Delegate_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_DialogID.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_EnumItem_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_EnumItem_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_EnumItem_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_EnumItem_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_EnumItem_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_EnumPrivate.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Enum_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Enum_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Enum_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Enum_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Event_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Event_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Event_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Event_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Event_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ExceptionPrivate.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Exception_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Exception_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Exception_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Exception_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Field_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Field_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Field_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Field_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Field_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Interface_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Interface_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Interface_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Interface_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Interface_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Macro_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Macro_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Macro_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Macro_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Macro_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MapItem_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MapItem_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MapItem_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MapItem_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MapItem_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Map_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Map_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Map_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Map_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Map_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MethodOverload.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MethodOverload_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MethodOverload_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MethodOverload_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MethodOverload_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_MethodOverload_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Method_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Method_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Method_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Method_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Method_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Module_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Module_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Module_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Module_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Module_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_NamespacePrivate.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_NamespaceProtected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Namespace_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Namespace_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Namespace_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ObjectShortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Object_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Object_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Object_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Object_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Operator_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Operator_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Operator_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Operator_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Operator_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Structure_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Structure_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Structure_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Structure_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Structure_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Template_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Template_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Template_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Template_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Template_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_TypeDefShortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_TypeDef_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_TypeDef_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_TypeDef_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_TypeDef_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Type_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Type_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Type_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Type_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Type_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_UnionPrivate.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Union_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Union_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Union_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Union_Shortcut.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ValueTypePrivate.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ValueType_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ValueType_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ValueType_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_ValueType_Shortcut.png" />
+    <Resource Include="Resources\Code_Cpp.png" />
+    <Resource Include="Resources\Code_CS.png" />
+    <Content Include="Resources\Package.ico" />
     <Resource Include="Resources\VS2010Icons\VSObject_Assembly.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Constant.png" />
@@ -237,11 +375,12 @@
     <Resource Include="Resources\VS2010Icons\VSObject_TypeDef.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Union.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_ValueType.png" />
-    <Resource Include="Resources\IconClass.png" />
-    <Resource Include="Resources\IconFile.png" />
-    <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Resources\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\SearchViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -273,6 +412,7 @@
       <Name>Translation</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

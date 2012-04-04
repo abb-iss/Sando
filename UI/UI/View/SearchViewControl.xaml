@@ -10,7 +10,8 @@
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
     <UserControl.Resources>
-        <view:StringToBitmapImage x:Key="StringToBitmapImage"/>
+        <view:ElementToIcon x:Key="ElementToIcon"/>
+        <view:FileTypeToIcon x:Key="FileTypeToIcon"/>
         <BitmapImage x:Key="IconClass" UriSource="../Resources/IconClass.png" />
         <BitmapImage x:Key="IconFile" UriSource="../Resources/IconFile.png" />
     </UserControl.Resources>
@@ -67,16 +68,17 @@
                                     </Grid.ColumnDefinitions>
                                     
                                     <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Grid.Row="0" Grid.Column="1" />
-                                    <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="1" />
                                     <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" Grid.Row="2" Grid.Column="1" />
+                                    <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Grid.Row="1" Grid.Column="1" />
                                     <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
                                         <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1" />
                                     </Canvas>
-                                    <Image Source="{Binding Mode=OneWay, Path=Icon, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="0" Grid.Column="0" />
-                                    <Image Source="{StaticResource ResourceKey=IconFile}" Width="20" Height="20" Grid.Row="1" Grid.Column="0" />
+                                    <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="20" Height="20" Grid.Row="0" Grid.Column="0" />
+                                    <!--Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" /-->
+                                    <Image Source="{Binding Mode=OneWay, Path=Element.FullFilePath, Converter={StaticResource FileTypeToIcon}}" Width="20" Height="20" Grid.Row="1" Grid.Column="0" />
                                     <!--I have no idea how to determine parent type without adding a new property IconParent to CodeSearchResult(Well, I don't know how to access parent type...)-->
                                     <!--Assume that parent and children are of the same type then-->
-                                    <Image Source="{Binding Mode=OneWay, Path=Icon, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />
+                                    
                                 </Grid>                
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

@@ -9,6 +9,9 @@ using Sando.Indexer;
 using Sando.SearchEngine;
 using Sando.Translation;
 using System.Windows.Media.Imaging;
+using Sando.UI.Model;
+using System.Reflection;
+using Sando.Core;
 
 namespace Sando.UI.View
 {
@@ -131,7 +134,7 @@ namespace Sando.UI.View
     }
 
 	[ValueConversion(typeof(string), typeof(BitmapImage))] 
-	public class StringToBitmapImage : IValueConverter
+	public class ElementToIcon : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
@@ -139,14 +142,39 @@ namespace Sando.UI.View
 			if (value == null) { return null; }
 		
 			/// I don't know why this converter doesn't work if I use Path=/
-			/// However, I choose to use Path=Icon and add a property CodeSearchResult.Icon
-			/*
-			 * CodeSearchResult codeSearchResult = (CodeSearchResult)value;
-			/// TODO: Finish the Icon Resource Name - codeSearchResult translation <hiprince>
-			/// I can't access the AccessLevel property directly, therefore I just leave it to public as default.
-			 * string resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}.png", codeSearchResult.Type);
-			 * return new BitmapImage(new Uri(resourceName, UriKind.Relative));*/
-			return new BitmapImage(new Uri((string)value, UriKind.Relative));
+
+			ProgramElement element = (ProgramElement)value;
+			string accessLevel;
+			PropertyInfo info = element.GetType().GetProperty("AccessLevel");
+			if (info != null)
+				accessLevel = "_" + info.GetValue(element, null).ToString();
+			else
+				accessLevel = string.Empty;
+			if (accessLevel == "_Public")
+				accessLevel = "";
+			string resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", element.ProgramElementType, accessLevel);
+			return new BitmapImage(new Uri(resourceName, UriKind.Relative));
+			//return new BitmapImage(new Uri((string)value, UriKind.Relative));
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return null;
+		}
+	}
+
+	[ValueConversion(typeof(string), typeof(BitmapImage))]
+	public class FileTypeToIcon : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			// empty images are empty...
+			if (value == null) { return null; }
+
+			string type = (string)value;
+			string resourceName = string.Format("../Resources/Code_{0}.png", type.Substring(type.LastIndexOf('.') + 1));
+			return new BitmapImage(new Uri(resourceName, UriKind.Relative));
+			//return new BitmapImage(new Uri((string)value, UriKind.Relative));
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
