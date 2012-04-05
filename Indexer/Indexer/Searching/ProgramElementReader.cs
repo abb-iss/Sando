@@ -30,6 +30,8 @@ namespace Sando.Indexer.Searching
 					return new MethodDocument(document).ReadProgramElementFromDocument();
 				case ProgramElementType.Property:
 					return new PropertyDocument(document).ReadProgramElementFromDocument();
+				case ProgramElementType.MethodPrototype:
+					return new MethodPrototypeDocument(document).ReadProgramElementFromDocument();
 				default:
 					return null;
 			}
