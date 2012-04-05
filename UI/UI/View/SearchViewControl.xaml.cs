@@ -141,7 +141,7 @@ namespace Sando.UI.View
 			// empty images are empty...
 			if (value == null) { return null; }
 		
-			/// I don't know why this converter doesn't work if I use Path=/
+			/// I don't know why this converter doesn't work if I use Path=/ in binding
 
 			ProgramElement element = (ProgramElement)value;
 			string accessLevel;
@@ -150,11 +150,12 @@ namespace Sando.UI.View
 				accessLevel = "_" + info.GetValue(element, null).ToString();
 			else
 				accessLevel = string.Empty;
-			if (accessLevel == "_Public")
+			if (accessLevel.ToLower() == "_public")
 				accessLevel = "";
+
+
 			string resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", element.ProgramElementType, accessLevel);
 			return new BitmapImage(new Uri(resourceName, UriKind.Relative));
-			//return new BitmapImage(new Uri((string)value, UriKind.Relative));
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -174,7 +175,6 @@ namespace Sando.UI.View
 			string type = (string)value;
 			string resourceName = string.Format("../Resources/Code_{0}.png", type.Substring(type.LastIndexOf('.') + 1));
 			return new BitmapImage(new Uri(resourceName, UriKind.Relative));
-			//return new BitmapImage(new Uri((string)value, UriKind.Relative));
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

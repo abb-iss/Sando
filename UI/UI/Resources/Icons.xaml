@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BitmapImage x:Key="VSObject_Class" UriSource="../Resources/VS2010Icons/VSObject_Class.png" />
+    <BitmapImage x:Key="VSObject_Class_Private" UriSource="../Resources/VS2010Icons/VSObject_Class_private.png" />
+    <BitmapImage x:Key="VSObject_Class_Friend" UriSource="../Resources/VS2010Icons/VSObject_Class_friend.png" />
+    <BitmapImage x:Key="VSObject_Class_Protected" UriSource="../Resources/VS2010Icons/VSObject_Class_protected.png" />
+    <BitmapImage x:Key="VSObject_Enum" UriSource="../Resources/VS2010Icons/VSObject_Enum.png" />
+    <BitmapImage x:Key="VSObject_Enum_Friend" UriSource="../Resources/VS2010Icons/VSObject_Enum_friend.png" />
+    <BitmapImage x:Key="VSObject_Enum_Protected" UriSource="../Resources/VS2010Icons/VSObject_Enum_protected.png" />
+    <BitmapImage x:Key="VSObject_Field" UriSource="../Resources/VS2010Icons/VSObject_Field.png" />
+    <BitmapImage x:Key="VSObject_Field_Private" UriSource="../Resources/VS2010Icons/VSObject_Field_private.png" />
+    <BitmapImage x:Key="VSObject_Field_Friend" UriSource="../Resources/VS2010Icons/VSObject_Field_friend.png" />
+    <BitmapImage x:Key="VSObject_Field_Protected" UriSource="../Resources/VS2010Icons/VSObject_Field_protected.png" />
+    <BitmapImage x:Key="VSObject_Interface" UriSource="../Resources/VS2010Icons/VSObject_Interface.png" />
+    <BitmapImage x:Key="VSObject_Interface_Private" UriSource="../Resources/VS2010Icons/VSObject_Interface_private.png" />
+    <BitmapImage x:Key="VSObject_Interface_Friend" UriSource="../Resources/VS2010Icons/VSObject_Interface_friend.png" />
+    <BitmapImage x:Key="VSObject_Interface_Protected" UriSource="../Resources/VS2010Icons/VSObject_Interface_protected.png" />
+    <BitmapImage x:Key="VSObject_Method" UriSource="../Resources/VS2010Icons/VSObject_Method.png" />
+    <BitmapImage x:Key="VSObject_Method_Private" UriSource="../Resources/VS2010Icons/VSObject_Method_private.png" />
+    <BitmapImage x:Key="VSObject_Method_Friend" UriSource="../Resources/VS2010Icons/VSObject_Method_friend.png" />
+    <BitmapImage x:Key="VSObject_Method_Protected" UriSource="../Resources/VS2010Icons/VSObject_Method_protected.png" />
+    <BitmapImage x:Key="VSObject_Namespace" UriSource="../Resources/VS2010Icons/VSObject_Namespace.png" />
+    <BitmapImage x:Key="VSObject_Object" UriSource="../Resources/VS2010Icons/VSObject_Object.png" />
+    <BitmapImage x:Key="VSObject_Object_Private" UriSource="../Resources/VS2010Icons/VSObject_Object_private.png" />
+    <BitmapImage x:Key="VSObject_Object_Friend" UriSource="../Resources/VS2010Icons/VSObject_Object_friend.png" />
+    <BitmapImage x:Key="VSObject_Object_Protected" UriSource="../Resources/VS2010Icons/VSObject_Object_protected.png" />
+    <BitmapImage x:Key="VSObject_Properties" UriSource="../Resources/VS2010Icons/VSObject_Properties.png" />
+    <BitmapImage x:Key="VSObject_Properties_Private" UriSource="../Resources/VS2010Icons/VSObject_Properties_private.png" />
+    <BitmapImage x:Key="VSObject_Properties_Friend" UriSource="../Resources/VS2010Icons/VSObject_Properties_friend.png" />
+    <BitmapImage x:Key="VSObject_Properties_Protected" UriSource="../Resources/VS2010Icons/VSObject_Properties_protected.png" />
+    
+</ResourceDictionary>

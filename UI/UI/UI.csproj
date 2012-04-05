@@ -211,6 +211,12 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\VS2010Icons\VSObject_Property.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Property_Friend.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Property_Private.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Property_Protected.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Property_Sealed.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_Property_Shortcut.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_BSC.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class_Friend.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class_Private.png" />
@@ -305,11 +311,6 @@
     <Resource Include="Resources\VS2010Icons\VSObject_Operator_Sealed.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Operator_Shortcut.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Private.png" />
-    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Friend.png" />
-    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Private.png" />
-    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Protected.png" />
-    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Sealed.png" />
-    <Resource Include="Resources\VS2010Icons\VSObject_Properties_Shortcut.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Structure_Friend.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Structure_Private.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Structure_Protected.png" />
@@ -363,7 +364,6 @@
     <Resource Include="Resources\VS2010Icons\VSObject_Namespace.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Object.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Operator.png" />
-    <Resource Include="Resources\VS2010Icons\VSObject_Properties.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Structure.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Template.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Type.png" />
@@ -372,6 +372,10 @@
     <Resource Include="Resources\VS2010Icons\VSObject_ValueType.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="View\SearchViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
