@@ -100,7 +100,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 6);
 					Assert.AreEqual(enumElem.Namespace, String.Empty);
 					Assert.AreEqual(enumElem.Values, "SENSED_DATA_READY SENDING_DONE RECEIVING_DONE");
-					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public); //TODO: make sure this is an okay default
+					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
 					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt"));
 					hasEnum = true;
 				}
@@ -127,7 +127,7 @@ namespace Sando.Parser.UnitTests
                 new DoWorkEventHandler(_processFileInBackground_DoWork);	
             _processFileInBackground.RunWorkerAsync();
             Thread.Sleep(10000);
-            //Assert.IsTrue(_processFileInBackground.IsBusy==false);
+            Assert.IsTrue(_processFileInBackground.IsBusy==false);
         }
 
 	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)

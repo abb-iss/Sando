@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Sando.Translation;
+using System.ComponentModel;
+using System;
 
 namespace Sando.Parser
 {
@@ -61,18 +63,18 @@ namespace Sando.Parser
 			return LaunchSrcML(filename);
 		}
 
-		
 		private string LaunchSrcML(string filename)
 		{
 			string srcML = "";
-
-			string inputCode = System.IO.File.ReadAllText(filename);
 			string langText = Language.ToString();
 
 			if(Language == LanguageEnum.CSharp)
 			{
 				//temporary, otherwise very ugly
-				inputCode = AdaptCSharpToJavaParsing(inputCode);
+				string allCode = System.IO.File.ReadAllText(filename);
+				allCode = AdaptCSharpToJavaParsing(allCode);
+				filename = filename + ".tmp";
+				System.IO.File.WriteAllText(filename, allCode);
 				langText = "Java";
 			}
 			else if(Language == LanguageEnum.CPP)
@@ -88,7 +90,7 @@ namespace Sando.Parser
 			startInfo.RedirectStandardInput = true;
 			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "--position -l "+langText;
+			startInfo.Arguments = "--position -l " + langText + " " + filename;
 
 			try
 			{
@@ -96,10 +98,15 @@ namespace Sando.Parser
 				{
 					System.IO.StreamReader sOut = exeProcess.StandardOutput;
 					System.IO.StreamWriter sIn = exeProcess.StandardInput;
-					sIn.Write(inputCode);
 					sIn.Close();
-					srcML = sOut.ReadToEnd();
+
+					var _readInputInBackground = new System.ComponentModel.BackgroundWorker();
+					_readInputInBackground.DoWork += (s, e) => _readInputInBackground_DoWork(sOut, out srcML);
+					_readInputInBackground.RunWorkerAsync();
+
 					exeProcess.WaitForExit();
+
+					_readInputInBackground.Dispose();
 					sOut.Close();
 				}
 			}
@@ -108,7 +115,30 @@ namespace Sando.Parser
 				throw new ParserException(TranslationCode.Exception_General_IOException, "sr2srcml.exe execution error, check parameters");
 			}
 
+
+			//erase the temp file we generate for csharp parsing
+			if(Language == LanguageEnum.CSharp)
+			{
+				System.IO.File.Delete(filename);
+			}
+
 			return srcML;
+		}
+
+		private void _readInputInBackground_DoWork(System.IO.StreamReader sOut, out string srcML)
+		{
+			srcML = "";
+			try
+			{
+				while(true)
+				{
+					srcML += sOut.ReadToEnd();
+				}
+			}
+			catch(Exception e)
+			{
+				//this will happen, so do nothing
+			}
 		}
 
 		private string AdaptCSharpToJavaParsing(string inputCode)
