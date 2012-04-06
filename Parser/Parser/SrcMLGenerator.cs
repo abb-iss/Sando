@@ -90,7 +90,7 @@ namespace Sando.Parser
 			startInfo.RedirectStandardInput = true;
 			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "--position -l " + langText + " " + filename;
+			startInfo.Arguments = "--position -l " + langText + " \"" + filename + "\"";
 
 			try
 			{
@@ -135,7 +135,7 @@ namespace Sando.Parser
 					srcML += sOut.ReadToEnd();
 				}
 			}
-			catch(Exception e)
+			catch(ObjectDisposedException)
 			{
 				//this will happen, so do nothing
 			}
