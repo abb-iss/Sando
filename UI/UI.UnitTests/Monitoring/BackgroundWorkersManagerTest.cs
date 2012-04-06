@@ -26,12 +26,13 @@ namespace Sando.UI.UnitTests.Monitoring
 				BackgroundWorker worker = new BackgroundWorker();
 				worker.DoWork += new DoWorkEventHandler(worker_DoWork);
 				backgroundWorkersManager.AddWorker(worker, i);
+                Thread.Sleep(100);
 			}
 			Assert.True(backgroundWorkersManager.GetNumberOfCurrentlyRunningWorkers() <= maxNrOfParallelWorkers, "BackgroundWorkersManager currently running workers number too high!");
 			while(counter < totalBackgroundWorkers)
 			{
 			}
-			Thread.Sleep(100);
+			Thread.Sleep(1000);
 			Assert.True(backgroundWorkersManager.GetNumberOfCurrentlyRunningWorkers() == 0, "BackgroundWorkersManager currently running workers does not equal 0!");
 			if(!allElementsProcessed)
 				Assert.Fail("queueEmptyEventWorker have not been called!");
