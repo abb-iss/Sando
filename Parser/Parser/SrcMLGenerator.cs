@@ -3,6 +3,8 @@ using System.Text.RegularExpressions;
 using Sando.Translation;
 using System.ComponentModel;
 using System;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace Sando.Parser
 {
@@ -63,6 +65,7 @@ namespace Sando.Parser
 			return LaunchSrcML(filename);
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)]
 		private string LaunchSrcML(string filename)
 		{
 			string srcML = "";

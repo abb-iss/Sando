@@ -33,21 +33,24 @@ namespace Sando.Parser
 			var programElements = new List<ProgramElement>();
 			string srcml = Generator.GenerateSrcML(fileName);
 
-			//now Parse the important parts of the srcml and generate program elements
-			XElement sourceElements = XElement.Parse(srcml);
-
-			ParseEnums(programElements, sourceElements, fileName);
-			ParseClasses(programElements, sourceElements, fileName);
-			ParseFunctions(programElements, sourceElements, fileName);
-			ParseFields(programElements, sourceElements, fileName);
-
-			if(Generator.Language == LanguageEnum.CSharp)
+			if(srcml != String.Empty)
 			{
-				ParseProperties(programElements, sourceElements, fileName);
-			}
-			else if(Generator.Language == LanguageEnum.CPP || Generator.Language == LanguageEnum.C) 
-			{
-				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
+				//now Parse the important parts of the srcml and generate program elements
+				XElement sourceElements = XElement.Parse(srcml);
+
+				ParseEnums(programElements, sourceElements, fileName);
+				ParseClasses(programElements, sourceElements, fileName);
+				ParseFunctions(programElements, sourceElements, fileName);
+				ParseFields(programElements, sourceElements, fileName);
+
+				if(Generator.Language == LanguageEnum.CSharp)
+				{
+					ParseProperties(programElements, sourceElements, fileName);
+				}
+				else if(Generator.Language == LanguageEnum.CPP || Generator.Language == LanguageEnum.C)
+				{
+					ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
+				}
 			}
 
 			return programElements.ToArray();
