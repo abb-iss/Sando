@@ -108,8 +108,9 @@ namespace Sando.Parser
 					_readInputInBackground.RunWorkerAsync();
 
 					exeProcess.WaitForExit();
-
+					
 					_readInputInBackground.Dispose();
+					if(!sOut.EndOfStream) srcML += sOut.ReadToEnd();
 					sOut.Close();
 				}
 			}
