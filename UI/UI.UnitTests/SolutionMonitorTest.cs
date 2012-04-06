@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
@@ -43,8 +44,10 @@ namespace Sando.UI.UnitTests
             {
                 string fullPath = Path.GetFullPath(file);
                 monitor.ProcessFileForTesting(fullPath);
-            }
+            }            
             monitor.UpdateAfterAdditions();
+            //TODO - Why is this necessary??
+		    Thread.Sleep(1000);
         }
         [Test]
         public void SolutionMonitor_BasicSetupTest()
