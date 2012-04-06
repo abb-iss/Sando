@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer;
@@ -129,7 +130,10 @@ namespace Sando.IntegrationTests.Search
 				string fullPath = Path.GetFullPath(file);
 				monitor.ProcessFileForTesting(fullPath);
 			}
-			monitor.UpdateAfterAdditions();
+            monitor.UpdateAfterAdditions();
+            //TODO - Why is this necessary??
+            Thread.Sleep(1000);
+
 		}
 
 		[TearDown]

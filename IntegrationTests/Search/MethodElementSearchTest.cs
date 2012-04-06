@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer;
@@ -87,6 +88,7 @@ namespace Sando.IntegrationTests.Search
 				monitor.ProcessFileForTesting(fullPath);
 			}
 			monitor.UpdateAfterAdditions();
+		    Thread.Sleep(1000);
 		}
 
 		[TearDown]
