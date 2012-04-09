@@ -131,9 +131,6 @@ namespace Sando.IntegrationTests.Search
 				monitor.ProcessFileForTesting(fullPath);
 			}
             monitor.UpdateAfterAdditions();
-            //TODO - Why is this necessary??
-            Thread.Sleep(1000);
-
 		}
 
 		[TearDown]

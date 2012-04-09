@@ -46,9 +46,8 @@ namespace Sando.UI.UnitTests
                 monitor.ProcessFileForTesting(fullPath);
             }            
             monitor.UpdateAfterAdditions();
-            //TODO - Why is this necessary??
-		    Thread.Sleep(1000);
         }
+
         [Test]
         public void SolutionMonitor_BasicSetupTest()
         {

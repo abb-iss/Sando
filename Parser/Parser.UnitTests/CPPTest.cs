@@ -126,7 +126,7 @@ namespace Sando.Parser.UnitTests
             _processFileInBackground.DoWork +=
                 new DoWorkEventHandler(_processFileInBackground_DoWork);	
             _processFileInBackground.RunWorkerAsync();
-            Thread.Sleep(10000);
+			Thread.Sleep(5000);
             Assert.IsTrue(_processFileInBackground.IsBusy==false);
         }
 

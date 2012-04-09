@@ -53,7 +53,6 @@ namespace Sando.IntegrationTests.Search
 				monitor.ProcessFileForTesting(fullPath);
 			}
 			monitor.UpdateAfterAdditions();
-		    Thread.Sleep(500);
 		}
 
 		[TearDown]
