@@ -103,13 +103,15 @@ namespace Sando.Parser
 					System.IO.StreamWriter sIn = exeProcess.StandardInput;
 					sIn.Close();
 
-					var _readInputInBackground = new System.ComponentModel.BackgroundWorker();
-					_readInputInBackground.DoWork += (s, e) => _readInputInBackground_DoWork(sOut, out srcML);
-					_readInputInBackground.RunWorkerAsync();
+					var readInputThread = new Thread(new ThreadStart(() => _readInput_DoWork(sOut, out srcML)));
+					readInputThread.Start();
 
 					exeProcess.WaitForExit();
-					
-					_readInputInBackground.Dispose();
+
+					lock(sOut) {
+						readInputThread.Abort();
+					}
+					readInputThread.Join();
 					if(!sOut.EndOfStream) srcML += sOut.ReadToEnd();
 					sOut.Close();
 				}
@@ -126,23 +128,24 @@ namespace Sando.Parser
 				System.IO.File.Delete(filename);
 			}
 
+			Debug.WriteLine(srcML);
 			return srcML;
 		}
 
-		private void _readInputInBackground_DoWork(System.IO.StreamReader sOut, out string srcML)
+		private void _readInput_DoWork(System.IO.StreamReader sOut, out string srcML)
 		{
 			srcML = "";
 			try
 			{
 				while(true)
 				{
-					srcML += sOut.ReadToEnd();
+					lock(sOut)
+					{
+						srcML += sOut.ReadToEnd();
+					}
 				}
 			}
-			catch(ObjectDisposedException)
-			{
-				//this will happen, so do nothing
-			}
+			catch(ThreadAbortException) { }
 		}
 
 		private string AdaptCSharpToJavaParsing(string inputCode)

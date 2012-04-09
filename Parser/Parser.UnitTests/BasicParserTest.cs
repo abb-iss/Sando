@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Parser;
+using System.Diagnostics;
 
 namespace Sando.Parser.UnitTests
 {
@@ -74,6 +75,17 @@ namespace Sando.Parser.UnitTests
 				}
 			}
 			Assert.IsTrue(seenSetLanguageMethod);
+		}
+
+		[Test]
+		public void RunIterativeMethodTest()
+		{
+			for(int i = 0; i < 500; i++)
+			{
+				Debug.WriteLine("iteration=" + i);
+				ParseMethodTest();
+			}
+
 		}
 
 		[Test]
