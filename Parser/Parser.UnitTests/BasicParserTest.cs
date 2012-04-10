@@ -82,7 +82,6 @@ namespace Sando.Parser.UnitTests
 		{
 			for(int i = 0; i < 500; i++)
 			{
-				Debug.WriteLine("iteration=" + i);
 				ParseMethodTest();
 			}
 

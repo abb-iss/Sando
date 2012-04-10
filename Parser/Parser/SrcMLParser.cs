@@ -385,7 +385,8 @@ namespace Sando.Parser
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, String.Empty);
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, 
+										body, classId, className, String.Empty, false);
 		}
 
 		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles)
@@ -422,8 +423,10 @@ namespace Sando.Parser
 				string className = twonames[0];
 				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
 				snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+				bool isConstructor = false;
 
-				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, includedFiles);
+				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, 
+														isConstructor, className, includedFiles);
 			}
 			else
 			{
@@ -437,7 +440,8 @@ namespace Sando.Parser
 				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
 				string className = classElement != null ? classElement.Name : String.Empty;
 
-				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, String.Empty);
+				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, 
+													body, classId, className, String.Empty, false);
 			}
 
 			return methodElement;
