@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Sando.Core;
 using Sando.Core.Tools;
+using Sando.ExtensionContracts.ParserContracts;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser
 {
-	public class SrcMLParser : ParserInterface
+	public class SrcMLParser : IParser
 	{
 		private readonly SrcMLGenerator Generator;
 

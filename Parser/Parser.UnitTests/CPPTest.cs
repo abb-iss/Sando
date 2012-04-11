@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Threading;
 using NUnit.Framework;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser.UnitTests
 {

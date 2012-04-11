@@ -1,5 +1,5 @@
 ﻿using System;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.UnitTestHelpers
 {

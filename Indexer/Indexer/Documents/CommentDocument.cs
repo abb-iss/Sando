@@ -1,6 +1,6 @@
 ﻿using System;
 using Lucene.Net.Documents;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Indexer.Documents
 {

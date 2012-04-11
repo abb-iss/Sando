@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;

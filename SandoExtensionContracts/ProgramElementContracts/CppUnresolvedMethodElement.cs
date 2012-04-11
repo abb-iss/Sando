@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace Sando.Core
+namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class CppUnresolvedMethodElement : MethodElement
 	{
@@ -13,7 +12,6 @@ namespace Sando.Core
 			Contract.Requires(className != null, "CppSplitMethodElement:Constructor - class name cannot be null!");
 			Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
 
-			ClassName = className;
 			IncludeFileNames = headerFiles;
 			IsResolved = false;
 		}
@@ -62,8 +60,6 @@ namespace Sando.Core
 			return false;
 		}
 		
-
-		public virtual string ClassName { get; private set; }
 		public virtual string[] IncludeFileNames { get; private set; }
 		public virtual bool IsResolved { get; set; }
 	}

@@ -5,11 +5,11 @@ using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using NUnit.Framework;
-using Sando.Core;
+using Sando.Core.Tools;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
-using Sando.Core.Tools;
 
 namespace Sando.Indexer.UnitTests.Searching.Criteria
 {

@@ -1,6 +1,6 @@
 ﻿using Lucene.Net.Documents;
 using NUnit.Framework;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;

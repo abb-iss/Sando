@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Xml;
 using Sando.Core;
+using Sando.ExtensionContracts.ParserContracts;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
@@ -132,8 +134,8 @@ namespace Sando.UI.Monitoring
         class ParserManager
         {
 
-            private readonly ParserInterface _csParser = new SrcMLParser(new SrcMLGenerator(LanguageEnum.CSharp));
-            private readonly ParserInterface _cppParser = new SrcMLParser(new SrcMLGenerator(LanguageEnum.CPP));
+            private readonly IParser _csParser = new SrcMLParser(new SrcMLGenerator(LanguageEnum.CSharp));
+            private readonly IParser _cppParser = new SrcMLParser(new SrcMLGenerator(LanguageEnum.CPP));
 
             internal ParserManager()
             {
@@ -141,7 +143,7 @@ namespace Sando.UI.Monitoring
                 _cppParser = new SrcMLParser(SrcMLGenerator.Generator(LanguageEnum.CPP).SetSrcMLLocation(SrcMLParser.StandardSrcMlLocation));                                
             }
 
-            internal ParserInterface Get(String filePath)
+			internal IParser Get(String filePath)
             {
                 if (filePath.EndsWith(".cs"))
                 {

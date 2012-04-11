@@ -59,6 +59,10 @@
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Name>SandoExtensionContracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
       <Project>{A4567112-2AAE-4C67-9EC6-4625924EA118}</Project>
       <Name>UnitTestHelpers</Name>

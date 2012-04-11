@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Lucene.Net.Search;
 using Sando.Core;
-using Sando.Indexer.Documents;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.Searching

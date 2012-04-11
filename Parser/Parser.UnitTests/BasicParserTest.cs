@@ -1,8 +1,7 @@
 ﻿using System;
-using NUnit.Framework;
-using Sando.Core;
-using Sando.Parser;
 using System.Diagnostics;
+using NUnit.Framework;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser.UnitTests
 {
