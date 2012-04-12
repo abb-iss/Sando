@@ -20,6 +20,7 @@ namespace Sando.Indexer.Documents
 		Id,
 		ImplementedInterfaces,
 		InitialValue,
+		IsConstructor,
 		Name,
 		Namespace,
 		ProgramElementType,

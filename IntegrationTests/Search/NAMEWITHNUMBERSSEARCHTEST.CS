@@ -20,7 +20,7 @@ namespace Sando.IntegrationTests.Search
 			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
 			string keywords = "problem";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-			Assert.AreEqual(codeSearchResults.Count, 1, "Invalid results number");
+			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
 			var classSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Class && el.Element.Name == "Problem0010Resolver");
 			if(classSearchResult == null)
 			{
@@ -35,6 +35,23 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(classElement.ProgramElementType, ProgramElementType.Class, "Program element type differs!");
 			Assert.AreEqual(classElement.ImplementedInterfaces, String.Empty, "Class implemented interfaces differs!");
 			Assert.False(String.IsNullOrWhiteSpace(classElement.Snippet), "Class snippet is invalid!");
+
+			var constructorSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "Problem0010Resolver");
+			if(constructorSearchResult == null)
+			{
+				Assert.Fail("Failed to find relevant search result for search: " + keywords);
+			}
+			var constructorElement = constructorSearchResult.Element as MethodElement;
+			//Assert.AreEqual(constructorElement.AccessLevel, AccessLevel.Public, "Constructor access level differs!");
+			Assert.IsTrue(constructorElement.IsConstructor, "IResolver", "Constructor extended classes differs!");
+			Assert.AreEqual(constructorElement.DefinitionLineNumber, 10, "Constructor definition line number differs!");
+			Assert.True(constructorElement.FullFilePath.EndsWith("\\TestFiles\\NamesWithNumbersTestFiles\\Problem0010Resolver.cs"), "Constructor full file path is invalid!");
+			Assert.AreEqual(constructorElement.Name, "Problem0010Resolver", "Constructor name differs!");
+			Assert.AreEqual(constructorElement.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
+			Assert.AreEqual(constructorElement.ReturnType, String.Empty, "Constructor should have an empty return type!");
+			Assert.AreEqual(constructorElement.Modifiers, String.Empty, "Constructor modifiers differs!");
+			Assert.AreEqual(constructorElement.Arguments, "long max", "Constructor modifiers differs!");
+			Assert.False(String.IsNullOrWhiteSpace(constructorElement.Snippet), "Constructor snippet is invalid!");
 		}
 
 		[SetUp]
