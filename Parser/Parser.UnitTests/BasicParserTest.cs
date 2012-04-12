@@ -272,8 +272,8 @@ namespace Sando.Parser.UnitTests
 					if(methodElement.IsConstructor)
 					{
 						hasConstructor = true;
-						Assert.AreEqual(methodElement.Name, "Event");
-						Assert.AreEqual(methodElement.DefinitionLineNumber, 123);
+						Assert.AreEqual(methodElement.Name, "SrcMLGenerator");
+						Assert.AreEqual(methodElement.DefinitionLineNumber, 21);
 					}
 				}
 			}

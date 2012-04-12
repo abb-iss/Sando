@@ -121,14 +121,12 @@ namespace Sando.Parser
 				throw new ParserException(TranslationCode.Exception_General_IOException, "sr2srcml.exe execution error, check parameters");
 			}
 
-
 			//erase the temp file we generate for csharp parsing
 			if(Language == LanguageEnum.CSharp)
 			{
 				System.IO.File.Delete(filename);
 			}
 
-			Debug.WriteLine(srcML);
 			return srcML;
 		}
 

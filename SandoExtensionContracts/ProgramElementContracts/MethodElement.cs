@@ -10,7 +10,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(arguments != null, "MethodElement:Constructor - arguments cannot be null!");
-			Contract.Requires(!String.IsNullOrWhiteSpace(returnType), "MethodElement:Constructor - return type cannot be null or an empty string!");
+			Contract.Requires(isConstructor || !String.IsNullOrWhiteSpace(returnType), "MethodElement:Constructor - return type cannot be null or an empty string!");
 			Contract.Requires(body != null, "MethodElement:Constructor - body cannot be null!");
 			Contract.Requires(classId != null, "MethodElement:Constructor - class id cannot be null!");
 			//Contract.Requires(classId != Guid.Empty, "MethodElement:Constructor - class id cannot be an empty Guid!");

@@ -31,7 +31,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLParser(Generator);
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 5);
+			Assert.AreEqual(elements.Length, 6);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is CppUnresolvedMethodElement)
