@@ -1,5 +1,5 @@
 ﻿using System;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.UnitTestHelpers
 {
@@ -86,8 +86,7 @@ namespace Sando.UnitTestHelpers
 			string modifiers = ""
 		)
 		{
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, 
-										new Guid(classId), className, modifiers, false);
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId), className, modifiers, false);
 		}
 
 		public static PropertyElement GetSamplePropertyElement(

@@ -1,8 +1,7 @@
 ﻿using System;
-using NUnit.Framework;
-using Sando.Core;
-using Sando.Parser;
 using System.Diagnostics;
+using NUnit.Framework;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser.UnitTests
 {
@@ -258,6 +257,28 @@ namespace Sando.Parser.UnitTests
 
 		}
 
+		[Test]
+		public void ParseConstructorTest()
+		{
+			bool hasConstructor = false;
+			var parser = new SrcMLParser(Generator);
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+			Assert.IsNotNull(elements);
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is MethodElement)
+				{
+					var methodElement = (MethodElement)pe;
+					if(methodElement.IsConstructor)
+					{
+						hasConstructor = true;
+						Assert.AreEqual(methodElement.Name, "Event");
+						Assert.AreEqual(methodElement.DefinitionLineNumber, 123);
+					}
+				}
+			}
+			Assert.IsTrue(hasConstructor);
+		}
 
 		[TearDown]
 		public static void CleanUp()

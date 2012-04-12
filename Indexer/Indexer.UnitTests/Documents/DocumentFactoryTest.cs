@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using NUnit.Framework;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
 

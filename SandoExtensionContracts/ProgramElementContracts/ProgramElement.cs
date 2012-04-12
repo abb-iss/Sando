@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.IO;
 
-namespace Sando.Core
+namespace Sando.ExtensionContracts.ProgramElementContracts
 {
     public abstract class ProgramElement
     {

@@ -54,6 +54,10 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Name>SandoExtensionContracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Parser\Parser.csproj">
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
       <Name>Parser</Name>

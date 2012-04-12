@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.Searching

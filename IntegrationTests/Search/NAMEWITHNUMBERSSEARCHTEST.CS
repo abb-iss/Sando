@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
-using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.IntegrationTests.Search
 {

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using NUnit.Framework;
+using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
-using Sando.Core;
-using Sando.Indexer;
 using UnitTestHelpers;
 
 namespace Sando.UI.UnitTests

@@ -49,9 +49,9 @@
     <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core\Core.csproj">
-      <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
-      <Name>Core</Name>
+    <ProjectReference Include="..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Name>SandoExtensionContracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

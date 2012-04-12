@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;

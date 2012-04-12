@@ -1,14 +1,8 @@
 ﻿using System.IO;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.SearchEngine
 {
-    using Sando.Core;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-
-
     /// <summary>
     /// Class defined to create return result from Lucene indexer
     /// </summary>
@@ -35,7 +29,7 @@ namespace Sando.SearchEngine
            private set;
        }
 
-       public String Snippet
+       public string Snippet
        {
            get
            {

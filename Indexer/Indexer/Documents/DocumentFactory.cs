@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.Contracts;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Indexer.Documents
 {

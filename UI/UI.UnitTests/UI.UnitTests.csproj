@@ -67,6 +67,10 @@
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Name>SandoExtensionContracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
       <Name>Search Engine</Name>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace Sando.Core
+namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class MethodPrototypeElement : ProgramElement
 	{

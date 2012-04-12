@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser.UnitTests
 {

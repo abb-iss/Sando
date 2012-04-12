@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.SearchEngine;
 using Sando.Translation;
-using System.Windows.Media.Imaging;
-using Sando.UI.Model;
-using System.Reflection;
-using Sando.Core;
 
 namespace Sando.UI.View
 {

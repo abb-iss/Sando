@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Lucene.Net.Documents;
-using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 
 namespace Sando.Indexer.Searching

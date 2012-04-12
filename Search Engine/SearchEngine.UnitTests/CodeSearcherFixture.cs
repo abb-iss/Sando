@@ -1,21 +1,17 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Lucene.Net.Analysis;
+using NUnit.Framework;
+using Sando.Core;
+using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.Indexer;
+using Sando.Indexer.Documents;
+using Sando.Indexer.Searching;
+using Sando.UnitTestHelpers;
 
 namespace Sando.SearchEngine.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using NUnit.Framework;
-    using Sando.SearchEngine;
-    using Lucene.Net.Analysis;
-    using Sando.Core;
-    using Sando.Indexer;
-    using Sando.Indexer.Documents;
-    using Lucene.Net.Search;
-	using Sando.Indexer.Searching;
-	using Sando.UnitTestHelpers;
 
     [TestFixture]
     public class CodeSearcherFixture
@@ -68,7 +64,7 @@ namespace Sando.SearchEngine.UnitTests
 			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath);
 			Indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
-				accessLevel: Core.AccessLevel.Public,
+				accessLevel: AccessLevel.Public,
 				definitionLineNumber: 11,
 				extendedClasses: "SimpleClassBase",
 				fullFilePath: "C:/Projects/SimpleClass.cs",
@@ -79,7 +75,7 @@ namespace Sando.SearchEngine.UnitTests
     		SandoDocument sandoDocument = DocumentFactory.Create(classElement);
     		Indexer.AddDocument(sandoDocument);
 			MethodElement methodElement = SampleProgramElementFactory.GetSampleMethodElement(
-				accessLevel: Core.AccessLevel.Protected,
+				accessLevel: AccessLevel.Protected,
     		    name: "SimpleName",
 				returnType: "Void",
 				fullFilePath: "C:/stuff"
