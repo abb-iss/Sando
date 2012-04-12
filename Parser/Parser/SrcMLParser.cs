@@ -41,15 +41,16 @@ namespace Sando.Parser
 
 				ParseEnums(programElements, sourceElements, fileName);
 				ParseClasses(programElements, sourceElements, fileName);
-				ParseFunctions(programElements, sourceElements, fileName);
 				ParseFields(programElements, sourceElements, fileName);
 
 				if(Generator.Language == LanguageEnum.CSharp)
 				{
+					ParseMethods(programElements, sourceElements, fileName);
 					ParseProperties(programElements, sourceElements, fileName);
 				}
 				else if(Generator.Language == LanguageEnum.CPP || Generator.Language == LanguageEnum.C)
 				{
+					ParseFunctions(programElements, sourceElements, fileName);
 					ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
 				}
 			}
@@ -323,7 +324,7 @@ namespace Sando.Parser
 			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty);
 		}
 
-		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, string fileName)
+		private void ParseMethods(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
 			IEnumerable<XElement> functions =
 				from el in elements.Descendants(SourceNamespace + "function")
@@ -331,15 +332,7 @@ namespace Sando.Parser
 			foreach(XElement func in functions)
 			{
 				MethodElement methodElement = null;
-				if(Generator.Language == LanguageEnum.CPP)
-				{
-					string[] includedFiles = ParseCppIncludes(elements);
-					methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
-				}
-				else
-				{
-					methodElement = ParseFunction(func, programElements, fileName);
-				}
+				methodElement = ParseMethod(func, programElements, fileName);
 				programElements.Add(methodElement);
 				DocCommentElement methodCommentsElement = ParseFunctionComments(func, methodElement);
 				if(methodCommentsElement != null)
@@ -349,24 +342,43 @@ namespace Sando.Parser
 			}
 		}
 
-		private MethodElement ParseFunction(XElement function, List<ProgramElement> programElements, string fileName)
+		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, string fileName)
+		{
+			IEnumerable<XElement> functions =
+				from el in elements.Descendants(SourceNamespace + "function")
+				select el;
+			foreach(XElement func in functions)
+			{
+				MethodElement methodElement = null;
+				string[] includedFiles = ParseCppIncludes(elements);
+				methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
+				programElements.Add(methodElement);
+				DocCommentElement methodCommentsElement = ParseFunctionComments(func, methodElement);
+				if(methodCommentsElement != null)
+				{
+					programElements.Add(methodCommentsElement);
+				}
+			}
+		}
+
+		private MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName)
 		{
 			string name;
 			int definitionLineNumber;
-			ParseName(function, out name, out definitionLineNumber);
+			ParseName(method, out name, out definitionLineNumber);
 
 			AccessLevel accessLevel = AccessLevel.Protected; //default
-			XElement access = function.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
+			XElement access = method.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
 			if(access != null)
 			{
 				accessLevel = StrToAccessLevel(access.Value);
 			}
 
-			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
+			XElement type = method.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
 			string returnType = type.Value;
 
 			//parse arguments
-			XElement paramlist = function.Element(SourceNamespace + "parameter_list");
+			XElement paramlist = method.Element(SourceNamespace + "parameter_list");
 			IEnumerable<XElement> argumentElements =
 				from el in paramlist.Descendants(SourceNamespace + "name")
 				select el;
@@ -377,16 +389,17 @@ namespace Sando.Parser
 			}
 			arguments = arguments.TrimEnd();
 
-			string body = ParseBody(function);
+			string body = ParseBody(method);
 
-			ClassElement classElement = RetrieveClassElement(function, programElements);
+			ClassElement classElement = RetrieveClassElement(method, programElements);
 			Guid classId = classElement != null ? classElement.Id : Guid.Empty;
 			string className = classElement != null ? classElement.Name : String.Empty;
 
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, String.Empty);
+			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, 
+										classId, className, String.Empty, false);
 		}
 
 		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles)
@@ -424,7 +437,8 @@ namespace Sando.Parser
 				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
 				snippet = RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, includedFiles);
+				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, 
+														className, false, includedFiles);
 			}
 			else
 			{
@@ -438,7 +452,8 @@ namespace Sando.Parser
 				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
 				string className = classElement != null ? classElement.Name : String.Empty;
 
-				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, String.Empty);
+				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, 
+													classId, className, String.Empty, false);
 			}
 
 			return methodElement;
