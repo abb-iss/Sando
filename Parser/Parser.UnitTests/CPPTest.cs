@@ -31,7 +31,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCppParser(Generator);
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 5);
+			Assert.AreEqual(elements.Length, 6);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is CppUnresolvedMethodElement)
@@ -67,7 +67,7 @@ namespace Sando.Parser.UnitTests
 					}
 				}
 			}
-			Assert.AreEqual(numMethods, 5);
+			Assert.AreEqual(numMethods, 6);
 			Assert.IsTrue(seenGetTimeMethod);
 		}
 
@@ -80,7 +80,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCppParser(Generator);
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 7);
+			Assert.AreEqual(elements.Length, 8);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is ClassElement)
@@ -117,28 +117,28 @@ namespace Sando.Parser.UnitTests
             Assert.IsTrue(true);
         }
 
-		//[Test]
-		//public void ParseCppConstructorTest()
-		//{
-		//    bool hasConstructor = false;
-		//    var parser = new SrcMLParser(Generator);
-		//    var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
-		//    Assert.IsNotNull(elements);
-		//    foreach(ProgramElement pe in elements)
-		//    {
-		//        if(pe is MethodElement)
-		//        {
-		//            var methodElement = (MethodElement)pe;
-		//            if(methodElement.IsConstructor)
-		//            {
-		//                hasConstructor = true;
-		//                Assert.AreEqual(methodElement.Name, "Event");
-		//                Assert.AreEqual(methodElement.DefinitionLineNumber, 123);
-		//            }
-		//        }
-		//    }
-		//    Assert.IsTrue(hasConstructor);
-		//}
+		[Test]
+		public void ParseCppConstructorTest()
+		{
+			bool hasConstructor = false;
+			var parser = new SrcMLCppParser(Generator);
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
+			Assert.IsNotNull(elements);
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is MethodPrototypeElement)
+				{
+					var protoElement = (MethodPrototypeElement)pe;
+					if(protoElement.IsConstructor)
+					{
+						hasConstructor = true;
+						Assert.AreEqual(protoElement.Name, "Event");
+						Assert.AreEqual(protoElement.DefinitionLineNumber, 15);
+					}
+				}
+			}
+			Assert.IsTrue(hasConstructor);
+		}
 
         [Test]
         public void ParseBigFileTest()

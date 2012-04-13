@@ -48,6 +48,7 @@ namespace Sando.Parser
 				ParseConstructors(programElements, sourceElements, fileName);
 				ParseFunctions(programElements, sourceElements, fileName);
 				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
+				ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
 			}
 
 			return programElements.ToArray();
@@ -58,16 +59,34 @@ namespace Sando.Parser
 			IEnumerable<XElement> functions =
 				from el in sourceElements.Descendants(SourceNamespace + "function_decl")
 				select el;
+			ParseCppFunctionPrototypes_Work(programElements, functions, fileName, false);
+		}
+
+		private void ParseCppConstructorPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)
+		{
+			IEnumerable<XElement> functions =
+				from el in sourceElements.Descendants(SourceNamespace + "constructor_decl")
+				select el;
+			ParseCppFunctionPrototypes_Work(programElements, functions, fileName, true);
+		}
+
+		private void ParseCppFunctionPrototypes_Work(List<ProgramElement> programElements, IEnumerable<XElement> functions, 
+														string fileName, bool isConstructor)
+		{
 			foreach(XElement function in functions)
 			{
-				string name;
-				int definitionLineNumber;
+				string name = String.Empty;
+				int definitionLineNumber = 0;
+				string returnType = String.Empty;
+
 				SrcMLParsingUtils.ParseName(function, out name, out definitionLineNumber);
-
 				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
-
-				XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
-				string returnType = type.Value;
+				XElement type = function.Element(SourceNamespace + "type");
+				if(type != null)
+				{
+					XElement typeName = type.Element(SourceNamespace + "name");
+					returnType = typeName.Value;
+				}
 
 				XElement paramlist = function.Element(SourceNamespace + "parameter_list");
 				IEnumerable<XElement> argumentElements =
@@ -83,9 +102,10 @@ namespace Sando.Parser
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
 				string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-				programElements.Add(new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet));
+				programElements.Add(new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor));
 			}
 		}
+
 
 		private string[] ParseCppIncludes(XElement sourceElements)
 		{
@@ -174,31 +194,32 @@ namespace Sando.Parser
 
 		private void ParseConstructors(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
-			//IEnumerable<XElement> constructors =
-			//    from el in elements.Descendants(SourceNamespace + "constructor")
-			//    select el;
-			//foreach(XElement cons in constructors)
-			//{
-			//    MethodElement methodElement = null;
-			//    methodElement = ParseCppFunction(cons, programElements, fileName, true);
-			//    programElements.Add(methodElement);
-			//    DocCommentElement methodCommentsElement = ParseFunctionComments(cons, methodElement);
-			//    if(methodCommentsElement != null)
-			//    {
-			//        programElements.Add(methodCommentsElement);
-			//    }
-			//}
+			string[] includedFiles = ParseCppIncludes(elements);
+			IEnumerable<XElement> constructors =
+				from el in elements.Descendants(SourceNamespace + "constructor")
+				select el;
+			foreach(XElement cons in constructors)
+			{
+				MethodElement methodElement = null;
+				methodElement = ParseCppFunction(cons, programElements, fileName, includedFiles, true);
+				programElements.Add(methodElement);
+				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(cons, methodElement);
+				if(methodCommentsElement != null)
+				{
+					programElements.Add(methodCommentsElement);
+				}
+			}
 		}
 
 		private void ParseFunctions(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
+			string[] includedFiles = ParseCppIncludes(elements);
 			IEnumerable<XElement> functions =
 				from el in elements.Descendants(SourceNamespace + "function")
 				select el;
 			foreach(XElement func in functions)
 			{
 				MethodElement methodElement = null;
-				string[] includedFiles = ParseCppIncludes(elements);
 				methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
 				programElements.Add(methodElement);
 				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(func, methodElement);
@@ -209,14 +230,20 @@ namespace Sando.Parser
 			}
 		}
 
-		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles)
+		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, 
+												string[] includedFiles, bool isConstructor = false)
 		{
-			MethodElement methodElement;
-			string snippet;
-			int definitionLineNumber;
+			MethodElement methodElement = null;
+			string snippet = String.Empty;
+			int definitionLineNumber = 0;
+			string returnType = String.Empty;
 
-			XElement type = function.Element(SourceNamespace + "type").Element(SourceNamespace + "name");
-			string returnType = type.Value;
+			XElement type = function.Element(SourceNamespace + "type");
+			if(type != null)
+			{
+				XElement typeName = type.Element(SourceNamespace + "name");
+				returnType = typeName.Value;
+			}
 
 			XElement paramlist = function.Element(SourceNamespace + "parameter_list");
 			IEnumerable<XElement> argumentElements =
@@ -245,7 +272,7 @@ namespace Sando.Parser
 				snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
 				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, 
-														className, false, includedFiles);
+														className, isConstructor, includedFiles);
 			}
 			else
 			{
@@ -260,7 +287,7 @@ namespace Sando.Parser
 				string className = classElement != null ? classElement.Name : String.Empty;
 
 				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, 
-													classId, className, String.Empty, false);
+													classId, className, String.Empty, isConstructor);
 			}
 
 			return methodElement;
