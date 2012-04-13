@@ -55,6 +55,7 @@ namespace Sando.Parser.UnitTests
 					Assert.IsTrue(isResolved);
 					Assert.IsNotNull(method);
 
+					//pick one of the resolved methods to see if it seems complete
 					if(method.Name == "getTime")
 					{
 						seenGetTimeMethod = true;

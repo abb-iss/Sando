@@ -59,7 +59,7 @@ namespace Sando.Parser
 			IEnumerable<XElement> functions =
 				from el in sourceElements.Descendants(SourceNamespace + "function_decl")
 				select el;
-			ParseCppFunctionPrototypes_Work(programElements, functions, fileName, false);
+			ParseCppFunctionPrototype(programElements, functions, fileName, false);
 		}
 
 		private void ParseCppConstructorPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)
@@ -67,10 +67,10 @@ namespace Sando.Parser
 			IEnumerable<XElement> functions =
 				from el in sourceElements.Descendants(SourceNamespace + "constructor_decl")
 				select el;
-			ParseCppFunctionPrototypes_Work(programElements, functions, fileName, true);
+			ParseCppFunctionPrototype(programElements, functions, fileName, true);
 		}
 
-		private void ParseCppFunctionPrototypes_Work(List<ProgramElement> programElements, IEnumerable<XElement> functions, 
+		private void ParseCppFunctionPrototype(List<ProgramElement> programElements, IEnumerable<XElement> functions, 
 														string fileName, bool isConstructor)
 		{
 			foreach(XElement function in functions)
