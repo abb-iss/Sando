@@ -4,6 +4,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;
+using UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests.Searching
 {
@@ -145,6 +146,12 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
 			Assert.True(element.PropertyType == returnedElement.PropertyType, "PropertyType is different!");
 			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+		}
+
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
 		}
 
 		private static string StandardizeFilePath(string fullFilePath)

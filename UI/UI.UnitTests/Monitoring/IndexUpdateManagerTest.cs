@@ -72,11 +72,15 @@ namespace Sando.UI.UnitTests.Monitoring
 			}
 		}
 
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+		}
+
 		[SetUp]
 		public void PrepareIndexUpdateManager()
 		{
-			TestUtils.InitializeDefaultExtensionPoints();
-
 			solutionPath = Path.Combine(Path.GetTempPath(), "solution");
 			indexPath = Path.Combine(solutionPath, "luceneindex");
 			PrepareFileSystemObjects();

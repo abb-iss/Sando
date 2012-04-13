@@ -9,13 +9,14 @@ using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
+using Sando.Core.Extensions;
+using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.Parser;
 using Sando.SearchEngine;
 using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
-using Sando.Core.Extensions;
-using Sando.Parser;
 
 namespace Sando.UI
 {
@@ -134,6 +135,8 @@ namespace Sando.UI
 			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
 			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
 			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
+
+			extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
         }
 
 		private void SolutionHasBeenClosed()

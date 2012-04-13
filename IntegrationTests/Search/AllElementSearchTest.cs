@@ -117,11 +117,15 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
 		}
 
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+		}
+
 		[SetUp]
 		public void Setup()
 		{
-			TestUtils.InitializeDefaultExtensionPoints();
-
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);

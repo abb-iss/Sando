@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Sando.ExtensionContracts.ParserContracts;
+using Sando.ExtensionContracts.SplitterContracts;
 
 namespace Sando.Core.Extensions
 {
@@ -28,6 +29,18 @@ namespace Sando.Core.Extensions
 				parsers[supportedFileExtension] = parserImplementation;
 		}
 
+		public IWordSplitter GetWordSplitterImplementation()
+		{
+			return wordSplitter;
+		}
+
+		public void RegisterWordSplitterImplementation(IWordSplitter wordSplitter)
+		{
+			Contract.Requires(wordSplitter != null, "ExtensionPointsManager:RegisterWordSplitterImplementation - wordSplitter cannot be null!");
+			
+			this.wordSplitter = wordSplitter;
+		}
+
 		public static ExtensionPointsRepository Instance
 		{
 			get
@@ -46,5 +59,6 @@ namespace Sando.Core.Extensions
 		private static ExtensionPointsRepository extensionManager;
 
 		private Dictionary<string, IParser> parsers;
+		private IWordSplitter wordSplitter;
 	}
 }

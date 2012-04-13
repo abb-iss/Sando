@@ -1,6 +1,6 @@
 ﻿namespace Sando.ExtensionContracts.SplitterContracts
 {
-	public interface ISplitter
+	public interface IWordSplitter
 	{
 		string[] ExtractWords(string text);
 	}

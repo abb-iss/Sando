@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Sando.ExtensionContracts.SplitterContracts;
 
 namespace Sando.Core.Tools
 {
-	public static class WordSplitter
+	public class WordSplitter : IWordSplitter
 	{
-		public static string[] ExtractWords(string word) 
+		public string[] ExtractWords(string word) 
 		{
 			word = Regex.Replace(word, @"([A-Z][a-z]+|[A-Z]+|[0-9]+)", "_$1").Replace(" _", "_");
 			char[] delimiters = new char[] { '_', ':' };

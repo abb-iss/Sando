@@ -99,7 +99,7 @@
     <Compile Include="ProgramElementContracts\ProgramElementType.cs" />
     <Compile Include="ProgramElementContracts\PropertyElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SplitterContracts\ISplitter.cs" />
+    <Compile Include="SplitterContracts\IWordSplitter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

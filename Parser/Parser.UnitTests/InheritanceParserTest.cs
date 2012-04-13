@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using UnitTestHelpers;
 
 namespace Sando.Parser.UnitTests
 {
@@ -90,6 +91,12 @@ namespace Sando.Parser.UnitTests
 				}
 			}
 			Assert.IsTrue(seenClass);
+		}
+
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
 		}
 
 	}

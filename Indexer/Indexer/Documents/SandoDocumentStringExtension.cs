@@ -1,5 +1,5 @@
 ﻿using System;
-using Sando.Core.Tools;
+using Sando.Core.Extensions;
 
 namespace Sando.Indexer.Documents
 {
@@ -9,7 +9,7 @@ namespace Sando.Indexer.Documents
 		{
 			if(String.IsNullOrWhiteSpace(fieldValue))
 				return fieldValue;
-			string splitWords = String.Join(" ", WordSplitter.ExtractWords(fieldValue));
+			string splitWords = String.Join(" ", ExtensionPointsRepository.Instance.GetWordSplitterImplementation().ExtractWords(fieldValue));
 			if(splitWords == fieldValue)
 				return fieldValue;
 			string result = fieldValue + delimiter + splitWords;

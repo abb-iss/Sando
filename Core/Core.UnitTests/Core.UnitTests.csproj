@@ -48,6 +48,14 @@
     <Compile Include="Tools\SplitterTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Name>SandoExtensionContracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
+      <Project>{A4567112-2AAE-4C67-9EC6-4625924EA118}</Project>
+      <Name>UnitTestHelpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>

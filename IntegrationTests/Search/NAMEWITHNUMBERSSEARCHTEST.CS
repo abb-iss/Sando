@@ -55,11 +55,15 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(constructorElement.Snippet), "Constructor snippet is invalid!");
 		}
 
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+		}
+
 		[SetUp]
 		public void Setup()
 		{
-			TestUtils.InitializeDefaultExtensionPoints();
-
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);

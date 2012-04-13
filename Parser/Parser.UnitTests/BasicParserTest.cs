@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using UnitTestHelpers;
 
 namespace Sando.Parser.UnitTests
 {
@@ -285,6 +286,12 @@ namespace Sando.Parser.UnitTests
 		public static void CleanUp()
 		{
 			System.IO.File.Delete(HelloWorldFile);
+		}
+
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
 		}
 	
 	}

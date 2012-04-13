@@ -9,6 +9,7 @@ using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;
+using UnitTestHelpers;
 
 namespace Sando.SearchEngine.UnitTests
 {
@@ -59,6 +60,8 @@ namespace Sando.SearchEngine.UnitTests
 		[TestFixtureSetUp]
     	public void CreateIndexer()
 		{
+			TestUtils.InitializeDefaultExtensionPoints();
+
 			IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
 		    Directory.CreateDirectory(IndexerPath);
 			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath);

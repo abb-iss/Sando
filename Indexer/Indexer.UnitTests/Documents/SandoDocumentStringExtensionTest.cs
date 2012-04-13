@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using Sando.Indexer.Documents;
+using UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
@@ -34,6 +32,12 @@ namespace Sando.Indexer.UnitTests.Documents
 
 			testString = String.Empty;
 			Assert.AreEqual(testString.ToSandoDisplayable(), String.Empty);
+		}
+
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
 		}
 	}
 }

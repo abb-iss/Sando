@@ -152,6 +152,12 @@ namespace Sando.Indexer.UnitTests
             };
         }
 
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+		}
+
 		[TearDown]
 		public void CloseDocumentIndexer()
 		{

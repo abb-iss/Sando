@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using NUnit.Framework;
+using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.ExtensionContracts.SplitterContracts;
+using UnitTestHelpers;
 
 namespace Sando.Core.UnitTests
 {
@@ -13,49 +16,49 @@ namespace Sando.Core.UnitTests
 		[Test]
 		public void TestSplitCamelCase()
 		{
-			string[] parts = WordSplitter.ExtractWords("aLongVariableNameInCamelCase");
+			string[] parts = wordSplitter.ExtractWords("aLongVariableNameInCamelCase");
 			Assert.IsTrue(parts.Length == 7);
 		}
 
 		[Test]
 		public void TestSplitUnderscores()
 		{
-			string[] parts = WordSplitter.ExtractWords("a_name_separated_by_lots_of_underscores");
+			string[] parts = wordSplitter.ExtractWords("a_name_separated_by_lots_of_underscores");
 			Assert.IsTrue(parts.Length == 7);
 		}
 
 		[Test]
 		public void TestUnsplittable()
 		{
-			string[] parts = WordSplitter.ExtractWords("unsplittable");
+			string[] parts = wordSplitter.ExtractWords("unsplittable");
 			Assert.IsTrue(parts.Length == 1);
 		}
 
 		[Test]
 		public void TestAbbreviations()
 		{
-			string[] parts = WordSplitter.ExtractWords("whatAboutALM");
+			string[] parts = wordSplitter.ExtractWords("whatAboutALM");
 			Assert.IsTrue(parts.Length == 3);
 		}
 
 		[Test]
 		public void TestAllCaps()
 		{
-			string[] parts = WordSplitter.ExtractWords("WHATIFALLINCAPS");
+			string[] parts = wordSplitter.ExtractWords("WHATIFALLINCAPS");
 			Assert.IsTrue(parts.Length == 1);
 		}
 
 		[Test]
 		public void TestAllCapsUnderscore()
 		{
-			string[] parts = WordSplitter.ExtractWords("WHAT_IF_ALL_IN_CAPS");
+			string[] parts = wordSplitter.ExtractWords("WHAT_IF_ALL_IN_CAPS");
 			Assert.IsTrue(parts.Length == 5);
 		}
 
 		[Test]
 		public void TestBeginUnderscore()
 		{
-			string[] parts = WordSplitter.ExtractWords("_beginInUnderscore");
+			string[] parts = wordSplitter.ExtractWords("_beginInUnderscore");
 			Assert.IsTrue(parts.Length == 3);
 		}
 
@@ -112,7 +115,7 @@ namespace Sando.Core.UnitTests
 			watch.Start();
 			for(int i = 0; i < 500; i++)
 			{
-				string[] parts = WordSplitter.ExtractWords("_beginInUnderscore");
+				string[] parts = wordSplitter.ExtractWords("_beginInUnderscore");
 				Assert.IsTrue(parts.Length == 3);
 			}
 			watch.Stop();
@@ -131,6 +134,15 @@ namespace Sando.Core.UnitTests
 			};
 		}
 
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+
+			wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+		}
+
 		private bool contractFailed;
+		private IWordSplitter wordSplitter;
 	}
 }

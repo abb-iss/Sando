@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using UnitTestHelpers;
 
 namespace Sando.Parser.UnitTests
 {
@@ -147,6 +148,12 @@ namespace Sando.Parser.UnitTests
 			Thread.Sleep(5000);
             Assert.IsTrue(_processFileInBackground.IsBusy==false);
         }
+
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+		}
 
 	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 	    {

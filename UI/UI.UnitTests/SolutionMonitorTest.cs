@@ -29,11 +29,15 @@ namespace Sando.UI.UnitTests
 			Directory.Delete(_luceneTempIndexesDirectory + "/basic/", true);
         }
 
+		[TestFixtureSetUp]
+		public void SetUp()
+		{
+			TestUtils.InitializeDefaultExtensionPoints();
+		}
+
         [SetUp]
         public void Setup()
         {
-			TestUtils.InitializeDefaultExtensionPoints();
-
 			Directory.CreateDirectory(_luceneTempIndexesDirectory + "/basic/");
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory + "/basic/");
             key = new SolutionKey(Guid.NewGuid(), ".\\TestFiles\\FourCSFiles", _luceneTempIndexesDirectory + "/basic/");

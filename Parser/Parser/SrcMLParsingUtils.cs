@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Sando.ExtensionContracts.ProgramElementContracts;
 using System.Xml.Linq;
-using Sando.Core.Tools;
+using Sando.Core.Extensions;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser
 {
@@ -161,7 +160,7 @@ namespace Sando.Parser
 			string body = String.Empty;
 			foreach(XElement elem in bodyNames)
 			{
-				body += String.Join(" ", WordSplitter.ExtractWords(elem.Value)) + " ";
+				body += String.Join(" ", ExtensionPointsRepository.Instance.GetWordSplitterImplementation().ExtractWords(elem.Value)) + " ";
 			}
 			body = body.TrimEnd();
 			return body;
