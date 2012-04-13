@@ -274,6 +274,7 @@ namespace Sando.Parser.UnitTests
 						hasConstructor = true;
 						Assert.AreEqual(methodElement.Name, "SrcMLGenerator");
 						Assert.AreEqual(methodElement.DefinitionLineNumber, 21);
+						Assert.AreEqual(methodElement.AccessLevel, AccessLevel.Public);
 					}
 				}
 			}

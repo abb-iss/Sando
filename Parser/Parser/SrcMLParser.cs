@@ -401,6 +401,15 @@ namespace Sando.Parser
 				XElement typeName = type.Element(SourceNamespace + "name");
 				returnType = typeName.Value;
 			}
+			else 
+			{
+				XElement access = method.Element(SourceNamespace + "specifier");
+				if(access != null)
+				{
+					accessLevel = StrToAccessLevel(access.Value);
+				}
+			}
+
 
 			//parse arguments
 			XElement paramlist = method.Element(SourceNamespace + "parameter_list");
