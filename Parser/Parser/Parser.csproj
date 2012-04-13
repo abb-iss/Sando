@@ -81,10 +81,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SrcMLParsingUtils.cs" />
+    <Compile Include="SrcMLCppParser.cs" />
     <Compile Include="ParserException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SrcMLGenerator.cs" />
-    <Compile Include="SrcMLParser.cs" />
+    <Compile Include="SrcMLCSharpParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

@@ -18,7 +18,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
     {
         private  string _currentDirectory;
         private  SrcMLGenerator _generator;
-        private  SrcMLParser _parser;
+        private  SrcMLCSharpParser _parser;
         private  string _luceneTempIndexesDirectory = "C:/Windows/Temp/basic";
         
         public SearchTester()
@@ -27,7 +27,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
                 _currentDirectory = Environment.CurrentDirectory;
                 _generator = new SrcMLGenerator();
 				_generator.SetSrcMLLocation(_currentDirectory + "\\..\\..\\LIBS\\srcML-Win");
-                _parser = new SrcMLParser(_generator);
+                _parser = new SrcMLCSharpParser(_generator);
                 Directory.CreateDirectory(_luceneTempIndexesDirectory);
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
          

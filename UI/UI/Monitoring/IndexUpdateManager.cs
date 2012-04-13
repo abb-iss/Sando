@@ -134,13 +134,13 @@ namespace Sando.UI.Monitoring
         class ParserManager
         {
 
-            private readonly IParser _csParser = new SrcMLParser(new SrcMLGenerator(LanguageEnum.CSharp));
-            private readonly IParser _cppParser = new SrcMLParser(new SrcMLGenerator(LanguageEnum.CPP));
+            private readonly IParser _csParser = new SrcMLCSharpParser(new SrcMLGenerator(LanguageEnum.CSharp));
+            private readonly IParser _cppParser = new SrcMLCSharpParser(new SrcMLGenerator(LanguageEnum.CPP));
 
             internal ParserManager()
             {
-                _csParser = new SrcMLParser(SrcMLGenerator.Generator(LanguageEnum.CSharp).SetSrcMLLocation(SrcMLParser.StandardSrcMlLocation));
-                _cppParser = new SrcMLParser(SrcMLGenerator.Generator(LanguageEnum.CPP).SetSrcMLLocation(SrcMLParser.StandardSrcMlLocation));                                
+                _csParser = new SrcMLCSharpParser(SrcMLGenerator.Generator(LanguageEnum.CSharp).SetSrcMLLocation(SrcMLCSharpParser.StandardSrcMlLocation));
+                _cppParser = new SrcMLCSharpParser(SrcMLGenerator.Generator(LanguageEnum.CPP).SetSrcMLLocation(SrcMLCSharpParser.StandardSrcMlLocation));                                
             }
 
 			internal IParser Get(String filePath)

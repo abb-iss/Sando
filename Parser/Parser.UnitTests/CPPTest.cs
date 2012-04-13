@@ -28,10 +28,10 @@ namespace Sando.Parser.UnitTests
 			bool seenGetTimeMethod = false;
 			int numMethods = 0;
 			string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
-			var parser = new SrcMLParser(Generator);
+			var parser = new SrcMLCppParser(Generator);
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 6);
+			Assert.AreEqual(elements.Length, 5);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is CppUnresolvedMethodElement)
@@ -77,7 +77,7 @@ namespace Sando.Parser.UnitTests
 		{
 			bool hasClass = false;
 			bool hasEnum = false;
-			var parser = new SrcMLParser(Generator);
+			var parser = new SrcMLCppParser(Generator);
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Length, 7);
@@ -112,7 +112,7 @@ namespace Sando.Parser.UnitTests
         [Test]
         public void ParseAboutDlgTest()
         {        
-            var parser = new SrcMLParser(Generator);
+            var parser = new SrcMLCppParser(Generator);
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\AboutDlg.cpp");
             Assert.IsTrue(true);
         }
@@ -153,7 +153,7 @@ namespace Sando.Parser.UnitTests
 
 	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 	    {
-            var parser = new SrcMLParser(Generator);
+            var parser = new SrcMLCppParser(Generator);
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LargeCppFile.txt");     
 	    }
 	}
