@@ -7,11 +7,6 @@ namespace Sando.Core.Extensions
 {
 	public class ExtensionPointsRepository
 	{
-		public ExtensionPointsRepository()
-		{
-			parsers = new Dictionary<string,IParser>();
-		}
-
 		public IParser GetParserImplementation(string fileExtension)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fileExtension), "ExtensionPointsManager:GetParserImplementation - fileExtension cannot be null or an empty string!");
@@ -41,6 +36,11 @@ namespace Sando.Core.Extensions
 					extensionManager = new ExtensionPointsRepository();
 				return extensionManager;
 			}
+		}
+
+		private ExtensionPointsRepository()
+		{
+			parsers = new Dictionary<string, IParser>();
 		}
 
 		private static ExtensionPointsRepository extensionManager;

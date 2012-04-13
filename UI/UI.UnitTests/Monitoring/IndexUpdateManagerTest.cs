@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.Indexer;
-using Sando.UI.Monitoring;
-using System.Threading;
-using System.ComponentModel;
 using Sando.Indexer.IndexState;
-using System.Collections.Generic;
+using Sando.UI.Monitoring;
+using UnitTestHelpers;
 
 namespace Sando.UI.UnitTests.Monitoring
 {
@@ -74,6 +75,8 @@ namespace Sando.UI.UnitTests.Monitoring
 		[SetUp]
 		public void PrepareIndexUpdateManager()
 		{
+			TestUtils.InitializeDefaultExtensionPoints();
+
 			solutionPath = Path.Combine(Path.GetTempPath(), "solution");
 			indexPath = Path.Combine(solutionPath, "luceneindex");
 			PrepareFileSystemObjects();

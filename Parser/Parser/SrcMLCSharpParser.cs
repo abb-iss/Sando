@@ -25,12 +25,6 @@ namespace Sando.Parser
 	        Generator.SetSrcMLLocation(StandardSrcMlLocation);
 		}
 
-		public SrcMLCSharpParser(SrcMLGenerator gen)
-		{
-			Generator = gen;
-			Contract.Requires(gen.Language == LanguageEnum.CSharp, "SrcMLCSharpParser is asked to parse a language other than C#");
-		}
-
 		public ProgramElement[] Parse(string fileName)
 		{
 			var programElements = new List<ProgramElement>();

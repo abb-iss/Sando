@@ -9,6 +9,7 @@ using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
+using UnitTestHelpers;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -119,6 +120,8 @@ namespace Sando.IntegrationTests.Search
 		[SetUp]
 		public void Setup()
 		{
+			TestUtils.InitializeDefaultExtensionPoints();
+
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);

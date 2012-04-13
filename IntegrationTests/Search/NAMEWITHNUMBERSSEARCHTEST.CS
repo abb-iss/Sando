@@ -8,6 +8,7 @@ using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
+using UnitTestHelpers;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -57,6 +58,8 @@ namespace Sando.IntegrationTests.Search
 		[SetUp]
 		public void Setup()
 		{
+			TestUtils.InitializeDefaultExtensionPoints();
+
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);

@@ -9,21 +9,18 @@ namespace Sando.Parser.UnitTests
 	public class InheritanceParserTest
 	{
 		private static string CurrentDirectory;
-		private static SrcMLGenerator Generator;
 
 		[SetUp]
 		public static void Init()
 		{
 			//set up generator
 			CurrentDirectory = Environment.CurrentDirectory;
-			Generator = new SrcMLGenerator();
-			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win");
 		}
 
 		[Test]
 		public void ParseProperties()
 		{
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortInheritance.txt");
 			bool seenClass = false;
 			int countProperties = 0;
@@ -41,7 +38,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void ParseMultipleParents()
 		{
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MultiParentTest.txt");
 			bool seenClass = false;
 			foreach(var programElement in elements)
@@ -71,7 +68,7 @@ namespace Sando.Parser.UnitTests
 		public void ClassInheritanceTest()
 		{
 			bool seenClass = false;
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length > 0);

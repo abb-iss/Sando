@@ -43,7 +43,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void GenerateSrcMLShortestFileTest()
 		{			
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var srcML = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsTrue(srcML!=null);
 		}	
@@ -52,7 +52,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseMethodTest()
 		{
 			bool seenSetLanguageMethod = false;
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
@@ -90,7 +90,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseClassTest()
 		{
 			bool seenClass = false;
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length > 0);
@@ -117,7 +117,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void BasicParserTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser(Generator);
+			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length>0);
@@ -137,7 +137,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void EnumParserTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser(Generator);
+			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			bool hasEnum = false;
 			foreach(var programElement in elements)
@@ -160,7 +160,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void CSharpRegionTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser(Generator);
+			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\RegionTest.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Length == 2);
@@ -178,7 +178,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void MethodLinksToClassTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser(Generator);
+			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt");
 			ClassElement ImageCaptureClassElement = null;
 			bool foundMethod = false;
@@ -218,7 +218,7 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void CommentsTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser(Generator);
+			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt");
 			MethodElement methodElement = null;
 			bool foundComment = false;
@@ -261,7 +261,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseConstructorTest()
 		{
 			bool hasConstructor = false;
-			var parser = new SrcMLCSharpParser(Generator);
+			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			foreach(ProgramElement pe in elements)

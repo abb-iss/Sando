@@ -8,6 +8,8 @@ using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
 using Sando.Parser;
+using Sando.Core.Extensions;
+using System.IO;
 
 namespace Sando.UI.Monitoring
 {
@@ -18,7 +20,6 @@ namespace Sando.UI.Monitoring
 		private IndexFilesStatesManager _indexFilesStatesManager;
 		private PhysicalFilesStatesManager _physicalFilesStatesManager;		
 		private DocumentIndexer _currentIndexer;
-	    private ParserManager _parserManager;
 
 
 	    public IndexUpdateManager(SolutionKey solutionKey, DocumentIndexer currentIndexer)
@@ -29,7 +30,6 @@ namespace Sando.UI.Monitoring
 
 			_physicalFilesStatesManager = new PhysicalFilesStatesManager();
 			_fileOperationResolver = new FileOperationResolver();
-	        _parserManager = new ParserManager();
 		}
 
 
@@ -95,8 +95,8 @@ namespace Sando.UI.Monitoring
 				indexFileState = new IndexFileState(filePath, lastModificationDate);
 			else
 				indexFileState.LastIndexingDate = lastModificationDate;
-
-            var parsed = _parserManager.Get(filePath).Parse(filePath);
+			FileInfo fileInfo = new FileInfo(filePath);
+			var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath);
 			foreach(var programElement in parsed)
 			{
 				if(programElement is CppUnresolvedMethodElement)
@@ -113,7 +113,8 @@ namespace Sando.UI.Monitoring
 						string headerPath = System.IO.Path.GetDirectoryName(filePath) + "\\" + headerFile;
 						if(!System.IO.File.Exists(headerPath)) continue;
 
-						isResolved = unresolvedMethod.TryResolve(_parserManager.Get(headerPath).Parse(headerPath), out methodElement);
+						fileInfo = new FileInfo(headerPath);
+						isResolved = unresolvedMethod.TryResolve(ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(headerPath), out methodElement);
 						if(isResolved == true)
 						{
 							var document = DocumentFactory.Create(methodElement);
@@ -130,32 +131,5 @@ namespace Sando.UI.Monitoring
 			}
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
 		}
-
-        class ParserManager
-        {
-
-            private readonly IParser _csParser = new SrcMLCSharpParser(new SrcMLGenerator(LanguageEnum.CSharp));
-            private readonly IParser _cppParser = new SrcMLCSharpParser(new SrcMLGenerator(LanguageEnum.CPP));
-
-            internal ParserManager()
-            {
-                _csParser = new SrcMLCSharpParser(SrcMLGenerator.Generator(LanguageEnum.CSharp).SetSrcMLLocation(SrcMLCSharpParser.StandardSrcMlLocation));
-                _cppParser = new SrcMLCSharpParser(SrcMLGenerator.Generator(LanguageEnum.CPP).SetSrcMLLocation(SrcMLCSharpParser.StandardSrcMlLocation));                                
-            }
-
-			internal IParser Get(String filePath)
-            {
-                if (filePath.EndsWith(".cs"))
-                {
-                    return _csParser;
-                }
-                else
-                {
-                    return _cppParser;
-                }
-            }
-        }
-
-
 	}
 }

@@ -10,16 +10,12 @@ namespace Sando.Parser.UnitTests
 	public class CPPTest
 	{
 		private static string CurrentDirectory;
-		private static SrcMLGenerator Generator;
 
 		[SetUp]
 		public static void Init()
 		{
 			//set up generator
 			CurrentDirectory = Environment.CurrentDirectory;
-			Generator = new SrcMLGenerator();
-			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win");
-			Generator.Language = LanguageEnum.CPP;
 		}
 
 		[Test]
@@ -28,7 +24,7 @@ namespace Sando.Parser.UnitTests
 			bool seenGetTimeMethod = false;
 			int numMethods = 0;
 			string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
-			var parser = new SrcMLCppParser(Generator);
+			var parser = new SrcMLCppParser();
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Length, 6);
@@ -78,7 +74,7 @@ namespace Sando.Parser.UnitTests
 		{
 			bool hasClass = false;
 			bool hasEnum = false;
-			var parser = new SrcMLCppParser(Generator);
+			var parser = new SrcMLCppParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Length, 8);
@@ -113,7 +109,7 @@ namespace Sando.Parser.UnitTests
         [Test]
         public void ParseAboutDlgTest()
         {        
-            var parser = new SrcMLCppParser(Generator);
+            var parser = new SrcMLCppParser();
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\AboutDlg.cpp");
             Assert.IsTrue(true);
         }
@@ -122,7 +118,7 @@ namespace Sando.Parser.UnitTests
 		public void ParseCppConstructorTest()
 		{
 			bool hasConstructor = false;
-			var parser = new SrcMLCppParser(Generator);
+			var parser = new SrcMLCppParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
 			foreach(ProgramElement pe in elements)
@@ -154,7 +150,7 @@ namespace Sando.Parser.UnitTests
 
 	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 	    {
-            var parser = new SrcMLCppParser(Generator);
+            var parser = new SrcMLCppParser();
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LargeCppFile.txt");     
 	    }
 	}

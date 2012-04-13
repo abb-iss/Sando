@@ -14,6 +14,8 @@ using Sando.SearchEngine;
 using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
+using Sando.Core.Extensions;
+using Sando.Parser;
 
 namespace Sando.UI
 {
@@ -128,6 +130,10 @@ namespace Sando.UI
 				_solutionEvents.Opened += SolutionHasBeenOpened;
 				_solutionEvents.AfterClosing += SolutionHasBeenClosed;
 			}
+
+			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
+			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
         }
 
 		private void SolutionHasBeenClosed()
