@@ -2,7 +2,7 @@
 
 namespace Sando.Core.Extensions.Configuration
 {
-	public class ParserExtensionPointsConfiguration : BaseExtensionPointsConfiguration
+	public class ParserExtensionPointsConfiguration : BaseExtensionPointConfiguration
 	{
 		public List<string> SupportedFileExtensions { get; set; }
 	}

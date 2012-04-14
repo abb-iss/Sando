@@ -41,6 +41,12 @@ namespace Sando.Core.Extensions
 			this.wordSplitter = wordSplitter;
 		}
 
+		public void ClearRepository()
+		{
+			parsers.Clear();
+			wordSplitter = null;
+		}
+
 		public static ExtensionPointsRepository Instance
 		{
 			get
