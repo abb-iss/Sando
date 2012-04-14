@@ -1,10 +1,9 @@
-﻿using log4net;
-using NUnit.Framework;
-using Sando.Core.Extensions.Configuration;
-using System;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Collections.Generic;
+using log4net;
+using NUnit.Framework;
 using Sando.Core.Extensions;
+using Sando.Core.Extensions.Configuration;
 using Sando.Core.Extensions.Logging;
 
 namespace Sando.Core.UnitTests.Extensions.Configuration

@@ -1,12 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
-using log4net;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Xml.Serialization;
-using System.Linq;
-using System.Runtime.Remoting;
-using Sando.ExtensionContracts.ParserContracts;
+using log4net;
 
 namespace Sando.Core.Extensions.Configuration
 {
