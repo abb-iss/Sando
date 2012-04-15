@@ -7,7 +7,7 @@ namespace Sando.TestExtensionPoints
 	{
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
-			return searchResults.OrderByDescending(r => r.FileName);
+			return searchResults.OrderByDescending(r => r.Score);
 		}
 	}
 }

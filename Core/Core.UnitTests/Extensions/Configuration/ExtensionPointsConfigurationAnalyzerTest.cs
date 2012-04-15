@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using log4net;
 using NUnit.Framework;
 using Sando.Core.Extensions;
@@ -9,6 +10,7 @@ using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
+using Sando.UnitTestHelpers;
 using UnitTestHelpers;
 
 namespace Sando.Core.UnitTests.Extensions.Configuration
@@ -24,12 +26,50 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 
 			IParser parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cs");
 
-			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".cs"), "Parser for '.cs' extension should be registered!");
+			Assert.IsNotNull(parser, "Parser for '.cs' extension should be registered!");
 			List<ProgramElement> programElements = null;
-			Assert.DoesNotThrow(() => programElements = ExtensionPointsRepository.Instance.GetParserImplementation(".cs").Parse("filename"));
-			Assert.IsTrue(programElements != null && programElements.Count == 1, "Invalid results from parse method!");
+			Assert.DoesNotThrow(() => programElements = parser.Parse("filename"));
+			Assert.IsTrue(programElements != null && programElements.Count == 1, "Invalid results from Parse method!");
 			Assert.AreEqual(programElements[0].Name, "TestCSharpName", "Name differs!");
 			Assert.AreEqual(programElements[0].GetType().FullName, "Sando.TestExtensionPoints.TestElement", "Type differs!");
+		}
+
+		[Test]
+		public void FindAndRegisterValidExtensionPoints_RegistersUsableCustomWordSplitter()
+		{
+			CreateExtensionPointsConfiguration(addValidWordSplitterConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+			IWordSplitter wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+			Assert.IsNotNull(wordSplitter, "Word splitter should be registered!");
+			Assert.AreEqual(wordSplitter.GetType().FullName, "Sando.TestExtensionPoints.TestWordSplitter", "Invalid word splitter returned!");
+
+			string[] splittedWords = null;
+			Assert.DoesNotThrow(() => splittedWords = wordSplitter.ExtractWords("FileName"));
+			Assert.IsTrue(splittedWords != null && splittedWords.Length == 2, "Invalid results from ExtractWords method!");
+			Assert.AreEqual(splittedWords[0], "File", "First splitted word is invalid!");
+			Assert.AreEqual(splittedWords[1], "Name", "Second splitted word is invalid!");
+		}
+
+		[Test]
+		public void FindAndRegisterValidExtensionPoints_RegistersUsableCustomResultsReorderer()
+		{
+			CreateExtensionPointsConfiguration(addValidResultsReordererConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+			IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+			Assert.IsNotNull(resultsReorderer, "Results reorderer should be registered!");
+			Assert.AreEqual(resultsReorderer.GetType().FullName, "Sando.TestExtensionPoints.TestResultsReorderer", "Invalid results reorderer returned!");
+
+			List<CodeSearchResult> results = new List<CodeSearchResult>() 
+												{
+													new CodeSearchResult(SampleProgramElementFactory.GetSampleClassElement(), 1),
+													new CodeSearchResult(SampleProgramElementFactory.GetSampleMethodElement(), 3),
+												};
+			Assert.DoesNotThrow(() => results = resultsReorderer.ReorderSearchResults(results.AsQueryable()).ToList());
+			Assert.IsTrue(results != null && results.Count() == 2, "Invalid results from ReorderSearchResults method!");
+			Assert.IsTrue(results.ElementAt(0).Score == 3 && results.ElementAt(0).Element.ProgramElementType == ProgramElementType.Method, "First result is invalid!");
+			Assert.IsTrue(results.ElementAt(1).Score == 1 && results.ElementAt(1).Element.ProgramElementType == ProgramElementType.Class, "Second result is invalid!");
 		}
 
 		[Test]
@@ -68,17 +108,6 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			string logFileContent = File.ReadAllText(logFilePath);
 			Assert.IsTrue(logFileContent.Contains("3 invalid parser configurations found - they will be omitted during registration process."), "Log file should contain information about removed invalid parser configurations!");
 		}
-		
-		[Test]
-		public void FindAndRegisterValidExtensionPoints_RegistersCustomWordSplitter()
-		{
-			CreateExtensionPointsConfiguration(addValidWordSplitterConfiguration: true);
-			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
-
-			IWordSplitter wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
-			Assert.IsNotNull(wordSplitter, "Word splitter should be registered!");
-			Assert.AreEqual(wordSplitter.GetType().FullName, "Sando.TestExtensionPoints.TestWordSplitter", "Invalid word splitter returned!");
-		}
 
 		[Test]
 		public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomWordSplitterConfiguration()
@@ -92,17 +121,6 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 
 			string logFileContent = File.ReadAllText(logFilePath);
 			Assert.IsTrue(logFileContent.Contains("Invalid word splitter configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid word splitter configuration!");
-		}
-
-		[Test]
-		public void FindAndRegisterValidExtensionPoints_RegistersCustomResultsReorderer()
-		{
-			CreateExtensionPointsConfiguration(addValidResultsReordererConfiguration: true);
-			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
-
-			IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
-			Assert.IsNotNull(resultsReorderer, "Results reorderer should be registered!");
-			Assert.AreEqual(resultsReorderer.GetType().FullName, "Sando.TestExtensionPoints.TestResultsReorderer", "Invalid results reorderer returned!");
 		}
 
 		[Test]
