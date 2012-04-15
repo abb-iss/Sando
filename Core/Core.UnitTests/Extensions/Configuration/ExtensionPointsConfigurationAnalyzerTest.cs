@@ -145,11 +145,16 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingResultsReorderer"), "Log file should contain information about errors occurred during the assembly loading!");
 		}
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void SetUp()
 		{
-			pluginDirectory = Path.GetTempPath();
 			TestUtils.InitializeDefaultExtensionPoints();
+		}
+
+		[TestFixtureSetUp]
+		public void TextFixtureSetUp()
+		{
+			pluginDirectory = Path.GetTempPath();
 			try
 			{
 				File.Copy("TestExtensionPoints.dll", Path.Combine(pluginDirectory, "TestExtensionPoints.dll"), true);
