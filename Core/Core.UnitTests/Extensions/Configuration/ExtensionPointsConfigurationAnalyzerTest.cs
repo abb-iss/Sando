@@ -149,6 +149,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		public void SetUp()
 		{
 			pluginDirectory = Path.GetTempPath();
+			TestUtils.InitializeDefaultExtensionPoints();
 			try
 			{
 				File.Copy("TestExtensionPoints.dll", Path.Combine(pluginDirectory, "TestExtensionPoints.dll"), true);
@@ -159,7 +160,6 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			
 			logFilePath = Path.Combine(pluginDirectory, "ExtensionAnalyzer.log");
 			logger = new FileLogger(logFilePath).Logger;
-			TestUtils.InitializeDefaultExtensionPoints();
 		}
 
 		[TearDown]
