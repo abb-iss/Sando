@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows.Input;
+using Sando.Core.Extensions;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 
@@ -41,7 +39,10 @@ public  class SearchManager
 				{
 					var myPackage = UIPackage.GetInstance();
 					_currentSearcher = GetSearcher(myPackage);
-					_myDaddy.Update(_currentSearcher.Search(searchString));
+					IQueryable<CodeSearchResult> results = _currentSearcher.Search(searchString).AsQueryable();
+					IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+					results = resultsReorderer.ReorderSearchResults(results);
+					_myDaddy.Update(results);
 				}
 			}
 

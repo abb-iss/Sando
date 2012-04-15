@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using System.Windows.Media.Imaging;
-using Sando.SearchEngine;
 using System.Windows;
-using System.Drawing;
+using System.Windows.Media.Imaging;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.Model
 {

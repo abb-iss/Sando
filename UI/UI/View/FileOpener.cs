@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using Sando.SearchEngine;
-using Sando.UI.Model;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View
 {

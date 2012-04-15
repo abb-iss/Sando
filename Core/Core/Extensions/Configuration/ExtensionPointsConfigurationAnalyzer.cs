@@ -5,6 +5,7 @@ using System.Reflection;
 using log4net;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.SplitterContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.Core.Extensions.Configuration
 {
@@ -18,6 +19,7 @@ namespace Sando.Core.Extensions.Configuration
 			RemoveInvalidConfigurations(extensionPointsConfiguration, logger);
 			FindAndRegisterValidParserExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidWordSplitterExtensionPoints(extensionPointsConfiguration, logger);
+			FindAndRegisterValidResultsReordererExtensionPoints(extensionPointsConfiguration, logger);
 			logger.Info("-=#|#=- Analyzing configuration finished -=#|#=-");
 		}
 
@@ -27,6 +29,8 @@ namespace Sando.Core.Extensions.Configuration
 				RemoveInvalidParserConfigurations(extensionPointsConfiguration, logger);
 			if(extensionPointsConfiguration.WordSplitterExtensionPointConfiguration != null)
 				RemoveInvalidWordSplitterConfiguration(extensionPointsConfiguration, logger);
+			if(extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration != null)
+				RemoveInvalidResultsReordererConfiguration(extensionPointsConfiguration, logger);
 		}
 
 		private static void RemoveInvalidParserConfigurations(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
@@ -49,6 +53,17 @@ namespace Sando.Core.Extensions.Configuration
 			{
 				extensionPointsConfiguration.WordSplitterExtensionPointConfiguration = null;
 				logger.Info(String.Format("Invalid word splitter configuration found - it will be omitted during registration process."));
+			}
+		}
+
+		private static void RemoveInvalidResultsReordererConfiguration(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+		{
+			BaseExtensionPointConfiguration resultsReordererConfiguration = extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration;
+			if(String.IsNullOrWhiteSpace(resultsReordererConfiguration.FullClassName) ||
+				String.IsNullOrWhiteSpace(resultsReordererConfiguration.LibraryFileRelativePath))
+			{
+				extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration = null;
+				logger.Info(String.Format("Invalid results reorderer configuration found - it will be omitted during registration process."));
 			}
 		}
 
@@ -79,7 +94,7 @@ namespace Sando.Core.Extensions.Configuration
 		{
 			logger.Info("Reading word splitter extension point configuration started");
 			BaseExtensionPointConfiguration wordSplitterConfiguration = extensionPointsConfiguration.WordSplitterExtensionPointConfiguration;
-			if(extensionPointsConfiguration.WordSplitterExtensionPointConfiguration != null)
+			if(wordSplitterConfiguration != null)
 			{
 				try
 				{
@@ -97,6 +112,30 @@ namespace Sando.Core.Extensions.Configuration
 				}
 			}
 			logger.Info("Reading word splitter extension point configuration finished");
+		}
+
+		private static void FindAndRegisterValidResultsReordererExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+		{
+			logger.Info("Reading results reorderer extension point configuration started");
+			BaseExtensionPointConfiguration resultsReordererConfiguration = extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration;
+			if(resultsReordererConfiguration != null)
+			{
+				try
+				{
+					logger.Info(String.Format("Results reorderer found: {0}, from assembly: {1}", resultsReordererConfiguration.FullClassName, resultsReordererConfiguration.LibraryFileRelativePath));
+					string assemblyPath = Path.Combine(extensionPointsConfiguration.PluginDirectoryPath, resultsReordererConfiguration.LibraryFileRelativePath);
+					Assembly parserAssembly = Assembly.LoadFile(assemblyPath);
+					Type resultsReordererType = parserAssembly.GetType(resultsReordererConfiguration.FullClassName);
+					IResultsReorderer resultsReorderer = (IResultsReorderer)Activator.CreateInstance(resultsReordererType);
+					ExtensionPointsRepository.Instance.RegisterResultsReordererImplementation(resultsReorderer);
+					logger.Info(String.Format("Results reorderer {0} successfully registered.", resultsReordererConfiguration.FullClassName));
+				}
+				catch(Exception ex)
+				{
+					logger.Error(String.Format("Results reorderer {0} cannot be registered: {1}", resultsReordererConfiguration.FullClassName, ex.Message));
+				}
+			}
+			logger.Info("Reading results reorderer extension point configuration finished");
 		}
 	}
 }

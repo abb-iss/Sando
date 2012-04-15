@@ -5,6 +5,7 @@ using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;

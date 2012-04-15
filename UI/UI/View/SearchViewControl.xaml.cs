@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,8 +8,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
-using Sando.SearchEngine;
 using Sando.Translation;
 
 namespace Sando.UI.View
@@ -120,7 +120,7 @@ namespace Sando.UI.View
 
     	#region Implementation of ISearchResultListener
 
-    	public void Update(List<CodeSearchResult> results)
+    	public void Update(IQueryable<CodeSearchResult> results)
     	{
     		SearchResults.Clear();
     		foreach (var codeSearchResult in results)

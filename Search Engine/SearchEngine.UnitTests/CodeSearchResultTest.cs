@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.SearchEngine.UnitTests
 {

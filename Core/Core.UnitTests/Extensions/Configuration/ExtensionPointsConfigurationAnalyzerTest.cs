@@ -14,7 +14,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		[Test]
 		public void FindAndRegisterValidExtensionPoints_RegistersCustomParsers()
 		{
-			CreateExtensionPointsConfiguration(true, false, false, false);
+			CreateExtensionPointsConfiguration(addValidParserConfigurations: true);
 			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".cs"), "Parser for '.cs' extension should be registered!");
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".h"), "Parser for '.h' extension should be registered!");
@@ -25,7 +25,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		[Test]
 		public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomParserConfigurations()
 		{
-			CreateExtensionPointsConfiguration(true, true, false, false);
+			CreateExtensionPointsConfiguration(addValidParserConfigurations: true, addInvalidParserConfigurations: true);
 			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".cs"), "Parser for '.cs' extension should be registered!");
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".h"), "Parser for '.h' extension should be registered!");
@@ -39,7 +39,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		[Test]
 		public void FindAndRegisterValidExtensionPoints_RegistersCustomWordSplitter()
 		{
-			CreateExtensionPointsConfiguration(false, false, true, false);
+			CreateExtensionPointsConfiguration(addValidWordSplitterConfiguration: true);
 			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetWordSplitterImplementation(), "Word splitter should be registered!");
 		}
@@ -47,12 +47,31 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		[Test]
 		public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomWordSplitterConfiguration()
 		{
-			CreateExtensionPointsConfiguration(false, false, false, true);
+			CreateExtensionPointsConfiguration(addInvalidWordSplitterConfiguration: true);
 			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			Assert.IsNull(ExtensionPointsRepository.Instance.GetWordSplitterImplementation(), "Word splitter shouldn't be registered!");
 
 			string logFileContent = File.ReadAllText(logFilePath);
 			Assert.IsTrue(logFileContent.Contains("Invalid word splitter configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid word splitter configuration!");
+		}
+
+		[Test]
+		public void FindAndRegisterValidExtensionPoints_RegistersCustomResultsReorderer()
+		{
+			CreateExtensionPointsConfiguration(addValidResultsReordererConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetResultsReordererImplementation(), "Results reorderer should be registered!");
+		}
+
+		[Test]
+		public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomResultsReordererConfiguration()
+		{
+			CreateExtensionPointsConfiguration(addInvalidResultsReordererConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+			Assert.IsNull(ExtensionPointsRepository.Instance.GetResultsReordererImplementation(), "Results reorderer shouldn't be registered!");
+
+			string logFileContent = File.ReadAllText(logFilePath);
+			Assert.IsTrue(logFileContent.Contains("Invalid results reorderer configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid word splitter configuration!");
 		}
 
 		[TestFixtureSetUp]
@@ -73,6 +92,13 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			catch
 			{
 			}
+			try
+			{
+				File.Copy("SearchEngine.dll", Path.Combine(pluginDirectory, "SearchEngine.dll"), true);
+			}
+			catch
+			{
+			}
 			
 			logFilePath = Path.Combine(pluginDirectory, "ExtensionAnalyzer.log");
 			logger = new FileLogger(logFilePath).Logger;
@@ -85,10 +111,12 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		}
 
 		private void CreateExtensionPointsConfiguration(
-			bool addValidParserConfigurations, 
-			bool addInvalidParserConfigurations, 
-			bool addValidWordSplitterConfiguration,
-			bool addInvalidWordSplitterConfiguration)
+			bool addValidParserConfigurations = false, 
+			bool addInvalidParserConfigurations = false, 
+			bool addValidWordSplitterConfiguration = false,
+			bool addInvalidWordSplitterConfiguration = false,
+			bool addValidResultsReordererConfiguration = false,
+			bool addInvalidResultsReordererConfiguration = false)
 		{
 			extensionPointsConfiguration = new ExtensionPointsConfiguration();
 			extensionPointsConfiguration.PluginDirectoryPath = pluginDirectory;
@@ -156,6 +184,26 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 					{
 						FullClassName = "Sando.Core.Tools.WordSplitter",
 						LibraryFileRelativePath = ""
+					};
+			}
+
+			if(addValidResultsReordererConfiguration)
+			{
+				extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "Sando.SearchEngine.SortByScoreResultsReorderer",
+						LibraryFileRelativePath = "SearchEngine.dll"
+					};
+			}
+
+			if(addInvalidResultsReordererConfiguration)
+			{
+				extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "",
+						LibraryFileRelativePath = "SearchEngine.dll"
 					};
 			}
 		}
