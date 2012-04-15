@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
 using Sando.Core.Extensions.Logging;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Core.UnitTests.Extensions.Configuration
 {
@@ -20,6 +21,19 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".h"), "Parser for '.h' extension should be registered!");
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".cpp"), "Parser for '.cpp' extension should be registered!");
 			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".cxx"), "Parser for '.cxx' extension should be registered!");
+		}
+
+		[Test]
+		public void FindAndRegisterValidExtensionPoints_RegistersUsableCustomParser()
+		{
+			CreateExtensionPointsConfiguration(addValidParserConfigurations: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+			Assert.IsNotNull(ExtensionPointsRepository.Instance.GetParserImplementation(".cs"), "Parser for '.cs' extension should be registered!");
+			List<ProgramElement> programElements = null;
+			Assert.DoesNotThrow(() => programElements = ExtensionPointsRepository.Instance.GetParserImplementation(".cs").Parse("filename"));
+			Assert.IsTrue(programElements != null && programElements.Count == 1, "Invalid results from parse method!");
+			Assert.AreEqual(programElements[0].Name, "TestCSharpName", "Name differs!");
+			Assert.AreEqual(programElements[0].GetType().FullName, "Sando.TestExtensionPoints.TestElement", "Type differs!");
 		}
 
 		[Test]
