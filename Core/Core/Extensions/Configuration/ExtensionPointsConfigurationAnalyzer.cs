@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using log4net;
 using Sando.ExtensionContracts.ParserContracts;
-using Sando.ExtensionContracts.SplitterContracts;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SplitterContracts;
 
 namespace Sando.Core.Extensions.Configuration
 {
@@ -25,60 +27,59 @@ namespace Sando.Core.Extensions.Configuration
 
 		private static void RemoveInvalidConfigurations(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
-			if(extensionPointsConfiguration.ParserExtensionPointsConfiguration != null)
+			if(extensionPointsConfiguration.ParsersConfiguration != null)
 				RemoveInvalidParserConfigurations(extensionPointsConfiguration, logger);
-			if(extensionPointsConfiguration.WordSplitterExtensionPointConfiguration != null)
+			if(extensionPointsConfiguration.WordSplitterConfiguration != null)
 				RemoveInvalidWordSplitterConfiguration(extensionPointsConfiguration, logger);
-			if(extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration != null)
+			if(extensionPointsConfiguration.ResultsReordererConfiguration != null)
 				RemoveInvalidResultsReordererConfiguration(extensionPointsConfiguration, logger);
 		}
 
 		private static void RemoveInvalidParserConfigurations(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
-			int invalidParserConfigurationCount = extensionPointsConfiguration.ParserExtensionPointsConfiguration.RemoveAll(
+			int invalidParserConfigurationCount = extensionPointsConfiguration.ParsersConfiguration.RemoveAll(
 				p =>
-					String.IsNullOrWhiteSpace(p.FullClassName) ||
-					String.IsNullOrWhiteSpace(p.LibraryFileRelativePath) ||
+					IsConfigurationInvalid(p) ||
 					p.SupportedFileExtensions == null ||
-					p.SupportedFileExtensions.Count == 0);
+					p.SupportedFileExtensions.Count == 0 ||
+					p.ProgramElementsConfiguration.Count(pe => IsConfigurationInvalid(pe)) > 0);
 			if(invalidParserConfigurationCount > 0)
 				logger.Info(String.Format("{0} invalid parser configurations found - they will be omitted during registration process.", invalidParserConfigurationCount));
 		}
 
 		private static void RemoveInvalidWordSplitterConfiguration(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
-			BaseExtensionPointConfiguration wordSplitterConfiguration = extensionPointsConfiguration.WordSplitterExtensionPointConfiguration;
-			if(String.IsNullOrWhiteSpace(wordSplitterConfiguration.FullClassName) ||
-				String.IsNullOrWhiteSpace(wordSplitterConfiguration.LibraryFileRelativePath))
+			if(IsConfigurationInvalid(extensionPointsConfiguration.WordSplitterConfiguration))
 			{
-				extensionPointsConfiguration.WordSplitterExtensionPointConfiguration = null;
+				extensionPointsConfiguration.WordSplitterConfiguration = null;
 				logger.Info(String.Format("Invalid word splitter configuration found - it will be omitted during registration process."));
 			}
 		}
 
 		private static void RemoveInvalidResultsReordererConfiguration(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
-			BaseExtensionPointConfiguration resultsReordererConfiguration = extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration;
-			if(String.IsNullOrWhiteSpace(resultsReordererConfiguration.FullClassName) ||
-				String.IsNullOrWhiteSpace(resultsReordererConfiguration.LibraryFileRelativePath))
+			if(IsConfigurationInvalid(extensionPointsConfiguration.ResultsReordererConfiguration))
 			{
-				extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration = null;
+				extensionPointsConfiguration.ResultsReordererConfiguration = null;
 				logger.Info(String.Format("Invalid results reorderer configuration found - it will be omitted during registration process."));
 			}
+		}
+
+		private static bool IsConfigurationInvalid(BaseExtensionPointConfiguration configuration)
+		{
+			return String.IsNullOrWhiteSpace(configuration.FullClassName) || String.IsNullOrWhiteSpace(configuration.LibraryFileRelativePath);
 		}
 
 		private static void FindAndRegisterValidParserExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
 			logger.Info("Reading parser extension points configuration started");
-			foreach(ParserExtensionPointsConfiguration parserConfiguration in extensionPointsConfiguration.ParserExtensionPointsConfiguration)
+			foreach(ParserExtensionPointsConfiguration parserConfiguration in extensionPointsConfiguration.ParsersConfiguration)
 			{
 				try
 				{
 					logger.Info(String.Format("Parser found: {0}, from assembly: {1}", parserConfiguration.FullClassName, parserConfiguration.LibraryFileRelativePath));
-					string assemblyPath = Path.Combine(extensionPointsConfiguration.PluginDirectoryPath, parserConfiguration.LibraryFileRelativePath);
-					Assembly parserAssembly = Assembly.LoadFile(assemblyPath);
-					Type parserType = parserAssembly.GetType(parserConfiguration.FullClassName);
-					IParser parser = (IParser)Activator.CreateInstance(parserType);
+					IParser parser = CreateInstance<IParser>(extensionPointsConfiguration.PluginDirectoryPath, parserConfiguration.LibraryFileRelativePath, parserConfiguration.FullClassName);
+					parserConfiguration.ProgramElementsConfiguration.ForEach(pe => LoadAssembly(extensionPointsConfiguration.PluginDirectoryPath, pe.LibraryFileRelativePath));
 					ExtensionPointsRepository.Instance.RegisterParserImplementation(parserConfiguration.SupportedFileExtensions, parser);
 					logger.Info(String.Format("Parser {0} successfully registered.", parserConfiguration.FullClassName));
 				}
@@ -93,16 +94,13 @@ namespace Sando.Core.Extensions.Configuration
 		private static void FindAndRegisterValidWordSplitterExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
 			logger.Info("Reading word splitter extension point configuration started");
-			BaseExtensionPointConfiguration wordSplitterConfiguration = extensionPointsConfiguration.WordSplitterExtensionPointConfiguration;
+			BaseExtensionPointConfiguration wordSplitterConfiguration = extensionPointsConfiguration.WordSplitterConfiguration;
 			if(wordSplitterConfiguration != null)
 			{
 				try
 				{
 					logger.Info(String.Format("Word splitter found: {0}, from assembly: {1}", wordSplitterConfiguration.FullClassName, wordSplitterConfiguration.LibraryFileRelativePath));
-					string assemblyPath = Path.Combine(extensionPointsConfiguration.PluginDirectoryPath, wordSplitterConfiguration.LibraryFileRelativePath);
-					Assembly parserAssembly = Assembly.LoadFile(assemblyPath);
-					Type wordSplitterType = parserAssembly.GetType(wordSplitterConfiguration.FullClassName);
-					IWordSplitter wordSplitter = (IWordSplitter)Activator.CreateInstance(wordSplitterType);
+					IWordSplitter wordSplitter = CreateInstance<IWordSplitter>(extensionPointsConfiguration.PluginDirectoryPath, wordSplitterConfiguration.LibraryFileRelativePath, wordSplitterConfiguration.FullClassName);
 					ExtensionPointsRepository.Instance.RegisterWordSplitterImplementation(wordSplitter);
 					logger.Info(String.Format("Word splitter {0} successfully registered.", wordSplitterConfiguration.FullClassName));
 				}
@@ -117,16 +115,13 @@ namespace Sando.Core.Extensions.Configuration
 		private static void FindAndRegisterValidResultsReordererExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
 		{
 			logger.Info("Reading results reorderer extension point configuration started");
-			BaseExtensionPointConfiguration resultsReordererConfiguration = extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration;
+			BaseExtensionPointConfiguration resultsReordererConfiguration = extensionPointsConfiguration.ResultsReordererConfiguration;
 			if(resultsReordererConfiguration != null)
 			{
 				try
 				{
 					logger.Info(String.Format("Results reorderer found: {0}, from assembly: {1}", resultsReordererConfiguration.FullClassName, resultsReordererConfiguration.LibraryFileRelativePath));
-					string assemblyPath = Path.Combine(extensionPointsConfiguration.PluginDirectoryPath, resultsReordererConfiguration.LibraryFileRelativePath);
-					Assembly parserAssembly = Assembly.LoadFile(assemblyPath);
-					Type resultsReordererType = parserAssembly.GetType(resultsReordererConfiguration.FullClassName);
-					IResultsReorderer resultsReorderer = (IResultsReorderer)Activator.CreateInstance(resultsReordererType);
+					IResultsReorderer resultsReorderer = CreateInstance<IResultsReorderer>(extensionPointsConfiguration.PluginDirectoryPath, resultsReordererConfiguration.LibraryFileRelativePath, resultsReordererConfiguration.FullClassName);
 					ExtensionPointsRepository.Instance.RegisterResultsReordererImplementation(resultsReorderer);
 					logger.Info(String.Format("Results reorderer {0} successfully registered.", resultsReordererConfiguration.FullClassName));
 				}
@@ -136,6 +131,19 @@ namespace Sando.Core.Extensions.Configuration
 				}
 			}
 			logger.Info("Reading results reorderer extension point configuration finished");
+		}
+
+		private static Assembly LoadAssembly(string pluginDirectoryPath, string libraryFileRelativePath)
+		{
+			string assemblyPath = Path.Combine(pluginDirectoryPath, libraryFileRelativePath);
+			return Assembly.LoadFrom(assemblyPath);
+		}
+
+		private static T CreateInstance<T>(string pluginDirectoryPath, string libraryFileRelativePath, string fullClassName)
+		{
+			Assembly assembly = LoadAssembly(pluginDirectoryPath, libraryFileRelativePath);
+			Type type = assembly.GetType(fullClassName);
+			return (T)Activator.CreateInstance(type);
 		}
 	}
 }

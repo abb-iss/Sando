@@ -80,21 +80,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			pluginDirectory = Path.GetTempPath();
 			try
 			{
-				File.Copy("Parser.dll", Path.Combine(pluginDirectory, "Parser.dll"), true);
-			}
-			catch
-			{
-			}
-			try
-			{
-				File.Copy("Core.dll", Path.Combine(pluginDirectory, "Core.dll"), true);
-			}
-			catch
-			{
-			}
-			try
-			{
-				File.Copy("SearchEngine.dll", Path.Combine(pluginDirectory, "SearchEngine.dll"), true);
+				File.Copy("TestExtensionPoints.dll", Path.Combine(pluginDirectory, "TestExtensionPoints.dll"), true);
 			}
 			catch
 			{
@@ -120,90 +106,106 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		{
 			extensionPointsConfiguration = new ExtensionPointsConfiguration();
 			extensionPointsConfiguration.PluginDirectoryPath = pluginDirectory;
-			extensionPointsConfiguration.ParserExtensionPointsConfiguration = new List<ParserExtensionPointsConfiguration>();
+			extensionPointsConfiguration.ParsersConfiguration = new List<ParserExtensionPointsConfiguration>();
 
 			if(addValidParserConfigurations)
 			{
-				extensionPointsConfiguration.ParserExtensionPointsConfiguration.AddRange(
+				extensionPointsConfiguration.ParsersConfiguration.AddRange(
 					new List<ParserExtensionPointsConfiguration>()
 					{
 						new ParserExtensionPointsConfiguration()
 						{
-							FullClassName = "Sando.Parser.SrcMLCSharpParser",
-							LibraryFileRelativePath = "Parser.dll",
-							SupportedFileExtensions = new List<string>() { ".cs" }
+							FullClassName = "Sando.TestExtensionPoints.TestCSharpParser",
+							LibraryFileRelativePath = "TestExtensionPoints.dll",
+							SupportedFileExtensions = new List<string>() { ".cs" },
+							ProgramElementsConfiguration = new List<BaseExtensionPointConfiguration>()
+							{
+								new BaseExtensionPointConfiguration()
+								{
+									FullClassName = "Sando.TestExtensionPoints.TestElement",
+									LibraryFileRelativePath = "TestExtensionPoints.dll"
+								}
+							}
 						},
 						new ParserExtensionPointsConfiguration()
 						{
-							FullClassName = "Sando.Parser.SrcMLCppParser",
-							LibraryFileRelativePath = "Parser.dll",
+							FullClassName = "Sando.TestExtensionPoints.TestCppParser",
+							LibraryFileRelativePath = "TestExtensionPoints.dll",
 							SupportedFileExtensions = new List<string>() { ".h", ".cpp", ".cxx" }
 						}
 					});
 			}
 			if(addInvalidParserConfigurations)
 			{
-				extensionPointsConfiguration.ParserExtensionPointsConfiguration.AddRange(
+				extensionPointsConfiguration.ParsersConfiguration.AddRange(
 					new List<ParserExtensionPointsConfiguration>()
 					{
 						new ParserExtensionPointsConfiguration()
 						{
 							FullClassName = "",
-							LibraryFileRelativePath = "Parser.dll",
+							LibraryFileRelativePath = "TestExtensionPoints.dll",
 							SupportedFileExtensions = new List<string>() { ".cs" }
 						},
 						new ParserExtensionPointsConfiguration()
 						{
-							FullClassName = "Sando.Parser.SrcMLCppParser",
+							FullClassName = "Sando.TestExtensionPoints.TestCppParser",
 							LibraryFileRelativePath = "",
 							SupportedFileExtensions = new List<string>() { ".h", ".cpp", ".cxx" }
 						},
 						new ParserExtensionPointsConfiguration()
 						{
-							FullClassName = "Sando.Parser.SrcMLCppParser",
-							LibraryFileRelativePath = "Parser.dll",
-							SupportedFileExtensions = new List<string>()
+							FullClassName = "Sando.TestExtensionPoints.TestCppParser",
+							LibraryFileRelativePath = "TestExtensionPoints.dll",
+							SupportedFileExtensions = new List<string>(){".cs"},
+							ProgramElementsConfiguration = new List<BaseExtensionPointConfiguration>()
+							{
+								new BaseExtensionPointConfiguration()
+								{
+									FullClassName = "Sando.TestExtensionPoints.TestElement",
+									LibraryFileRelativePath = ""
+								}
+							}
 						}
 					});
 			}
 
 			if(addValidWordSplitterConfiguration)
 			{
-				extensionPointsConfiguration.WordSplitterExtensionPointConfiguration =
+				extensionPointsConfiguration.WordSplitterConfiguration =
 					new BaseExtensionPointConfiguration()
 					{
-						FullClassName = "Sando.Core.Tools.WordSplitter",
-						LibraryFileRelativePath = "Core.dll"
+						FullClassName = "Sando.TestExtensionPoints.TestWordSplitter",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
 					};
 			}
 
 			if(addInvalidWordSplitterConfiguration)
 			{
-				extensionPointsConfiguration.WordSplitterExtensionPointConfiguration =
+				extensionPointsConfiguration.WordSplitterConfiguration =
 					new BaseExtensionPointConfiguration()
 					{
-						FullClassName = "Sando.Core.Tools.WordSplitter",
+						FullClassName = "Sando.TestExtensionPoints.TestWordSplitter",
 						LibraryFileRelativePath = ""
 					};
 			}
 
 			if(addValidResultsReordererConfiguration)
 			{
-				extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration =
+				extensionPointsConfiguration.ResultsReordererConfiguration =
 					new BaseExtensionPointConfiguration()
 					{
-						FullClassName = "Sando.SearchEngine.SortByScoreResultsReorderer",
-						LibraryFileRelativePath = "SearchEngine.dll"
+						FullClassName = "Sando.TestExtensionPoints.TestResultsReorderer",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
 					};
 			}
 
 			if(addInvalidResultsReordererConfiguration)
 			{
-				extensionPointsConfiguration.ResultsReordererExtensionPointConfiguration =
+				extensionPointsConfiguration.ResultsReordererConfiguration =
 					new BaseExtensionPointConfiguration()
 					{
 						FullClassName = "",
-						LibraryFileRelativePath = "SearchEngine.dll"
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
 					};
 			}
 		}

@@ -5,8 +5,8 @@ namespace Sando.Core.Extensions.Configuration
 	public class ExtensionPointsConfiguration
 	{
 		public string PluginDirectoryPath { get; set; }
-		public List<ParserExtensionPointsConfiguration> ParserExtensionPointsConfiguration { get; set; }
-		public BaseExtensionPointConfiguration WordSplitterExtensionPointConfiguration { get; set; }
-		public BaseExtensionPointConfiguration ResultsReordererExtensionPointConfiguration { get; set; }
+		public List<ParserExtensionPointsConfiguration> ParsersConfiguration { get; set; }
+		public BaseExtensionPointConfiguration WordSplitterConfiguration { get; set; }
+		public BaseExtensionPointConfiguration ResultsReordererConfiguration { get; set; }
 	}
 }
