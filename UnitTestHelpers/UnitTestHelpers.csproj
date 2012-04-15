@@ -53,6 +53,10 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Indexer\Indexer\Indexer.csproj">
+      <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
+      <Name>Indexer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Parser\Parser\Parser.csproj">
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
       <Name>Parser</Name>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
+using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
@@ -28,6 +29,7 @@ namespace Sando.Indexer.Searching.Criteria
 
 		public override string ToQueryString()
 		{
+			queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
 			StringBuilder stringBuilder = new StringBuilder();
 			if(SearchByAccessLevel)
 			{
@@ -60,6 +62,7 @@ namespace Sando.Indexer.Searching.Criteria
 			{
 				stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
 				stringBuilder.Append(accessLevel.ToString());
+				AppendBoostFactor(stringBuilder, SandoField.AccessLevel.ToString());
 				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
@@ -80,6 +83,7 @@ namespace Sando.Indexer.Searching.Criteria
 			{
 				stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
 				stringBuilder.Append(programElementType.ToString());
+				AppendBoostFactor(stringBuilder, SandoField.ProgramElementType.ToString());
 				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
@@ -100,6 +104,7 @@ namespace Sando.Indexer.Searching.Criteria
 			{
 				stringBuilder.Append(SandoField.FullFilePath.ToString() + ":");
 				stringBuilder.Append(String.IsNullOrWhiteSpace(location) ? "*" : '\"' + location + '\"');
+				AppendBoostFactor(stringBuilder, SandoField.FullFilePath.ToString());
 				if(collectionSize > 1)
 				{
 					stringBuilder.Append(" OR ");
@@ -163,43 +168,59 @@ namespace Sando.Indexer.Searching.Criteria
 				case UsageType.Bodies:
 					stringBuilder.Append(SandoField.Body.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.Body.ToString());
 					break;
 				case UsageType.Definitions:
 					stringBuilder.Append(SandoField.Name.ToString() + ":");
 					stringBuilder.Append(searchTerm);
-					stringBuilder.Append("^4");
+					AppendBoostFactor(stringBuilder, SandoField.Name.ToString());
 					break;
 				case UsageType.EnumValues:
 					stringBuilder.Append(SandoField.Values.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.Values.ToString());
 					break;
 				case UsageType.ExtendedClasses:
 					stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.ExtendedClasses.ToString());
 					break;
 				case UsageType.ImplementedInterfaces:
 					stringBuilder.Append(SandoField.ImplementedInterfaces.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.ImplementedInterfaces.ToString());
 					break;
 				case UsageType.MethodArguments:
 					stringBuilder.Append(SandoField.Arguments.ToString() + ":");
 					stringBuilder.Append(searchTerm);
-					stringBuilder.Append("^1");
+					AppendBoostFactor(stringBuilder, SandoField.Arguments.ToString());
 					break;
 				case UsageType.MethodReturnTypes:
 					stringBuilder.Append(SandoField.ReturnType.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.ReturnType.ToString());
 					break;
 				case UsageType.NamespaceNames:
 					stringBuilder.Append(SandoField.Namespace.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.Namespace.ToString());
 					break;
 				case UsageType.PropertyOrFieldTypes:
 					stringBuilder.Append(SandoField.DataType.ToString() + ":");
 					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.DataType.ToString());
 					break;
 				default:
 					throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
+			}
+		}
+
+		private void AppendBoostFactor(StringBuilder stringBuilder, string fieldName)
+		{
+			if(queryWeights.ContainsKey(fieldName) && queryWeights[fieldName] != 1)
+			{
+				stringBuilder.Append("^");
+				stringBuilder.Append(queryWeights[fieldName]);
 			}
 		}
 
@@ -215,5 +236,7 @@ namespace Sando.Indexer.Searching.Criteria
 		public virtual SortedSet<UsageType> UsageTypes { get; set; }
 		public virtual bool SearchByLocation { get; set; }
 		public virtual SortedSet<string> Locations { get; set; }
+
+		private Dictionary<string, float> queryWeights;
 	}
 }

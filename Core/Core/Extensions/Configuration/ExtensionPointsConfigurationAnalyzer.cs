@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using log4net;
 using Sando.ExtensionContracts.ParserContracts;
-using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 
@@ -22,6 +22,7 @@ namespace Sando.Core.Extensions.Configuration
 			FindAndRegisterValidParserExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidWordSplitterExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidResultsReordererExtensionPoints(extensionPointsConfiguration, logger);
+			FindAndRegisterValidQueryWeightsSupplierExtensionPoints(extensionPointsConfiguration, logger);
 			logger.Info("-=#|#=- Analyzing configuration finished -=#|#=-");
 		}
 
@@ -33,6 +34,8 @@ namespace Sando.Core.Extensions.Configuration
 				RemoveInvalidWordSplitterConfiguration(extensionPointsConfiguration, logger);
 			if(extensionPointsConfiguration.ResultsReordererConfiguration != null)
 				RemoveInvalidResultsReordererConfiguration(extensionPointsConfiguration, logger);
+			if(extensionPointsConfiguration.QueryWeightsSupplierConfiguration != null)
+				RemoveInvalidQueryWeightsSupplierConfiguration(extensionPointsConfiguration, logger);
 		}
 
 		private static void RemoveInvalidParserConfigurations(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
@@ -62,6 +65,15 @@ namespace Sando.Core.Extensions.Configuration
 			{
 				extensionPointsConfiguration.ResultsReordererConfiguration = null;
 				logger.Info(String.Format("Invalid results reorderer configuration found - it will be omitted during registration process."));
+			}
+		}
+
+		private static void RemoveInvalidQueryWeightsSupplierConfiguration(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+		{
+			if(IsConfigurationInvalid(extensionPointsConfiguration.QueryWeightsSupplierConfiguration))
+			{
+				extensionPointsConfiguration.QueryWeightsSupplierConfiguration = null;
+				logger.Info(String.Format("Invalid query weights supplier configuration found - it will be omitted during registration process."));
 			}
 		}
 
@@ -131,6 +143,27 @@ namespace Sando.Core.Extensions.Configuration
 				}
 			}
 			logger.Info("Reading results reorderer extension point configuration finished");
+		}
+
+		private static void FindAndRegisterValidQueryWeightsSupplierExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+		{
+			logger.Info("Reading query weights supplier extension point configuration started");
+			BaseExtensionPointConfiguration queryWeightsSupplierConfiguration = extensionPointsConfiguration.QueryWeightsSupplierConfiguration;
+			if(queryWeightsSupplierConfiguration != null)
+			{
+				try
+				{
+					logger.Info(String.Format("Query weights supplier found: {0}, from assembly: {1}", queryWeightsSupplierConfiguration.FullClassName, queryWeightsSupplierConfiguration.LibraryFileRelativePath));
+					IQueryWeightsSupplier queryWeightsSupplier = CreateInstance<IQueryWeightsSupplier>(extensionPointsConfiguration.PluginDirectoryPath, queryWeightsSupplierConfiguration.LibraryFileRelativePath, queryWeightsSupplierConfiguration.FullClassName);
+					ExtensionPointsRepository.Instance.RegisterQueryWeightsSupplierImplementation(queryWeightsSupplier);
+					logger.Info(String.Format("Query weights supplier {0} successfully registered.", queryWeightsSupplierConfiguration.FullClassName));
+				}
+				catch(Exception ex)
+				{
+					logger.Error(String.Format("Query weights supplier {0} cannot be registered: {1}", queryWeightsSupplierConfiguration.FullClassName, ex.Message));
+				}
+			}
+			logger.Info("Reading query weights supplier extension point configuration finished");
 		}
 
 		private static Assembly LoadAssembly(string pluginDirectoryPath, string libraryFileRelativePath)

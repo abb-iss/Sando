@@ -8,5 +8,6 @@ namespace Sando.Core.Extensions.Configuration
 		public List<ParserExtensionPointsConfiguration> ParsersConfiguration { get; set; }
 		public BaseExtensionPointConfiguration WordSplitterConfiguration { get; set; }
 		public BaseExtensionPointConfiguration ResultsReordererConfiguration { get; set; }
+		public BaseExtensionPointConfiguration QueryWeightsSupplierConfiguration { get; set; }
 	}
 }

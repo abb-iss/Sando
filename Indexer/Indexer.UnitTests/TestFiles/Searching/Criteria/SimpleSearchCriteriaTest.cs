@@ -253,7 +253,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-		    string actual = "((" + SandoField.Body.ToString() + ":SimpleClass OR " + SandoField.Name.ToString() + ":SimpleClass^4 OR " + SandoField.Values.ToString() + ":SimpleClass OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass OR " + SandoField.ImplementedInterfaces.ToString() + ":SimpleClass OR " + SandoField.Arguments.ToString() + ":SimpleClass^1 OR " + SandoField.ReturnType.ToString() + ":SimpleClass OR " + SandoField.Namespace.ToString() + ":SimpleClass OR " + SandoField.DataType.ToString() + ":SimpleClass))";
+		    string actual = "((" + SandoField.Body.ToString() + ":SimpleClass OR " + SandoField.Name.ToString() + ":SimpleClass^4 OR " + SandoField.Values.ToString() + ":SimpleClass OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass OR " + SandoField.ImplementedInterfaces.ToString() + ":SimpleClass OR " + SandoField.Arguments.ToString() + ":SimpleClass OR " + SandoField.ReturnType.ToString() + ":SimpleClass OR " + SandoField.Namespace.ToString() + ":SimpleClass OR " + SandoField.DataType.ToString() + ":SimpleClass))";
 		    Assert.AreEqual(queryString, actual, "Created query string is invalid!");
 			try
 			{

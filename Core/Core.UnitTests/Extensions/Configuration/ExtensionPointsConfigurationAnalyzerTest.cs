@@ -8,6 +8,7 @@ using Sando.Core.Extensions.Configuration;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UnitTestHelpers;
@@ -70,6 +71,23 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			Assert.IsTrue(results != null && results.Count() == 2, "Invalid results from ReorderSearchResults method!");
 			Assert.IsTrue(results.ElementAt(0).Score == 3 && results.ElementAt(0).Element.ProgramElementType == ProgramElementType.Method, "First result is invalid!");
 			Assert.IsTrue(results.ElementAt(1).Score == 1 && results.ElementAt(1).Element.ProgramElementType == ProgramElementType.Class, "Second result is invalid!");
+		}
+		
+		[Test]
+		public void FindAndRegisterValidExtensionPoints_RegistersUsableCustomQueryWeightsSupplier()
+		{
+			CreateExtensionPointsConfiguration(addValidQueryWeightsSupplierConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+			IQueryWeightsSupplier queryWeightsSupplier = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation();
+			Assert.IsNotNull(queryWeightsSupplier, "Query weights supplier should be registered!");
+			Assert.AreEqual(queryWeightsSupplier.GetType().FullName, "Sando.TestExtensionPoints.TestQueryWeightsSupplier", "Invalid query weights supplier returned!");
+
+			Dictionary<string, float> weights = null;
+ 			Assert.DoesNotThrow(() => weights = queryWeightsSupplier.GetQueryWeightsValues());
+			Assert.IsTrue(weights != null && weights.Count() == 2, "Invalid results from SetQueryWeightsValues method!");
+			Assert.AreEqual(weights["field1"], 2, "First weight is invalid!");
+			Assert.AreEqual(weights["field2"], 3, "Second weight is invalid!");
 		}
 
 		[Test]
@@ -138,6 +156,20 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		}
 
 		[Test]
+		public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomQueryWeightsSupplierConfiguration()
+		{
+			CreateExtensionPointsConfiguration(addInvalidQueryWeightsSupplierConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+			IQueryWeightsSupplier queryWeightsSupplier = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation();
+			Assert.IsNotNull(queryWeightsSupplier, "Default query weights supplier should be used!");
+			Assert.AreEqual(queryWeightsSupplier.GetType().FullName, "Sando.Indexer.Searching.QueryWeightsSupplier", "Invalid query weights supplier returned!");
+			
+			string logFileContent = File.ReadAllText(logFilePath);
+			Assert.IsTrue(logFileContent.Contains("Invalid query weights supplier configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid word splitter configuration!");
+		}
+
+		[Test]
 		public void FindAndRegisterValidExtensionPoints_DoesNotRegisterInvalidExtensionPoints()
 		{
 			CreateExtensionPointsConfiguration(addInvalidExtensionPoints: true);
@@ -161,6 +193,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			Assert.IsTrue(logFileContent.Contains("Could not load file or assembly 'file:///" + pluginDirectory + "NonExistingTestElement.dll' or one of its dependencies"), "Log file should contain information about errors occurred during the assembly loading!");
 			Assert.IsTrue(logFileContent.Contains("Could not load file or assembly 'file:///" + pluginDirectory + "NonExistingWordSplitter.dll' or one of its dependencies"), "Log file should contain information about errors occurred during the assembly loading!");
 			Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingResultsReorderer"), "Log file should contain information about errors occurred during the assembly loading!");
+			Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingQueryWeightsSupplier"), "Log file should contain information about errors occurred during the assembly loading!");
 		}
 
 		[SetUp]
@@ -198,6 +231,8 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			bool addInvalidWordSplitterConfiguration = false,
 			bool addValidResultsReordererConfiguration = false,
 			bool addInvalidResultsReordererConfiguration = false,
+			bool addValidQueryWeightsSupplierConfiguration = false,
+			bool addInvalidQueryWeightsSupplierConfiguration = false,
 			bool addInvalidExtensionPoints = false)
 		{
 			extensionPointsConfiguration = new ExtensionPointsConfiguration();
@@ -305,6 +340,26 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 					};
 			}
 
+			if(addValidQueryWeightsSupplierConfiguration)
+			{
+				extensionPointsConfiguration.QueryWeightsSupplierConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "Sando.TestExtensionPoints.TestQueryWeightsSupplier",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
+					};
+			}
+
+			if(addInvalidQueryWeightsSupplierConfiguration)
+			{
+				extensionPointsConfiguration.QueryWeightsSupplierConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
+					};
+			}
+
 			if(addInvalidExtensionPoints)
 			{
 				extensionPointsConfiguration.ParsersConfiguration.AddRange(
@@ -349,6 +404,13 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 					new BaseExtensionPointConfiguration()
 					{
 						FullClassName = "Sando.TestExtensionPoints.NonExistingResultsReorderer",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
+					};
+
+				extensionPointsConfiguration.QueryWeightsSupplierConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "Sando.TestExtensionPoints.NonExistingQueryWeightsSupplier",
 						LibraryFileRelativePath = "TestExtensionPoints.dll"
 					};
 			}

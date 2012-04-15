@@ -13,6 +13,7 @@ using Sando.Core.Extensions;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
 using Sando.Translation;
@@ -140,6 +141,8 @@ namespace Sando.UI
 			extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
 
 			extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
+
+			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
         }
 
 		private void SolutionHasBeenClosed()
