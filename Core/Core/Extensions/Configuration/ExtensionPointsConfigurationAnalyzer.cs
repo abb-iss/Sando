@@ -143,6 +143,8 @@ namespace Sando.Core.Extensions.Configuration
 		{
 			Assembly assembly = LoadAssembly(pluginDirectoryPath, libraryFileRelativePath);
 			Type type = assembly.GetType(fullClassName);
+			if(type == null)
+				throw new ArgumentNullException(String.Format("Type cannot be found: {0}", fullClassName));
 			return (T)Activator.CreateInstance(type);
 		}
 	}
