@@ -72,7 +72,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length > 0);
+			Assert.IsTrue(elements.Count > 0);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is ClassElement)

@@ -1,13 +1,14 @@
-﻿using Sando.ExtensionContracts.ParserContracts;
+﻿using System.Collections.Generic;
+using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.TestExtensionPoints
 {
 	public class TestCSharpParser : IParser
 	{
-		public ProgramElement[] Parse(string filename)
+		public List<ProgramElement> Parse(string filename)
 		{
-			return new ProgramElement[1] { new TestElement("TestCSharpName", 1, filename, "TestElement snippet") };
+			return new List<ProgramElement>() { new TestElement("TestCSharpName", 1, filename, "TestElement snippet") };
 		}
 	}
 }
