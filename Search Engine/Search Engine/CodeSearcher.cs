@@ -51,16 +51,17 @@ namespace Sando.SearchEngine
         /// Searches the specified search string.
         /// </summary>
         /// <param name="searchString">The search string.</param>
+		/// <param name="searchCriteria">The other search criteria</param>
         /// <returns>List of Search Result</returns>
-        public virtual List<CodeSearchResult> Search(string searchString)
-        {
+		public virtual List<CodeSearchResult> Search(string searchString)
+		{
 			Contract.Requires(String.IsNullOrWhiteSpace(searchString), "CodeSearcher:Search - searchString cannot be null or an empty string!");
 
 			SearchCriteria searchCrit = this.GetCriteria(searchString);
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
 			List<CodeSearchResult> res = lruCache.Get(searchCrit);
-			if(res!=null && !indexingChanged)
+			if (res != null && !indexingChanged)
 			{
 				//cache hits and index not changed
 				return res;
@@ -73,7 +74,7 @@ namespace Sando.SearchEngine
 				lruCache.Put(searchCrit, res);
 				return res;
 			}
-        }
+		}
 
 		/// <summary>
 		/// Searches using the specified search criteria.
@@ -99,20 +100,22 @@ namespace Sando.SearchEngine
 				return res;
 			}
 		}
+		#endregion
 
-        #endregion	
-        #region Private Mthods
-        /// <summary>
-        /// Gets the criteria.
-        /// </summary>
-        /// <param name="searchString">Search string.</param>
-        /// <returns>search criteria</returns>
-        private SearchCriteria GetCriteria(string searchString)
-        {
-            var criteria = new SimpleSearchCriteria();
-            criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
-            return criteria;
-        }
-        #endregion
-    }
+		#region Private Mthods
+		/// <summary>
+		/// Gets the criteria.
+		/// </summary>
+		/// <param name="searchString">Search string.</param>
+		/// <returns>search criteria</returns>
+		private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
+		{
+			if (searchCriteria == null)
+				searchCriteria = new SimpleSearchCriteria();
+			var criteria = searchCriteria;
+			criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
+			return criteria;
+		}
+		#endregion
+	}
 }

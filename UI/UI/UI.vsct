@@ -86,9 +86,6 @@
   </Commands>
 
 
-
-
-
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidUIPkg" value="{7e03caf3-06ed-4ff5-962a-effa1fb2f383}" />

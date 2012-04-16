@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ComboBoxItemCurrentDocument" xml:space="preserve">
+    <value>Current document</value>
+  </data>
+  <data name="ComboBoxItemEntireSolution" xml:space="preserve">
+    <value>Entire solution</value>
+  </data>
   <data name="Exception_General_IOException" xml:space="preserve">
     <value>Input-ouput exception occurred: {0}</value>
   </data>

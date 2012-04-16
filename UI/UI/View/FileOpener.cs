@@ -18,10 +18,10 @@ namespace Sando.UI.View
 
     		public static void OpenItem(object sender)
     		{
-    			var result = sender as ListBox;
+    			var result = sender as ListBoxItem;
     			if(result != null)
     			{
-					var myResult = result.SelectedItem as CodeSearchResult;
+					var myResult = result.Content as CodeSearchResult;
     				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
     			}
     		}

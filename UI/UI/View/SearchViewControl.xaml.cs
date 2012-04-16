@@ -11,6 +11,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.SearchEngine;
 using Sando.Translation;
+using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.UI.View
 {
@@ -46,6 +47,18 @@ namespace Sando.UI.View
 			}
 		}
 
+		public SimpleSearchCriteria SearchCriteria
+		{
+			get
+			{
+				return (SimpleSearchCriteria)GetValue(SearchCriteriaProperty);
+			}
+			set
+			{
+				SetValue(SearchCriteriaProperty, value);
+			}
+		}
+
 		public string SearchLabel
 		{
 			get
@@ -54,11 +67,38 @@ namespace Sando.UI.View
 			}
 		}
 
+		public string ComboBoxItemCurrentDocument
+		{
+			get
+			{
+				return Translator.GetTranslation(TranslationCode.ComboBoxItemCurrentDocument);
+			}
+		}
+
+		public string ComboBoxItemEntireSolution
+		{
+			get
+			{
+				return Translator.GetTranslation(TranslationCode.ComboBoxItemEntireSolution);
+			}
+		}
+
+		public ProgramElementType ElementType
+		{
+			get
+			{
+				return ElementType;
+			}
+		}
+
 		public static readonly DependencyProperty SearchResultsProperty =
 			DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
 		public static readonly DependencyProperty SearchStringProperty =
 			DependencyProperty.Register("SearchString", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+		public static readonly DependencyProperty SearchCriteriaProperty =
+			DependencyProperty.Register("SearchCriteria", typeof(SimpleSearchCriteria), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
     	private SearchManager _searchManager;
 
@@ -70,12 +110,20 @@ namespace Sando.UI.View
             InitializeComponent();
     		_searchManager = new SearchManager(this);
 			SearchResults = new ObservableCollection<CodeSearchResult>();
+			SearchCriteria = new SimpleSearchCriteria();
     	}
 
     	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
     	{
-    		_searchManager.Search(SearchString);
+			SearchCriteria = new SimpleSearchCriteria();
+			SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
+			SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
+			SearchCriteria.SearchByAccessLevel = searchByAccessLevel.IsChecked.HasValue && searchByAccessLevel.IsChecked.Value;
+			SearchCriteria.SearchByProgramElementType = searchByProgramElementType.IsChecked.HasValue && searchByProgramElementType.IsChecked.Value;
+
+			_searchManager.Search(SearchString, SearchCriteria);
+			resultExpander.IsExpanded = true;
     	}
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -85,20 +133,23 @@ namespace Sando.UI.View
 				var text = sender as TextBox;
 				if (text != null)
 				{
-					_searchManager.SearchOnReturn(sender, e, text.Text);
-				}				
+					SearchCriteria = new SimpleSearchCriteria();
+					SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
+					SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
+					SearchCriteria.SearchByAccessLevel = searchByAccessLevel.IsChecked.HasValue && searchByAccessLevel.IsChecked.Value;
+					SearchCriteria.SearchByProgramElementType = searchByProgramElementType.IsChecked.HasValue && searchByProgramElementType.IsChecked.Value;
+					
+					//_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
+					_searchManager.Search(text.Text, SearchCriteria);
+					resultExpander.IsExpanded = true;
+				}
 			}
-    		
     	}
-
-		
 
     	private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
     		FileOpener.OpenItem(sender);
     	}
-
-
 
     	public static IIndexUpdateListener GetInstance()
     	{
@@ -132,6 +183,7 @@ namespace Sando.UI.View
     	#endregion
     }
 
+	#region ValueConverter of SearchResult's Icon
 	[ValueConversion(typeof(string), typeof(BitmapImage))] 
 	public class ElementToIcon : IValueConverter
 	{
@@ -139,8 +191,6 @@ namespace Sando.UI.View
 		{
 			// empty images are empty...
 			if (value == null) { return null; }
-		
-			/// I don't know why this converter doesn't work if I use Path=/ in binding
 
 			ProgramElement element = (ProgramElement)value;
 			string accessLevel;
@@ -159,7 +209,7 @@ namespace Sando.UI.View
 
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			return null;
+			return new NotImplementedException();
 		}
 	}
 
@@ -178,7 +228,28 @@ namespace Sando.UI.View
 
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
-			return null;
+			return new NotImplementedException();
 		}
 	}
+	#endregion
+
+	#region NullableBoolToBool
+
+	[ValueConversion(typeof(bool?), typeof(bool))]
+	public class NullableBoolToBool : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if (((bool?)value).HasValue)
+				return ((bool?)value).Value;
+			else
+				return false;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return value;
+		}
+	}
+#endregion
 }

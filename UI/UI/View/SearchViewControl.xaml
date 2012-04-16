@@ -6,107 +6,161 @@
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
              xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" mc:Ignorable="d" 
-             d:DesignHeight="*" d:DesignWidth="300"
+             xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
+             d:DesignWidth="700" d:DesignHeight="400"
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
     <UserControl.Resources>
         <view:ElementToIcon x:Key="ElementToIcon"/>
         <view:FileTypeToIcon x:Key="FileTypeToIcon"/>
-        <BitmapImage x:Key="IconClass" UriSource="../Resources/IconClass.png" />
-        <BitmapImage x:Key="IconFile" UriSource="../Resources/IconFile.png" />
-    </UserControl.Resources>
+		<view:NullableBoolToBool x:Key="NullableBoolToBool"/>
+		
+        <ObjectDataProvider x:Key="ProgramElementType" MethodName="GetValues" ObjectType="{x:Type ExContract:ProgramElementType}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ExContract:ProgramElementType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+		<ObjectDataProvider x:Key="AccessLevel" MethodName="GetValues" ObjectType="{x:Type ExContract:AccessLevel}">
+			<ObjectDataProvider.MethodParameters>
+				<x:Type TypeName="ExContract:AccessLevel"/>
+			</ObjectDataProvider.MethodParameters>
+		</ObjectDataProvider>
+	</UserControl.Resources>
     
-    <Grid>
+    <Grid VerticalAlignment="Top" HorizontalAlignment="Left">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>            
-            <RowDefinition Height="*"/>
+            <RowDefinition MinHeight="200" Height="*"/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="250" Width="2*"/>
+            <ColumnDefinition MinWidth="0" Width="0"/>
+            <ColumnDefinition MinWidth="300" Width="5*"/>
+        </Grid.ColumnDefinitions>
         <Grid.Resources></Grid.Resources>
- 
-        <StackPanel Margin="10,0,10,10" Grid.Row="0" >
-            <StackPanel.Resources>                
-                <Style TargetType="{x:Type StackPanel}">
-                    <Setter Property="Margin" Value="0,10,0,0"/>
-                    
-                </Style>
-            </StackPanel.Resources>
-            <Grid Margin="0,10,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="60" />
-                </Grid.ColumnDefinitions>
-                <TextBox  Grid.Column="0" Height="25" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray" Text="{Binding Path=SearchString}"></TextBox>
-                <Button Grid.Column="1" Content="{Binding Path=SearchLabel}" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" />
+
+        <!--Left Part: Query-->
+        <GroupBox Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                    <RowDefinition Height="Auto" MinHeight="30"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Height="Auto">
+                    <!--Query String Input-->
+                    <TextBlock Margin="5,0,5,5" Text="Query?"/>
+                    <StackPanel Margin="5,0,5,5" >
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type StackPanel}">
+                                <Setter Property="Margin" Value="0,5,0,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <TextBox  Grid.Column="0" Height="25" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray" Text="{Binding Path=SearchString}"></TextBox>
+                    </StackPanel>
+
+					<!--Where to query?
+					<TextBlock Margin="5,0,5,0" Text="Where?"/>
+                    <ComboBox Margin="5,0,5,5" SelectedIndex="0" >
+                        <ComboBoxItem Content="{Binding Path=ComboBoxItemCurrentDocument}"/>
+                        <ComboBoxItem Content="{Binding Path=ComboBoxItemEntireSolution}" />
+                    </ComboBox>
+					-->
+					<!--What element type??-->
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<TextBlock Margin="5,0,5,5" Text="Specific element type?" Grid.Column="0"/>
+						<CheckBox Name="searchByAccessLevel" HorizontalAlignment="Left" Margin="5,2,5,5" Grid.Column="1" IsChecked="False" />
+					</Grid>
+					<ComboBox Name="searchAccessLevel" IsEnabled="{Binding ElementName=searchByAccessLevel, Path=IsChecked}" Margin="5,0,5,5" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource ResourceKey=AccessLevel}}"/>
+
+                    <!--What element type??-->
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						<TextBlock Margin="5,0,5,5" Text="Specific element type?" Grid.Column="0"/>
+						<CheckBox Name="searchByProgramElementType" HorizontalAlignment="Left" Margin="5,2,5,5" Grid.Column="1" IsChecked="False" />
+					</Grid>
+					<ComboBox Name="searchElementType" IsEnabled="{Binding ElementName=searchByProgramElementType, Path=IsChecked}" Margin="5,0,5,5" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource ResourceKey=ProgramElementType}}"/>
+
+				</StackPanel>
+                <Button Grid.Row="1" Margin="0,0,5,0" Content="{Binding Path=SearchLabel}" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" />
             </Grid>
-            </StackPanel>
+        </GroupBox>
 
-        <ListView Grid.Row="1" ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                Margin="10,0,10,10" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" MouseDoubleClick="UIElement_OnMouseDown">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment"                            
+        <!--Right Part: Result-->
+        <Expander Name="resultExpander" Grid.Row="0" Grid.Column="2" ExpandDirection="Right" Header="" IsExpanded="False" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
+            
+            <ListView ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                Margin="5,5,5,5" SelectedIndex="0" HorizontalAlignment="Right" VerticalContentAlignment="Top" >
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment"                            
                 Value="Stretch" />
-                    <Setter Property="Margin" Value="0,0,0,0"/>
-                    <Setter Property="Padding" Value="0,0,0,0"/>
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn  Header="Summary" Width="125" >
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>                                
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="20" />
-                                        <RowDefinition Height="20" />
-                                        <RowDefinition Height="20" />
-                                        <RowDefinition Height="0" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Name="Icon" Width="20"/>
-                                        <ColumnDefinition Name="Summary" Width="*"/>
-                                    </Grid.ColumnDefinitions>
+                        <Setter Property="Margin" Value="0,0,0,0"/>
+                        <Setter Property="Padding" Value="0,0,0,0"/>
+                        <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn  Header="Summary" Width="125" >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="20" />
+                                            <RowDefinition Height="0" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Name="Icon" Width="20"/>
+                                            <ColumnDefinition Name="Summary" Width="*"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="1" />
-                                    <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="1" />
-                                    <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="2" Grid.Column="1" />
-                                    <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-                                        <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1" />
-                                    </Canvas>
-                                    <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="0" Grid.Column="0" />
-                                    <!--Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" /-->
-                                    <Image Source="{Binding Mode=OneWay, Path=Element.FullFilePath, Converter={StaticResource FileTypeToIcon}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />
-                                    <!--I have no idea how to determine parent type without adding a new property IconParent to CodeSearchResult(Well, I don't know how to access parent type...)-->
-                                    <!--Assume that parent and children are of the same type then-->
-                                    
-                                </Grid>                
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="Auto" Header="Code Snippet">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid Margin="0,2,0,0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="60" />
-                                        <RowDefinition Height="0" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <!--<ColumnDefinition Width="Auto" />-->
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <!--<Label FontFamily="Cambria" Width="Auto" Height="Auto" MinWidth="20" FontSize="9" Grid.Row="0" Grid.Column="0" Content="{Binding Mode=OneWay, Path=Element.DefinitionLineNumber}" />-->
-                                    <TextBlock Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="9" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
+                                        <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="1" />
+                                        <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="1" />
+                                        <TextBlock Name="FileName" Text="{Binding Mode=OneWay, Path=FileName}" Width="{Binding ElementName=Summary, Path=Width}" TextTrimming="WordEllipsis" Grid.Row="2" Grid.Column="1" />
+                                        <Canvas HorizontalAlignment="Stretch" Height="0" Margin="0,0,0,0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                                            <Line X1="1" X2="600" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1" />
+                                        </Canvas>
+                                        <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="0" Grid.Column="0" />
+                                        <!--Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource StringToBitmapImage}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" /-->
+                                        <Image Source="{Binding Mode=OneWay, Path=Element.FullFilePath, Converter={StaticResource FileTypeToIcon}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />
+
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="330" Header="Code Snippet">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="60" />
+                                            <RowDefinition Height="0" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <!--<ColumnDefinition Width="Auto" />-->
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <!--<Label FontFamily="Cambria" Width="Auto" Height="Auto" MinWidth="20" FontSize="9" Grid.Row="0" Grid.Column="0" Content="{Binding Mode=OneWay, Path=Element.DefinitionLineNumber}" />-->
+                                        <TextBlock Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="9" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
                                                Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="0" Grid.Column="1" TextTrimming="CharacterEllipsis"/>
-                                    <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
-                                        <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
-                                    </Canvas>
-                                </Grid>
-                            </DataTemplate>                            
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+                                        <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                                            <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
+                                        </Canvas>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Expander>
     </Grid>
 </UserControl>

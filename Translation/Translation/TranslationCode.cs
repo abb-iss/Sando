@@ -11,6 +11,8 @@
 			//Indexer
 			Exception_Indexer_LuceneIndexIsCorrupt,
 			Exception_Indexer_LuceneIndexAlreadyOpened,
-			SearchLabel
+			SearchLabel,
+			ComboBoxItemCurrentDocument,
+			ComboBoxItemEntireSolution
 	}
 }

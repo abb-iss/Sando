@@ -88,11 +88,17 @@ namespace Sando.UI
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
             ToolWindowPane window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+			
+			
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
             }
-            var windowFrame = (IVsWindowFrame)window.Frame;
+			
+            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+			// Dock Sando to the bottom of Visual Studio.
+			windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockBottom, Guid.Empty, 0, 0, 0, 0);
+
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
