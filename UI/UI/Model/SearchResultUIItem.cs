@@ -94,8 +94,7 @@ namespace Sando.UI.Model
 				//Application.Current.TryFindResource(iconPath) as BitmapImage;
 				
 				try
-				{
-					if (icon.StreamSource.Length==0);
+				{					
 					if (icon.Height == 0)
 						icon = null;
 				}
