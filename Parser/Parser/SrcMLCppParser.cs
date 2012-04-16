@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Sando.Core.Tools;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
-using System.Diagnostics.Contracts;
 
 namespace Sando.Parser
 {
@@ -25,7 +23,7 @@ namespace Sando.Parser
 	        Generator.SetSrcMLLocation(StandardSrcMlLocation);
 		}
 
-		public ProgramElement[] Parse(string fileName)
+		public List<ProgramElement> Parse(string fileName)
 		{
 			var programElements = new List<ProgramElement>();
 			string srcml = Generator.GenerateSrcML(fileName);
@@ -45,7 +43,7 @@ namespace Sando.Parser
 				ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
 			}
 
-			return programElements.ToArray();
+			return programElements;
 		}
 
 		private void ParseCppFunctionPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)

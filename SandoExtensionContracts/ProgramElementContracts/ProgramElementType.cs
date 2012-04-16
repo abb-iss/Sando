@@ -9,6 +9,7 @@
 		Field,
 		Method,
 		Property,
-		MethodPrototype
+		MethodPrototype,
+		Custom
 	}
 }

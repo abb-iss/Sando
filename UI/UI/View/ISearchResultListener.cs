@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Sando.SearchEngine;
+﻿using System.Linq;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View
 {
 	public interface ISearchResultListener
 	{
-		void Update(List<CodeSearchResult> results);
+		void Update(IQueryable<CodeSearchResult> results);
 	}
 }

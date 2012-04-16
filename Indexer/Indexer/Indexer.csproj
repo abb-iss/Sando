@@ -122,6 +122,7 @@
     <Compile Include="Searching\Criteria\SearchCriteria.cs" />
     <Compile Include="Searching\IndexerSearcher.cs" />
     <Compile Include="Searching\ProgramElementReader.cs" />
+    <Compile Include="Searching\QueryWeightsSupplier.cs" />
     <Compile Include="Searching\UsageType.cs" />
   </ItemGroup>
   <ItemGroup>

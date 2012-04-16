@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using UnitTestHelpers;
@@ -56,7 +55,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length>0);
+			Assert.IsTrue(elements.Count>0);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is MethodElement)
@@ -94,7 +93,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length > 0);
+			Assert.IsTrue(elements.Count > 0);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is ClassElement)
@@ -121,7 +120,7 @@ namespace Sando.Parser.UnitTests
 			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length>0);
+			Assert.IsTrue(elements.Count>0);
 			bool hasClass=false, hasMethod=false;
 			foreach (var programElement in elements)
 			{
@@ -164,7 +163,7 @@ namespace Sando.Parser.UnitTests
 			SrcMLCSharpParser parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\RegionTest.txt");
 			Assert.IsNotNull(elements);
-			Assert.IsTrue(elements.Length == 2);
+			Assert.IsTrue(elements.Count == 2);
 			bool hasClass = false, hasMethod = false;
 			foreach(var programElement in elements)
 			{

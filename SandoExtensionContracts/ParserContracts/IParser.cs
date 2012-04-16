@@ -1,9 +1,10 @@
-﻿using Sando.ExtensionContracts.ProgramElementContracts;
+﻿using System.Collections.Generic;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.ExtensionContracts.ParserContracts
 {
 	public interface IParser
 	{
-		ProgramElement[] Parse(string filename);
+		List<ProgramElement> Parse(string filename);
 	}
 }

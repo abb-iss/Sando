@@ -2,7 +2,9 @@
 using System.IO;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.Indexer.Searching;
 using Sando.Parser;
+using Sando.SearchEngine;
 
 namespace UnitTestHelpers
 {
@@ -27,6 +29,10 @@ namespace UnitTestHelpers
 			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
 
 			extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
+
+			extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
+
+			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
 		}
     }
 }

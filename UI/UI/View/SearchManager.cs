@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.Windows.Input;
+using Sando.Core.Extensions;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
-using Sando.Indexer.Searching.Criteria;
-using Sando.Core.Tools;
 
 namespace Sando.UI.View
 {
@@ -37,21 +33,24 @@ public  class SearchManager
 				return codeSearcher;
 			}
 
-			public void Search(String searchString, SimpleSearchCriteria searchCriteria = null)
+			public void Search(String searchString)
 			{
-				if (!string.IsNullOrEmpty(searchString))
+				if(!string.IsNullOrEmpty(searchString))
 				{
 					var myPackage = UIPackage.GetInstance();
 					_currentSearcher = GetSearcher(myPackage);
-					_myDaddy.Update(_currentSearcher.Search(GetCriteria(searchString, searchCriteria)));
+					IQueryable<CodeSearchResult> results = _currentSearcher.Search(searchString).AsQueryable();
+					IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+					results = resultsReorderer.ReorderSearchResults(results);
+					_myDaddy.Update(results);
 				}
 			}
 
-			public void SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
+			public void SearchOnReturn(object sender, KeyEventArgs e, String searchString)
 			{
 				if(e.Key == Key.Return)
 				{
-					Search(searchString, searchCriteria);
+					Search(searchString);
 				}
 			}
 
@@ -59,22 +58,6 @@ public  class SearchManager
 			{
 				_invalidated = true;
 			}
-
-			#region Private Mthods
-			/// <summary>
-			/// Gets the criteria.
-			/// </summary>
-			/// <param name="searchString">Search string.</param>
-			/// <returns>search criteria</returns>
-			private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
-			{
-				if (searchCriteria == null)
-					searchCriteria = new SimpleSearchCriteria();
-				var criteria = searchCriteria;
-				criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
-				return criteria;
-			}
-			#endregion
 		}
 
 }

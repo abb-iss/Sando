@@ -4,6 +4,7 @@ using System.IO;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;

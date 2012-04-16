@@ -28,7 +28,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCppParser();
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 6);
+			Assert.AreEqual(elements.Count, 6);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is CppUnresolvedMethodElement)
@@ -78,7 +78,7 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCppParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
-			Assert.AreEqual(elements.Length, 8);
+			Assert.AreEqual(elements.Count, 8);
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is ClassElement)

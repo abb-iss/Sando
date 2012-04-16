@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Sando.ExtensionContracts.ParserContracts;
+using Sando.ExtensionContracts.QueryContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 
 namespace Sando.Core.Extensions
@@ -41,10 +43,36 @@ namespace Sando.Core.Extensions
 			this.wordSplitter = wordSplitter;
 		}
 
+		public IResultsReorderer GetResultsReordererImplementation()
+		{
+			return resultsReorderer;
+		}
+
+		public void RegisterResultsReordererImplementation(IResultsReorderer resultsReorderer)
+		{
+			Contract.Requires(resultsReorderer != null, "ExtensionPointsManager:RegisterResultsReordererImplementation - resultsReorderer cannot be null!");
+
+			this.resultsReorderer = resultsReorderer;
+		}
+
+		public IQueryWeightsSupplier GetQueryWeightsSupplierImplementation()
+		{
+			return queryWeightsSupplier;
+		}
+
+		public void RegisterQueryWeightsSupplierImplementation(IQueryWeightsSupplier queryWeightsSupplier)
+		{
+			Contract.Requires(queryWeightsSupplier != null, "ExtensionPointsManager:RegisterQueryWeightsSupplierImplementation - queryWeightsSupplier cannot be null!");
+
+			this.queryWeightsSupplier = queryWeightsSupplier;
+		}
+
 		public void ClearRepository()
 		{
 			parsers.Clear();
 			wordSplitter = null;
+			resultsReorderer = null;
+			queryWeightsSupplier = null;
 		}
 
 		public static ExtensionPointsRepository Instance
@@ -66,5 +94,7 @@ namespace Sando.Core.Extensions
 
 		private Dictionary<string, IParser> parsers;
 		private IWordSplitter wordSplitter;
+		private IResultsReorderer resultsReorderer;
+		private IQueryWeightsSupplier queryWeightsSupplier;
 	}
 }

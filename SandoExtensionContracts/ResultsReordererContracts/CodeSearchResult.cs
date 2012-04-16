@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
-namespace Sando.SearchEngine
+namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
     /// <summary>
     /// Class defined to create return result from Lucene indexer

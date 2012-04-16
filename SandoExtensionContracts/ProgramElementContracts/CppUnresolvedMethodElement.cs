@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Sando.ExtensionContracts.ProgramElementContracts
@@ -17,7 +18,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			IsResolved = false;
 		}
 
-		public bool TryResolve(ProgramElement[] headerElements, out MethodElement outMethodElement) 
+		public bool TryResolve(List<ProgramElement> headerElements, out MethodElement outMethodElement) 
 		{
 			AccessLevel accessLevel; 
 			Guid classId;
@@ -32,7 +33,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			return true;
 		}
 
-		private bool ResolveClassId(string className, ProgramElement[] includeElements, out Guid outGuid)
+		private bool ResolveClassId(string className, List<ProgramElement> includeElements, out Guid outGuid)
 		{
 			foreach(ProgramElement element in includeElements)
 			{
@@ -47,7 +48,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			return false;
 		}
 
-		private bool ResolveAccessType(string funcName, ProgramElement[] includeElements, out AccessLevel outAccessLevel)
+		private bool ResolveAccessType(string funcName, List<ProgramElement> includeElements, out AccessLevel outAccessLevel)
 		{
 			foreach(ProgramElement element in includeElements)
 			{
