@@ -70,7 +70,7 @@
 							<ColumnDefinition Width="Auto"/>
 							<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
-						<TextBlock Margin="5,0,5,5" Text="Specific element type?" Grid.Column="0"/>
+						<TextBlock Margin="5,0,5,5" Text="Specific access level?" Grid.Column="0"/>
 						<CheckBox Name="searchByAccessLevel" HorizontalAlignment="Left" Margin="5,2,5,5" Grid.Column="1" IsChecked="False" />
 					</Grid>
 					<ComboBox Name="searchAccessLevel" IsEnabled="{Binding ElementName=searchByAccessLevel, Path=IsChecked}" Margin="5,0,5,5" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource ResourceKey=AccessLevel}}"/>

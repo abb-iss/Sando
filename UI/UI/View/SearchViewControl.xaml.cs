@@ -139,8 +139,8 @@ namespace Sando.UI.View
 					SearchCriteria.SearchByAccessLevel = searchByAccessLevel.IsChecked.HasValue && searchByAccessLevel.IsChecked.Value;
 					SearchCriteria.SearchByProgramElementType = searchByProgramElementType.IsChecked.HasValue && searchByProgramElementType.IsChecked.Value;
 					
-					//_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
-					_searchManager.Search(text.Text, SearchCriteria);
+					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
+					// _searchManager.Search(text.Text, SearchCriteria);
 					resultExpander.IsExpanded = true;
 				}
 			}

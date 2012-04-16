@@ -5,6 +5,9 @@ using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
+using Sando.Indexer.Searching.Criteria;
+using Sando.Core.Tools;
+using System.Collections.Generic;
 
 namespace Sando.UI.View
 {
@@ -33,24 +36,24 @@ public  class SearchManager
 				return codeSearcher;
 			}
 
-			public void Search(String searchString)
+			public void Search(String searchString, SimpleSearchCriteria searchCriteria = null)
 			{
-				if(!string.IsNullOrEmpty(searchString))
+				if (!string.IsNullOrEmpty(searchString))
 				{
 					var myPackage = UIPackage.GetInstance();
 					_currentSearcher = GetSearcher(myPackage);
-					IQueryable<CodeSearchResult> results = _currentSearcher.Search(searchString).AsQueryable();
+					IQueryable<CodeSearchResult> results = _currentSearcher.Search(GetCriteria(searchString, searchCriteria)).AsQueryable();
 					IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
 					results = resultsReorderer.ReorderSearchResults(results);
 					_myDaddy.Update(results);
 				}
 			}
 
-			public void SearchOnReturn(object sender, KeyEventArgs e, String searchString)
+			public void SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
 			{
 				if(e.Key == Key.Return)
 				{
-					Search(searchString);
+					Search(searchString, searchCriteria);
 				}
 			}
 
@@ -58,6 +61,22 @@ public  class SearchManager
 			{
 				_invalidated = true;
 			}
+
+			#region Private Mthods
+			/// <summary>
+			/// Gets the criteria.
+			/// </summary>
+			/// <param name="searchString">Search string.</param>
+			/// <returns>search criteria</returns>
+			private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
+			{
+				if (searchCriteria == null)
+					searchCriteria = new SimpleSearchCriteria();
+				var criteria = searchCriteria;
+				criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
+				return criteria;
+			}
+			#endregion
 		}
 
 }
