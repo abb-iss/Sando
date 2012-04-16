@@ -2,12 +2,14 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
+using Sando.Core.Extensions;
 using Sando.Indexer;
 using Thread = System.Threading.Thread;
 
@@ -108,20 +110,25 @@ namespace Sando.UI.Monitoring
 
 		private void ProcessSingleFile(ProjectItem item)
 		{
-
-            if (item.Name.EndsWith(".cs") || item.Name.EndsWith(".cpp") || item.Name.EndsWith(".h") || item.Name.EndsWith(".cxx"))
-			{
-                Debug.WriteLine("Start: " + item.Name);
-                try
+		    string fileExtension = Path.GetExtension(item.Name);
+            if (fileExtension != null && !fileExtension.Equals(String.Empty))
+            {
+                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
                 {
-                    var path = item.FileNames[0];
-                    ProcessFileForTesting(path);
-                    Debug.WriteLine("End: " + item.Name);
-                }catch(Exception e)
-                {
-                    Debug.WriteLine(e.StackTrace);
+                    Debug.WriteLine("Start: " + item.Name);
+                    try
+                    {
+                        var path = item.FileNames[0];
+                        ProcessFileForTesting(path);
+                        Debug.WriteLine("End: " + item.Name);
+                    }
+                    //TODO - don't catch a generic exception
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.StackTrace);
+                    }
                 }
-			}
+            }
 		}
 
 	    public void ProcessFileForTesting(string path)
