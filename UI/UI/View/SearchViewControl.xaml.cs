@@ -148,8 +148,16 @@ namespace Sando.UI.View
 
     	private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
-    		FileOpener.OpenItem(sender);
+            FileOpener.OpenItem(sender);
     	}
+
+        private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                FileOpener.OpenItem(sender);
+            }
+        }
 
     	public static IIndexUpdateListener GetInstance()
     	{
@@ -181,6 +189,8 @@ namespace Sando.UI.View
     	}
 
     	#endregion
+
+        
     }
 
 	#region ValueConverter of SearchResult's Icon

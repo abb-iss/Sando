@@ -103,6 +103,7 @@
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>
                         <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
+                        <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
