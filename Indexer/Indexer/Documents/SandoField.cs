@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 
 namespace Sando.Indexer.Documents
-{
+{    
+
 	public enum SandoField
 	{
 		AccessLevel,

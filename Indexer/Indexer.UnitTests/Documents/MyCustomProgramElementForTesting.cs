@@ -32,5 +32,14 @@ namespace Sando.Indexer.UnitTests.Documents
             document.Add(new Field(SandoField.Snippet.ToString(), "The text of the custom thing.", Field.Store.YES, Field.Index.NO));
             return document;
         }
+
+        public static MyCustomProgramElementForTesting GetProgramElement()
+        {
+            var element =  new MyCustomProgramElementForTesting("customThingName", 123, @"C:\stuff\place.txt", "The text of the custom thing.");
+            element.A = "A's value";
+            element.B = "B's value";
+            element.C = "C's value";
+            return element;
+        }
     }
 }

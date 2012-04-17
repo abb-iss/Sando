@@ -4,7 +4,11 @@ using System.Linq;
 using System.Text;
 using Lucene.Net.Documents;
 using NUnit.Framework;
+using Sando.Core.Extensions;
+using Sando.Core.Tools;
 using Sando.Indexer.Documents;
+using Sando.Indexer.Searching;
+using Sando.Parser;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
@@ -28,9 +32,22 @@ namespace Sando.Indexer.UnitTests.Documents
 
 
         [Test]
-        public void UnMarshallCustomElement()
+        public void CustomDocumentToLuceneDocument()
         {
+            //test AddDocumentFields
+            var customSandoDocument = new CustomDocument(MyCustomProgramElementForTesting.GetProgramElement(), typeof(MyCustomProgramElementForTesting));
+            var luceneDocumentWithCustomFields = customSandoDocument.GetDocument();
+            Assert.IsTrue(luceneDocumentWithCustomFields!=null);
+        }
 
+        [SetUp]
+        public static void InitializeExtensionPoints()
+        {
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());           
+            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
         }
 
     }
