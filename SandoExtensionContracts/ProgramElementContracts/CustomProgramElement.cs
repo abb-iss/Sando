@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Sando.ExtensionContracts.ProgramElementContracts
@@ -14,6 +15,19 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
         public override ProgramElementType ProgramElementType
         {
             get { return ProgramElementType.Custom; }
+        }
+
+        public IEnumerable<PropertyInfo> GetCustomProperties()
+        {
+            var propertyInfos = new List<PropertyInfo>();
+            foreach (var property in this.GetType().GetProperties())
+            {
+                if (property.DeclaringType != typeof(ProgramElement) && property.DeclaringType != typeof(CustomProgramElement))
+                {
+                    propertyInfos.Add(property);
+                }
+            }
+            return propertyInfos;
         }
     }
 }

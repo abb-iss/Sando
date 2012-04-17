@@ -42,6 +42,10 @@ namespace Sando.Indexer.Documents
 			{
 				return new PropertyDocument(programElement as PropertyElement);
 			}
+            if(programElement as CustomProgramElement !=null)
+            {
+                return new CustomDocument(programElement as CustomProgramElement, programElement.GetType());
+            }
 
 			//if this code is reached, contract will fail
 			return null;

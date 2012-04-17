@@ -40,6 +40,27 @@ namespace Sando.Indexer.UnitTests.Documents
             Assert.IsTrue(luceneDocumentWithCustomFields!=null);
         }
 
+        [Test]
+        public void GetCustomDocumentFromFactoryTest()
+        {
+            var element = DocumentFactory.Create(MyCustomProgramElementForTesting.GetProgramElement());
+            Assert.IsTrue(element != null);
+        }
+
+        [Test]
+        public void RoundTrip()
+        {
+            var element = DocumentFactory.Create(MyCustomProgramElementForTesting.GetProgramElement());
+            var generatedDocumentFromElement = element.GetDocument();
+            var prefabLuceneDocument = MyCustomProgramElementForTesting.GetLuceneDocument();
+            foreach (var property in MyCustomProgramElementForTesting.GetProgramElement().GetCustomProperties())
+            {
+                Field field1 = generatedDocumentFromElement.GetField(property.Name);
+                Field field2 = prefabLuceneDocument.GetField(property.Name);
+                Assert.IsTrue(field1.StringValue().Equals(field2.StringValue()));
+            }
+        }
+
         [SetUp]
         public static void InitializeExtensionPoints()
         {

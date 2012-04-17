@@ -11,10 +11,9 @@ namespace Sando.Indexer.Documents
 {
     public class CustomDocument : SandoDocument
     {
-        private Type _myType;
-        private static String CustomPrefix = "CustomField++";
+        private Type _myType;        
 
-        public CustomDocument(ProgramElement programElement, Type type)
+        public CustomDocument(CustomProgramElement programElement, Type type)
             : base(programElement)
         {
             this._myType = type;
@@ -22,42 +21,31 @@ namespace Sando.Indexer.Documents
 
         public CustomDocument(Document document, Type type) : base(document)
         {            
-            this._myType = type;
+            this._myType = type;            
         }
 
         protected override void AddDocumentFields()
         {
-            var customElement = programElement;
-            foreach (var property in GetCustomProperties())
+            var customElement = programElement as CustomProgramElement;
+            foreach (var property in customElement.GetCustomProperties())
             {
-                document.Add(new Field(CustomPrefix + property.Name, property.GetValue(customElement,null) as String, Field.Store.YES, Field.Index.ANALYZED));    
+                document.Add(new Field(property.Name, property.GetValue(customElement,null) as String, Field.Store.YES, Field.Index.ANALYZED));    
             }            
         }
 
         protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
         {            
             var parameters = new object[] {name,  definitionLineNumber, fullFilePath, snippet};
-            var programElement = Activator.CreateInstance(_myType,parameters);
-            foreach (var property in GetCustomProperties())
+            var myElement = Activator.CreateInstance(_myType,parameters);
+            foreach (var property in (myElement as CustomProgramElement).GetCustomProperties())
             {
                     Field field = document.GetField(property.Name);
                     Contract.Assert(field != null, "Field " + property.Name + " was not populated");
-                    property.SetValue(programElement, field.StringValue(), null);                
+                    property.SetValue(myElement, field.StringValue(), null);                
             }
-            return programElement as ProgramElement;
+            return myElement as ProgramElement;
         }
 
-        private IEnumerable<PropertyInfo> GetCustomProperties()
-        {
-            var propertyInfos = new List<PropertyInfo>();
-            foreach (var property in _myType.GetProperties())
-            {
-                if (property.DeclaringType != typeof(ProgramElement) && property.DeclaringType != typeof(CustomProgramElement))
-                {
-                    propertyInfos.Add(property);
-                }
-            }
-            return propertyInfos;
-        }
+
     }
 }
