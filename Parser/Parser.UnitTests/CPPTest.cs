@@ -127,7 +127,7 @@ namespace Sando.Parser.UnitTests
 				if(pe is EnumElement)
 				{
 					EnumElement enumElem = (EnumElement)pe;
-					Assert.AreEqual(enumElem.Name, null);
+					Assert.AreEqual(enumElem.Name, "");
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 30);
 					Assert.AreEqual(enumElem.Values, "IDD IDD_PLAYMP3_DIALOG");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
