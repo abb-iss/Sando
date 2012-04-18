@@ -101,35 +101,42 @@ namespace Sando.UI.Monitoring
 			{
 				if(programElement is CppUnresolvedMethodElement)
 				{
-					CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)programElement;
-					foreach(String headerFile in unresolvedMethod.IncludeFileNames)
-					{
-						bool isResolved = false;
-						MethodElement methodElement = null;
-
-						//it's reasonable to assume that the header file path is relative from the cpp file,
-						//as other included files are unlikely to be part of the same project and therefore 
-						//should not need to be parsed
-						string headerPath = System.IO.Path.GetDirectoryName(filePath) + "\\" + headerFile;
-						if(!System.IO.File.Exists(headerPath)) continue;
-
-						fileInfo = new FileInfo(headerPath);
-						isResolved = unresolvedMethod.TryResolve(ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(headerPath), out methodElement);
-						if(isResolved == true)
-						{
-							var document = DocumentFactory.Create(methodElement);
-							_currentIndexer.AddDocument(document);
-							break;
-						}
-					}
+				    SandoDocument document = GetDocumentForCppMethod(programElement,filePath); 
+                    _currentIndexer.AddDocument(document);
 				}
 				else
 				{
 					var document = DocumentFactory.Create(programElement);
-					_currentIndexer.AddDocument(document);
+                    if(document!=null)
+					    _currentIndexer.AddDocument(document);
 				}
 			}
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
 		}
+
+        //TODO - it seems wrong that we have language-specific code in the indexmanager
+        private SandoDocument GetDocumentForCppMethod(ProgramElement programElement, string filePath)
+	    {
+            CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)programElement;
+            foreach (String headerFile in unresolvedMethod.IncludeFileNames)
+            {
+                bool isResolved = false;
+                MethodElement methodElement = null;
+
+                //it's reasonable to assume that the header file path is relative from the cpp file,
+                //as other included files are unlikely to be part of the same project and therefore 
+                //should not need to be parsed
+                string headerPath = System.IO.Path.GetDirectoryName(filePath) + "\\" + headerFile;
+                if (!System.IO.File.Exists(headerPath)) continue;
+
+                var fileInfo = new FileInfo(headerPath);
+                isResolved = unresolvedMethod.TryResolve(ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(headerPath), out methodElement);
+                if (isResolved == true)
+                {
+                    return DocumentFactory.Create(methodElement);
+                }
+            }
+            return null;
+	    }
 	}
 }
