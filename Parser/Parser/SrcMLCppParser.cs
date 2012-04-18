@@ -35,7 +35,7 @@ namespace Sando.Parser
 				//classes have to parsed first
 				ParseClasses(programElements, sourceElements, fileName);
 
-				SrcMLParsingUtils.ParseEnums(programElements, sourceElements, fileName, SnippetSize);
+				ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
 				SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
 				ParseConstructors(programElements, sourceElements, fileName);
 				ParseFunctions(programElements, sourceElements, fileName);
@@ -71,7 +71,7 @@ namespace Sando.Parser
 				int definitionLineNumber = 0;
 				string returnType = String.Empty;
 
-				SrcMLParsingUtils.ParseName(function, out name, out definitionLineNumber);
+				SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber);
 				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
 				XElement type = function.Element(SourceNamespace + "type");
 				if(type != null)
@@ -133,7 +133,7 @@ namespace Sando.Parser
 		{
 			string name;
 			int definitionLineNumber;
-			SrcMLParsingUtils.ParseName(cls, out name, out definitionLineNumber);
+			SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
 
 			AccessLevel accessLevel = AccessLevel.Public; //default
 			XElement accessElement = cls.Element(SourceNamespace + "specifier");
@@ -285,7 +285,71 @@ namespace Sando.Parser
 			return methodElement;
 		}
 
-		
+		public static void ParseCppEnums(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
+		{
+			IEnumerable<XElement> enums =
+				from el in elements.Descendants(SourceNamespace + "enum")
+				select el;
+
+			foreach(XElement enm in enums)
+			{
+				//SrcML doesn't seem to parse access level specifiers for enums, so just pretend they are all public for now
+				AccessLevel accessLevel = AccessLevel.Public;
+
+				string name = "";
+				int definitionLineNumber = 0;
+				if(enm.Element(SourceNamespace + "name") != null)
+				{
+					SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber);
+				}
+				else
+				{
+					//enums in C++ aren't required to have a name
+					name = ProgramElement.UndefinedName;
+					definitionLineNumber = Int32.Parse(enm.Attribute(PositionNamespace + "line").Value);
+				}
+
+				//parse namespace
+				IEnumerable<XElement> ownerNamespaces =
+					from el in enm.Ancestors(SourceNamespace + "decl")
+					where el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+					select el;
+				string namespaceName = String.Empty;
+				foreach(XElement ownerNamespace in ownerNamespaces)
+				{
+					foreach(XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+					{
+						namespaceName += spc.Value + " ";
+					}
+				}
+				namespaceName = namespaceName.TrimEnd();
+
+				//parse values
+				XElement block = enm.Element(SourceNamespace + "block");
+				string values = String.Empty;
+				if(block != null)
+				{
+					IEnumerable<XElement> exprs =
+						from el in block.Descendants(SourceNamespace + "expr")
+						select el;
+					foreach(XElement expr in exprs)
+					{
+						IEnumerable<XElement> enames = expr.Elements(SourceNamespace + "name");
+						foreach(XElement ename in enames)
+						{
+							values += ename.Value + " ";
+						}
+					}
+					values = values.TrimEnd();
+				}
+
+				string fullFilePath = System.IO.Path.GetFullPath(fileName);
+				string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, snippetSize);
+
+				programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
+			}
+		}
+
 		private AccessLevel RetrieveCppAccessLevel(XElement field)
 		{
 			AccessLevel accessLevel = AccessLevel.Protected;

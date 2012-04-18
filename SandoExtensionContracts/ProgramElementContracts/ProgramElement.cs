@@ -14,14 +14,24 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			//Contract.Requires(File.Exists(fullFilePath), "ProgramElement:Constructor - file must exist for the specified path! (path = \"" + fullFilePath + "\")");
 			Contract.Requires(!String.IsNullOrWhiteSpace(snippet), "ProgramElement:Constructor - snippet cannot be null!");
 
-			Name = name;
 			Id = Guid.NewGuid();
 			DefinitionLineNumber = definitionLineNumber;
 			FullFilePath = fullFilePath;
 			Snippet = snippet;
 		}
 
-		public virtual string Name { get; private set; }
+		public static readonly String UndefinedName = "__undefined__";
+
+		public virtual string Name
+		{
+			get
+			{
+				if(Name == UndefinedName) return "";
+				return Name;
+			}
+			private set { Name = value; }
+		}
+
 		public virtual Guid Id { get; private set; }
 		public virtual int DefinitionLineNumber { get; private set; }
 		public virtual string FullFilePath { get; private set; }

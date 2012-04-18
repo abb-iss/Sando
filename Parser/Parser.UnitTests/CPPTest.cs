@@ -112,8 +112,31 @@ namespace Sando.Parser.UnitTests
         {        
             var parser = new SrcMLCppParser();
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\AboutDlg.cpp");
-            Assert.IsTrue(true);
+            Assert.IsNotNull(elements);
         }
+
+		[Test]
+		public void ParseUndefinedNameEnumTest()
+		{
+			bool hasEnum = false;
+			var parser = new SrcMLCppParser();
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\PlayMp3Dlg.h.txt");
+			Assert.IsNotNull(elements);
+			foreach(ProgramElement pe in elements)
+			{
+				if(pe is EnumElement)
+				{
+					EnumElement enumElem = (EnumElement)pe;
+					Assert.AreEqual(enumElem.Name, null);
+					Assert.AreEqual(enumElem.DefinitionLineNumber, 30);
+					Assert.AreEqual(enumElem.Values, "IDD IDD_PLAYMP3_DIALOG");
+					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
+					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\PlayMp3Dlg.h.txt"));
+					hasEnum = true;
+				}
+			}
+			Assert.IsTrue(hasEnum);
+		}
 
 		[Test]
 		public void ParseCppConstructorTest()
