@@ -18,18 +18,21 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			DefinitionLineNumber = definitionLineNumber;
 			FullFilePath = fullFilePath;
 			Snippet = snippet;
+			Name = name;
 		}
 
 		public static readonly String UndefinedName = "__undefined__";
 
+
+		private string _name;
 		public virtual string Name
 		{
 			get
 			{
-				if(Name == UndefinedName) return "";
-				return Name;
+				if(_name == UndefinedName) return "";
+				return _name;
 			}
-			private set { Name = value; }
+			private set { _name = value; }
 		}
 
 		public virtual Guid Id { get; private set; }
