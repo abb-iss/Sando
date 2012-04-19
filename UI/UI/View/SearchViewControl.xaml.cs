@@ -12,6 +12,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Translation;
 using Sando.Indexer.Searching.Criteria;
+using System.Collections.Generic;
 
 namespace Sando.UI.View
 {
@@ -83,11 +84,22 @@ namespace Sando.UI.View
 			}
 		}
 
-		public ProgramElementType ElementType
+		public ObservableCollection<string> ProgramElementTypeList
 		{
 			get
 			{
-				return ElementType;
+				ObservableCollection<string> list = (ObservableCollection<string>)GetValue(ProgramElementTypeListProperty);
+				return list;
+			}
+		}
+
+		public List<string> ProgramElementTypes
+		{
+			get
+			{
+				List<string> list = Enum.GetValues(typeof(ProgramElementType)).Cast<string>().ToList<string>();
+				list.Add("all");
+				return list;
 			}
 		}
 
@@ -100,6 +112,9 @@ namespace Sando.UI.View
 		public static readonly DependencyProperty SearchCriteriaProperty =
 			DependencyProperty.Register("SearchCriteria", typeof(SimpleSearchCriteria), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
+		public static readonly DependencyProperty ProgramElementTypeListProperty =
+			DependencyProperty.Register("ProgramElementTypes", typeof(ObservableCollection<string>), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
     	private SearchManager _searchManager;
 
 
@@ -108,6 +123,7 @@ namespace Sando.UI.View
     		_instance = this;
             this.DataContext = this; //so we can show results
             InitializeComponent();
+
     		_searchManager = new SearchManager(this);
 			SearchResults = new ObservableCollection<CodeSearchResult>();
 			SearchCriteria = new SimpleSearchCriteria();
@@ -142,6 +158,8 @@ namespace Sando.UI.View
 					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
 					// _searchManager.Search(text.Text, SearchCriteria);
 					resultExpander.IsExpanded = true;
+					searchResultListbox.SelectedIndex = 0;
+					searchResultListbox.Focus();
 				}
 			}
     	}
@@ -202,7 +220,8 @@ namespace Sando.UI.View
 			// empty images are empty...
 			if (value == null) { return null; }
 
-			ProgramElement element = (ProgramElement)value;
+			ProgramElement element = value as ProgramElement;
+			if (element == null) { return null; }
 			string accessLevel;
 			PropertyInfo info = element.GetType().GetProperty("AccessLevel");
 			if (info != null)
@@ -261,5 +280,51 @@ namespace Sando.UI.View
 			return value;
 		}
 	}
-#endregion
+	#endregion
+
+	#region NullOrEmptyToVisibility Converter
+	[ValueConversion(typeof(int), typeof(string))]
+	public class NullOrEmptyToVisibility : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if (value == null)
+				return "Hidden";
+			if ((int)value == 0)
+			{
+				return "Hidden";
+			}
+			else
+				return "Visible";
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return value;
+		}
+	}
+	#endregion
+
+	#region NullOrEmptyIsHidden Converter
+	[ValueConversion(typeof(int), typeof(string))]
+	public class NullOrEmptyIsHidden : IValueConverter
+	{
+		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			if (value == null)
+				return "21";
+			if ((int)value == 0)
+			{
+				return "21";
+			}
+			else
+				return "41";
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		{
+			return value;
+		}
+	}
+	#endregion
 }
