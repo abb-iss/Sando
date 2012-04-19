@@ -132,12 +132,22 @@ namespace Sando.UI.View
     	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
     	{
-			SearchCriteria = new SimpleSearchCriteria();
-			SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
-			SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
-			SearchCriteria.SearchByAccessLevel = searchByAccessLevel.IsChecked.HasValue && searchByAccessLevel.IsChecked.Value;
-			SearchCriteria.SearchByProgramElementType = searchByProgramElementType.IsChecked.HasValue && searchByProgramElementType.IsChecked.Value;
-
+			if (searchAccessLevel.SelectedIndex == 0)
+				SearchCriteria.SearchByAccessLevel = false;
+			else
+			{
+				SearchCriteria.SearchByAccessLevel = true;
+				SearchCriteria.AccessLevels.Clear();
+				SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
+			}
+			if (searchElementType.SelectedIndex == 0)
+				SearchCriteria.SearchByProgramElementType = false;
+			else
+			{
+				SearchCriteria.SearchByProgramElementType = true;
+				SearchCriteria.ProgramElementTypes.Clear();
+				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
+			}
 			_searchManager.Search(SearchString, SearchCriteria);
 			resultExpander.IsExpanded = true;
     	}
@@ -149,11 +159,23 @@ namespace Sando.UI.View
 				var text = sender as TextBox;
 				if (text != null)
 				{
-					SearchCriteria = new SimpleSearchCriteria();
-					SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
-					SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
-					SearchCriteria.SearchByAccessLevel = searchByAccessLevel.IsChecked.HasValue && searchByAccessLevel.IsChecked.Value;
-					SearchCriteria.SearchByProgramElementType = searchByProgramElementType.IsChecked.HasValue && searchByProgramElementType.IsChecked.Value;
+					if (searchAccessLevel.SelectedIndex == 0)
+						SearchCriteria.SearchByAccessLevel = false;
+					else
+					{
+						SearchCriteria.SearchByAccessLevel = true;
+						SearchCriteria.AccessLevels.Clear();
+						SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
+					}
+					if (searchElementType.SelectedIndex == 0)
+						SearchCriteria.SearchByProgramElementType = false;
+					else
+					{
+						SearchCriteria.SearchByProgramElementType = true;
+						SearchCriteria.ProgramElementTypes.Clear();
+						SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
+					}
+					
 					
 					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
 					// _searchManager.Search(text.Text, SearchCriteria);
