@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Core.Extensions;
+using Sando.Core.Extensions.Configuration;
+using Sando.Core.Extensions.Logging;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -19,6 +23,7 @@ using Sando.SearchEngine;
 using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
+using log4net;
 
 namespace Sando.UI
 {
@@ -59,8 +64,10 @@ namespace Sando.UI
 
 
     	private SolutionEvents _solutionEvents;
+        private ILog logger;
+        private string pluginDirectory;
 
-    	private static UIPackage MyPackage
+        private static UIPackage MyPackage
 		{
 			get;
 			set;
@@ -122,6 +129,8 @@ namespace Sando.UI
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
+            SetUpLogger();
+
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if ( null != mcs )
@@ -140,18 +149,66 @@ namespace Sando.UI
 				_solutionEvents.AfterClosing += SolutionHasBeenClosed;
 			}
 
-			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
-
-			extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
-
-			extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
-
-			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+			RegisterExtensionPoints();
         }
 
-		private void SolutionHasBeenClosed()
+        private void SetUpLogger()
+        {
+            IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
+            var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
+            pluginDirectory = directoryProvider.GetExtensionDirectory();
+            var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
+            logger = new FileLogger(logFilePath).Logger;
+        }
+
+        private void RegisterExtensionPoints()
+        {
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, new SrcMLCSharpParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
+                                                                   new SrcMLCppParser());
+
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
+            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
+            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+
+            var extensionPointsConfiguration = GetExtensionPointsConfiguration();
+            ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger); 
+
+        }
+
+
+        //TODO - get this from the plugin directory
+        private ExtensionPointsConfiguration GetExtensionPointsConfiguration()
+        {
+            var extensionPointsConfiguration = new ExtensionPointsConfiguration();
+			extensionPointsConfiguration.PluginDirectoryPath = pluginDirectory;
+			extensionPointsConfiguration.ParsersConfiguration = new List<ParserExtensionPointsConfiguration>();
+
+            extensionPointsConfiguration.ParsersConfiguration.Add(
+
+                new ParserExtensionPointsConfiguration()
+                    {
+                        FullClassName = "Sando.ParserExtensions.TextFileParser",
+                        LibraryFileRelativePath = "ParserExtensions.dll",
+                        SupportedFileExtensions = new List<string>() {".txt"},
+                        ProgramElementsConfiguration = new List<BaseExtensionPointConfiguration>()
+                                                           {
+                                                               new BaseExtensionPointConfiguration()
+                                                                   {
+                                                                       FullClassName =
+                                                                           "Sando.ParserExtensions.TextFileElement",
+                                                                       LibraryFileRelativePath =
+                                                                           "ParserExtensions.dll"
+                                                                   }
+                                                           }
+                    }
+                );
+            return extensionPointsConfiguration;
+        }
+
+        private void SolutionHasBeenClosed()
 		{
 		
 			if(_currentMonitor != null)
@@ -176,6 +233,28 @@ namespace Sando.UI
 			return MyPackage;
 		}
 
+
+        private class ExtensionDirectoryProvider
+        {
+            //TODO - there must be a better way to do this?
+
+            private IVsExtensionManager _myMan;
+
+            public ExtensionDirectoryProvider(IVsExtensionManager vsExtensionManager)
+            {
+                _myMan = vsExtensionManager;
+            }
+
+            private IInstalledExtension GetExtension(string identifier)
+            {
+                return _myMan.GetInstalledExtension(identifier);
+            }
+
+            internal string GetExtensionDirectory()
+            {                
+                return GetExtension("7e03caf3-06ed-4ff5-962a-effa1fb2f383").InstallPath;
+            }
+        }
 
 
     	#endregion

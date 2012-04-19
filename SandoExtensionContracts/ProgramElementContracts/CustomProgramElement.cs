@@ -8,6 +8,10 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
     public abstract class CustomProgramElement: ProgramElement
     {
+        public const string CustomTypeTag = "CustomType";
+
+        public String CustomType { get { return GetType().AssemblyQualifiedName; }  }
+
         protected CustomProgramElement(string name, int definitionLineNumber, string fullFilePath, string snippet) : base(name, definitionLineNumber, fullFilePath, snippet)
         {
         }
@@ -26,8 +30,14 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
                 {
                     propertyInfos.Add(property);
                 }
+                else if (property.Name.Equals(CustomTypeTag))
+                {
+                    propertyInfos.Add(property);
+                }
             }
             return propertyInfos;
         }
+
+        public abstract string GetName();
     }
 }

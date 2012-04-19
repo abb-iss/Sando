@@ -39,9 +39,12 @@ namespace Sando.Indexer.Documents
             var myElement = Activator.CreateInstance(_myType,parameters);
             foreach (var property in (myElement as CustomProgramElement).GetCustomProperties())
             {
+                if (!property.Name.Equals(CustomProgramElement.CustomTypeTag))
+                {
                     Field field = document.GetField(property.Name);
                     Contract.Assert(field != null, "Field " + property.Name + " was not populated");
-                    property.SetValue(myElement, field.StringValue(), null);                
+                    property.SetValue(myElement, field.StringValue(), null);
+                }
             }
             return myElement as ProgramElement;
         }

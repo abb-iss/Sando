@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using Lucene.Net.Documents;
+using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 
@@ -32,9 +34,23 @@ namespace Sando.Indexer.Searching
 					return new PropertyDocument(document).ReadProgramElementFromDocument();
 				case ProgramElementType.MethodPrototype:
 					return new MethodPrototypeDocument(document).ReadProgramElementFromDocument();
+                case ProgramElementType.Custom:
+                    return new CustomDocument(document, GetTypeForCustom(document)).ReadProgramElementFromDocument();
 				default:
 					return null;
 			}
 		}
+
+	    private static Type GetTypeForCustom(Document document)
+	    {
+            try
+            {
+                return Type.GetType(document.GetField(CustomProgramElement.CustomTypeTag).StringValue());
+
+            }catch(Exception e)
+            {
+                return typeof (CustomProgramElement);
+            }
+	    }
 	}
 }

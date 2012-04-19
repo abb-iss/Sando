@@ -41,5 +41,10 @@ namespace Sando.Indexer.UnitTests.Documents
             element.C = "C's value";
             return element;
         }
+
+        public override string GetName()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
