@@ -139,6 +139,14 @@ namespace Sando.Parser.UnitTests
 		}
 
 		[Test]
+		public void ParseAnotherEnumTest()
+		{
+			var parser = new SrcMLCppParser();
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\xmlMatchedTagsHighlighter.cpp");
+			Assert.IsNotNull(elements);
+		}
+
+		[Test]
 		public void ParseCppConstructorTest()
 		{
 			bool hasConstructor = false;

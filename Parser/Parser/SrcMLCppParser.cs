@@ -312,7 +312,9 @@ namespace Sando.Parser
 				//parse namespace
 				IEnumerable<XElement> ownerNamespaces =
 					from el in enm.Ancestors(SourceNamespace + "decl")
-					where el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+					where el.Element(SourceNamespace + "type") != null &&
+							el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
+							el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
 					select el;
 				string namespaceName = String.Empty;
 				foreach(XElement ownerNamespace in ownerNamespaces)
@@ -323,6 +325,7 @@ namespace Sando.Parser
 					}
 				}
 				namespaceName = namespaceName.TrimEnd();
+				
 
 				//parse values
 				XElement block = enm.Element(SourceNamespace + "block");
