@@ -6,6 +6,7 @@ using Lucene.Net.Documents;
 using NUnit.Framework;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Parser;
@@ -55,9 +56,12 @@ namespace Sando.Indexer.UnitTests.Documents
             var prefabLuceneDocument = MyCustomProgramElementForTesting.GetLuceneDocument();
             foreach (var property in MyCustomProgramElementForTesting.GetProgramElement().GetCustomProperties())
             {
-                Field field1 = generatedDocumentFromElement.GetField(property.Name);
-                Field field2 = prefabLuceneDocument.GetField(property.Name);
-                Assert.IsTrue(field1.StringValue().Equals(field2.StringValue()));
+                if (!property.Name.Equals(CustomProgramElement.CustomTypeTag))
+                {
+                    Field field1 = generatedDocumentFromElement.GetField(property.Name);
+                    Field field2 = prefabLuceneDocument.GetField(property.Name);
+                    Assert.IsTrue(field1.StringValue().Equals(field2.StringValue()));
+                }
             }
         }
 
