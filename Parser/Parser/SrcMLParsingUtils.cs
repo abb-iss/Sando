@@ -101,16 +101,19 @@ namespace Sando.Parser
 
 		public static string ParseBody(XElement function)
 		{
-			XElement block = function.Element(SourceNamespace + "block");
-			IEnumerable<XElement> bodyNames =
-				from el in block.Descendants(SourceNamespace + "name")
-				select el;
 			string body = String.Empty;
-			foreach(XElement elem in bodyNames)
+			XElement block = function.Element(SourceNamespace + "block");
+			if(block != null)
 			{
-				body += String.Join(" ", ExtensionPointsRepository.Instance.GetWordSplitterImplementation().ExtractWords(elem.Value)) + " ";
+				IEnumerable<XElement> bodyNames =
+					from el in block.Descendants(SourceNamespace + "name")
+					select el;
+				foreach(XElement elem in bodyNames)
+				{
+					body += String.Join(" ", ExtensionPointsRepository.Instance.GetWordSplitterImplementation().ExtractWords(elem.Value)) + " ";
+				}
+				body = body.TrimEnd();
 			}
-			body = body.TrimEnd();
 			return body;
 		}
 

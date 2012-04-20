@@ -4,6 +4,7 @@ using System.Threading;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using UnitTestHelpers;
+using System.Diagnostics;
 
 namespace Sando.Parser.UnitTests
 {
@@ -144,6 +145,36 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCppParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\xmlMatchedTagsHighlighter.cpp");
 			Assert.IsNotNull(elements);
+		}
+
+		[Test]
+		public void TrickyFileTest()
+		{
+			var parser = new SrcMLCppParser();
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Parameters.h");
+			Assert.IsNotNull(elements);
+		}
+
+		[Test]
+		public void WeirdStructTest()
+		{	
+			//Note: may not want to create this in mydocuments.... 
+			//create a test file
+			String WeirdStruct = "struct LangMenuItem { LangType _langType; int	_cmdID; generic_string _langName; " +
+									"LangMenuItem(LangType lt, int cmdID = 0, generic_string langName = TEXT(\"\")): " +
+									"_langType(lt), _cmdID(cmdID), _langName(langName){};};";
+			String WeirdStructFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HelloWorld1.cs";
+			System.IO.File.WriteAllText(WeirdStructFile, WeirdStruct);
+
+			var parser = new SrcMLCppParser();
+			var elements = parser.Parse(WeirdStructFile);
+			Assert.IsNotNull(elements);
+
+			//TODO: still figuring out what to do about structs
+
+
+			//delete file
+			System.IO.File.Delete(WeirdStructFile);
 		}
 
 		[Test]

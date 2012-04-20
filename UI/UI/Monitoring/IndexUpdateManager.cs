@@ -102,7 +102,8 @@ namespace Sando.UI.Monitoring
 				if(programElement is CppUnresolvedMethodElement)
 				{
 				    SandoDocument document = GetDocumentForCppMethod(programElement,filePath); 
-                    _currentIndexer.AddDocument(document);
+					if(document!=null)
+						_currentIndexer.AddDocument(document);
 				}
 				else
 				{
@@ -128,6 +129,8 @@ namespace Sando.UI.Monitoring
                 //should not need to be parsed
                 string headerPath = System.IO.Path.GetDirectoryName(filePath) + "\\" + headerFile;
                 if (!System.IO.File.Exists(headerPath)) continue;
+
+				Debug.WriteLine("*** parsing header = " + headerPath);
 
                 var fileInfo = new FileInfo(headerPath);
                 isResolved = unresolvedMethod.TryResolve(ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(headerPath), out methodElement);
