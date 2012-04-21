@@ -166,12 +166,29 @@ namespace Sando.Parser.UnitTests
 			String WeirdStructFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HelloWorld1.cs";
 			System.IO.File.WriteAllText(WeirdStructFile, WeirdStruct);
 
+            bool hasStruct = false;
+            Guid structId = Guid.Empty;
 			var parser = new SrcMLCppParser();
 			var elements = parser.Parse(WeirdStructFile);
-			Assert.IsNotNull(elements);
+			Assert.IsTrue(elements.Count == 2);
 
-			//TODO: still figuring out what to do about structs
-
+            foreach (ProgramElement pe in elements)
+            {
+                if (pe is StructElement)
+                {
+                    StructElement structElement = (StructElement)pe;
+                    Assert.IsNotNull(structElement);
+                    Assert.AreEqual(structElement.Name, "LangMenuItem");
+                    structId = structElement.Id;
+                    hasStruct = true;
+                }
+                else if (pe is MethodElement)
+                {
+                    MethodElement methodElement = (MethodElement)pe;
+                    Assert.AreEqual(methodElement.ClassId, structId);
+                }
+            }
+            Assert.IsTrue(hasStruct);
 
 			//delete file
 			System.IO.File.Delete(WeirdStructFile);

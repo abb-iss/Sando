@@ -32,8 +32,9 @@ namespace Sando.Parser
 			{
 				XElement sourceElements = XElement.Parse(srcml);
 
-				//classes have to parsed first
+				//classes and structs have to parsed first
 				ParseClasses(programElements, sourceElements, fileName);
+                ParseStructs(programElements, sourceElements, fileName);
 
 				ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
 				SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
@@ -125,17 +126,28 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cls in classes)
 			{
-				programElements.Add(ParseClass(cls, fileName));
+				programElements.Add((ClassElement)ParseClassOrStruct(cls, fileName, false));
 			}
 		}
 
-		private ClassElement ParseClass(XElement cls, string fileName)
+        private void ParseStructs(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
+            IEnumerable<XElement> classes =
+                from el in elements.Descendants(SourceNamespace + "struct")
+                select el;
+            foreach (XElement cls in classes)
+            {
+                programElements.Add((StructElement)ParseClassOrStruct(cls, fileName, true));
+            }
+        }
+
+		private ProgramElement ParseClassOrStruct(XElement cls, string fileName, bool parseStruct)
 		{
 			string name;
 			int definitionLineNumber;
 			SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
 
-			AccessLevel accessLevel = AccessLevel.Public; //default
+            AccessLevel accessLevel = AccessLevel.Public; 
 			XElement accessElement = cls.Element(SourceNamespace + "specifier");
 			if(accessElement != null)
 			{
@@ -181,7 +193,16 @@ namespace Sando.Parser
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty);
+            if(parseStruct)
+            {
+                return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName,
+                    extendedClasses, implementedInterfaces, String.Empty);
+            }
+            else
+            {
+                return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName,
+                    extendedClasses, implementedInterfaces, String.Empty);
+            }
 		}
 
 		private void ParseConstructors(List<ProgramElement> programElements, XElement elements, string fileName)
@@ -274,9 +295,20 @@ namespace Sando.Parser
 				snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
 
+                Guid classId = Guid.Empty;
+                string className = String.Empty;
 				ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(function, programElements);
-				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
-				string className = classElement != null ? classElement.Name : String.Empty;
+                StructElement structElement = RetrieveStructElement(function, programElements);
+                if (classElement != null)
+                {
+                    classId = classElement.Id;
+                    className = classElement.Name;
+                }
+                else if (structElement != null)
+                {
+                    classId = structElement.Id;
+                    className = structElement.Name;
+                }
 
 				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, 
 													classId, className, String.Empty, isConstructor);
@@ -352,6 +384,26 @@ namespace Sando.Parser
 				programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
 			}
 		}
+
+        public static StructElement RetrieveStructElement(XElement field, List<ProgramElement> programElements)
+        {
+            IEnumerable<XElement> ownerStructs =
+                from el in field.Ancestors(SourceNamespace + "struct")
+                select el;
+            if (ownerStructs.Count() > 0)
+            {
+                XElement name = ownerStructs.First().Element(SourceNamespace + "name");
+                string ownerStructName = name.Value;
+                //now find the StructElement object corresponding to ownerClassName, since those should have been gen'd by now
+                ProgramElement ownerStruct = programElements.Find(element => element is StructElement && ((StructElement)element).Name == ownerStructName);
+                return ownerStruct as StructElement;
+            }
+            else
+            {
+                //field is not contained by a class
+                return null;
+            }
+        }
 
 		private AccessLevel RetrieveCppAccessLevel(XElement field)
 		{

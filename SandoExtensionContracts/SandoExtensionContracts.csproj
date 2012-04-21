@@ -87,6 +87,7 @@
     <Compile Include="ProgramElementContracts\AccessLevel.cs" />
     <Compile Include="ProgramElementContracts\ClassElement.cs" />
     <Compile Include="ProgramElementContracts\CommentElement.cs" />
+    <Compile Include="ProgramElementContracts\StructElement.cs" />
     <Compile Include="ProgramElementContracts\CppUnresolvedMethodElement.cs" />
     <Compile Include="ProgramElementContracts\CustomProgramElement.cs" />
     <Compile Include="ProgramElementContracts\DocCommentElement.cs" />

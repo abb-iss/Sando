@@ -3,6 +3,7 @@
 	public enum ProgramElementType
 	{
 		Class,
+        Struct,
 		Comment,
 		DocComment,
 		Enum,
