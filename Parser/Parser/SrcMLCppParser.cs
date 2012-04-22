@@ -169,7 +169,7 @@ namespace Sando.Parser
 			}
 			namespaceName = namespaceName.TrimEnd();
 
-			//parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
+			//parse extended classes 
 			string extendedClasses = String.Empty;
 			XElement super = cls.Element(SourceNamespace + "super");
 			if(super != null)
@@ -187,16 +187,13 @@ namespace Sando.Parser
 					extendedClasses = extendedClasses.TrimEnd();
 				}
 			}
-			//interfaces are treated as extended classes in SrcML for now
-			string implementedInterfaces = String.Empty;
 
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
 			string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
             if(parseStruct)
             {
-                return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName,
-                    extendedClasses, implementedInterfaces, String.Empty);
+                return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, String.Empty);
             }
             else
             {
