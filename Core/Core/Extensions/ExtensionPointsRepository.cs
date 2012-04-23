@@ -67,12 +67,25 @@ namespace Sando.Core.Extensions
 			this.queryWeightsSupplier = queryWeightsSupplier;
 		}
 
+		public IQueryRewriter GetQueryRewriterImplementation()
+		{
+			return queryRewriter;
+		}
+
+		public void RegisterQueryRewriterImplementation(IQueryRewriter queryRewriter)
+		{
+			Contract.Requires(queryRewriter != null, "ExtensionPointsManager:RegisterQueryRewriterImplementation - queryRewriter cannot be null!");
+
+			this.queryRewriter = queryRewriter;
+		}
+
 		public void ClearRepository()
 		{
 			parsers.Clear();
 			wordSplitter = null;
 			resultsReorderer = null;
 			queryWeightsSupplier = null;
+			queryRewriter = null;
 		}
 
 		public static ExtensionPointsRepository Instance
@@ -96,5 +109,6 @@ namespace Sando.Core.Extensions
 		private IWordSplitter wordSplitter;
 		private IResultsReorderer resultsReorderer;
 		private IQueryWeightsSupplier queryWeightsSupplier;
+		private IQueryRewriter queryRewriter;
 	}
 }

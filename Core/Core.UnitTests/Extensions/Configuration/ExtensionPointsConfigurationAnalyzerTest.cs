@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using log4net;
@@ -91,6 +92,22 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		}
 
 		[Test]
+		public void FindAndRegisterValidExtensionPoints_RegistersUsableCustomQueryRewriter()
+		{
+			CreateExtensionPointsConfiguration(addValidQueryRewriterConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+			IQueryRewriter queryRewriter = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation();
+			Assert.IsNotNull(queryRewriter, "Query rewriter should be registered!");
+			Assert.AreEqual(queryRewriter.GetType().FullName, "Sando.TestExtensionPoints.TestQueryRewriter", "Invalid query rewriter returned!");
+
+			string query = null;
+			Assert.DoesNotThrow(() => query = queryRewriter.RewriteQuery("Two Keywords"));
+			Assert.IsFalse(String.IsNullOrWhiteSpace(query), "Invalid results from RewriteQuery method!");
+			Assert.AreEqual(query, "two keywords", "Query is invalid!");
+		}
+
+		[Test]
 		public void FindAndRegisterValidExtensionPoints_RegistersCustomParsers()
 		{
 			CreateExtensionPointsConfiguration(addValidParserConfigurations: true);
@@ -170,6 +187,20 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 		}
 
 		[Test]
+		public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomQueryRewriterConfiguration()
+		{
+			CreateExtensionPointsConfiguration(addInvalidQueryRewriterConfiguration: true);
+			ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+			IQueryRewriter queryRewriter = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation();
+			Assert.IsNotNull(queryRewriter, "Default query rewriter should be used!");
+			Assert.AreEqual(queryRewriter.GetType().FullName, "Sando.Indexer.Searching.QueryRewriter", "Invalid query rewriter returned!");
+
+			string logFileContent = File.ReadAllText(logFilePath);
+			Assert.IsTrue(logFileContent.Contains("Invalid query rewriter configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid word splitter configuration!");
+		}
+
+		[Test]
 		public void FindAndRegisterValidExtensionPoints_DoesNotRegisterInvalidExtensionPoints()
 		{
 			CreateExtensionPointsConfiguration(addInvalidExtensionPoints: true);
@@ -194,6 +225,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			Assert.IsTrue(logFileContent.Contains("Could not load file or assembly 'file:///" + pluginDirectory + "NonExistingWordSplitter.dll' or one of its dependencies"), "Log file should contain information about errors occurred during the assembly loading!");
 			Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingResultsReorderer"), "Log file should contain information about errors occurred during the assembly loading!");
 			Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingQueryWeightsSupplier"), "Log file should contain information about errors occurred during the assembly loading!");
+			Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingQueryRewriter"), "Log file should contain information about errors occurred during the assembly loading!");
 		}
 
 		[SetUp]
@@ -233,6 +265,8 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 			bool addInvalidResultsReordererConfiguration = false,
 			bool addValidQueryWeightsSupplierConfiguration = false,
 			bool addInvalidQueryWeightsSupplierConfiguration = false,
+			bool addValidQueryRewriterConfiguration = false,
+			bool addInvalidQueryRewriterConfiguration = false,
 			bool addInvalidExtensionPoints = false)
 		{
 			extensionPointsConfiguration = new ExtensionPointsConfiguration();
@@ -360,6 +394,26 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 					};
 			}
 
+			if(addValidQueryRewriterConfiguration)
+			{
+				extensionPointsConfiguration.QueryRewriterConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "Sando.TestExtensionPoints.TestQueryRewriter",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
+					};
+			}
+
+			if(addInvalidQueryRewriterConfiguration)
+			{
+				extensionPointsConfiguration.QueryRewriterConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
+					};
+			}
+
 			if(addInvalidExtensionPoints)
 			{
 				extensionPointsConfiguration.ParsersConfiguration.AddRange(
@@ -411,6 +465,13 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 					new BaseExtensionPointConfiguration()
 					{
 						FullClassName = "Sando.TestExtensionPoints.NonExistingQueryWeightsSupplier",
+						LibraryFileRelativePath = "TestExtensionPoints.dll"
+					};
+
+				extensionPointsConfiguration.QueryRewriterConfiguration =
+					new BaseExtensionPointConfiguration()
+					{
+						FullClassName = "Sando.TestExtensionPoints.NonExistingQueryRewriter",
 						LibraryFileRelativePath = "TestExtensionPoints.dll"
 					};
 			}

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestQueryRewriter.cs" />
     <Compile Include="TestQueryWeightsSupplier.cs" />
     <Compile Include="TestCppParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

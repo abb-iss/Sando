@@ -23,6 +23,7 @@ namespace Sando.Core.Extensions.Configuration
 			FindAndRegisterValidWordSplitterExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidResultsReordererExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidQueryWeightsSupplierExtensionPoints(extensionPointsConfiguration, logger);
+			FindAndRegisterValidQueryRewriterExtensionPoints(extensionPointsConfiguration, logger);
 			logger.Info("-=#|#=- Analyzing configuration finished -=#|#=-");
 		}
 
@@ -36,6 +37,8 @@ namespace Sando.Core.Extensions.Configuration
 				RemoveInvalidResultsReordererConfiguration(extensionPointsConfiguration, logger);
 			if(extensionPointsConfiguration.QueryWeightsSupplierConfiguration != null)
 				RemoveInvalidQueryWeightsSupplierConfiguration(extensionPointsConfiguration, logger);
+			if(extensionPointsConfiguration.QueryRewriterConfiguration != null)
+				RemoveInvalidQueryRewriterConfiguration(extensionPointsConfiguration, logger);
 		}
 
 		private static void RemoveInvalidParserConfigurations(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
@@ -74,6 +77,15 @@ namespace Sando.Core.Extensions.Configuration
 			{
 				extensionPointsConfiguration.QueryWeightsSupplierConfiguration = null;
 				logger.Info(String.Format("Invalid query weights supplier configuration found - it will be omitted during registration process."));
+			}
+		}
+
+		private static void RemoveInvalidQueryRewriterConfiguration(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+		{
+			if(IsConfigurationInvalid(extensionPointsConfiguration.QueryRewriterConfiguration))
+			{
+				extensionPointsConfiguration.QueryRewriterConfiguration = null;
+				logger.Info(String.Format("Invalid query rewriter configuration found - it will be omitted during registration process."));
 			}
 		}
 
@@ -164,6 +176,27 @@ namespace Sando.Core.Extensions.Configuration
 				}
 			}
 			logger.Info("Reading query weights supplier extension point configuration finished");
+		}
+
+		private static void FindAndRegisterValidQueryRewriterExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+		{
+			logger.Info("Reading query rewriter extension point configuration started");
+			BaseExtensionPointConfiguration queryRewriterConfiguration = extensionPointsConfiguration.QueryRewriterConfiguration;
+			if(queryRewriterConfiguration != null)
+			{
+				try
+				{
+					logger.Info(String.Format("Query rewriter found: {0}, from assembly: {1}", queryRewriterConfiguration.FullClassName, queryRewriterConfiguration.LibraryFileRelativePath));
+					IQueryRewriter queryRewriter = CreateInstance<IQueryRewriter>(extensionPointsConfiguration.PluginDirectoryPath, queryRewriterConfiguration.LibraryFileRelativePath, queryRewriterConfiguration.FullClassName);
+					ExtensionPointsRepository.Instance.RegisterQueryRewriterImplementation(queryRewriter);
+					logger.Info(String.Format("Query rewriter {0} successfully registered.", queryRewriterConfiguration.FullClassName));
+				}
+				catch(Exception ex)
+				{
+					logger.Error(String.Format("Query rewriter {0} cannot be registered: {1}", queryRewriterConfiguration.FullClassName, ex.Message));
+				}
+			}
+			logger.Info("Reading query rewriter extension point configuration finished");
 		}
 
 		private static Assembly LoadAssembly(string pluginDirectoryPath, string libraryFileRelativePath)

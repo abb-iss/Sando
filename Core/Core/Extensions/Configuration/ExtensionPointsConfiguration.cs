@@ -9,5 +9,6 @@ namespace Sando.Core.Extensions.Configuration
 		public BaseExtensionPointConfiguration WordSplitterConfiguration { get; set; }
 		public BaseExtensionPointConfiguration ResultsReordererConfiguration { get; set; }
 		public BaseExtensionPointConfiguration QueryWeightsSupplierConfiguration { get; set; }
+		public BaseExtensionPointConfiguration QueryRewriterConfiguration { get; set; }
 	}
 }

@@ -100,6 +100,7 @@
     <Compile Include="ProgramElementContracts\ProgramElementType.cs" />
     <Compile Include="ProgramElementContracts\PropertyElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryContracts\IQueryRewriter.cs" />
     <Compile Include="QueryContracts\IQueryWeightsSupplier.cs" />
     <Compile Include="ResultsReordererContracts\CodeSearchResult.cs" />
     <Compile Include="ResultsReordererContracts\IResultsReorderer.cs" />

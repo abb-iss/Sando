@@ -33,6 +33,8 @@ namespace UnitTestHelpers
 			extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
 
 			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+
+			extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
 		}
     }
 }
