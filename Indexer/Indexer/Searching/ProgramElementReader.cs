@@ -48,8 +48,8 @@ namespace Sando.Indexer.Searching
             try
             {
                 return Type.GetType(document.GetField(CustomProgramElement.CustomTypeTag).StringValue());
-
-            }catch(Exception e)
+            }
+			catch
             {
                 return typeof (CustomProgramElement);
             }
