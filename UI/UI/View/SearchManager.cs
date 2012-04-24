@@ -74,7 +74,7 @@ public  class SearchManager
 					searchCriteria = new SimpleSearchCriteria();
 				var criteria = searchCriteria;
                 searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
-			    List<string> searchTerms = searchString.Split(' ').ToList();
+			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
                 criteria.SearchTerms = new SortedSet<string>(searchTerms);
 				return criteria;
 			}
