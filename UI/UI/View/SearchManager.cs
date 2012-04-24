@@ -39,7 +39,7 @@ public  class SearchManager
 			public void Search(String searchString, SimpleSearchCriteria searchCriteria = null)
 			{
 				if (!string.IsNullOrEmpty(searchString))
-				{
+				{				    
 					var myPackage = UIPackage.GetInstance();
 					_currentSearcher = GetSearcher(myPackage);
 					IQueryable<CodeSearchResult> results = _currentSearcher.Search(GetCriteria(searchString, searchCriteria)).AsQueryable();
@@ -73,7 +73,9 @@ public  class SearchManager
 				if (searchCriteria == null)
 					searchCriteria = new SimpleSearchCriteria();
 				var criteria = searchCriteria;
-				criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
+                searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
+			    List<string> searchTerms = searchString.Split(' ').ToList();
+                criteria.SearchTerms = new SortedSet<string>(searchTerms);
 				return criteria;
 			}
 			#endregion
