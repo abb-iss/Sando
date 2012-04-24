@@ -42,6 +42,10 @@ namespace Sando.Indexer.Documents
 			{
 				return new PropertyDocument(programElement as PropertyElement);
 			}
+            if (programElement as StructElement != null)
+            {
+                return new StructDocument(programElement as StructElement);
+            }
             if(programElement as CustomProgramElement !=null)
             {
                 return new CustomDocument(programElement as CustomProgramElement, programElement.GetType());
@@ -51,4 +55,6 @@ namespace Sando.Indexer.Documents
 			return null;
 		}
 	}
+
+  
 }

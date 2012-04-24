@@ -26,6 +26,22 @@ namespace Sando.Indexer.UnitTests
 			}
 		}
 
+        [Test]
+        public void DocumentFactory_CreateReturnsStructDocumentForValidStructElement()
+        {
+            try
+            {
+                ProgramElement programElement = SampleProgramElementFactory.GetSampleStructElement();
+                SandoDocument sandoDocument = DocumentFactory.Create(programElement);
+                Assert.True(sandoDocument != null, "Null returned from DocumentFactory!");
+                Assert.True(sandoDocument is StructDocument, "StructDocument must be returned for StructElement object!");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message + ". " + ex.StackTrace);
+            }
+        }
+
 		[Test]
 		public void DocumentFactory_CreateReturnsCommentDocumentForValidCommentElement()
 		{

@@ -104,5 +104,20 @@ namespace Sando.UnitTestHelpers
 		{
 			return new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId), className, modifiers);
 		}
+
+        public static ProgramElement GetSampleStructElement(
+            AccessLevel accessLevel = AccessLevel.Public,
+            int definitionLineNumber = 11,
+            string extendedClasses = "SimpleClassBase",
+            string fullFilePath = "C:/Projects/SampleClass.cs",
+            string implementedInterfaces = "IDisposable",
+            string name = "SimpleClassName",
+            string namespaceName = "Sando.Indexer.UnitTests",
+            string snippet = "public class SimpleClass\n{private int field1;\nprotected void method(){}\n}",
+            string modifiers = ""
+        )
+        {
+            return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, modifiers);
+        }
 	}
 }
