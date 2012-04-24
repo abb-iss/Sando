@@ -21,6 +21,7 @@ namespace Sando.Parser
 		
     	private const string Src2SrcmlExe = "\\src2srcml.exe";
     	private string SrcMLFolderPath;
+		private volatile bool _srcMLExecComplete = false;
 
 		public LanguageEnum Language { get; set; }
 
@@ -108,9 +109,7 @@ namespace Sando.Parser
 
 					exeProcess.WaitForExit();
 
-					lock(sOut) {
-						readInputThread.Abort();
-					}
+					_srcMLExecComplete = true;
 					readInputThread.Join();
 					if(!sOut.EndOfStream) srcML += sOut.ReadToEnd();
 					sOut.Close();
@@ -132,18 +131,16 @@ namespace Sando.Parser
 
 		private void _readInput_DoWork(System.IO.StreamReader sOut, out string srcML)
 		{
+			bool keepGoing = true;
+
 			srcML = "";
-			try
+			while(keepGoing)
 			{
-				while(true)
-				{
-					lock(sOut)
-					{
-						srcML += sOut.ReadToEnd();
-					}
-				}
+				Thread.Yield();
+				if(_srcMLExecComplete) keepGoing = false;
+				srcML += sOut.ReadToEnd();
 			}
-			catch(ThreadAbortException) { }
+			
 		}
 
 		private string AdaptCSharpToJavaParsing(string inputCode)

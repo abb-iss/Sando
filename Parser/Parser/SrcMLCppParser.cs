@@ -36,8 +36,8 @@ namespace Sando.Parser
 				ParseClasses(programElements, sourceElements, fileName);
                 ParseStructs(programElements, sourceElements, fileName);
 
-				ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
 				SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
+				ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
 				ParseConstructors(programElements, sourceElements, fileName);
 				ParseFunctions(programElements, sourceElements, fileName);
 				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
@@ -52,7 +52,10 @@ namespace Sando.Parser
 			IEnumerable<XElement> functions =
 				from el in sourceElements.Descendants(SourceNamespace + "function_decl")
 				select el;
-			ParseCppFunctionPrototype(programElements, functions, fileName, false);
+			foreach(XElement function in functions)
+			{
+				programElements.Add(ParseCppFunctionPrototype(function, fileName, false));
+			}
 		}
 
 		private void ParseCppConstructorPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)
@@ -60,43 +63,42 @@ namespace Sando.Parser
 			IEnumerable<XElement> functions =
 				from el in sourceElements.Descendants(SourceNamespace + "constructor_decl")
 				select el;
-			ParseCppFunctionPrototype(programElements, functions, fileName, true);
-		}
-
-		private void ParseCppFunctionPrototype(List<ProgramElement> programElements, IEnumerable<XElement> functions, 
-														string fileName, bool isConstructor)
-		{
 			foreach(XElement function in functions)
 			{
-				string name = String.Empty;
-				int definitionLineNumber = 0;
-				string returnType = String.Empty;
-
-				SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber);
-				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
-				XElement type = function.Element(SourceNamespace + "type");
-				if(type != null)
-				{
-					XElement typeName = type.Element(SourceNamespace + "name");
-					returnType = typeName.Value;
-				}
-
-				XElement paramlist = function.Element(SourceNamespace + "parameter_list");
-				IEnumerable<XElement> argumentElements =
-					from el in paramlist.Descendants(SourceNamespace + "name")
-					select el;
-				string arguments = String.Empty;
-				foreach(XElement elem in argumentElements)
-				{
-					arguments += elem.Value + " ";
-				}
-				arguments = arguments.TrimEnd();
-
-				string fullFilePath = System.IO.Path.GetFullPath(fileName);
-				string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
-
-				programElements.Add(new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor));
+				programElements.Add(ParseCppFunctionPrototype(function, fileName, true));
 			}
+		}
+
+		private MethodPrototypeElement ParseCppFunctionPrototype(XElement function, string fileName, bool isConstructor)
+		{
+			string name = String.Empty;
+			int definitionLineNumber = 0;
+			string returnType = String.Empty;
+
+			SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber);
+			AccessLevel accessLevel = RetrieveCppAccessLevel(function);
+			XElement type = function.Element(SourceNamespace + "type");
+			if(type != null)
+			{
+				XElement typeName = type.Element(SourceNamespace + "name");
+				returnType = typeName.Value;
+			}
+
+			XElement paramlist = function.Element(SourceNamespace + "parameter_list");
+			IEnumerable<XElement> argumentElements =
+				from el in paramlist.Descendants(SourceNamespace + "name")
+				select el;
+			string arguments = String.Empty;
+			foreach(XElement elem in argumentElements)
+			{
+				arguments += elem.Value + " ";
+			}
+			arguments = arguments.TrimEnd();
+
+			string fullFilePath = System.IO.Path.GetFullPath(fileName);
+			string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+
+			return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor);
 		}
 
 
