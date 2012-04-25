@@ -10,6 +10,7 @@ using Sando.Indexer.IndexState;
 using Sando.Parser;
 using Sando.Core.Extensions;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Sando.UI.Monitoring
 {
@@ -97,16 +98,25 @@ namespace Sando.UI.Monitoring
 				indexFileState.LastIndexingDate = lastModificationDate;
 			FileInfo fileInfo = new FileInfo(filePath);
 			var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath);
+
+            var unresolvedElements = parsed.FindAll(pe => pe is CppUnresolvedMethodElement);
+            if (unresolvedElements.Count > 0)
+            {
+                List<ProgramElement> headerElements = GenerateCppHeaderElements(filePath, unresolvedElements);
+
+                //now try to resolve
+                foreach (CppUnresolvedMethodElement unresolvedElement in unresolvedElements)
+                {
+                    SandoDocument document = GetDocumentForUnresolvedCppMethod(unresolvedElement, headerElements);
+                    if (document != null)
+                        _currentIndexer.AddDocument(document);
+                }
+            }
+
 			foreach(var programElement in parsed)
 			{
-				if(programElement is CppUnresolvedMethodElement)
-				{
-				    SandoDocument document = GetDocumentForCppMethod(programElement,filePath); 
-					if(document!=null)
-						_currentIndexer.AddDocument(document);
-				}
-				else
-				{
+				if(! (programElement is CppUnresolvedMethodElement))
+                {
 					var document = DocumentFactory.Create(programElement);
                     if(document!=null)
 					    _currentIndexer.AddDocument(document);
@@ -115,29 +125,36 @@ namespace Sando.UI.Monitoring
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
 		}
 
-        //TODO - it seems wrong that we have language-specific code in the indexmanager
-        private SandoDocument GetDocumentForCppMethod(ProgramElement programElement, string filePath)
-	    {
-            CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)programElement;
-            foreach (String headerFile in unresolvedMethod.IncludeFileNames)
-            {
-                bool isResolved = false;
-                MethodElement methodElement = null;
+        private List<ProgramElement> GenerateCppHeaderElements(string filePath, List<ProgramElement> unresolvedElements)
+        {
+            List<ProgramElement> headerElements = new List<ProgramElement>();
 
+            //first parse all the included header files. they are the same in all the unresolved elements
+            CppUnresolvedMethodElement firstUnresolved = (CppUnresolvedMethodElement)unresolvedElements[0];
+            foreach (String headerFile in firstUnresolved.IncludeFileNames)
+            {
                 //it's reasonable to assume that the header file path is relative from the cpp file,
                 //as other included files are unlikely to be part of the same project and therefore 
                 //should not need to be parsed
                 string headerPath = System.IO.Path.GetDirectoryName(filePath) + "\\" + headerFile;
                 if (!System.IO.File.Exists(headerPath)) continue;
+                Debug.WriteLine("*** parsing header = " + headerPath);
+                var headerInfo = new FileInfo(headerPath);
+                headerElements.AddRange(ExtensionPointsRepository.Instance.GetParserImplementation(headerInfo.Extension).Parse(headerPath));
+            }
+            return headerElements;
+        }
 
-				Debug.WriteLine("*** parsing header = " + headerPath);
+        //TODO - it seems wrong that we have language-specific code in the indexmanager
+        private SandoDocument GetDocumentForUnresolvedCppMethod(CppUnresolvedMethodElement unresolvedMethod, List<ProgramElement> headerElements)
+	    {
+            bool isResolved = false;
+            MethodElement methodElement = null;
 
-                var fileInfo = new FileInfo(headerPath);
-                isResolved = unresolvedMethod.TryResolve(ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(headerPath), out methodElement);
-                if (isResolved == true)
-                {
-                    return DocumentFactory.Create(methodElement);
-                }
+            isResolved = unresolvedMethod.TryResolve(headerElements, out methodElement);
+            if (isResolved == true)
+            {
+                return DocumentFactory.Create(methodElement);
             }
             return null;
 	    }

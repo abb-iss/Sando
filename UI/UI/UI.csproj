@@ -517,6 +517,6 @@
   <Target Name="AfterBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y $(SolutionDir)..\LIBS\srcML-Win $(OutDir)</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win" "$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
