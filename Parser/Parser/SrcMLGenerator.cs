@@ -136,7 +136,6 @@ namespace Sando.Parser
 			srcML = "";
 			while(keepGoing)
 			{
-				Thread.Yield();
 				if(_srcMLExecComplete) keepGoing = false;
 				srcML += sOut.ReadToEnd();
 			}
