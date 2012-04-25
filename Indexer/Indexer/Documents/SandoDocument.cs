@@ -23,7 +23,7 @@ namespace Sando.Indexer.Documents
 				document = new Document();
 				document.Add(new Field(SandoField.Id.ToString(), programElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
 				document.Add(new Field(SandoField.Name.ToString(), programElement.Name.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-				document.Add(new Field(SandoField.ProgramElementType.ToString(), programElement.ProgramElementType.ToString(), Field.Store.YES, Field.Index.ANALYZED));
+				document.Add(new Field(SandoField.ProgramElementType.ToString(), programElement.ProgramElementType.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				document.Add(new Field(SandoField.FullFilePath.ToString(), StandardizeFilePath(programElement.FullFilePath), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), programElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
 				document.Add(new Field(SandoField.Snippet.ToString(), programElement.Snippet, Field.Store.YES, Field.Index.NO));
@@ -36,7 +36,7 @@ namespace Sando.Indexer.Documents
 		{
 			//Guid id = new Guid(document.GetField(SandoField.Id.ToString()).StringValue());
 			string name = document.GetField(SandoField.Name.ToString()).StringValue().ToSandoDisplayable();
-			ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue());
+			ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue(), true);
 			string fullFilePath = document.GetField(SandoField.FullFilePath.ToString()).StringValue();
 			int definitionLineNumber = int.Parse(document.GetField(SandoField.DefinitionLineNumber.ToString()).StringValue());
 			string snippet = document.GetField(SandoField.Snippet.ToString()).StringValue();		    

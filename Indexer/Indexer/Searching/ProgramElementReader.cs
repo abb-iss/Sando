@@ -15,7 +15,7 @@ namespace Sando.Indexer.Searching
 			Contract.Requires(document != null, "ProgramElementReader:ReadProgramElementFromDocument - document cannot be null!");
 			Contract.Ensures(Contract.Result<ProgramElement>() != null, "ProgramElementReader:ReadProgramElementFromDocument - an object must be returned from this method!");
 
-			ProgramElementType programElementType = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue());
+			ProgramElementType programElementType = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue(), true);
 			switch(programElementType)
 			{
 				case ProgramElementType.Class:
