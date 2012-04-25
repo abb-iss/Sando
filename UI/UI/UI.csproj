@@ -216,6 +216,10 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="src2srcml.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Resource Include="Resources\VS2010Icons\VSObject_Property.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property_Friend.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property_Private.png" />
@@ -441,4 +445,7 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y $(SolutionDir)..\LIBS\srcML-Win $(OutDir)</PostBuildEvent>
+  </PropertyGroup>
 </Project>

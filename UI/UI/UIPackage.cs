@@ -165,9 +165,9 @@ namespace Sando.UI
         {
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
 
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, new SrcMLCSharpParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, new SrcMLCSharpParser(pluginDirectory));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
-                                                                   new SrcMLCppParser());
+                                                                   new SrcMLCppParser(pluginDirectory));
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());

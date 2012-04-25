@@ -16,11 +16,14 @@ namespace Sando.Parser
 
 	    public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
 
-	    public SrcMLCSharpParser()
+	    public SrcMLCSharpParser(string pluginDirectory = null)
 		{
 			//try to set this up automatically			
-			Generator = new SrcMLGenerator(LanguageEnum.CSharp);	        
-	        Generator.SetSrcMLLocation(StandardSrcMlLocation);
+			Generator = new SrcMLGenerator(LanguageEnum.CSharp);	   
+            if(pluginDirectory!=null)
+                Generator.SetSrcMLLocation(pluginDirectory);
+            else
+	            Generator.SetSrcMLLocation(StandardSrcMlLocation);
 		}
 
 		public List<ProgramElement> Parse(string fileName)
