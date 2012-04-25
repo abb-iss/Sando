@@ -216,9 +216,70 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="src2srcml.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\..\LIBS\srcML-Win\bz2-1.dll">
+      <Link>LIBS\bz2-1.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\iconv.dll">
+      <Link>LIBS\iconv.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libarchive-2.dll">
+      <Link>LIBS\libarchive-2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libexslt.dll">
+      <Link>LIBS\libexslt.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libgcc_s_sjlj-1.dll">
+      <Link>LIBS\libgcc_s_sjlj-1.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libgcrypt-11.dll">
+      <Link>LIBS\libgcrypt-11.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libgnurx-0.dll">
+      <Link>LIBS\libgnurx-0.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libgpg-error-0.dll">
+      <Link>LIBS\libgpg-error-0.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libsrcml.dll">
+      <Link>LIBS\libsrcml.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libstdc++-6.dll">
+      <Link>LIBS\libstdc++-6.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libxml2.dll">
+      <Link>LIBS\libxml2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\libxslt.dll">
+      <Link>LIBS\libxslt.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\src2srcml.exe">
+      <Link>LIBS\src2srcml.exe</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\VS2010Icons\VSObject_Property.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property_Friend.png" />
@@ -352,6 +413,16 @@
     <Resource Include="Resources\VS2010Icons\VSObject_ValueType_Shortcut.png" />
     <Resource Include="Resources\Code_Cpp.png" />
     <Resource Include="Resources\Code_CS.png" />
+    <Content Include="..\..\LIBS\srcML-Win\srcml2src.exe">
+      <Link>LIBS\srcml2src.exe</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win\zlib1.dll">
+      <Link>LIBS\zlib1.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Package.ico" />
     <Resource Include="Resources\VS2010Icons\VSObject_Assembly.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class.png" />
