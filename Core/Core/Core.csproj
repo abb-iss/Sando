@@ -86,7 +86,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\SandoException.cs" />
     <Compile Include="Extensions\Configuration\BaseExtensionPointConfiguration.cs" />
-    <Compile Include="Extensions\Configuration\ExtensionPointsConfigurationValidator.cs" />
+    <Compile Include="Extensions\Configuration\ExtensionPointsConfigurationFileReader.cs" />
     <Compile Include="Extensions\Configuration\ExtensionPointsConfigurationAnalyzer.cs" />
     <Compile Include="Extensions\Configuration\ParserExtensionPointsConfiguration.cs" />
     <Compile Include="Extensions\Configuration\ExtensionPointsConfiguration.cs" />

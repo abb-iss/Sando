@@ -6,7 +6,7 @@ using log4net;
 
 namespace Sando.Core.Extensions.Configuration
 {
-	public static class ExtensionPointsConfigurationValidator
+	public static class ExtensionPointsConfigurationFileReader
 	{
 		public static ExtensionPointsConfiguration ReadAndValidate(string extensionPointsConfigurationFilePath, ILog logger)
 		{

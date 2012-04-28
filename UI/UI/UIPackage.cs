@@ -177,11 +177,21 @@ namespace Sando.UI
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
 			extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
 
-            var extensionPointsConfiguration = GetExtensionPointsConfiguration();
-            ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger); 
-
+            //var extensionPointsConfiguration = GetExtensionPointsConfiguration();
+			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
+			string extensionPointsConfigurationFilePath = Path.Combine(extensionPointsConfigurationDirectory, "ExtensionPointsConfiguration.xml");
+			var extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath,logger);
+			if(extensionPointsConfiguration != null)
+			{
+				extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationFilePath;
+				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+			}
         }
 
+		private SandoDialogPage getExtensionPointsDialogPage()
+		{
+			return GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
+		}
 
         //TODO - get this from the plugin directory
         private ExtensionPointsConfiguration GetExtensionPointsConfiguration()

@@ -88,7 +88,7 @@
     <Compile Include="OptionsPages\SandoOptionsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OptionsPages\ExtensionPointsDialogPage.cs">
+    <Compile Include="OptionsPages\SandoDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
