@@ -5,8 +5,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
+using log4net;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -23,7 +25,6 @@ using Sando.SearchEngine;
 using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
-using log4net;
 
 namespace Sando.UI
 {
@@ -50,6 +51,8 @@ namespace Sando.UI
     [Guid(GuidList.guidUIPkgString)]
 	// This attribute starts up our extension early so that it can listen to solution events
 	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
+	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
+	[ProvideProfileAttribute(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
 	public sealed class UIPackage: Package
     {    	
     	
