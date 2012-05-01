@@ -8,14 +8,17 @@ using Sando.Indexer.Documents;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
-    public class MyCustomProgramElementForTesting: CustomProgramElement 
+    public class MyCustomProgramElementForTesting: ProgramElement 
     {
         public MyCustomProgramElementForTesting(string name, int definitionLineNumber, string fullFilePath, string snippet) : base(name, definitionLineNumber, fullFilePath, snippet)
         {
         }
         
+        [CustomIndexField("A")]
         public String A { get; set; }
+        [CustomIndexField("B")]
         public String B { get; set; }
+        [CustomIndexField("C")]
         public String C { get; set; }
 
         public static Document GetLuceneDocument()
@@ -30,6 +33,7 @@ namespace Sando.Indexer.UnitTests.Documents
             document.Add(new Field(SandoField.FullFilePath.ToString(), @"C:\stuff\place.txt", Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), "123", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(SandoField.Snippet.ToString(), "The text of the custom thing.", Field.Store.YES, Field.Index.NO));
+            document.Add(new Field(ProgramElement.CustomTypeTag, typeof(MyCustomProgramElementForTesting).AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
             return document;
         }
 
@@ -42,9 +46,11 @@ namespace Sando.Indexer.UnitTests.Documents
             return element;
         }
 
-        public override string GetName()
+
+
+        public override ProgramElementType ProgramElementType
         {
-            throw new NotImplementedException();
+            get { return ProgramElementType.Custom; }
         }
     }
 }

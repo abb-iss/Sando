@@ -37,15 +37,8 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         public string Type
         {
             get
-            {
-                var customProgramElement = Element as CustomProgramElement;
-                if(customProgramElement !=null )
-                {
-                    return customProgramElement.GetName();
-                }else
-                {
-                    return Element.ProgramElementType.ToString();
-                }
+            {          
+               return Element.GetName();                
             }
         }
 

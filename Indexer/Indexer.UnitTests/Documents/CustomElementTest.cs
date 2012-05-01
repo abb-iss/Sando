@@ -21,7 +21,7 @@ namespace Sando.Indexer.UnitTests.Documents
         public void LuceneDocToCustomProgramElement()
         {
             //test ReadProgramElementFromDocument            
-            var customSandoDocument = new CustomDocument(MyCustomProgramElementForTesting.GetLuceneDocument(), typeof(MyCustomProgramElementForTesting));
+            var customSandoDocument = new SandoDocument(MyCustomProgramElementForTesting.GetLuceneDocument());
             var customProgramElement = customSandoDocument.ReadProgramElementFromDocument();
             var myCustomProgramElementForTesting = customProgramElement as MyCustomProgramElementForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
@@ -36,7 +36,7 @@ namespace Sando.Indexer.UnitTests.Documents
         public void CustomDocumentToLuceneDocument()
         {
             //test AddDocumentFields
-            var customSandoDocument = new CustomDocument(MyCustomProgramElementForTesting.GetProgramElement(), typeof(MyCustomProgramElementForTesting));
+            var customSandoDocument = new SandoDocument(MyCustomProgramElementForTesting.GetProgramElement());
             var luceneDocumentWithCustomFields = customSandoDocument.GetDocument();
             Assert.IsTrue(luceneDocumentWithCustomFields!=null);
         }
@@ -56,7 +56,7 @@ namespace Sando.Indexer.UnitTests.Documents
             var prefabLuceneDocument = MyCustomProgramElementForTesting.GetLuceneDocument();
             foreach (var property in MyCustomProgramElementForTesting.GetProgramElement().GetCustomProperties())
             {
-                if (!property.Name.Equals(CustomProgramElement.CustomTypeTag))
+                if (!property.Name.Equals(ProgramElement.CustomTypeTag))
                 {
                     Field field1 = generatedDocumentFromElement.GetField(property.Name);
                     Field field2 = prefabLuceneDocument.GetField(property.Name);

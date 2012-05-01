@@ -46,9 +46,9 @@ namespace Sando.Indexer.Documents
             {
                 return new StructDocument(programElement as StructElement);
             }
-            if(programElement as CustomProgramElement !=null)
+            if(programElement.GetCustomProperties().Count>0)
             {
-                return new CustomDocument(programElement as CustomProgramElement, programElement.GetType());
+                return new SandoDocument(programElement);
             }
 
 			//if this code is reached, contract will fail

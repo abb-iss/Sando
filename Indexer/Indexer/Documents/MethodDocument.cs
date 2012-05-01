@@ -39,7 +39,9 @@ namespace Sando.Indexer.Documents
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
 			bool isConstructor = bool.Parse(document.GetField(SandoField.IsConstructor.ToString()).StringValue());
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor);
+            var element = Activator.CreateInstance(GetMyType(), name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor) as ProgramElement;			
+            SetCustomFields(element);
+		    return element;
 		}
 	}
 }

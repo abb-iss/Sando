@@ -87,9 +87,9 @@
     <Compile Include="ProgramElementContracts\AccessLevel.cs" />
     <Compile Include="ProgramElementContracts\ClassElement.cs" />
     <Compile Include="ProgramElementContracts\CommentElement.cs" />
+    <Compile Include="ProgramElementContracts\CustomIndexFieldAttribute..cs" />
     <Compile Include="ProgramElementContracts\StructElement.cs" />
     <Compile Include="ProgramElementContracts\CppUnresolvedMethodElement.cs" />
-    <Compile Include="ProgramElementContracts\CustomProgramElement.cs" />
     <Compile Include="ProgramElementContracts\DocCommentElement.cs" />
     <Compile Include="ProgramElementContracts\EnumElement.cs" />
     <Compile Include="ProgramElementContracts\FieldElement.cs" />

@@ -37,22 +37,12 @@ namespace Sando.Indexer.Searching
                 case ProgramElementType.Struct:
                     return new StructDocument(document).ReadProgramElementFromDocument();
                 case ProgramElementType.Custom:
-                    return new CustomDocument(document, GetTypeForCustom(document)).ReadProgramElementFromDocument();
+                    return new SandoDocument(document).ReadProgramElementFromDocument();
 				default:
 					return null;
 			}
 		}
 
-	    private static Type GetTypeForCustom(Document document)
-	    {
-            try
-            {
-                return Type.GetType(document.GetField(CustomProgramElement.CustomTypeTag).StringValue());
-            }
-			catch
-            {
-                return typeof (CustomProgramElement);
-            }
-	    }
+	
 	}
 }
