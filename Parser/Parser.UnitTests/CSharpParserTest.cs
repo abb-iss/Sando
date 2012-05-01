@@ -6,7 +6,7 @@ using UnitTestHelpers;
 namespace Sando.Parser.UnitTests
 {
 	[TestFixture]
-	public class HelloWorldParserTest
+	public class CSharpParserTest
 	{
 		static String HelloWorldFile;
 		private static string CurrentDirectory;

@@ -7,7 +7,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser
 {
-	public class SrcMLCppParser : IParser
+	public class SrcMLCppParser:   IParser
 	{
 		private readonly SrcMLGenerator Generator;
 
@@ -217,7 +217,7 @@ namespace Sando.Parser
 			foreach(XElement cons in constructors)
 			{
 				MethodElement methodElement = null;
-				methodElement = ParseCppFunction(cons, programElements, fileName, includedFiles, true);
+                methodElement = ParseCppFunction(cons, programElements, fileName, includedFiles,  typeof(MethodElement), typeof(CppUnresolvedMethodElement), true);
 				programElements.Add(methodElement);
 				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(cons, methodElement);
 				if(methodCommentsElement != null)
@@ -236,7 +236,7 @@ namespace Sando.Parser
 			foreach(XElement func in functions)
 			{
 				MethodElement methodElement = null;
-				methodElement = ParseCppFunction(func, programElements, fileName, includedFiles);
+                methodElement = ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement));
 				programElements.Add(methodElement);
 				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(func, methodElement);
 				if(methodCommentsElement != null)
@@ -246,8 +246,8 @@ namespace Sando.Parser
 			}
 		}
 
-		private MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName, 
-												string[] includedFiles, bool isConstructor = false)
+		public virtual MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName,
+                                                string[] includedFiles, Type resolvedType, Type unresolvedType, bool isConstructor = false)
 		{
 			MethodElement methodElement = null;
 			string snippet = String.Empty;
@@ -287,8 +287,8 @@ namespace Sando.Parser
 				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
 				snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-				return new CppUnresolvedMethodElement(funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, 
-														className, isConstructor, includedFiles);
+                return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, 
+														className, isConstructor, includedFiles) as MethodElement;
 			}
 			else
 			{
@@ -312,9 +312,9 @@ namespace Sando.Parser
                     classId = structElement.Id;
                     className = structElement.Name;
                 }
-
-				methodElement = new MethodElement(funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, 
-													classId, className, String.Empty, isConstructor);
+                methodElement = Activator.CreateInstance(resolvedType, funcName, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments,
+			                             returnType, body,
+			                             classId, className, String.Empty, isConstructor) as MethodElement;
 			}
 
 			return methodElement;

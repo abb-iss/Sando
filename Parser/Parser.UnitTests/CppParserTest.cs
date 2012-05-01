@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using NUnit.Framework;
@@ -9,7 +10,7 @@ using System.Diagnostics;
 namespace Sando.Parser.UnitTests
 {
 	[TestFixture]
-	public class CPPTest
+	public class CppParserTest
 	{
 		private static string CurrentDirectory;
 
@@ -30,44 +31,8 @@ namespace Sando.Parser.UnitTests
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Count, 6);
-			foreach(ProgramElement pe in elements)
-			{
-				if(pe is CppUnresolvedMethodElement)
-				{
-					numMethods++;
+            CheckParseOfEventFile(parser, sourceFile, elements);
 
-					//Resolve
-					bool isResolved = false;
-					MethodElement method = null;
-					CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement)pe;
-					foreach(String headerFile in unresolvedMethod.IncludeFileNames) {
-						//it's reasonable to assume that the header file path is relative from the cpp file,
-						//as other included files are unlikely to be part of the same project and therefore 
-						//should not need to be parsed
-						string headerPath = System.IO.Path.GetDirectoryName(sourceFile) + "\\" + headerFile;
-						if(!System.IO.File.Exists(headerPath)) continue;
-
-						isResolved = unresolvedMethod.TryResolve(parser.Parse(headerPath), out method);
-						if(isResolved == true) break;
-					}
-					Assert.IsTrue(isResolved);
-					Assert.IsNotNull(method);
-
-					//pick one of the resolved methods to see if it seems complete
-					if(method.Name == "getTime")
-					{
-						seenGetTimeMethod = true;
-						Assert.AreEqual(method.DefinitionLineNumber, 13);
-						Assert.AreEqual(method.ReturnType, "double");
-						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
-						Assert.AreEqual(method.Arguments, String.Empty);
-						Assert.AreEqual(method.Body, "time");
-						Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
-					}
-				}
-			}
-			Assert.AreEqual(numMethods, 6);
-			Assert.IsTrue(seenGetTimeMethod);
 		}
 
 
@@ -239,5 +204,102 @@ namespace Sando.Parser.UnitTests
             var parser = new SrcMLCppParser();
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LargeCppFile.txt");     
 	    }
+
+        [Test]
+        public void ParseCppSourceWithAlternativeParserTest()
+        {
+            string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
+            var parser = new MySrcMlCppParser();
+            var elements = parser.Parse(sourceFile);
+            Assert.IsNotNull(elements);
+            Assert.AreEqual(elements.Count, 6);
+            CheckParseOfEventFile(parser, sourceFile, elements);
+            bool foundOne = false;
+            foreach (var programElement in elements)
+            {
+                if(programElement as MyMethodElementUnresolvedType !=null)
+                {
+                    foundOne = true;
+                    Assert.IsTrue((programElement as MyMethodElementUnresolvedType).CustomStuffHere.Equals("WHOA"));
+                }
+            }
+            Assert.IsTrue(foundOne);
+        }
+
+	    private static void CheckParseOfEventFile(SrcMLCppParser parser, string sourceFile, List<ProgramElement> elements)
+	    {
+	        bool seenGetTimeMethod = false;
+	        int numMethods = 0;
+	        foreach (ProgramElement pe in elements)
+	        {
+	            if (pe is CppUnresolvedMethodElement)
+	            {
+	                numMethods++;
+
+	                //Resolve
+	                bool isResolved = false;
+	                MethodElement method = null;
+	                CppUnresolvedMethodElement unresolvedMethod = (CppUnresolvedMethodElement) pe;
+	                foreach (String headerFile in unresolvedMethod.IncludeFileNames)
+	                {
+	                    //it's reasonable to assume that the header file path is relative from the cpp file,
+	                    //as other included files are unlikely to be part of the same project and therefore 
+	                    //should not need to be parsed
+	                    string headerPath = System.IO.Path.GetDirectoryName(sourceFile) + "\\" + headerFile;
+	                    if (!System.IO.File.Exists(headerPath)) continue;
+
+	                    isResolved = unresolvedMethod.TryResolve(parser.Parse(headerPath), out method);
+	                    if (isResolved == true) break;
+	                }
+	                Assert.IsTrue(isResolved);
+	                Assert.IsNotNull(method);
+
+	                //pick one of the resolved methods to see if it seems complete
+	                if (method.Name == "getTime")
+	                {
+	                    seenGetTimeMethod = true;
+	                    Assert.AreEqual(method.DefinitionLineNumber, 13);
+	                    Assert.AreEqual(method.ReturnType, "double");
+	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
+	                    Assert.AreEqual(method.Arguments, String.Empty);
+	                    Assert.AreEqual(method.Body, "time");
+	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
+	                }
+	            }
+	        }
+	        Assert.AreEqual(numMethods, 6);
+	        Assert.IsTrue(seenGetTimeMethod);
+	    }
 	}
+
+    public class MySrcMlCppParser : SrcMLCppParser
+    {
+        public override MethodElement ParseCppFunction(System.Xml.Linq.XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles, Type resolvedType, Type unresolvedType, bool isConstructor = false)
+        {
+            var methodElement = base.ParseCppFunction(function, programElements, fileName, includedFiles, typeof(MyMethodElementType),  typeof(MyMethodElementUnresolvedType), isConstructor);
+            var myMethodElement = methodElement as MyMethodElementUnresolvedType;
+            myMethodElement.CustomStuffHere = "WHOA";
+            return myMethodElement;
+        }
+    }
+
+    public class MyMethodElementUnresolvedType:CppUnresolvedMethodElement
+    {
+        [CustomIndexField]
+        public string CustomStuffHere { get; set; }
+
+        public MyMethodElementUnresolvedType(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles) : base(name, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
+        {
+        }
+    }
+
+    public class MyMethodElementType : MethodElement
+    {
+        [CustomIndexField]
+        public string CustomStuffHere { get; set; }
+
+        public MyMethodElementType(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
+        {
+        }
+    }
 }

@@ -44,8 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicParserTest.cs" />
-    <Compile Include="CPPTest.cs" />
+    <Compile Include="CSharpParserTest.cs" />
+    <Compile Include="CppParserTest.cs" />
     <Compile Include="InheritanceParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

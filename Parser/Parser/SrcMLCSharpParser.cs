@@ -195,7 +195,7 @@ namespace Sando.Parser
 			}
 		}
 
-		private MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, bool isConstructor = false)
+		public virtual MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, bool isConstructor = false)
 		{
 			string name = String.Empty;
 			int definitionLineNumber = 0;
