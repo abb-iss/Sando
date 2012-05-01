@@ -179,6 +179,10 @@ namespace Sando.UI
 
             //var extensionPointsConfiguration = GetExtensionPointsConfiguration();
 			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
+            if(extensionPointsConfigurationDirectory==null)
+            {
+                extensionPointsConfigurationDirectory = pluginDirectory;
+            }
 			string extensionPointsConfigurationFilePath = Path.Combine(extensionPointsConfigurationDirectory, "ExtensionPointsConfiguration.xml");
 			var extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath,logger);
 			if(extensionPointsConfiguration != null)
