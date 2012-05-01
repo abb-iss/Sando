@@ -195,7 +195,12 @@ namespace Sando.Parser
 			}
 		}
 
-		public virtual MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, bool isConstructor = false)
+        private MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, bool isConstructor = false)
+        {
+            return ParseMethod(method, programElements, fileName, typeof (MethodElement), isConstructor);
+        }
+
+		public virtual MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, Type myType, bool isConstructor = false)
 		{
 			string name = String.Empty;
 			int definitionLineNumber = 0;
@@ -245,10 +250,11 @@ namespace Sando.Parser
 			string className = classElement != null ? classElement.Name : String.Empty;
 
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
-			string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+			
+            string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
 
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body,
-										classId, className, String.Empty, isConstructor);
+            return Activator.CreateInstance(myType, name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body,
+                                        classId, className, String.Empty, isConstructor) as MethodElement;			
 		}
 
 

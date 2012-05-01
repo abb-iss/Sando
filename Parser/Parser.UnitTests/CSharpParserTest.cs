@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using UnitTestHelpers;
@@ -51,32 +52,60 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void ParseMethodTest()
 		{
-			bool seenSetLanguageMethod = false;
 			var parser = new SrcMLCSharpParser();
 			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Count>0);
-			foreach(ProgramElement pe in elements)
-			{
-				if(pe is MethodElement)
-				{
-					MethodElement method = (MethodElement)pe;
-					if(method.Name == "SetLanguage")
-					{
-						seenSetLanguageMethod = true;
-						Assert.AreEqual(method.DefinitionLineNumber, 26);
-						Assert.AreEqual(method.ReturnType, "void");
-						Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
-						Assert.AreEqual(method.Arguments, "LanguageEnum language");
-						Assert.AreEqual(method.Body, "Language language language Language Enum CSharp Language Language Enum Java");
-						Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
-					}
-				}
-			}
-			Assert.IsTrue(seenSetLanguageMethod);
+
+            CheckParseOfShortCSharpFile(elements);
 		}
 
-		[Test]
+        [Test]
+        public void ParseMethodWithAlternativeParserTest()
+        {            
+            var parser = new MySrcMLCSharpParser();
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+            Assert.IsNotNull(elements);
+            Assert.IsTrue(elements.Count > 0);
+
+            CheckParseOfShortCSharpFile(elements);
+            bool seenOne = false;
+            foreach (var programElement in elements)
+            {
+                if(programElement as MyCSharpMethodElement !=null)
+                {
+                    seenOne = true;
+                    Assert.IsTrue((programElement as MyCSharpMethodElement).CustomCrazyStuff.Equals("wow"));
+                }
+            }
+            Assert.IsTrue(seenOne);
+        }
+
+	    private static void CheckParseOfShortCSharpFile(List<ProgramElement> elements)
+	    {
+	        bool seenSetLanguageMethod = false;
+	        foreach (ProgramElement pe in elements)
+	        {
+	            if (pe is MethodElement)
+	            {
+	                MethodElement method = (MethodElement) pe;
+	                if (method.Name == "SetLanguage")
+	                {
+	                    seenSetLanguageMethod = true;
+	                    Assert.AreEqual(method.DefinitionLineNumber, 26);
+	                    Assert.AreEqual(method.ReturnType, "void");
+	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
+	                    Assert.AreEqual(method.Arguments, "LanguageEnum language");
+	                    Assert.AreEqual(method.Body,
+	                                    "Language language language Language Enum CSharp Language Language Enum Java");
+	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
+	                }
+	            }
+	        }
+	        Assert.IsTrue(seenSetLanguageMethod);
+	    }
+
+	    [Test]
 		public void RunIterativeMethodTest()
 		{
 			for(int i = 0; i < 500; i++)
@@ -294,4 +323,26 @@ namespace Sando.Parser.UnitTests
 		}
 	
 	}
+
+    public class MySrcMLCSharpParser : SrcMLCSharpParser
+    {
+
+        public override MethodElement ParseMethod(System.Xml.Linq.XElement method, List<ProgramElement> programElements, string fileName, Type mytype, bool isConstructor = false)
+        {
+            var element = base.ParseMethod(method, programElements, fileName,  typeof(MyCSharpMethodElement), isConstructor);
+            (element as MyCSharpMethodElement).CustomCrazyStuff = "wow";
+            return element;
+        }
+    }
+
+    public class MyCSharpMethodElement : MethodElement
+    {
+
+        [CustomIndexField]
+        public string CustomCrazyStuff { get; set; }
+
+        public MyCSharpMethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
+        {
+        }
+    }
 }
