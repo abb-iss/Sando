@@ -35,7 +35,7 @@ namespace Sando.Indexer.Documents
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
 			string initialValue = document.GetField(SandoField.InitialValue.ToString()).StringValue().ToSandoDisplayable();
-			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, modifiers, initialValue);
+            return base.ReadProgramElementFromDocument(GetMyType(), new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, modifiers, initialValue });
 		}
 	}
 }

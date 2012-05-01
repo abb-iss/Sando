@@ -14,11 +14,11 @@ namespace Sando.Indexer.UnitTests.Documents
         {
         }
         
-        [CustomIndexField("A")]
+        [CustomIndexField]
         public String A { get; set; }
-        [CustomIndexField("B")]
+        [CustomIndexField]
         public String B { get; set; }
-        [CustomIndexField("C")]
+        [CustomIndexField]
         public String C { get; set; }
 
         public static Document GetLuceneDocument()

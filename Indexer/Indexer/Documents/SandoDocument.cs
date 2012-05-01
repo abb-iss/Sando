@@ -88,9 +88,10 @@ namespace Sando.Indexer.Documents
         {
             try
             {
-                return Type.GetType(document.GetField(ProgramElement.CustomTypeTag).StringValue());
+                string typeId = document.GetField(ProgramElement.CustomTypeTag).StringValue();
+                return Type.GetType(typeId);
             }
-			catch
+            catch
             {
                 return typeof (ProgramElement);
             }
@@ -112,5 +113,12 @@ namespace Sando.Indexer.Documents
             return fullFilePath;
         }
 
-	}
+
+        internal ProgramElement ReadProgramElementFromDocument(Type type, object[] parameters)
+        {
+            var element = Activator.CreateInstance(type, parameters) as ProgramElement;
+            SetCustomFields(element);
+            return element;			
+        }
+    }
 }

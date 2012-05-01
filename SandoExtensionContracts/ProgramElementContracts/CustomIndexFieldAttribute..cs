@@ -10,11 +10,11 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
     ]
     public class CustomIndexFieldAttribute: System.Attribute
     {
-        private string name;
+        
 
-        public CustomIndexFieldAttribute(string name)
+        public CustomIndexFieldAttribute()
         {
-            this.name = name;
+        
         }
 
     }
