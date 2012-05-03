@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandoExtensionContracts", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestExtensionPoints", "..\TestExtensionPoints\TestExtensionPoints.csproj", "{720CF03C-A31E-4CB0-9C31-4FC7CB555A69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserExtensions", "ParserExtensions\ParserExtensions.csproj", "{F01758D8-81DD-46AC-9632-BBEA96C4272E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExperimentalExtensions", "..\ExperimentalExtensions\ExperimentalExtensions.csproj", "{F01758D8-81DD-46AC-9632-BBEA96C4272E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
