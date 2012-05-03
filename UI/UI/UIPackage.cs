@@ -155,6 +155,8 @@ namespace Sando.UI
 			RegisterExtensionPoints();
         }
 
+     
+
         private void SetUpLogger()
         {
             IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
@@ -172,12 +174,6 @@ namespace Sando.UI
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
                                                                    new SrcMLCppParser(pluginDirectory + "\\LIBS"));
 
-            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
-            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
-            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
-			extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
-
-            //var extensionPointsConfiguration = GetExtensionPointsConfiguration();
 			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
             if(extensionPointsConfigurationDirectory==null)
             {
@@ -187,7 +183,7 @@ namespace Sando.UI
 			var extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath,logger);
 			if(extensionPointsConfiguration != null)
 			{
-				extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationFilePath;
+                extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationDirectory;
 				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			}
         }
@@ -197,34 +193,7 @@ namespace Sando.UI
 			return GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
 		}
 
-        //TODO - get this from the plugin directory
-        private ExtensionPointsConfiguration GetExtensionPointsConfiguration()
-        {
-            var extensionPointsConfiguration = new ExtensionPointsConfiguration();
-			extensionPointsConfiguration.PluginDirectoryPath = pluginDirectory;
-			extensionPointsConfiguration.ParsersConfiguration = new List<ParserExtensionPointsConfiguration>();
 
-            extensionPointsConfiguration.ParsersConfiguration.Add(
-
-                new ParserExtensionPointsConfiguration()
-                    {
-                        FullClassName = "Sando.ParserExtensions.TextFileParser",
-                        LibraryFileRelativePath = "ParserExtensions.dll",
-                        SupportedFileExtensions = new List<string>() {".txt"},
-                        ProgramElementsConfiguration = new List<BaseExtensionPointConfiguration>()
-                                                           {
-                                                               new BaseExtensionPointConfiguration()
-                                                                   {
-                                                                       FullClassName =
-                                                                           "Sando.ParserExtensions.TextFileElement",
-                                                                       LibraryFileRelativePath =
-                                                                           "ParserExtensions.dll"
-                                                                   }
-                                                           }
-                    }
-                );
-            return extensionPointsConfiguration;
-        }
 
         private void SolutionHasBeenClosed()
 		{

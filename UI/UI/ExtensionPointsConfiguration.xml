@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ExtensionPointsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <PluginDirectoryPath>C:\</PluginDirectoryPath>
+  <WordSplitterConfiguration>
+    <FullClassName>Sando.Core.Tools.WordSplitter</FullClassName>
+    <LibraryFileRelativePath>Core.dll</LibraryFileRelativePath>
+  </WordSplitterConfiguration>
+  <ResultsReordererConfiguration>
+    <FullClassName>Sando.SearchEngine.SortByScoreResultsReorderer</FullClassName>
+    <LibraryFileRelativePath>SearchEngine.dll</LibraryFileRelativePath>
+  </ResultsReordererConfiguration>
+  <QueryWeightsSupplierConfiguration>
+    <FullClassName>Sando.Indexer.Searching.QueryWeightsSupplier</FullClassName>
+    <LibraryFileRelativePath>Indexer.dll</LibraryFileRelativePath>
+  </QueryWeightsSupplierConfiguration>
+  <QueryRewriterConfiguration>
+    <FullClassName>Sando.Indexer.Searching.QueryRewriter</FullClassName>
+    <LibraryFileRelativePath>Indexer.dll</LibraryFileRelativePath>
+  </QueryRewriterConfiguration>
+</ExtensionPointsConfiguration>
