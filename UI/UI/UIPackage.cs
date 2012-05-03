@@ -174,12 +174,6 @@ namespace Sando.UI
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
                                                                    new SrcMLCppParser(pluginDirectory + "\\LIBS"));
 
-            //extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
-            //extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
-            //extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
-			//extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
-
-            //var extensionPointsConfiguration = GetExtensionPointsConfiguration();
 			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
             if(extensionPointsConfigurationDirectory==null)
             {
@@ -189,7 +183,7 @@ namespace Sando.UI
 			var extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath,logger);
 			if(extensionPointsConfiguration != null)
 			{
-				extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationFilePath;
+                extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationDirectory;
 				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			}
         }
