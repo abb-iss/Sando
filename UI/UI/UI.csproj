@@ -419,6 +419,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="ExtensionPointsConfiguration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Package.ico" />
     <Resource Include="Resources\VS2010Icons\VSObject_Assembly.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class.png" />
