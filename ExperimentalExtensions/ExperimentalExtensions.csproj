@@ -45,7 +45,7 @@
     <Compile Include="TextFileParserExtension\TextFileParser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+    <ProjectReference Include="..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
       <Name>SandoExtensionContracts</Name>
     </ProjectReference>
