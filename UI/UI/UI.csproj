@@ -181,6 +181,11 @@
     <Compile Include="UIPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="VSPackage.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VSPackage.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -191,6 +196,9 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>VSPackage.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -206,10 +214,6 @@
     <VSCTCompile Include="UI.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Images_32bit.bmp" />
-    <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\..\LIBS\srcML-Win\bz2-1.dll">
@@ -277,6 +281,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="sandosearch.bmp" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property_Friend.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property_Private.png" />
@@ -422,8 +427,8 @@
     <Content Include="ExtensionPointsConfiguration.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+      <SubType>Designer</SubType>
     </Content>
-    <Content Include="Resources\Package.ico" />
     <Resource Include="Resources\VS2010Icons\VSObject_Assembly.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Class.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Constant.png" />
