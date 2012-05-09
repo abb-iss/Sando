@@ -22,14 +22,14 @@ namespace Sando.UI {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class VSPackage {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal VSPackage() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Sando.UI {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sando.UI.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sando.UI.VSPackage", typeof(VSPackage).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,28 +60,57 @@ namespace Sando.UI {
             }
         }
         
-        internal static System.Drawing.Bitmap _523 {
+        /// <summary>
+        ///   Looks up a localized string similar to Sando.
+        /// </summary>
+        internal static string _1000 {
             get {
-                object obj = ResourceManager.GetObject("523", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("1000", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can not create tool window..
+        ///   Looks up a localized string similar to General.
         /// </summary>
-        internal static string CanNotCreateWindow {
+        internal static string _1001 {
             get {
-                return ResourceManager.GetString("CanNotCreateWindow", resourceCulture);
+                return ResourceManager.GetString("1001", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sando Search.
+        ///   Looks up a localized string similar to Sando.
         /// </summary>
-        internal static string ToolWindowTitle {
+        internal static string _1002 {
             get {
-                return ResourceManager.GetString("ToolWindowTitle", resourceCulture);
+                return ResourceManager.GetString("1002", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sando general settings.
+        /// </summary>
+        internal static string _1003 {
+            get {
+                return ResourceManager.GetString("1003", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UI.
+        /// </summary>
+        internal static string _110 {
+            get {
+                return ResourceManager.GetString("110", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This package provides a new search box for visual studio.
+        /// </summary>
+        internal static string _112 {
+            get {
+                return ResourceManager.GetString("112", resourceCulture);
             }
         }
     }
