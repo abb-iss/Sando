@@ -174,6 +174,12 @@ namespace Sando.UI
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
                                                                    new SrcMLCppParser(pluginDirectory + "\\LIBS"));
 
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
+            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
+ 	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+ 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
+
+
 			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
             if(extensionPointsConfigurationDirectory==null)
             {
