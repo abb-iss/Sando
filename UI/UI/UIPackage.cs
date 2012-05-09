@@ -208,6 +208,7 @@ namespace Sando.UI
 
 		private void SolutionHasBeenOpened()
 		{
+		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
 			_currentMonitor = SolutionMonitorFactory.CreateMonitor();
             _currentMonitor.StartMonitoring();		    
 			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());

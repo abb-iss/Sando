@@ -12,7 +12,9 @@ namespace Sando.UI.Monitoring
 	class SolutionMonitorFactory
 	{
 		private const string Lucene = "\\lucene";
-		private static readonly string LuceneFolder = CreateLuceneFolder();
+
+	    public static string LuceneDirectory { get; set; }
+
 
 		public static SolutionMonitor CreateMonitor()
 		{
@@ -33,8 +35,8 @@ namespace Sando.UI.Monitoring
 
 		private static string CreateLuceneFolder()
 		{
-			var current = Directory.GetCurrentDirectory();			
-			return CreateFolder(Lucene, current);
+            Contract.Requires(LuceneDirectory != null, "Please set the LuceneDirectory before calling this method");
+			return CreateFolder(Lucene, LuceneDirectory);
 		}
 
 		private static string CreateFolder(string name, string current)
@@ -72,8 +74,9 @@ namespace Sando.UI.Monitoring
 
 		private static string GetLuceneDirectoryForSolution(Solution openSolution)
 		{
-			CreateFolder(GetName(openSolution), LuceneFolder + "\\");
-			return LuceneFolder + "\\" + GetName(openSolution);
+		    var luceneFolder = CreateLuceneFolder();
+            CreateFolder(GetName(openSolution), luceneFolder + "\\");
+			return luceneFolder + "\\" + GetName(openSolution);
 		}
 	}
 }
