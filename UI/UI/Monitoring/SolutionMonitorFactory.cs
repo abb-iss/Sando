@@ -39,16 +39,16 @@ namespace Sando.UI.Monitoring
 			return CreateFolder(Lucene, LuceneDirectory);
 		}
 
-		private static string CreateFolder(string name, string current)
+		private static string CreateFolder(string folderName, string parentDirectory)
 		{
-			if (!File.Exists(current + name))
+			if (!File.Exists(parentDirectory + folderName))
 			{
-				var directoryInfo = Directory.CreateDirectory(current + name);
+				var directoryInfo = Directory.CreateDirectory(parentDirectory + folderName);
 				return directoryInfo.FullName;
 			}
 			else
 			{
-				return name + Lucene;
+                return parentDirectory + folderName;
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace Sando.UI.Monitoring
 		{
 			var fullName = openSolution.FullName;
 			var split = fullName.Split('\\');
-			return split[split.Length - 1];
+			return split[split.Length - 1]+fullName.GetHashCode();
 		}
 
 		private static Solution GetOpenSolution()
