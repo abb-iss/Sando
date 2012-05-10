@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -41,11 +42,19 @@ public  class SearchManager
 				if (!string.IsNullOrEmpty(searchString))
 				{				    
 					var myPackage = UIPackage.GetInstance();
-					_currentSearcher = GetSearcher(myPackage);
-					IQueryable<CodeSearchResult> results = _currentSearcher.Search(GetCriteria(searchString, searchCriteria)).AsQueryable();
-					IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
-					results = resultsReorderer.ReorderSearchResults(results);
-					_myDaddy.Update(results);
+                    if (myPackage.GetCurrentDirectory() != null)
+                    {
+                        _currentSearcher = GetSearcher(myPackage);
+                        IQueryable<CodeSearchResult> results =
+                            _currentSearcher.Search(GetCriteria(searchString, searchCriteria)).AsQueryable();
+                        IResultsReorderer resultsReorderer =
+                            ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+                        results = resultsReorderer.ReorderSearchResults(results);
+                        _myDaddy.Update(results);
+                    }else
+                    {
+                        MessageBox.Show("Sando searches only the currently open Solution.  Please open a Solution and try again.", "Sando Search", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
 				}
 			}
 
