@@ -77,16 +77,22 @@ namespace Sando.Parser
             if (Language == LanguageEnum.CSharp)
             {
                 tmpFilename = filename + ".tmp";
-                StreamReader reader = (new FileInfo(filename)).OpenText();
-                string line;
-                var writer = new StreamWriter((new FileInfo(tmpFilename)).OpenWrite());
-                while ((line = reader.ReadLine()) != null)
-                {
-                    string adaptCSharpToJavaParsing = AdaptCSharpToJavaParsing(line);
-                    writer.Write(adaptCSharpToJavaParsing + "\r\n");
-                }
-                writer.Flush();
-                writer.Close();
+
+                string allCode = System.IO.File.ReadAllText(filename);
+                allCode = AdaptCSharpToJavaParsing(allCode);
+                tmpFilename = filename + ".tmp";
+                System.IO.File.WriteAllText(tmpFilename, allCode);
+
+                //StreamReader reader = (new FileInfo(filename)).OpenText();
+                //string line;
+                //var writer = new StreamWriter((new FileInfo(tmpFilename)).OpenWrite());
+                //while ((line = reader.ReadLine()) != null)
+                //{
+                //    string adaptCSharpToJavaParsing = AdaptCSharpToJavaParsing(line);
+                //    writer.Write(adaptCSharpToJavaParsing + "\r\n");
+                //}
+                //writer.Flush();
+                //writer.Close();
                 langText = "Java";
             }
             else if (Language == LanguageEnum.CPP)
