@@ -34,7 +34,7 @@ namespace UnitTestHelpers
 
 			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
 
-			extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
+			extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 		}
     }
 }

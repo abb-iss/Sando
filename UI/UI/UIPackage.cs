@@ -177,7 +177,7 @@ namespace Sando.UI
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
- 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new QueryRewriter());
+ 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new QuerySplittingBasedRewriter());
 
 
 			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
