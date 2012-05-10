@@ -115,7 +115,7 @@
     <Compile Include="IndexState\IndexOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IIndexUpdateListener.cs" />
-    <Compile Include="Searching\QuerySplittingBasedRewriter.cs" />
+    <Compile Include="Searching\DefaultQueryRewriter.cs" />
     <Compile Include="Searching\Criteria\AndSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\ParenthesisSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\OrSearchCriteria.cs" />
