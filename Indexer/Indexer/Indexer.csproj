@@ -106,7 +106,9 @@
     <Compile Include="Documents\SandoField.cs" />
     <Compile Include="Documents\StructDocument.cs" />
     <Compile Include="Exceptions\IndexerException.cs" />
+    <Compile Include="IndexState\IndexState.cs" />
     <Compile Include="IndexState\CppHeaderElementResolver.cs" />
+    <Compile Include="IndexState\IndexStateManager.cs" />
     <Compile Include="IndexState\PhysicalFilesStatesManager.cs" />
     <Compile Include="IndexState\PhysicalFileState.cs" />
     <Compile Include="IndexState\FileOperationResolver.cs" />
