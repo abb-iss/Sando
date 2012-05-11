@@ -69,7 +69,7 @@ namespace Sando.Parser
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private string LaunchSrcML(string filename)
-        {
+        { 
             string srcML = "";
             string langText = Language.ToString();
             var tmpFilename = filename;

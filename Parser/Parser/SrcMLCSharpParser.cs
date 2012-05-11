@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
@@ -238,7 +239,7 @@ namespace Sando.Parser
 				select el;
 			string arguments = String.Empty;
 			foreach(XElement elem in argumentElements)
-			{
+			{                
 				arguments += elem.Value + " ";
 			}
 			arguments = arguments.TrimEnd();

@@ -109,8 +109,8 @@ namespace Sando.Parser
 					from el in block.Descendants(SourceNamespace + "name")
 					select el;
 				foreach(XElement elem in bodyNames)
-				{
-					body += String.Join(" ", ExtensionPointsRepository.Instance.GetWordSplitterImplementation().ExtractWords(elem.Value)) + " ";
+				{					
+                    body += String.Join(" ", elem.Value) + " ";
 				}
 				body = body.TrimEnd();
 			}

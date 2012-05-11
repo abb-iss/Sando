@@ -97,7 +97,7 @@ namespace Sando.Parser.UnitTests
 	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 	                    Assert.AreEqual(method.Arguments, "LanguageEnum language");
 	                    Assert.AreEqual(method.Body,
-	                                    "Language language language Language Enum CSharp Language Language Enum Java");
+	                                    "Language language language LanguageEnum CSharp Language LanguageEnum Java");
 	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 	                }
 	            }
