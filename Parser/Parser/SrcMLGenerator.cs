@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
 using Sando.Translation;
 using System.ComponentModel;
@@ -66,68 +67,81 @@ namespace Sando.Parser
 			return LaunchSrcML(filename);
 		}
 
-		[MethodImpl(MethodImplOptions.Synchronized)]
-		private string LaunchSrcML(string filename)
-		{
-			string srcML = "";
-			string langText = Language.ToString();
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private string LaunchSrcML(string filename)
+        {
+            string srcML = "";
+            string langText = Language.ToString();
+            var tmpFilename = filename;
 
-			if(Language == LanguageEnum.CSharp)
-			{
-				//temporary, otherwise very ugly
-				string allCode = System.IO.File.ReadAllText(filename);
-				allCode = AdaptCSharpToJavaParsing(allCode);
-				filename = filename + ".tmp";
-				System.IO.File.WriteAllText(filename, allCode);
-				langText = "Java";
-			}
-			else if(Language == LanguageEnum.CPP)
-			{
-				langText = "C++";
-			}
+            if (Language == LanguageEnum.CSharp)
+            {
+                tmpFilename = filename + ".tmp";
+
+                string allCode = System.IO.File.ReadAllText(filename);
+                allCode = AdaptCSharpToJavaParsing(allCode);
+                tmpFilename = filename + ".tmp";
+                System.IO.File.WriteAllText(tmpFilename, allCode);
+
+                //StreamReader reader = (new FileInfo(filename)).OpenText();
+                //string line;
+                //var writer = new StreamWriter((new FileInfo(tmpFilename)).OpenWrite());
+                //while ((line = reader.ReadLine()) != null)
+                //{
+                //    string adaptCSharpToJavaParsing = AdaptCSharpToJavaParsing(line);
+                //    writer.Write(adaptCSharpToJavaParsing + "\r\n");
+                //}
+                //writer.Flush();
+                //writer.Close();
+                langText = "Java";
+            }
+            else if (Language == LanguageEnum.CPP)
+            {
+                langText = "C++";
+            }
 
 
-			ProcessStartInfo startInfo = new ProcessStartInfo();
-			startInfo.CreateNoWindow = true;
-			startInfo.UseShellExecute = false;
-			startInfo.RedirectStandardOutput = true;
-			startInfo.RedirectStandardInput = true;
-			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
-			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "--position -l " + langText + " \"" + filename + "\"";
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = true;
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardInput = true;
+            startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.Arguments = "--position -l " + langText + " \"" + tmpFilename + "\"";
 
-			try
-			{
-				using (Process exeProcess = Process.Start(startInfo))
-				{
-					System.IO.StreamReader sOut = exeProcess.StandardOutput;
-					System.IO.StreamWriter sIn = exeProcess.StandardInput;
-					sIn.Close();
+            try
+            {
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    System.IO.StreamReader sOut = exeProcess.StandardOutput;
+                    System.IO.StreamWriter sIn = exeProcess.StandardInput;
+                    sIn.Close();
 
-					var readInputThread = new Thread(new ThreadStart(() => _readInput_DoWork(sOut, out srcML)));
-					readInputThread.Start();
+                    var readInputThread = new Thread(new ThreadStart(() => _readInput_DoWork(sOut, out srcML)));
+                    readInputThread.Start();
 
-					exeProcess.WaitForExit();
+                    exeProcess.WaitForExit();
 
-					_srcMLExecComplete = true;
-					readInputThread.Join();
-					if(!sOut.EndOfStream) srcML += sOut.ReadToEnd();
-					sOut.Close();
-				}
-			}
-			catch
-			{
-				throw new ParserException(TranslationCode.Exception_General_IOException, "sr2srcml.exe execution error, check parameters");
-			}
+                    _srcMLExecComplete = true;
+                    readInputThread.Join();
+                    if (!sOut.EndOfStream) srcML += sOut.ReadToEnd();
+                    sOut.Close();
+                }
+            }
+            catch
+            {
+                throw new ParserException(TranslationCode.Exception_General_IOException, "sr2srcml.exe execution error, check parameters");
+            }
 
-			//erase the temp file we generate for csharp parsing
-			if(Language == LanguageEnum.CSharp)
-			{
-				System.IO.File.Delete(filename);
-			}
+            //erase the temp file we generate for csharp parsing
+            if (Language == LanguageEnum.CSharp)
+            {
+                System.IO.File.Delete(tmpFilename);
+            }
 
-			return srcML;
-		}
+            return srcML;
+        }
 
 		private void _readInput_DoWork(System.IO.StreamReader sOut, out string srcML)
 		{

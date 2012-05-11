@@ -13,8 +13,8 @@
     <FullClassName>Sando.Indexer.Searching.QueryWeightsSupplier</FullClassName>
     <LibraryFileRelativePath>Indexer.dll</LibraryFileRelativePath>
   </QueryWeightsSupplierConfiguration>
-  <QueryRewriterConfiguration>
-    <FullClassName>Sando.Indexer.Searching.QueryRewriter</FullClassName>
+  <DefaultQueryRewriterConfiguration>
+    <FullClassName>Sando.Indexer.Searching.DefaultQueryRewriter</FullClassName>
     <LibraryFileRelativePath>Indexer.dll</LibraryFileRelativePath>
-  </QueryRewriterConfiguration>
+  </DefaultQueryRewriterConfiguration>
 </ExtensionPointsConfiguration>

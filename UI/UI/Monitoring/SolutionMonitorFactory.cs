@@ -12,7 +12,9 @@ namespace Sando.UI.Monitoring
 	class SolutionMonitorFactory
 	{
 		private const string Lucene = "\\lucene";
-		private static readonly string LuceneFolder = CreateLuceneFolder();
+
+	    public static string LuceneDirectory { get; set; }
+
 
 		public static SolutionMonitor CreateMonitor()
 		{
@@ -33,20 +35,20 @@ namespace Sando.UI.Monitoring
 
 		private static string CreateLuceneFolder()
 		{
-			var current = Directory.GetCurrentDirectory();			
-			return CreateFolder(Lucene, current);
+            Contract.Requires(LuceneDirectory != null, "Please set the LuceneDirectory before calling this method");
+			return CreateFolder(Lucene, LuceneDirectory);
 		}
 
-		private static string CreateFolder(string name, string current)
+		private static string CreateFolder(string folderName, string parentDirectory)
 		{
-			if (!File.Exists(current + name))
+			if (!File.Exists(parentDirectory + folderName))
 			{
-				var directoryInfo = Directory.CreateDirectory(current + name);
+				var directoryInfo = Directory.CreateDirectory(parentDirectory + folderName);
 				return directoryInfo.FullName;
 			}
 			else
 			{
-				return name + Lucene;
+                return parentDirectory + folderName;
 			}
 		}
 
@@ -54,7 +56,7 @@ namespace Sando.UI.Monitoring
 		{
 			var fullName = openSolution.FullName;
 			var split = fullName.Split('\\');
-			return split[split.Length - 1];
+			return split[split.Length - 1]+fullName.GetHashCode();
 		}
 
 		private static Solution GetOpenSolution()
@@ -72,8 +74,9 @@ namespace Sando.UI.Monitoring
 
 		private static string GetLuceneDirectoryForSolution(Solution openSolution)
 		{
-			CreateFolder(GetName(openSolution), LuceneFolder + "\\");
-			return LuceneFolder + "\\" + GetName(openSolution);
+		    var luceneFolder = CreateLuceneFolder();
+            CreateFolder(GetName(openSolution), luceneFolder + "\\");
+			return luceneFolder + "\\" + GetName(openSolution);
 		}
 	}
 }

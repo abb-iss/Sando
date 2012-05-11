@@ -174,6 +174,12 @@ namespace Sando.UI
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
                                                                    new SrcMLCppParser(pluginDirectory + "\\LIBS"));
 
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
+            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
+ 	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+ 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+
+
 			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
             if(extensionPointsConfigurationDirectory==null)
             {
@@ -208,6 +214,7 @@ namespace Sando.UI
 
 		private void SolutionHasBeenOpened()
 		{
+		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
 			_currentMonitor = SolutionMonitorFactory.CreateMonitor();
             _currentMonitor.StartMonitoring();		    
 			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
