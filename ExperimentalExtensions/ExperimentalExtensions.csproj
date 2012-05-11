@@ -83,7 +83,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RelevanceFeedbackExtension\RelevanceFeedbackExtension.cs" />
     <Compile Include="RelevanceFeedbackExtension\RFMetrics.cs" />
-    <Compile Include="RelevanceFeedbackExtension\RFQueryResultsMonitor.cs" />
+    <Compile Include="RelevanceFeedbackExtension\RFTrainingEntry.cs" />
     <Compile Include="TextFileParserExtension\TextFileElement.cs" />
     <Compile Include="TextFileParserExtension\TextFileParser.cs" />
   </ItemGroup>
