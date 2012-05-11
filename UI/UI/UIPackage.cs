@@ -170,9 +170,9 @@ namespace Sando.UI
         {
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
 
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, new SrcMLCSharpParser(pluginDirectory+"\\LIBS"));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(GetSrcMLDirectory()));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
-                                                                   new SrcMLCppParser(pluginDirectory + "\\LIBS"));
+                                                                   new SrcMLCppParser(GetSrcMLDirectory()));
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
@@ -192,9 +192,28 @@ namespace Sando.UI
                 extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationDirectory;
 				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			}
+
+            var csParser = extensionPointsRepository.GetParserImplementation(".cs") as SrcMLCSharpParser;
+            if(csParser!=null)
+            {
+                csParser.SetSrcMLPath(GetSrcMLDirectory());
+            }
+            var cppParser = extensionPointsRepository.GetParserImplementation(".cpp") as SrcMLCppParser;
+            if (cppParser != null)
+            {
+                cppParser.SetSrcMLPath(GetSrcMLDirectory());
+            }
+
+
+
         }
 
-		private SandoDialogPage getExtensionPointsDialogPage()
+        private string GetSrcMLDirectory()
+        {
+            return pluginDirectory + "\\LIBS";
+        }
+
+        private SandoDialogPage getExtensionPointsDialogPage()
 		{
 			return GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
 		}

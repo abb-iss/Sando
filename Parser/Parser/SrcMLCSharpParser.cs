@@ -17,15 +17,34 @@ namespace Sando.Parser
 
 	    public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
 
+        public SrcMLCSharpParser():this(null)
+        {
+            
+        }
+
 	    public SrcMLCSharpParser(string pluginDirectory = null)
 		{
 			//try to set this up automatically			
-			Generator = new SrcMLGenerator(LanguageEnum.CSharp);	   
-            if(pluginDirectory!=null)
+			Generator = new SrcMLGenerator(LanguageEnum.CSharp);
+            if (pluginDirectory != null)
                 Generator.SetSrcMLLocation(pluginDirectory);
             else
-	            Generator.SetSrcMLLocation(StandardSrcMlLocation);
+            {
+                try
+                {
+                    Generator.SetSrcMLLocation(StandardSrcMlLocation);
+                }
+                catch (Exception e)
+                {
+                    //
+                }
+            }	        
 		}
+
+        public void SetSrcMLPath(string getSrcMlDirectory)
+        {
+            Generator.SetSrcMLLocation(getSrcMlDirectory);
+        }
 
 		public List<ProgramElement> Parse(string fileName)
 		{
@@ -320,6 +339,8 @@ namespace Sando.Parser
 				programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
 			}
 		}
+
+	   
 	}
 
 }
