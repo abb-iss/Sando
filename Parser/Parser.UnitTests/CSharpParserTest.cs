@@ -41,6 +41,14 @@ namespace Sando.Parser.UnitTests
 			Assert.IsNotNullOrEmpty(srcML);
 		}
 
+        [Test]
+        public void GenerateSrcMLLargeFileTest()
+        {
+            String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\VeryLargeCsFile.txt");
+            Assert.IsNotNullOrEmpty(srcML);
+        }
+
+
 		[Test]
 		public void GenerateSrcMLShortestFileTest()
 		{			
