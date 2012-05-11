@@ -278,5 +278,16 @@ namespace Sando.UI
     	}
 
     	#endregion
+
+        public bool IsPerformingInitialIndexing()
+        {
+            if(_currentMonitor!=null)
+            {
+                return _currentMonitor.PerformingInitialIndexing();
+            }else
+            {
+                return false;
+            }
+        }
     }
 }
