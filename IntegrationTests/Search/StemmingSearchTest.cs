@@ -47,7 +47,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(methodElement.Arguments, "string extension", "Method arguments differs!");
 			Assert.NotNull(methodElement.Body, "Method body is null!");
 			Assert.True(methodElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
-			Assert.AreEqual(methodElement.ClassName, "FileNameTemplate#File Name Template", "Method class name differs!");
+			Assert.AreEqual(methodElement.ClassName, "FileNameTemplate", "Method class name differs!");
 			Assert.AreEqual(methodElement.DefinitionLineNumber, 17, "Method definition line number differs!");
 			Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Method full file path is invalid!");
 			Assert.AreEqual(methodElement.Name, "Parse", "Method name differs!");
@@ -65,7 +65,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(methodElement.Arguments, "ImagePairNames startNames", "Method arguments differs!");
 			Assert.NotNull(methodElement.Body, "Method body is null!");
 			Assert.True(methodElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
-            Assert.AreEqual(methodElement.ClassName, "FileNameTemplate#File Name Template", "Method class name differs!");
+            Assert.AreEqual(methodElement.ClassName, "FileNameTemplate", "Method class name differs!");
 			Assert.AreEqual(methodElement.DefinitionLineNumber, 53, "Method definition line number differs!");
 			Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Method full file path is invalid!");
 			Assert.AreEqual(methodElement.Name, "TryAddTemplatePrompt", "Method name differs!");

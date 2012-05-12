@@ -36,7 +36,7 @@ namespace Sando.Indexer.Documents
 			string returnType = document.GetField(SandoField.ReturnType.ToString()).StringValue().ToSandoDisplayable();
 			string body = document.GetField(SandoField.Body.ToString()).StringValue();
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
-			string className = document.GetField(SandoField.ClassName.ToString()).StringValue();
+			string className = document.GetField(SandoField.ClassName.ToString()).StringValue().ToSandoDisplayable();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
 			bool isConstructor = bool.Parse(document.GetField(SandoField.IsConstructor.ToString()).StringValue());
             return base.ReadProgramElementFromDocument(GetMyType(), new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor });
