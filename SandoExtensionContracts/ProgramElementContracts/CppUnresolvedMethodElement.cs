@@ -18,7 +18,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			IsResolved = false;
 		}
 
-		public bool TryResolve(List<ProgramElement> headerElements, out MethodElement outMethodElement) 
+		public bool TryResolve(CppUnresolvedMethodElement unresolvedMethod, List<ProgramElement> headerElements, out MethodElement outMethodElement) 
 		{
 			AccessLevel accessLevel; 
 			Guid classId;
@@ -28,12 +28,38 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			if(ResolveAccessType(Name, headerElements, out accessLevel) == false) return false;
 
 			IsResolved = true;
-			outMethodElement = new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, 
-													classId, ClassName, String.Empty, IsConstructor);
+		    outMethodElement =
+                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel,
+		                                 Arguments, ReturnType, Body,
+		                                 classId, ClassName, String.Empty, IsConstructor) as MethodElement;
+		    SetCustomFields(unresolvedMethod, outMethodElement);
+                //new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, 
+                //                                    classId, ClassName, String.Empty, IsConstructor);
 			return true;
 		}
 
-		private bool ResolveClassId(string className, List<ProgramElement> includeElements, out Guid outGuid)
+	    private void SetCustomFields(CppUnresolvedMethodElement oldElement, MethodElement newElement)
+	    {
+	        foreach (var property in (oldElement as ProgramElement).GetCustomProperties())
+	        {
+	            if (!property.Name.Equals(ProgramElement.CustomTypeTag))
+	            {
+	                var newProperty = newElement.GetType().GetProperty(property.Name);
+                    var oldProperty= oldElement.GetType().GetProperty(property.Name);
+	                var oldGet = oldProperty.GetGetMethod(false);
+	                var newSet = newProperty.GetSetMethod();
+	                object[] parameters = {oldGet.Invoke(oldElement, null)};
+	                newSet.Invoke(newElement, parameters);
+	            }
+	        }	    
+	    }
+
+	    protected virtual Type GetResolvedType()
+	    {
+	        return typeof (MethodElement);
+	    }
+
+	    private bool ResolveClassId(string className, List<ProgramElement> includeElements, out Guid outGuid)
 		{
 			foreach(ProgramElement element in includeElements)
 			{

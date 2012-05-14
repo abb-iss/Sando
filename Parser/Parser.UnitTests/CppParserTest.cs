@@ -248,7 +248,7 @@ namespace Sando.Parser.UnitTests
 	                    string headerPath = System.IO.Path.GetDirectoryName(sourceFile) + "\\" + headerFile;
 	                    if (!System.IO.File.Exists(headerPath)) continue;
 
-	                    isResolved = unresolvedMethod.TryResolve(parser.Parse(headerPath), out method);
+	                    isResolved = unresolvedMethod.TryResolve(unresolvedMethod, parser.Parse(headerPath), out method);
 	                    if (isResolved == true) break;
 	                }
 	                Assert.IsTrue(isResolved);
