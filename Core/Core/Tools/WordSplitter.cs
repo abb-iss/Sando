@@ -19,7 +19,7 @@ namespace Sando.Core.Tools
         {
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
 
-            searchTerms = Regex.Replace(searchTerms, @"\\|/|:|~", "");
+            searchTerms = Regex.Replace(searchTerms, @"\\|/|:|~|?", "");
 
             MatchCollection matchCollection = Regex.Matches(searchTerms, "\"[^\"]*\"");
             List<string> matches = new List<string>();
