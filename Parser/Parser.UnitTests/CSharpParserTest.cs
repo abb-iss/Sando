@@ -61,7 +61,14 @@ namespace Sando.Parser.UnitTests
 		}
 
         [Test]
-        public void ParseFailingFile()
+        public void GenerateSrcMLPossiblyFailingFileTest()
+        {
+            String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
+            Assert.IsNotNullOrEmpty(srcML);
+        }
+
+        [Test]
+        public void ParsePossiblyFailingFile()
         {
             var parser = new SrcMLCSharpParser();
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
@@ -297,7 +304,7 @@ namespace Sando.Parser.UnitTests
 					if(comment.DocumentedElementId == methodElement.Id)
 					{
 						foundComment = true;
-						Assert.AreEqual(comment.Body, "<summary>  Required method for Designer support - do not modify  the contents of this method with the code editor.  </summary>");
+						Assert.AreEqual(comment.Body, "summary  Required method for Designer support - do not modify  the contents of this method with the code editor.  </summary>");
 						Assert.AreEqual(comment.DefinitionLineNumber, methodElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}

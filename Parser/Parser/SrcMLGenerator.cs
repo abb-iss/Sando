@@ -160,6 +160,9 @@ namespace Sando.Parser
 		{
 			//replace ':' with extends in class definitions 
 			inputCode = Regex.Replace(inputCode, @"class(\s*\w+\s*):(\s*\w+)", "class$1implements$2");
+            
+            //remove generics
+            inputCode = Regex.Replace(inputCode, "<([\\w_]*)>", "$1");            
 
 			//erase #region #endregion lines
             inputCode = Regex.Replace(inputCode, @"#[ \t]*region([\w\. _])*", "");
