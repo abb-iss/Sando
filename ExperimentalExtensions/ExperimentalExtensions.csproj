@@ -22,7 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -71,6 +71,9 @@
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\LIBS\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -81,6 +84,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RelevanceFeedbackExtension\RelevanceFeedbackExtension.cs" />
+    <Compile Include="RelevanceFeedbackExtension\RFMetrics.cs" />
+    <Compile Include="RelevanceFeedbackExtension\RFRankGenerator.cs" />
+    <Compile Include="RelevanceFeedbackExtension\RFTrainingEntry.cs" />
+    <Compile Include="RelevanceFeedbackExtension\RFUnitTests.cs" />
     <Compile Include="TextFileParserExtension\TextFileElement.cs" />
     <Compile Include="TextFileParserExtension\TextFileParser.cs" />
   </ItemGroup>
@@ -93,9 +101,7 @@
   <ItemGroup>
     <None Include="sandoKey.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RelevanceFeedbackExtension\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
