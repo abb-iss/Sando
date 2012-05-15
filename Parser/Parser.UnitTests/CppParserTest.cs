@@ -291,6 +291,13 @@ namespace Sando.Parser.UnitTests
         public MyMethodElementUnresolvedType(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles) : base(name, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
         {
         }
+
+        protected override Type GetResolvedType()
+        {
+            return typeof(MyMethodElementType);
+        }
+
+
     }
 
     public class MyMethodElementType : MethodElement
