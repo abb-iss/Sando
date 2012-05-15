@@ -105,6 +105,25 @@ namespace Sando.IntegrationTests.Search
 			Directory.Delete(indexPath, true);
 		}
 
+		public List<IMethod> ExpandRankedResults(List<IMethod> rankedResults)
+        {
+            HashSet<IMethod> expandedMeths = new HashSet<IMethod>();
+            expandedMeths.UnionWith(rankedResults);
+            int count = 0;
+            foreach (var meth in rankedResults)
+            {
+				//if(meth.GetRelevance() > 0.3)
+                if(count<10)
+				{
+					List<IMethod> callees = this.graphDataBase.GetCallees(meth);
+					if (callees.Count < 30)
+						expandedMeths.UnionWith(callees);
+				}
+                count++;
+            }
+            return expandedMeths.ToList();
+        }
+
 		private string indexPath;
 		private static SolutionMonitor monitor;
 		private static SolutionKey key;

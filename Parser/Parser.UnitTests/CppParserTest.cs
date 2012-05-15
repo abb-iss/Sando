@@ -248,7 +248,7 @@ namespace Sando.Parser.UnitTests
 	                    string headerPath = System.IO.Path.GetDirectoryName(sourceFile) + "\\" + headerFile;
 	                    if (!System.IO.File.Exists(headerPath)) continue;
 
-	                    isResolved = unresolvedMethod.TryResolve(parser.Parse(headerPath), out method);
+	                    isResolved = unresolvedMethod.TryResolve(unresolvedMethod, parser.Parse(headerPath), out method);
 	                    if (isResolved == true) break;
 	                }
 	                Assert.IsTrue(isResolved);
@@ -262,7 +262,7 @@ namespace Sando.Parser.UnitTests
 	                    Assert.AreEqual(method.ReturnType, "double");
 	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 	                    Assert.AreEqual(method.Arguments, String.Empty);
-	                    Assert.AreEqual(method.Body, "time");
+	                    Assert.AreEqual(method.Body, "_time");
 	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 	                }
 	            }
@@ -291,6 +291,13 @@ namespace Sando.Parser.UnitTests
         public MyMethodElementUnresolvedType(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles) : base(name, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
         {
         }
+
+        protected override Type GetResolvedType()
+        {
+            return typeof(MyMethodElementType);
+        }
+
+
     }
 
     public class MyMethodElementType : MethodElement

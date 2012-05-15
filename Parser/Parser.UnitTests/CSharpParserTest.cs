@@ -41,15 +41,43 @@ namespace Sando.Parser.UnitTests
 			Assert.IsNotNullOrEmpty(srcML);
 		}
 
+        [Test]
+        public void GenerateSrcMLLargeFileTest()
+        {
+            String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\VeryLargeCsFile.txt");
+            Assert.IsNotNullOrEmpty(srcML);
+        }
+
+
+
+
+
 		[Test]
 		public void GenerateSrcMLShortestFileTest()
 		{			
 			var parser = new SrcMLCSharpParser();
 			var srcML = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsTrue(srcML!=null);
-		}	
+		}
 
-		[Test]
+        [Test]
+        public void GenerateSrcMLPossiblyFailingFileTest()
+        {
+            String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
+            Assert.IsNotNullOrEmpty(srcML);
+        }
+
+        [Test]
+        public void ParsePossiblyFailingFile()
+        {
+            var parser = new SrcMLCSharpParser();
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
+            Assert.IsNotNull(elements);
+            Assert.IsTrue(elements.Count > 0);
+
+        }
+
+	    [Test]
 		public void ParseMethodTest()
 		{
 			var parser = new SrcMLCSharpParser();
@@ -96,8 +124,8 @@ namespace Sando.Parser.UnitTests
 	                    Assert.AreEqual(method.ReturnType, "void");
 	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 	                    Assert.AreEqual(method.Arguments, "LanguageEnum language");
-	                    Assert.AreEqual(method.Body,
-	                                    "Language language language Language Enum CSharp Language Language Enum Java");
+	                    Assert.AreEqual(method.Body.Trim(),
+                                        "temporary Language   language language  LanguageEnum CSharp Language   LanguageEnum Java");
 	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 	                }
 	            }
@@ -276,7 +304,7 @@ namespace Sando.Parser.UnitTests
 					if(comment.DocumentedElementId == methodElement.Id)
 					{
 						foundComment = true;
-						Assert.AreEqual(comment.Body, "<summary>  Required method for Designer support - do not modify  the contents of this method with the code editor.  </summary>");
+						Assert.AreEqual(comment.Body, "summary  Required method for Designer support - do not modify  the contents of this method with the code editor.  </summary>");
 						Assert.AreEqual(comment.DefinitionLineNumber, methodElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}
@@ -286,7 +314,9 @@ namespace Sando.Parser.UnitTests
 
 		}
 
-		[Test]
+
+
+	    [Test]
 		public void ParseConstructorTest()
 		{
 			bool hasConstructor = false;

@@ -40,7 +40,7 @@ namespace Sando.Indexer.Documents
 	        var customProperties = programElement.GetCustomProperties();
 	        foreach (var customProperty in customProperties)
 	        {
-                document.Add(new Field(customProperty.Name, customProperty.GetValue(programElement,null) as string, Field.Store.NO, Field.Index.ANALYZED));
+                document.Add(new Field(customProperty.Name, customProperty.GetValue(programElement,null) as string, Field.Store.YES, Field.Index.ANALYZED));
 	        }
 	    }
 

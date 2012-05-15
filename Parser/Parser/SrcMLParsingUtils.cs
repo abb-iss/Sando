@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -105,21 +106,39 @@ namespace Sando.Parser
 			XElement block = function.Element(SourceNamespace + "block");
 			if(block != null)
 			{
-				IEnumerable<XElement> bodyNames =
-					from el in block.Descendants(SourceNamespace + "name")
-					select el;
-				foreach(XElement elem in bodyNames)
-				{
-					body += String.Join(" ", ExtensionPointsRepository.Instance.GetWordSplitterImplementation().ExtractWords(elem.Value)) + " ";
-				}
+
+                IEnumerable<XElement> comments =
+                    from el in block.Descendants(SourceNamespace + "comment")
+                         select el;
+                foreach (XElement elem in comments)
+                {
+                    body += String.Join(" ", elem.Value) + " ";
+                }
+
+                //Expressions should also include all names, but we need to verify this...
+                IEnumerable<XElement> expressions =
+                        from el in block.Descendants(SourceNamespace + "expr")
+                        select el;                
+                foreach (XElement elem in expressions)
+                {
+                    body += String.Join(" ", elem.Value) + " ";
+                }
 				body = body.TrimEnd();
 			}
+		    body = Regex.Replace(body, "\\W", " ");
 			return body;
 		}
 
 		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber)
 		{
-			XElement nameElement = target.Element(SourceNamespace + "name");
+            XElement nameElement ;
+			nameElement= target.Element(SourceNamespace + "name");
+            if(nameElement==null)
+            {
+                //case of anonymous inner class, should have a super
+                nameElement = target.Element(SourceNamespace + "super");
+                nameElement = nameElement.Element(SourceNamespace + "name");
+            }
 			name = nameElement.Value;
 
 			if(nameElement.Attribute(PositionNamespace + "line") != null)

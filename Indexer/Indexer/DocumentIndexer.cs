@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
@@ -52,8 +53,8 @@ namespace Sando.Indexer
 		public virtual void AddDocument(SandoDocument sandoDocument)
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
-
-			IndexWriter.AddDocument(sandoDocument.GetDocument());
+            
+            IndexWriter.AddDocument(sandoDocument.GetDocument());
 		}
 
         [MethodImpl(MethodImplOptions.Synchronized)]

@@ -55,8 +55,8 @@ namespace Sando.Indexer.IndexState
 
 		private IndexStateManager()
 		{
-			Contract.Requires(!String.IsNullOrWhiteSpace(indexDirectoryPath), "IndexStateManager:Constructor - index directory path cannot be null or an empty string!");
-			Contract.Requires(Directory.Exists(indexDirectoryPath), "IndexStateManager:Constructor - index directory path does not point to a valid directory!");
+			//Contract.Requires(!String.IsNullOrWhiteSpace(indexDirectoryPath), "IndexStateManager:Constructor - index directory path cannot be null or an empty string!");
+			//Contract.Requires(Directory.Exists(indexDirectoryPath), "IndexStateManager:Constructor - index directory path does not point to a valid directory!");
 
 			this.indexDirectoryPath = Assembly.GetCallingAssembly().Location;
 			this.indexStatePath = Path.Combine(indexDirectoryPath, IndexStateFileName);

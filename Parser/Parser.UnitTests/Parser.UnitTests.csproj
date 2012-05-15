@@ -72,11 +72,14 @@
     <Content Include="TestFiles\Event.CPP.txt" />
     <Content Include="TestFiles\Event.H.txt" />
     <Content Include="TestFiles\InheritanceCSharpFile.txt" />
-    <Content Include="TestFiles\LargeCppFile.txt" />
+    <Content Include="TestFiles\MESTParsingfile.txt" />
     <Content Include="TestFiles\MultiParentTest.txt" />
     <Content Include="TestFiles\ShortCSharpFile.txt" />
     <Content Include="TestFiles\ShortestCSharpFile.txt" />
     <Content Include="TestFiles\ShortInheritance.txt" />
+    <Content Include="TestFiles\VeryLargeCsFile.txt">
+      <SubType>Component</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

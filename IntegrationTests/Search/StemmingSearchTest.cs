@@ -22,7 +22,7 @@ namespace Sando.IntegrationTests.Search
 			string keywords = "name";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 4, "Invalid results number");
-			var classSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Class && el.Element.Name == "FileNameTemplate");
+            var classSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Class && el.Element.Name == "FileNameTemplate");
 			if(classSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
@@ -65,7 +65,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(methodElement.Arguments, "ImagePairNames startNames", "Method arguments differs!");
 			Assert.NotNull(methodElement.Body, "Method body is null!");
 			Assert.True(methodElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
-			Assert.AreEqual(methodElement.ClassName, "FileNameTemplate", "Method class name differs!");
+            Assert.AreEqual(methodElement.ClassName, "FileNameTemplate", "Method class name differs!");
 			Assert.AreEqual(methodElement.DefinitionLineNumber, 53, "Method definition line number differs!");
 			Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Method full file path is invalid!");
 			Assert.AreEqual(methodElement.Name, "TryAddTemplatePrompt", "Method name differs!");
@@ -81,7 +81,7 @@ namespace Sando.IntegrationTests.Search
 			var fieldElement = fieldSearchResult.Element as FieldElement;
 			Assert.AreEqual(fieldElement.AccessLevel, AccessLevel.Private, "Field access level differs!");
 			Assert.True(fieldElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
-			Assert.AreEqual(fieldElement.ClassName, "FileNameTemplate", "Field class name differs!");
+            Assert.AreEqual(fieldElement.ClassName, "FileNameTemplate", "Field class name differs!");
 			Assert.AreEqual(fieldElement.DefinitionLineNumber, 12, "Field definition line number differs!");
 			Assert.True(fieldElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Field full file path is invalid!");
 			Assert.AreEqual(fieldElement.Name, "fileName", "Field name differs!");

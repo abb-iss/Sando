@@ -109,7 +109,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Arguments, "A B string fileName Image image", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
 			Assert.True(method.ClassId != null && method.ClassId != Guid.Empty, "Class id is invalid!");
-			Assert.AreEqual(method.ClassName, "ImageCapture", "Method class name differs!");
+            Assert.AreEqual(method.ClassName, "ImageCapture", "Method class name differs!");
 			Assert.AreEqual(method.DefinitionLineNumber, 83, "Method definition line number differs!");
 			Assert.True(method.FullFilePath.EndsWith("\\TestFiles\\MethodElementTestFiles\\ImageCapture.cs"), "Method full file path is invalid!");
 			Assert.AreEqual(method.Name, "FetchOutputStream", "Method name differs!");

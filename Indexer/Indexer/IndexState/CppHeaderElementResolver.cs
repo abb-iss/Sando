@@ -38,7 +38,7 @@ namespace Sando.Indexer.IndexState
 			bool isResolved = false;
 			MethodElement methodElement = null;
 
-			isResolved = unresolvedMethod.TryResolve(headerElements, out methodElement);
+			isResolved = unresolvedMethod.TryResolve(unresolvedMethod, headerElements, out methodElement);
 			if(isResolved == true)
 			{
 				return DocumentFactory.Create(methodElement);

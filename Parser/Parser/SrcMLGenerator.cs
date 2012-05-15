@@ -69,7 +69,7 @@ namespace Sando.Parser
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private string LaunchSrcML(string filename)
-        {
+        { 
             string srcML = "";
             string langText = Language.ToString();
             var tmpFilename = filename;
@@ -160,9 +160,12 @@ namespace Sando.Parser
 		{
 			//replace ':' with extends in class definitions 
 			inputCode = Regex.Replace(inputCode, @"class(\s*\w+\s*):(\s*\w+)", "class$1implements$2");
+            
+            //remove generics
+            inputCode = Regex.Replace(inputCode, "<([\\w_]*)>", "$1");            
 
 			//erase #region #endregion lines
-			inputCode = Regex.Replace(inputCode, @"#region[\w\. ]*", "");
+            inputCode = Regex.Replace(inputCode, @"#[ \t]*region([\w\. _])*", "");
 			inputCode = Regex.Replace(inputCode, @"#endregion", "");
 
 			//place semicolons after set and get in C# properties

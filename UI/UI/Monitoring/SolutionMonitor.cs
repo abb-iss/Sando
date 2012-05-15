@@ -27,11 +27,15 @@ namespace Sando.UI.Monitoring
 		private readonly SolutionKey _solutionKey;
 		private Thread _startupThread;
 
-
+        public bool PerformingInitialIndexing()
+        {
+            return !_initialIndexDone;
+        }
 
 		private readonly IndexUpdateManager _indexUpdateManager;
+	    private bool _initialIndexDone = false;
 
-		public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
+	    public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
 		{
 			_openSolution = openSolution;
 			_currentIndexer = currentIndexer;
@@ -66,7 +70,8 @@ namespace Sando.UI.Monitoring
                         UpdateAfterAdditions();
                     }
                 }
-			}			
+			}
+		    _initialIndexDone = true;
 		}
 
 	    public void UpdateAfterAdditions()
