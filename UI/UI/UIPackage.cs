@@ -52,7 +52,7 @@ namespace Sando.UI
 	// This attribute starts up our extension early so that it can listen to solution events
 	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
-	[ProvideProfileAttribute(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
+	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
 	public sealed class UIPackage: Package
     {    	
     	
@@ -119,6 +119,17 @@ namespace Sando.UI
 			ShowToolWindow(null,null);
 		}
 
+		public static SandoOptions GetSandoOptions()
+		{
+			SandoDialogPage sandoDialogPage = GetInstance().GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
+			SandoOptions sandoOptions = new SandoOptions()
+										{
+											ExtensionPointsPluginDirectoryPath = sandoDialogPage.ExtensionPointsPluginDirectoryPath,
+											NumberOfSearchResultsReturned = int.Parse(sandoDialogPage.NumberOfSearchResultsReturned)
+										};
+			return sandoOptions;
+		}
+
         /////////////////////////////////////////////////////////////////////////////
         // Overriden Package Implementation
         #region Package Members
@@ -180,7 +191,7 @@ namespace Sando.UI
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 
 
-			string extensionPointsConfigurationDirectory = getExtensionPointsDialogPage().ExtensionPointsPluginDirectoryPath;
+			string extensionPointsConfigurationDirectory = GetSandoOptions().ExtensionPointsPluginDirectoryPath;
             if(extensionPointsConfigurationDirectory==null)
             {
                 extensionPointsConfigurationDirectory = pluginDirectory;
@@ -212,11 +223,6 @@ namespace Sando.UI
         {
             return pluginDirectory + "\\LIBS";
         }
-
-        private SandoDialogPage getExtensionPointsDialogPage()
-		{
-			return GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
-		}
 
 
 

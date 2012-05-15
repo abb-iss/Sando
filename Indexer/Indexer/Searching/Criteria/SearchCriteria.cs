@@ -2,6 +2,11 @@
 {
 	public abstract class SearchCriteria
 	{
+		public SearchCriteria()
+		{
+			NumberOfSearchResultsReturned = 20;
+		}
+
 		public abstract string ToQueryString();
 		
 		public override bool Equals(object obj)
@@ -16,5 +21,7 @@
 		{
 			return this.ToQueryString().GetHashCode();
 		}
+
+		public int NumberOfSearchResultsReturned { get; set; }
 	}
 }

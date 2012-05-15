@@ -18,7 +18,7 @@ namespace Sando.Indexer.Searching
 		{
 			string searchQueryString = searchCriteria.ToQueryString();
 			Query query = documentIndexer.QueryParser.Parse(searchQueryString);
-			int hitsPerPage = 10;
+			int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
 			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
 			documentIndexer.IndexSearcher.Search(query, collector);
 

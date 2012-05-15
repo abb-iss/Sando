@@ -31,15 +31,17 @@ namespace Configuration.OptionsPages
 				optionsControl.Location = new Point(0, 0);
 				optionsControl.OptionsPage = this;
 				optionsControl.ExtensionPointsPluginDirectoryPath = this.ExtensionPointsPluginDirectoryPath;
+				optionsControl.NumberOfSearchResultsReturned = this.NumberOfSearchResultsReturned;
 				return optionsControl;
 			}
 		}
-		/// <summary> 
-		/// Gets or sets the path to the image file. 
-		/// </summary> 
-		/// <remarks>The property that needs to be persisted.</remarks> 
+
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+		public string NumberOfSearchResultsReturned { get; set; }
+		
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public string ExtensionPointsPluginDirectoryPath { get; set; }
+
 		#endregion Properties 
 	}
 }
