@@ -131,7 +131,14 @@ namespace Sando.Parser
 
 		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber)
 		{
-			XElement nameElement = target.Element(SourceNamespace + "name");
+            XElement nameElement ;
+			nameElement= target.Element(SourceNamespace + "name");
+            if(nameElement==null)
+            {
+                //case of anonymous inner class, should have a super
+                nameElement = target.Element(SourceNamespace + "super");
+                nameElement = nameElement.Element(SourceNamespace + "name");
+            }
 			name = nameElement.Value;
 
 			if(nameElement.Attribute(PositionNamespace + "line") != null)

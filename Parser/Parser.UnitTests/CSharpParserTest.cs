@@ -58,9 +58,19 @@ namespace Sando.Parser.UnitTests
 			var parser = new SrcMLCSharpParser();
 			var srcML = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsTrue(srcML!=null);
-		}	
+		}
 
-		[Test]
+        [Test]
+        public void ParseFailingFile()
+        {
+            var parser = new SrcMLCSharpParser();
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
+            Assert.IsNotNull(elements);
+            Assert.IsTrue(elements.Count > 0);
+
+        }
+
+	    [Test]
 		public void ParseMethodTest()
 		{
 			var parser = new SrcMLCSharpParser();
