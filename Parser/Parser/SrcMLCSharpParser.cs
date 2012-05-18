@@ -120,7 +120,13 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cls in classes)
 			{
-				programElements.Add(ParseClass(cls, fileName));
+                ClassElement classElement = ParseClass(cls, fileName);
+                programElements.Add(classElement);
+                DocCommentElement classCommentsElement = SrcMLParsingUtils.ParseClassComments(cls, classElement);
+                if (classCommentsElement != null)
+                {
+                    programElements.Add(classCommentsElement);
+                }
 			}
 		}
 

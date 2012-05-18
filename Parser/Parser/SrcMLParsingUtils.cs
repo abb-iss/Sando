@@ -63,9 +63,43 @@ namespace Sando.Parser
 			}
 		}
 
+
+        public static DocCommentElement ParseClassComments(XElement cls, ClassElement classElement)
+        {
+            string commentBody = "";
+            int commentLine = 0;
+            int snippetSize = 5;
+
+            //retrieve comments above class
+            XElement aboveComment = (cls.PreviousNode is XElement) ? (XElement)cls.PreviousNode : null;
+            while (aboveComment != null &&
+                  aboveComment.Name == (SourceNamespace + "comment"))
+            {
+                string commentText = aboveComment.Value;
+                if (commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
+                commentBody = " " + commentText + commentBody;
+                commentLine = Int32.Parse(aboveComment.Attribute(PositionNamespace + "line").Value);
+                aboveComment = (aboveComment.PreviousNode is XElement) ? (XElement)aboveComment.PreviousNode : null;
+            }
+            commentBody = commentBody.TrimStart();
+
+            if (commentBody != "")
+            {
+                return new DocCommentElement(classElement.Name, classElement.DefinitionLineNumber, classElement.FullFilePath,
+                                                RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize), 
+                                                commentBody, classElement.Id);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 		public static DocCommentElement ParseFunctionComments(XElement function, MethodElement funcElement)
 		{
 			string commentBody = "";
+            int commentLine = funcElement.DefinitionLineNumber;
+            int snippetSize = 5;
 
 			//retrieve comments inside function
 			IEnumerable<XElement> inComments =
@@ -73,7 +107,9 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement inComment in inComments)
 			{
-				commentBody += inComment.Value + " ";
+                string commentText = inComment.Value;
+                if (commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
+                commentBody = " " + commentText + commentBody;
 			}
 			commentBody = commentBody.TrimEnd();
 
@@ -85,14 +121,16 @@ namespace Sando.Parser
 				string commentText = aboveComment.Value;
 				if(commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
 				commentBody = " " + commentText + commentBody;
-				aboveComment = (aboveComment.PreviousNode is XElement) ? (XElement)aboveComment.PreviousNode : null;
+                commentLine = Int32.Parse(aboveComment.Attribute(PositionNamespace + "line").Value);
+                aboveComment = (aboveComment.PreviousNode is XElement) ? (XElement)aboveComment.PreviousNode : null;
 			}
 			commentBody = commentBody.TrimStart();
 
 			if(commentBody != "")
 			{
 				return new DocCommentElement(funcElement.Name, funcElement.DefinitionLineNumber, funcElement.FullFilePath,
-												funcElement.Snippet, commentBody, funcElement.Id);
+                                                RetrieveSnippet(funcElement.FullFilePath, commentLine, snippetSize),
+												commentBody, funcElement.Id);
 			}
 			else
 			{
