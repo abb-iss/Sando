@@ -63,6 +63,7 @@ namespace Sando.Parser
 				ParseFunctions(programElements, sourceElements, fileName);
 				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
 				ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
+				SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
 			}
 
 			return programElements;
