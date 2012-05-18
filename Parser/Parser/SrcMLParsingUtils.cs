@@ -123,6 +123,21 @@ namespace Sando.Parser
                 {
                     body += String.Join(" ", elem.Value) + " ";
                 }
+                //need to also add a names from declarations
+                IEnumerable<XElement> declarations =
+                    from el in block.Descendants(SourceNamespace + "decl")
+                    select el;
+			    foreach (var declaration in declarations)
+			    {
+                    var declNames = from el in declaration.Descendants(SourceNamespace + "name")
+                                    where (el.Parent.Name.LocalName.Equals("type")||
+                                    el.Parent.Name.LocalName.Equals("decl"))
+                                    select el;
+                    foreach (XElement elem in declNames)
+                    {
+                        body += String.Join(" ", elem.Value) + " ";
+                    }			        
+			    }
 				body = body.TrimEnd();
 			}
 		    body = Regex.Replace(body, "\\W", " ");

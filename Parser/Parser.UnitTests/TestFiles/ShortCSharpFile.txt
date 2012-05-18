@@ -45,7 +45,7 @@ namespace Sando.Parser
 		//
 		// run srcML and return the generated sourceXML as a string
 		//
-		public String GenerateSrcML(String filename)
+		public String GenerateSrcML(String parameterFilename)
 		{
 			//check whether filename exists
 			if(!System.IO.File.Exists(filename))
@@ -62,12 +62,13 @@ namespace Sando.Parser
 			string srcML = "";
 
 			ProcessStartInfo startInfo = new ProcessStartInfo();
+			ProcessStartInfo waddow = new ProcessStartInfo();
 			startInfo.CreateNoWindow = true;
 			startInfo.UseShellExecute = false;
 			startInfo.RedirectStandardOutput = true;
 			startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "-l "+Language.ToString()+" " + filename ;
+			startInfo.Arguments = "-l Testingphraseola "+Language.ToString()+" " + filename ;
 
 			try
 			{

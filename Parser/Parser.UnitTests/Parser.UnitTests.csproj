@@ -47,6 +47,8 @@
     <Compile Include="CSharpParserTest.cs" />
     <Compile Include="CppParserTest.cs" />
     <Compile Include="InheritanceParserTest.cs" />
+    <Compile Include="ParserTestingUtils.cs" />
+    <Compile Include="ParserUtilsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,17 +71,24 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="TestFiles\AboutDlg.cpp" />
     <Content Include="TestFiles\Event.CPP.txt" />
     <Content Include="TestFiles\Event.H.txt" />
+    <Content Include="TestFiles\ImageCaptureCS.txt" />
     <Content Include="TestFiles\InheritanceCSharpFile.txt" />
+    <Content Include="TestFiles\Message.H.txt" />
     <Content Include="TestFiles\MESTParsingfile.txt" />
     <Content Include="TestFiles\MultiParentTest.txt" />
+    <Content Include="TestFiles\Parameters.h" />
+    <Content Include="TestFiles\PlayMp3Dlg.h.txt" />
+    <Content Include="TestFiles\RegionTest.txt" />
     <Content Include="TestFiles\ShortCSharpFile.txt" />
     <Content Include="TestFiles\ShortestCSharpFile.txt" />
     <Content Include="TestFiles\ShortInheritance.txt" />
     <Content Include="TestFiles\VeryLargeCsFile.txt">
       <SubType>Component</SubType>
     </Content>
+    <Content Include="TestFiles\xmlMatchedTagsHighlighter.cpp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

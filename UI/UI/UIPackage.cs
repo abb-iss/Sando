@@ -119,9 +119,22 @@ namespace Sando.UI
 			ShowToolWindow(null,null);
 		}
 
-		public static SandoOptions GetSandoOptions()
+        public static SandoOptions GetSandoOptions()
+        {
+            return GetSandoOptions(null, 20);
+        }
+
+        public static SandoOptions GetSandoOptions(string defaultPluginDirectory, int defaultToReturn)
 		{
 			SandoDialogPage sandoDialogPage = GetInstance().GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
+            if(sandoDialogPage.ExtensionPointsPluginDirectoryPath==null&& defaultPluginDirectory!=null)
+            {
+                sandoDialogPage.ExtensionPointsPluginDirectoryPath = defaultPluginDirectory;
+            }
+            if(sandoDialogPage.NumberOfSearchResultsReturned==null)
+            {
+                sandoDialogPage.NumberOfSearchResultsReturned = defaultToReturn+"";
+            }
 			SandoOptions sandoOptions = new SandoOptions()
 										{
 											ExtensionPointsPluginDirectoryPath = sandoDialogPage.ExtensionPointsPluginDirectoryPath,
@@ -191,7 +204,7 @@ namespace Sando.UI
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 
 
-			string extensionPointsConfigurationDirectory = GetSandoOptions().ExtensionPointsPluginDirectoryPath;
+			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory,20).ExtensionPointsPluginDirectoryPath;
             if(extensionPointsConfigurationDirectory==null)
             {
                 extensionPointsConfigurationDirectory = pluginDirectory;
@@ -218,6 +231,7 @@ namespace Sando.UI
 
 
         }
+
 
         private string GetSrcMLDirectory()
         {

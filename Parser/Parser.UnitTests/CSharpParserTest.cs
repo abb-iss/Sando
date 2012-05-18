@@ -275,9 +275,10 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void CommentsTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt");
-			MethodElement methodElement = null;
+			
+		    string filePath = "..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt";
+            var elements = ParserTestingUtils.ParseCsharpFile(filePath);
+		    MethodElement methodElement = null;
 			bool foundComment = false;
 
 			//find the method element
@@ -314,7 +315,7 @@ namespace Sando.Parser.UnitTests
 
 		}
 
-
+ 
 
 	    [Test]
 		public void ParseConstructorTest()
@@ -351,7 +352,6 @@ namespace Sando.Parser.UnitTests
 		{
 			TestUtils.InitializeDefaultExtensionPoints();
 		}
-	
 	}
 
     public class MySrcMLCSharpParser : SrcMLCSharpParser
