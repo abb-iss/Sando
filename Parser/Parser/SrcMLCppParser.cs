@@ -149,13 +149,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cls in classes)
 			{
-                ClassElement classElement = (ClassElement)ParseClassOrStruct(cls, fileName, false);
-                programElements.Add(classElement);
-                DocCommentElement classCommentsElement = SrcMLParsingUtils.ParseClassComments(cls, classElement);
-                if (classCommentsElement != null)
-                {
-                    programElements.Add(classCommentsElement);
-                }
+                programElements.Add((ClassElement)ParseClassOrStruct(cls, fileName, false));
 			}
 		}
 
@@ -240,14 +234,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cons in constructors)
 			{
-				MethodElement methodElement = null;
-                methodElement = ParseCppFunction(cons, programElements, fileName, includedFiles,  typeof(MethodElement), typeof(CppUnresolvedMethodElement), true);
-				programElements.Add(methodElement);
-				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(cons, methodElement);
-				if(methodCommentsElement != null)
-				{
-					programElements.Add(methodCommentsElement);
-				}
+				programElements.Add(ParseCppFunction(cons, programElements, fileName, includedFiles,  typeof(MethodElement), typeof(CppUnresolvedMethodElement), true));
 			}
 		}
 
@@ -259,14 +246,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement func in functions)
 			{
-				MethodElement methodElement = null;
-                methodElement = ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement));
-				programElements.Add(methodElement);
-				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(func, methodElement);
-				if(methodCommentsElement != null)
-				{
-					programElements.Add(methodCommentsElement);
-				}
+				programElements.Add(ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement)));
 			}
 		}
 
