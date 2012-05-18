@@ -63,40 +63,88 @@ namespace Sando.Parser
 			}
 		}
 
-		public static DocCommentElement ParseFunctionComments(XElement function, MethodElement funcElement)
+		public static void ParseComments(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
 		{
-			string commentBody = "";
-
-			//retrieve comments inside function
-			IEnumerable<XElement> inComments =
-				from el in function.Descendants(SourceNamespace + "comment")
+			IEnumerable<XElement> comments =
+				from el in elements.Descendants(SourceNamespace + "comment")
 				select el;
-			foreach(XElement inComment in inComments)
-			{
-				commentBody += inComment.Value + " ";
-			}
-			commentBody = commentBody.TrimEnd();
 
-			//retrieve comments above function
-			XElement aboveComment = (function.PreviousNode is XElement) ? (XElement)function.PreviousNode : null;
-			while(aboveComment != null &&
-				  aboveComment.Name == (SourceNamespace + "comment"))
+			foreach(XElement comment in comments)
 			{
-				string commentText = aboveComment.Value;
+				string commentText = comment.Value;
 				if(commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
-				commentBody = " " + commentText + commentBody;
-				aboveComment = (aboveComment.PreviousNode is XElement) ? (XElement)aboveComment.PreviousNode : null;
-			}
-			commentBody = commentBody.TrimStart();
+				commentText = commentText.TrimStart();
+				int commentLine = Int32.Parse(comment.Attribute(PositionNamespace + "line").Value);
+				
 
-			if(commentBody != "")
-			{
-				return new DocCommentElement(funcElement.Name, funcElement.DefinitionLineNumber, funcElement.FullFilePath,
-												funcElement.Snippet, commentBody, funcElement.Id);
-			}
-			else
-			{
-				return null;
+				if(commentText == String.Empty) continue;
+
+				//comment above method or class
+				XElement belowComment = (comment.NextNode is XElement) ? (XElement)comment.NextNode : null;
+				while(belowComment != null &&
+						belowComment.Name == (SourceNamespace + "comment"))
+				{
+					//proceed down the list of comments until I get to some other program element
+					belowComment = (belowComment.NextNode is XElement) ? (XElement)belowComment.NextNode : null;
+				}
+
+				if(belowComment != null &&
+					(belowComment.Name == (SourceNamespace + "function") ||
+						belowComment.Name == (SourceNamespace + "constructor")))
+				{
+					XElement name = belowComment.Element(SourceNamespace + "name");
+					if(name != null)
+					{
+						string methodName = name.Value;
+						MethodElement methodElement = (MethodElement)programElements.Find(element => element is MethodElement && ((MethodElement)element).Name == methodName);
+						if(methodElement != null)
+						{
+							programElements.Add(new DocCommentElement(methodElement.Name, methodElement.DefinitionLineNumber, methodElement.FullFilePath,
+																		RetrieveSnippet(methodElement.FullFilePath, commentLine, snippetSize),
+																		commentText, methodElement.Id));
+							continue;
+						}
+					}
+				}
+				else if(belowComment != null &&
+							belowComment.Name == (SourceNamespace + "class"))
+				{
+					XElement name = belowComment.Element(SourceNamespace + "name");
+					if(name != null)
+					{
+						string className = name.Value;
+						ClassElement classElement = (ClassElement)programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == className);
+						if(classElement != null)
+						{
+							programElements.Add(new DocCommentElement(classElement.Name, classElement.DefinitionLineNumber, classElement.FullFilePath,
+																		RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize),
+																		commentText, classElement.Id));
+							continue;
+						}
+					}
+				}
+
+				//comment inside a method or class
+				if(comment.Parent.Name == (SourceNamespace + "function") ||
+				   comment.Parent.Name == (SourceNamespace + "constructor"))
+				{
+					MethodElement methodElement = RetrieveMethodElement(comment, programElements);
+					programElements.Add(new DocCommentElement(methodElement.Name, methodElement.DefinitionLineNumber, methodElement.FullFilePath,
+																RetrieveSnippet(methodElement.FullFilePath, commentLine, snippetSize),
+																commentText, methodElement.Id));
+					continue;
+				}
+				else if(comment.Parent.Name == (SourceNamespace + "class"))
+				{
+					ClassElement classElement = RetrieveClassElement(comment, programElements);
+					programElements.Add(new DocCommentElement(classElement.Name, classElement.DefinitionLineNumber, classElement.FullFilePath,
+																RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize),
+																commentText, classElement.Id));
+					continue;
+				}
+
+				//comment is not associated with another element, so it's a plain CommentElement
+				programElements.Add(new CommentElement(commentText, commentLine, fileName, RetrieveSnippet(fileName, commentLine, snippetSize), commentText));
 			}
 		}
 
@@ -107,22 +155,22 @@ namespace Sando.Parser
 			if(block != null)
 			{
 
-                IEnumerable<XElement> comments =
-                    from el in block.Descendants(SourceNamespace + "comment")
-                         select el;
-                foreach (XElement elem in comments)
-                {
-                    body += String.Join(" ", elem.Value) + " ";
-                }
+				IEnumerable<XElement> comments =
+					from el in block.Descendants(SourceNamespace + "comment")
+					select el;
+				foreach(XElement elem in comments)
+				{
+					body += String.Join(" ", elem.Value) + " ";
+				}
 
-                //Expressions should also include all names, but we need to verify this...
-                IEnumerable<XElement> expressions =
-                        from el in block.Descendants(SourceNamespace + "expr")
-                        select el;                
-                foreach (XElement elem in expressions)
-                {
-                    body += String.Join(" ", elem.Value) + " ";
-                }
+				//Expressions should also include all names, but we need to verify this...
+				IEnumerable<XElement> expressions =
+						from el in block.Descendants(SourceNamespace + "expr")
+						select el;
+				foreach(XElement elem in expressions)
+				{
+					body += String.Join(" ", elem.Value) + " ";
+				}
                 //need to also add a names from declarations
                 IEnumerable<XElement> declarations =
                     from el in block.Descendants(SourceNamespace + "decl")
@@ -140,20 +188,20 @@ namespace Sando.Parser
 			    }
 				body = body.TrimEnd();
 			}
-		    body = Regex.Replace(body, "\\W", " ");
+			body = Regex.Replace(body, "\\W", " ");
 			return body;
 		}
 
 		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber)
 		{
-            XElement nameElement ;
-			nameElement= target.Element(SourceNamespace + "name");
-            if(nameElement==null)
-            {
-                //case of anonymous inner class, should have a super
-                nameElement = target.Element(SourceNamespace + "super");
-                nameElement = nameElement.Element(SourceNamespace + "name");
-            }
+			XElement nameElement;
+			nameElement = target.Element(SourceNamespace + "name");
+			if(nameElement == null)
+			{
+				//case of anonymous inner class, should have a super
+				nameElement = target.Element(SourceNamespace + "super");
+				nameElement = nameElement.Element(SourceNamespace + "name");
+			}
 			name = nameElement.Value;
 
 			if(nameElement.Attribute(PositionNamespace + "line") != null)
@@ -180,6 +228,28 @@ namespace Sando.Parser
 				//now find the ClassElement object corresponding to ownerClassName, since those should have been gen'd by now
 				ProgramElement ownerClass = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerClassName);
 				return ownerClass as ClassElement;
+			}
+			else
+			{
+				//field is not contained by a class
+				return null;
+			}
+		}
+
+		public static MethodElement RetrieveMethodElement(XElement field, List<ProgramElement> programElements)
+		{
+			IEnumerable<XElement> ownerMethods =
+				from el in field.Ancestors(SourceNamespace + "function")
+				select el;
+			ownerMethods.Union(from el in field.Ancestors(SourceNamespace + "constructor") select el);
+
+			if(ownerMethods.Count() > 0)
+			{
+				XElement name = ownerMethods.First().Element(SourceNamespace + "name");
+				string ownerMethodName = name.Value;
+				//now find the MethodElement object corresponding to ownerMethodName, since those should have been gen'd by now
+				ProgramElement ownerMethod = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerMethodName);
+				return ownerMethod as MethodElement;
 			}
 			else
 			{

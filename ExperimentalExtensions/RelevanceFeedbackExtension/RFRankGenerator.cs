@@ -37,7 +37,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			startInfo.RedirectStandardInput = false;
 			startInfo.FileName = SvmRankFolderPath + SvmRankLearnExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = "-c " + C + " " + trainFile + " " + modelFile;
+			startInfo.Arguments = "-c " + C + " \"" + trainFile + "\" \"" + modelFile + "\"";
 
 			try
 			{
@@ -64,7 +64,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			startInfo.RedirectStandardInput = false;
 			startInfo.FileName = SvmRankFolderPath + SvmRankClassifyExe;
 			startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-			startInfo.Arguments = inputFile + " " + modelFile + " " + outputFile;
+			startInfo.Arguments = "\"" + inputFile + "\" \"" + modelFile + "\" \"" + outputFile + "\"";
 
 			try
 			{

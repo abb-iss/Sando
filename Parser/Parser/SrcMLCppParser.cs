@@ -63,6 +63,7 @@ namespace Sando.Parser
 				ParseFunctions(programElements, sourceElements, fileName);
 				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
 				ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
+				SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
 			}
 
 			return programElements;
@@ -149,7 +150,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cls in classes)
 			{
-				programElements.Add((ClassElement)ParseClassOrStruct(cls, fileName, false));
+                programElements.Add((ClassElement)ParseClassOrStruct(cls, fileName, false));
 			}
 		}
 
@@ -234,14 +235,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cons in constructors)
 			{
-				MethodElement methodElement = null;
-                methodElement = ParseCppFunction(cons, programElements, fileName, includedFiles,  typeof(MethodElement), typeof(CppUnresolvedMethodElement), true);
-				programElements.Add(methodElement);
-				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(cons, methodElement);
-				if(methodCommentsElement != null)
-				{
-					programElements.Add(methodCommentsElement);
-				}
+				programElements.Add(ParseCppFunction(cons, programElements, fileName, includedFiles,  typeof(MethodElement), typeof(CppUnresolvedMethodElement), true));
 			}
 		}
 
@@ -253,14 +247,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement func in functions)
 			{
-				MethodElement methodElement = null;
-                methodElement = ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement));
-				programElements.Add(methodElement);
-				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(func, methodElement);
-				if(methodCommentsElement != null)
-				{
-					programElements.Add(methodCommentsElement);
-				}
+				programElements.Add(ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement)));
 			}
 		}
 

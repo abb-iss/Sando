@@ -63,6 +63,7 @@ namespace Sando.Parser
 				ParseConstructors(programElements, sourceElements, fileName);
 				ParseMethods(programElements, sourceElements, fileName);
 				ParseProperties(programElements, sourceElements, fileName);
+				SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
 			}
 
 			return programElements;
@@ -120,7 +121,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cls in classes)
 			{
-				programElements.Add(ParseClass(cls, fileName));
+                programElements.Add(ParseClass(cls, fileName));
 			}
 		}
 
@@ -186,14 +187,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement cons in constructors)
 			{
-				MethodElement methodElement = null;
-				methodElement = ParseMethod(cons, programElements, fileName, true);
-				programElements.Add(methodElement);
-				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(cons, methodElement);
-				if(methodCommentsElement != null)
-				{
-					programElements.Add(methodCommentsElement);
-				}
+				programElements.Add(ParseMethod(cons, programElements, fileName, true));
 			}
 		}
 
@@ -204,14 +198,7 @@ namespace Sando.Parser
 				select el;
 			foreach(XElement func in functions)
 			{
-				MethodElement methodElement = null;
-				methodElement = ParseMethod(func, programElements, fileName);
-				programElements.Add(methodElement);
-				DocCommentElement methodCommentsElement = SrcMLParsingUtils.ParseFunctionComments(func, methodElement);
-				if(methodCommentsElement != null)
-				{
-					programElements.Add(methodCommentsElement);
-				}
+				programElements.Add(ParseMethod(func, programElements, fileName));
 			}
 		}
 

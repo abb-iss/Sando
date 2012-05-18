@@ -279,9 +279,13 @@ namespace Sando.Parser.UnitTests
 		    string filePath = "..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt";
             var elements = ParserTestingUtils.ParseCsharpFile(filePath);
 		    MethodElement methodElement = null;
-			bool foundComment = false;
+            ClassElement classElement = null;
+			bool foundMethodComment = false;
+            bool foundClassComment = false;
+			string methodCommentBody = String.Empty;
+			string classCommentBody = String.Empty;
 
-			//find the method element
+			//find the method and class element
 			foreach(ProgramElement pe in elements)
 			{
 				if(pe is MethodElement)
@@ -293,8 +297,17 @@ namespace Sando.Parser.UnitTests
 					}
 
 				}
+                else if(pe is ClassElement)
+                {
+                    ClassElement klass = (ClassElement)pe;
+                    if(klass.Name == "ImageCapture")
+                    {
+                        classElement = klass;
+                    }
+                }
 			}
 			Assert.IsNotNull(methodElement);
+			Assert.IsNotNull(classElement);
 
 			//now see if the comment was properly associated to the method element
 			foreach(ProgramElement pe in elements)
@@ -304,15 +317,24 @@ namespace Sando.Parser.UnitTests
 					DocCommentElement comment = (DocCommentElement)pe;
 					if(comment.DocumentedElementId == methodElement.Id)
 					{
-						foundComment = true;
-						Assert.AreEqual(comment.Body, "summary  Required method for Designer support - do not modify  the contents of this method with the code editor.  </summary>");
+						foundMethodComment = true;
+						methodCommentBody += comment.Body + " ";
 						Assert.AreEqual(comment.DefinitionLineNumber, methodElement.DefinitionLineNumber);
+						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
+					}
+                    else if(comment.DocumentedElementId == classElement.Id)
+					{
+						foundClassComment = true;
+						classCommentBody += comment.Body + " ";
+						Assert.AreEqual(comment.DefinitionLineNumber, classElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}
 				}
 			}
-			Assert.IsTrue(foundComment);
-
+			Assert.IsTrue(foundMethodComment);
+            Assert.IsTrue(foundClassComment);
+			Assert.AreEqual(methodCommentBody, "summary Required method for Designer support - do not modify the contents of this method with the code editor. </summary> ");
+			Assert.AreEqual(classCommentBody, "summary Represents a class for managing the capturing and saving of screenshots. </summary> ");
 		}
 
  
