@@ -55,8 +55,9 @@ namespace Sando.Parser
 			{
 				XElement sourceElements = XElement.Parse(srcml);
 
-				//classes have to be parsed first
+				//classes and structs have to be parsed first
 				ParseClasses(programElements, sourceElements, fileName);
+                ParseStructs(programElements, sourceElements, fileName);
 
 				ParseEnums(programElements, sourceElements, fileName, SnippetSize);
 				SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
@@ -124,6 +125,57 @@ namespace Sando.Parser
                 programElements.Add(ParseClass(cls, fileName));
 			}
 		}
+
+        private void ParseStructs(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
+            IEnumerable<XElement> structs =
+				from el in elements.Descendants(SourceNamespace + "decl")
+				where el.Element(SourceNamespace + "type") != null &&
+					  el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
+					  el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "struct"
+                select el;
+            foreach (XElement strct in structs)
+            {
+                programElements.Add(ParseStruct(strct, fileName));
+            }
+        }
+
+        private StructElement ParseStruct(XElement strct, string fileName)
+        {
+            string name;
+            int definitionLineNumber;
+            SrcMLParsingUtils.ParseNameAndLineNumber(strct, out name, out definitionLineNumber);
+
+            AccessLevel accessLevel = AccessLevel.Public; //default
+			XElement accessElement = strct.Element(SourceNamespace + "specifier");
+			if(accessElement != null)
+			{
+				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
+			}
+
+            //parse namespace
+            IEnumerable<XElement> ownerNamespaces =
+                from el in strct.Ancestors(SourceNamespace + "decl")
+                where el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+                select el;
+            string namespaceName = String.Empty;
+            foreach (XElement ownerNamespace in ownerNamespaces)
+            {
+                foreach (XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+                {
+                    namespaceName += spc.Value + " ";
+                }
+            }
+            namespaceName = namespaceName.TrimEnd();
+
+            //TODO: extended structs are pretty difficult to parse in SrcML
+            string extendedStructs = String.Empty;
+
+            string fullFilePath = System.IO.Path.GetFullPath(fileName);
+            string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+
+            return new StructElement(name, definitionLineNumber, fileName, snippet, accessLevel, namespaceName, extendedStructs, String.Empty);
+        }
 
 		private ClassElement ParseClass(XElement cls, string fileName)
 		{

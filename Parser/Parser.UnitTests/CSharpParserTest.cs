@@ -214,6 +214,28 @@ namespace Sando.Parser.UnitTests
 			Assert.IsTrue(hasEnum);
 		}
 
+        [Test]
+        public void CSharpStructParserTest()
+        {
+            SrcMLCSharpParser parser = new SrcMLCSharpParser();
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Struct1.cs.txt");
+            bool hasStruct = false;
+            foreach (var programElement in elements)
+            {
+                if (programElement as StructElement != null)
+                {
+                    StructElement structElem = (StructElement)programElement;
+                    Assert.AreEqual(structElem.Name, "SimpleStruct");
+                    Assert.AreEqual(structElem.DefinitionLineNumber, 6);
+                    Assert.AreEqual(structElem.Namespace, "SimpleNamespace");
+                    Assert.AreEqual(structElem.AccessLevel, AccessLevel.Public);
+                    Assert.True(structElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Struct1.cs.txt"));
+                    hasStruct = true;
+                }
+            }
+            Assert.IsTrue(hasStruct);
+        }
+
 		[Test]
 		public void CSharpRegionTest()
 		{
