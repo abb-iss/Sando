@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExtensionPointsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ParsersConfiguration>
+    <ParserExtensionPointsConfiguration>
+      <FullClassName>Sando.ExperimentalExtensions.PaiceStemmer.PaiceStemmerExtension</FullClassName>
+      <LibraryFileRelativePath>ExperimentalExtensionPoints.dll</LibraryFileRelativePath>
+      <SupportedFileExtensions>
+        <string>.cs</string>
+      </SupportedFileExtensions>
+    </ParserExtensionPointsConfiguration>
+  </ParsersConfiguration>
+  <QueryRewriterConfiguration>
+    <FullClassName>Sando.ExperimentalExtensions.PaiceStemmer.PaiceStemmerExtension</FullClassName>
+    <LibraryFileRelativePath>ExperimentalExtensionPoints.dll</LibraryFileRelativePath>
+  </QueryRewriterConfiguration>
+</ExtensionPointsConfiguration>
