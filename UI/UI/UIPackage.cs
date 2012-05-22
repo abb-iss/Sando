@@ -135,11 +135,7 @@ namespace Sando.UI
             {
                 sandoDialogPage.NumberOfSearchResultsReturned = defaultToReturn+"";
             }
-			SandoOptions sandoOptions = new SandoOptions()
-										{
-											ExtensionPointsPluginDirectoryPath = sandoDialogPage.ExtensionPointsPluginDirectoryPath,
-											NumberOfSearchResultsReturned = int.Parse(sandoDialogPage.NumberOfSearchResultsReturned)
-										};
+			SandoOptions sandoOptions = new SandoOptions(sandoDialogPage.ExtensionPointsPluginDirectoryPath, sandoDialogPage.NumberOfSearchResultsReturned);
 			return sandoOptions;
 		}
 
