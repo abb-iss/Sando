@@ -15,7 +15,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 	}
 
 	[ContractClassFor(typeof(IMetric))]
-	public class ContractForIMetric : IMetric{
+	public abstract class ContractForIMetric : IMetric{
 
 		public double runMetric(string query, CodeSearchResult result)
 		{
