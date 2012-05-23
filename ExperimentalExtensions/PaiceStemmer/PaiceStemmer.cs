@@ -21,11 +21,7 @@ namespace Sando.ExperimentalExtensions.PaiceStemmer
 		{
 			ruleTable = new List<string>();
 			ruleIndex = new int[26];
-			preStrip = false;
-			if (pre == "/p")
-			{
-				preStrip=true;
-			}
+			preStrip = true;
 			ReadRules(ruleDir + ruleFile);
 		}
 

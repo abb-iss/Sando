@@ -11,7 +11,7 @@ namespace Sando.ExperimentalExtensions.PaiceStemmer
 {
 	public class PaiceStemmerExtension : IParser, IQueryRewriter
 	{
-		string defaultRuleDir = Environment.CurrentDirectory + "\\..\\..\\sando\\LIBS\\paice";
+		string defaultRuleDir = Environment.CurrentDirectory + "\\..\\..\\LIBS\\paice";
 
 		private PaiceStemmer paiceStemmer;
 
@@ -36,10 +36,10 @@ namespace Sando.ExperimentalExtensions.PaiceStemmer
 				if(element is MethodElement)
 				{
 					MethodElement method = (MethodElement)element;
-					newElements.Add(new MethodElement(paiceStemmer.stripAffixes(method.Name), method.DefinitionLineNumber, 
-										method.FullFilePath, method.Snippet, method.AccessLevel, method.Arguments, 
-										method.ReturnType, StemSentence(method.Body), method.ClassId, method.ClassName, 
-										method.Modifiers, method.IsConstructor));
+					newElements.Add(new MethodElement(method.Name, method.DefinitionLineNumber, method.FullFilePath, 
+											method.Snippet, method.AccessLevel, method.Arguments, method.ReturnType, 
+											StemSentence(method.Body), method.ClassId, method.ClassName, 
+											method.Modifiers, method.IsConstructor));
 				}
 				else
 				{
