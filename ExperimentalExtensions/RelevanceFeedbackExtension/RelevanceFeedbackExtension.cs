@@ -58,6 +58,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			Metrics = new List<IMetric>();
 			Metrics.Add(new QueryFileNameCosine());
 			Metrics.Add(new QueryElementNameCosine());
+			Metrics.Add(new OriginalSandoRank());
 
 			//TODO: Read the number of entries from an existing training file
 		}

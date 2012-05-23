@@ -57,6 +57,13 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		}
 	}
 
+	public class OriginalSandoRank : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			return 1 - (1 / (1 + result.Score));
+		}
+	}
 
 	public static class MetricUtils
 	{

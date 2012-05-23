@@ -15,9 +15,9 @@ namespace Sando.ExperimentalExtensions.PaiceStemmer
 
 		private PaiceStemmer paiceStemmer;
 
-		PaiceStemmerExtension()
+		public PaiceStemmerExtension()
 		{
-			paiceStemmer = new PaiceStemmer(defaultRuleDir,"");
+			paiceStemmer = new PaiceStemmer(defaultRuleDir, "");
 		}
 
 		public string RewriteQuery(string query)
@@ -36,9 +36,10 @@ namespace Sando.ExperimentalExtensions.PaiceStemmer
 				if(element is MethodElement)
 				{
 					MethodElement method = (MethodElement)element;
-					newElements.Add(new MethodElement(method.Name, method.DefinitionLineNumber, method.FullFilePath, method.Snippet, 
-										method.AccessLevel, method.Arguments, method.ReturnType, StemSentence(method.Body), 
-										method.ClassId, method.ClassName, method.Modifiers, method.IsConstructor));
+					newElements.Add(new MethodElement(paiceStemmer.stripAffixes(method.Name), method.DefinitionLineNumber, 
+										method.FullFilePath, method.Snippet, method.AccessLevel, method.Arguments, 
+										method.ReturnType, StemSentence(method.Body), method.ClassId, method.ClassName, 
+										method.Modifiers, method.IsConstructor));
 				}
 				else
 				{
