@@ -20,7 +20,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 	public class RelevanceFeedbackExtension : IQueryRewriter, IResultsReorderer
 	{
 		//TODO: this is not the directory I expected (sando part should already have been there)
-		public readonly string StandardSvmRankLocation = Environment.CurrentDirectory + "\\..\\..\\sando\\LIBS\\svm_rank_windows";
+		public readonly string StandardSvmRankLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\svm_rank_windows";
 
 		public static readonly int DEFAULT_TRAINING_CORPUS_SIZE = 10000;
 
