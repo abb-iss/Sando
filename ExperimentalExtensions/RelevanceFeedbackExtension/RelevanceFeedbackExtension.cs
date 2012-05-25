@@ -24,11 +24,11 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 
 		public static readonly int DEFAULT_TRAINING_CORPUS_SIZE = 10000;
 
-		//TODO: figure out a better place for these file, and figure out how to make them per solution
-		public readonly string TrainingFile = Environment.CurrentDirectory + "\\..\\..\\trainRF.dat";
-		public readonly string ModelFile = Environment.CurrentDirectory + "\\..\\..\\modelRF.dat";
-		public readonly string InputRankingFile = Environment.CurrentDirectory + "\\..\\..\\inputRF.dat";
-		public readonly string OutputRankingFile = Environment.CurrentDirectory + "\\..\\..\\outputRF.dat"; 
+		//TODO: figure out how to make them per solution
+		public readonly string TrainingFile = Environment.CurrentDirectory + "\\trainRF.dat";
+		public readonly string ModelFile = Environment.CurrentDirectory + "\\modelRF.dat";
+		public readonly string InputRankingFile = Environment.CurrentDirectory + "\\inputRF.dat";
+		public readonly string OutputRankingFile = Environment.CurrentDirectory + "\\outputRF.dat"; 
 
 		public RFMode OpMode { get; private set; }
 

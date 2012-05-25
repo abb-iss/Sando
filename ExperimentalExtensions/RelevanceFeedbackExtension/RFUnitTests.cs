@@ -64,7 +64,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			RelevanceFeedbackExtension rfe = new RelevanceFeedbackExtension();
 
 			String ranking = "1" + Environment.NewLine + "2" + Environment.NewLine + "3";
-			String rankFile = Environment.CurrentDirectory + "\\..\\..\\rankfile.dat";
+			String rankFile = Environment.CurrentDirectory + "\\rankfile.dat";
 			System.IO.File.WriteAllText(rankFile, ranking);
 
 			List<CodeSearchResult> sandoResults = new List<CodeSearchResult>();
