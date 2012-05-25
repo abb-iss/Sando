@@ -12,7 +12,7 @@ namespace Sando.ExperimentalExtensions.PaiceStemmer
 		[Test]
 		public void StemmingTest()
 		{
-			string ruleDir = Environment.CurrentDirectory + "\\..\\..\\sando\\LIBS\\paice";
+			string ruleDir = Environment.CurrentDirectory + "\\..\\..\\LIBS\\paice";
 			PaiceStemmer paice = new PaiceStemmer(ruleDir, "");
 			Assert.AreEqual(paice.stripAffixes("intercoastal"), "intercoast");
 			Assert.AreEqual(paice.stripAffixes("scientists"), "scy");
