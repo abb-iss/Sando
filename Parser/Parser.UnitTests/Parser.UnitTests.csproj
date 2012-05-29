@@ -71,24 +71,58 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="TestFiles\AboutDlg.cpp" />
-    <Content Include="TestFiles\Event.CPP.txt" />
-    <Content Include="TestFiles\Event.H.txt" />
-    <Content Include="TestFiles\ImageCaptureCS.txt" />
-    <Content Include="TestFiles\InheritanceCSharpFile.txt" />
-    <Content Include="TestFiles\Message.H.txt" />
-    <Content Include="TestFiles\MESTParsingfile.txt" />
-    <Content Include="TestFiles\MultiParentTest.txt" />
-    <Content Include="TestFiles\Parameters.h" />
-    <Content Include="TestFiles\PlayMp3Dlg.h.txt" />
-    <Content Include="TestFiles\RegionTest.txt" />
-    <Content Include="TestFiles\ShortCSharpFile.txt" />
-    <Content Include="TestFiles\ShortestCSharpFile.txt" />
-    <Content Include="TestFiles\ShortInheritance.txt" />
+    <Content Include="TestFiles\AboutDlg.cpp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\Event.CPP.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\Event.H.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\ImageCaptureCS.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\InheritanceCSharpFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\Message.H.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\MESTParsingfile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\MultiParentTest.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\Parameters.h">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\PlayMp3Dlg.h.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\RegionTest.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\ShortCSharpFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\ShortestCSharpFile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\ShortInheritance.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\Struct1.cs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestFiles\VeryLargeCsFile.txt">
       <SubType>Component</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestFiles\xmlMatchedTagsHighlighter.cpp" />
+    <Content Include="TestFiles\xmlMatchedTagsHighlighter.cpp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

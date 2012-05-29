@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Core.Extensions;
+using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
+using Sando.Parser;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 
@@ -92,7 +95,16 @@ namespace Sando.IntegrationTests.Search
 
 		[SetUp]
 		public void Setup()
-		{
+		{              
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
+            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+            extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser("..\\..\\LIBS\\srcML-Win"));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" },
+                                                                   new SrcMLCppParser("..\\..\\LIBS\\srcML-Win"));
+
+
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath);

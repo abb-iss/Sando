@@ -15,3 +15,7 @@ Sando/Local.testsettings
 Sando/Sando.vsmdi
 Sando/TraceAndTestImpact.testsettings
 bin/*
+Sando/Sando.ncrunchsolution.user
+Sando/Sando.crunchsolution.cache
+*.ncrunchproject
+*.ncrunchsolution

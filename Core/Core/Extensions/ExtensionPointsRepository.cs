@@ -92,9 +92,11 @@ namespace Sando.Core.Extensions
 		{
 			get
 			{
-				if(extensionManager == null)
-					extensionManager = new ExtensionPointsRepository();
-				return extensionManager;
+                if (extensionManager == null)
+                {
+                    extensionManager = new ExtensionPointsRepository();
+                }
+			    return extensionManager;
 			}
 		}
 

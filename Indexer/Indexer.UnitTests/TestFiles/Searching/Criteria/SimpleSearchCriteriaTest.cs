@@ -5,6 +5,7 @@ using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using NUnit.Framework;
+using Sando.Core.Extensions;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
@@ -437,6 +438,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 		[SetUp]
 		public void resetContract()
 		{
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
+            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+            extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());        
 			contractFailed = false;
 			Contract.ContractFailed += (sender, e) =>
 			{

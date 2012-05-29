@@ -50,13 +50,27 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\StemmingSearchTest.cs" />
-    <Compile Include="Search\NameWithNumbersSearchTest.cs" />
-    <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs" />
-    <None Include="TestFiles\MethodElementTestFiles\Searcher.cs" />
-    <None Include="TestFiles\MethodElementTestFiles\ImageCapture.cs" />
-    <Compile Include="Search\AllElementSearchTest.cs" />
-    <Compile Include="Search\MethodElementSearchTest.cs" />
-    <None Include="TestFiles\NamesWithNumbersTestFiles\Problem0010Resolver.cs" />
+    <Compile Include="Search\NameWithNumbersSearchTest.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\MethodElementTestFiles\Searcher.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\MethodElementTestFiles\ImageCapture.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Search\AllElementSearchTest.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Search\MethodElementSearchTest.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <None Include="TestFiles\NamesWithNumbersTestFiles\Problem0010Resolver.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core\Core.csproj">
@@ -66,6 +80,10 @@
     <ProjectReference Include="..\Indexer\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Parser\Parser\Parser.csproj">
+      <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
+      <Name>Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
