@@ -43,7 +43,7 @@ namespace Sando.UI.UnitTests
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory + "/basic/");
             key = new SolutionKey(Guid.NewGuid(), ".\\TestFiles\\FourCSFiles", _luceneTempIndexesDirectory + "/basic/");
             var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-            monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer);            
+            monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);            
             string[] files = Directory.GetFiles(".\\TestFiles\\FourCSFiles");
             foreach (var file in files)
             {

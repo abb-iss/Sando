@@ -9,13 +9,15 @@ namespace Sando.Indexer.IndexState
 {
 	public class IndexFilesStatesManager
 	{
-		public IndexFilesStatesManager(string indexDirectoryPath)
+		public IndexFilesStatesManager(string indexDirectoryPath, bool isIndexRecreationRequired)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(indexDirectoryPath), "IndexFilesStatesManager:Constructor - index directory path cannot be null or an empty string!");
 			Contract.Requires(Directory.Exists(indexDirectoryPath), "IndexFilesStatesManager:Constructor - index directory path does not point to a valid directory!");
 
 			this.indexDirectoryPath = indexDirectoryPath;
 			this.indexFilesStatesPath = Path.Combine(indexDirectoryPath, IndexFilesStatesFileName);
+			if(isIndexRecreationRequired && File.Exists(this.indexFilesStatesPath))
+				File.Delete(this.indexFilesStatesPath);
 		}
 
         [MethodImpl(MethodImplOptions.Synchronized)]

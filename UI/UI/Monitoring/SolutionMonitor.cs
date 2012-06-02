@@ -35,13 +35,13 @@ namespace Sando.UI.Monitoring
 		private readonly IndexUpdateManager _indexUpdateManager;
 	    private bool _initialIndexDone = false;
 
-	    public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer)
+		public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
 		{
 			_openSolution = openSolution;
 			_currentIndexer = currentIndexer;
 			_currentPath = solutionKey.GetIndexPath();			
 			_solutionKey = solutionKey;
-			_indexUpdateManager = new IndexUpdateManager(solutionKey, _currentIndexer);
+			_indexUpdateManager = new IndexUpdateManager(solutionKey, _currentIndexer, isIndexRecreationRequired);
 
 			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
 			_processFileInBackground.DoWork +=

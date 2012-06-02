@@ -14,7 +14,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(null);
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(null, false);
 			}
 			catch 
 			{
@@ -28,7 +28,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(String.Empty);
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(String.Empty, false);
 			}
 			catch
 			{
@@ -42,7 +42,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager("Fake path");
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager("Fake path", false);
 			}
 			catch
 			{
@@ -54,7 +54,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		[Test]
 		public void IndexFilesStatesManager_GetIndexFileStateThrowsWhenFullFilePathIsNull()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 			try
 			{
 				indexFilesStatesManager.GetIndexFileState(null);
@@ -70,7 +70,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		[Test]
 		public void IndexFilesStatesManager_GetIndexFileStateThrowsWhenFullFilePathIsAnEmptyString()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 			try
 			{
 				indexFilesStatesManager.GetIndexFileState(String.Empty);
@@ -87,7 +87,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 				IndexFileState indexFileState = indexFilesStatesManager.GetIndexFileState("fake file");
 				Assert.IsNull(indexFileState, "GetIndexFileState should return null for the non indexed file!");
 			}
@@ -102,7 +102,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 				IndexFileState indexFileState = new IndexFileState("file path", DateTime.UtcNow);
 				CreateTemporaryFile();
 				indexFilesStatesManager.UpdateIndexFileState(temporaryFilePath, indexFileState);
@@ -122,7 +122,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		[Test]
 		public void IndexFilesStatesManager_UpdateIndexFileStateThrowsWhenFullFilePathIsNull()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 			try
 			{
 				indexFilesStatesManager.UpdateIndexFileState(null, new IndexFileState("file path", DateTime.UtcNow));
@@ -137,7 +137,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		[Test]
 		public void IndexFilesStatesManager_UpdateIndexFileStateThrowsWhenFullFilePathIsAnEmptyString()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 			try
 			{
 				indexFilesStatesManager.UpdateIndexFileState(String.Empty, new IndexFileState("file path", DateTime.UtcNow));
@@ -152,7 +152,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		[Test]
 		public void IndexFilesStatesManager_UpdateIndexFileStateThrowsWhenFileDoesNotExists()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 			try
 			{
 				indexFilesStatesManager.UpdateIndexFileState("fake path", new IndexFileState("fake path", DateTime.UtcNow));
@@ -167,7 +167,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		[Test]
 		public void IndexFilesStatesManager_UpdateIndexFileStateThrowsWhenIndexFileStateIsNull()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 			try
 			{
 				CreateTemporaryFile();
@@ -189,7 +189,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 				CreateTemporaryFile();
 				DateTime modificationDate = DateTime.UtcNow;
 				indexFilesStatesManager.UpdateIndexFileState(temporaryFilePath, new IndexFileState(temporaryFilePath, modificationDate));
@@ -213,7 +213,7 @@ namespace Sando.Indexer.UnitTests.IndexState
 		{
 			try
 			{
-				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory);
+				IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(fileDirectory, false);
 				CreateTemporaryIndexFilesStatesFile();
 				Assert.True(File.Exists(filePath), "Index files states file should exists here!");
 				indexFilesStatesManager.ReadIndexFilesStates();

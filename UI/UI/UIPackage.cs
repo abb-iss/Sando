@@ -25,6 +25,7 @@ using Sando.SearchEngine;
 using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
+using Sando.Indexer.IndexState;
 
 namespace Sando.UI
 {
@@ -250,7 +251,13 @@ namespace Sando.UI
 		private void SolutionHasBeenOpened()
 		{
 		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
-			_currentMonitor = SolutionMonitorFactory.CreateMonitor();
+			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory, 20).ExtensionPointsPluginDirectoryPath;
+			if(extensionPointsConfigurationDirectory == null)
+			{
+				extensionPointsConfigurationDirectory = pluginDirectory;
+			}
+			bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+			_currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
             _currentMonitor.StartMonitoring();		    
 			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
 		}

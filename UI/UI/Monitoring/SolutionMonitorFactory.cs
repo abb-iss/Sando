@@ -16,20 +16,25 @@ namespace Sando.UI.Monitoring
 	    public static string LuceneDirectory { get; set; }
 
 
-		public static SolutionMonitor CreateMonitor()
+		public static SolutionMonitor CreateMonitor(bool isIndexRecreationRequired)
 		{
 			var openSolution = GetOpenSolution();
-			return CreateMonitor(openSolution);
+			return CreateMonitor(openSolution, isIndexRecreationRequired);
 		}
 
-		private static SolutionMonitor CreateMonitor(Solution openSolution)
+		private static SolutionMonitor CreateMonitor(Solution openSolution, bool isIndexRecreationRequired)
 		{
 			Contract.Requires(openSolution != null, "A solution must be open");
 
 			//TODO if solution is reopen - the guid should be read from file - future change
 			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
 			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Snowball);
-			var currentMonitor = new SolutionMonitor(SolutionWrapper.Create(openSolution), solutionKey, currentIndexer);			
+			if(isIndexRecreationRequired)
+			{
+				currentIndexer.DeleteDocuments("*");
+				currentIndexer.CommitChanges();
+			}
+			var currentMonitor = new SolutionMonitor(SolutionWrapper.Create(openSolution), solutionKey, currentIndexer, isIndexRecreationRequired);			
 			return currentMonitor;
 		}
 

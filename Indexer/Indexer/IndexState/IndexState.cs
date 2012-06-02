@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Sando.Indexer.IndexState
@@ -7,14 +8,10 @@ namespace Sando.Indexer.IndexState
 	{
 		public IndexState()
 		{
-			UsedFieldNames = new List<string>();
-			UsedParsers = new Dictionary<string, string>();
+			RelevantFilesInfo = new List<RelevantFileInfo>();
 		}
 
-		public List<string> UsedFieldNames { get; set; }
-		public Dictionary<string, string> UsedParsers { get; set; }
-		public string UsedSplitter { get; set; }
-		public string UsedAnalyzer { get; set; }
+		public List<RelevantFileInfo> RelevantFilesInfo { get; set; }
 
 		public override bool Equals(object obj)
 		{
@@ -22,20 +19,9 @@ namespace Sando.Indexer.IndexState
 			if(indexState == null)
 				return false;
 			
-			if(UsedFieldNames.Count != indexState.UsedFieldNames.Count)
+			if(RelevantFilesInfo.Count != indexState.RelevantFilesInfo.Count)
 				return false;
-			if(UsedFieldNames.Count(f => !indexState.UsedFieldNames.Contains(f)) > 0)
-				return false;
-
-			if(UsedParsers.Count != indexState.UsedParsers.Count)
-				return false;
-			if(UsedParsers.Count(f => !indexState.UsedParsers.Contains(f)) > 0)
-				return false;
-
-			if(UsedSplitter != indexState.UsedSplitter)
-				return false;
-
-			if(UsedAnalyzer != indexState.UsedAnalyzer)
+			if(RelevantFilesInfo.Count(f => !indexState.RelevantFilesInfo.Exists(f2 => f.FullName == f2.FullName && f.LastWriteTime == f2.LastWriteTime)) > 0)
 				return false;
 
 			return true;
@@ -45,5 +31,11 @@ namespace Sando.Indexer.IndexState
 		{
 			return base.GetHashCode();
 		}
+	}
+
+	public class RelevantFileInfo
+	{
+		public string FullName { get; set; }
+		public DateTime LastWriteTime { get; set; }
 	}
 }

@@ -109,7 +109,7 @@ namespace Sando.IntegrationTests.Search
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath);
 			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer);
+			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles");
 			foreach(var file in files)
 			{

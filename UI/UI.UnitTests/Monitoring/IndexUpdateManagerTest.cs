@@ -18,7 +18,7 @@ namespace Sando.UI.UnitTests.Monitoring
 		[Test]
 		public void IndexUpdateManager_WorksNormallyWith50Threads()
 		{
-			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(indexPath);
+			IndexFilesStatesManager indexFilesStatesManager = new IndexFilesStatesManager(indexPath, false);
 			indexFilesStatesManager.ReadIndexFilesStates();
 			string filePath = null;
 			for(int i = 0; i < nrOfDifferentFiles; ++i)
@@ -48,7 +48,7 @@ namespace Sando.UI.UnitTests.Monitoring
 
 			indexUpdateManager.SaveFileStates();
 
-			indexFilesStatesManager = new IndexFilesStatesManager(indexPath);
+			indexFilesStatesManager = new IndexFilesStatesManager(indexPath, false);
 			indexFilesStatesManager.ReadIndexFilesStates(); 
 			foreach(int i in randomNumbers)
 			{
@@ -86,7 +86,7 @@ namespace Sando.UI.UnitTests.Monitoring
 			PrepareFileSystemObjects();
 			solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath);
 			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Default);
-			indexUpdateManager = new IndexUpdateManager(solutionKey, documentIndexer);
+			indexUpdateManager = new IndexUpdateManager(solutionKey, documentIndexer, false);
 			executionCounter = 0;
 		}
 

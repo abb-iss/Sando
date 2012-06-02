@@ -1,16 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Xml;
 using Sando.Core;
-using Sando.ExtensionContracts.ParserContracts;
+using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
-using Sando.Parser;
-using Sando.Core.Extensions;
-using System.IO;
-using System.Collections.Generic;
 
 namespace Sando.UI.Monitoring
 {
@@ -23,10 +21,10 @@ namespace Sando.UI.Monitoring
 		private DocumentIndexer _currentIndexer;
 
 
-	    public IndexUpdateManager(SolutionKey solutionKey, DocumentIndexer currentIndexer)
+		public IndexUpdateManager(SolutionKey solutionKey, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
 		{
 			_currentIndexer = currentIndexer;
-			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath());
+			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath(), isIndexRecreationRequired);
 			_indexFilesStatesManager.ReadIndexFilesStates();
 
 			_physicalFilesStatesManager = new PhysicalFilesStatesManager();
