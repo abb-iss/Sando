@@ -339,15 +339,21 @@ namespace Sando.Parser.UnitTests
 					DocCommentElement comment = (DocCommentElement)pe;
 					if(comment.DocumentedElementId == methodElement.Id)
 					{
-						foundMethodComment = true;
 						methodCommentBody += comment.Body + " ";
+						if(methodCommentBody == "summary Required method for Designer support - do not modify the contents of this method with the code editor. </summary> ")
+						{
+							foundMethodComment = true;
+						}
 						Assert.AreEqual(comment.DefinitionLineNumber, methodElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}
                     else if(comment.DocumentedElementId == classElement.Id)
 					{
-						foundClassComment = true;
 						classCommentBody += comment.Body + " ";
+						if(classCommentBody == "summary Represents a class for managing the capturing and saving of screenshots. </summary> ")
+						{
+							foundClassComment = true;
+						}
 						Assert.AreEqual(comment.DefinitionLineNumber, classElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}
@@ -355,11 +361,7 @@ namespace Sando.Parser.UnitTests
 			}
 			Assert.IsTrue(foundMethodComment);
             Assert.IsTrue(foundClassComment);
-			Assert.AreEqual(methodCommentBody, "summary Required method for Designer support - do not modify the contents of this method with the code editor. </summary> ");
-			Assert.AreEqual(classCommentBody, "summary Represents a class for managing the capturing and saving of screenshots. </summary> ");
-		}
-
- 
+		} 
 
 	    [Test]
 		public void ParseConstructorTest()

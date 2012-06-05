@@ -125,21 +125,20 @@ namespace Sando.Parser
 				}
 
 				//comment inside a method or class
-				if(comment.Parent.Name == (SourceNamespace + "function") ||
-				   comment.Parent.Name == (SourceNamespace + "constructor"))
+				MethodElement methodEl = RetrieveMethodElement(comment, programElements);
+				if(methodEl != null)
 				{
-					MethodElement methodElement = RetrieveMethodElement(comment, programElements);
-					programElements.Add(new DocCommentElement(methodElement.Name, methodElement.DefinitionLineNumber, methodElement.FullFilePath,
-																RetrieveSnippet(methodElement.FullFilePath, commentLine, snippetSize),
-																commentText, methodElement.Id));
+					programElements.Add(new DocCommentElement(methodEl.Name, methodEl.DefinitionLineNumber, methodEl.FullFilePath,
+																RetrieveSnippet(methodEl.FullFilePath, commentLine, snippetSize),
+																commentText, methodEl.Id));
 					continue;
 				}
-				else if(comment.Parent.Name == (SourceNamespace + "class"))
+				ClassElement classEl = RetrieveClassElement(comment, programElements);
+				if(classEl != null)
 				{
-					ClassElement classElement = RetrieveClassElement(comment, programElements);
-					programElements.Add(new DocCommentElement(classElement.Name, classElement.DefinitionLineNumber, classElement.FullFilePath,
-																RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize),
-																commentText, classElement.Id));
+					programElements.Add(new DocCommentElement(classEl.Name, classEl.DefinitionLineNumber, classEl.FullFilePath,
+																RetrieveSnippet(classEl.FullFilePath, commentLine, snippetSize),
+																commentText, classEl.Id));
 					continue;
 				}
 
@@ -196,14 +195,27 @@ namespace Sando.Parser
 		{
 			XElement nameElement;
 			nameElement = target.Element(SourceNamespace + "name");
-			if(nameElement == null)
+			if(nameElement == null && 
+				target.Element(SourceNamespace + "super") != null) 
 			{
 				//case of anonymous inner class, should have a super
 				nameElement = target.Element(SourceNamespace + "super");
 				nameElement = nameElement.Element(SourceNamespace + "name");
+				name = nameElement.Value;
 			}
-			name = nameElement.Value;
+			else if(nameElement == null)
+			{
+				//case of there is no resemblance of a name available
+				name = ProgramElement.UndefinedName;
+				nameElement = target; //still try to parse line number
+			}
+			else
+			{
+				//normal case
+				name = nameElement.Value;
+			}
 
+			////try to get line number
 			if(nameElement.Attribute(PositionNamespace + "line") != null)
 			{
 				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
@@ -253,7 +265,7 @@ namespace Sando.Parser
 			}
 			else
 			{
-				//field is not contained by a class
+				//field is not contained by a method
 				return null;
 			}
 		}
