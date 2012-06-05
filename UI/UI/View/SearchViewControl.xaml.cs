@@ -149,7 +149,7 @@ namespace Sando.UI.View
 				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 			}
 			_searchManager.Search(SearchString, SearchCriteria);
-			resultExpander.IsExpanded = true;
+			//resultExpander.IsExpanded = true;
     	}
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -179,7 +179,7 @@ namespace Sando.UI.View
 					
 					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
 					// _searchManager.Search(text.Text, SearchCriteria);
-					resultExpander.IsExpanded = true;
+					//resultExpander.IsExpanded = true;
 					searchResultListbox.SelectedIndex = 0;
 					searchResultListbox.Focus();
 				}

@@ -109,8 +109,17 @@ namespace Sando.UI.Monitoring
 
 		private void ProcessChildren(ProjectItem item)
 		{
-			if (item.ProjectItems != null)
-				ProcessItems(item.ProjectItems.GetEnumerator());
+            if (item.ProjectItems != null)
+            {
+                try
+                {
+                    ProcessItems(item.ProjectItems.GetEnumerator());
+                }catch(NullReferenceException nre)
+                {
+                    //item.ProjectItems == null during shutdown
+                    //thus, ignore this error, as it only occurs during shutdown
+                }
+            }
 		}
 
 		private void ProcessSingleFile(ProjectItem item)
