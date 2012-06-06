@@ -1,5 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BitmapImage x:Key="VSObject_Comment" UriSource="../Resources/VS2010Icons/comment.png" />
+    <BitmapImage x:Key="VSObject_Generic" UriSource="../Resources/VS2010Icons/generic.png" />
     <BitmapImage x:Key="VSObject_Class" UriSource="../Resources/VS2010Icons/VSObject_Class.png" />
     <BitmapImage x:Key="VSObject_Class_Private" UriSource="../Resources/VS2010Icons/VSObject_Class_private.png" />
     <BitmapImage x:Key="VSObject_Class_Friend" UriSource="../Resources/VS2010Icons/VSObject_Class_friend.png" />
