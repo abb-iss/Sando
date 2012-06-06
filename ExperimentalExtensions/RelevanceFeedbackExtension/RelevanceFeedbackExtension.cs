@@ -7,6 +7,7 @@ using System.Diagnostics;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using System.Diagnostics.Contracts;
+using System.Text.RegularExpressions;
 
 namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 {
@@ -47,7 +48,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 
 		public RelevanceFeedbackExtension(int trainingSetSize)
 		{
-			Contract.Requires(trainingSetSize > 0, "Relevance feedback needs a training set that is greater than 0.");
+			Contract.Requires(trainingSetSize > 0, "Relevance feedback needs a training set size that is greater than 0.");
 
 			OpMode = RFMode.Training;
 			TrainingSetSize = trainingSetSize;
@@ -60,7 +61,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			Metrics.Add(new QueryElementNameCosine());
 			Metrics.Add(new OriginalSandoRank());
 
-			//TODO: Read the number of entries from an existing training file
+			ReadNumberOfTrainingEntries(TrainingFile);
 		}
 
 		public string RewriteQuery(string query)
@@ -137,6 +138,41 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		private void WriteRankingEntry(string rankingDataFile, RFTrainingEntry entry)
 		{
 			System.IO.File.WriteAllText(rankingDataFile, entry.SerializeInSandoOrder());
+		}
+
+		private int ReadNumberOfTrainingEntries(string trainingDataFile)
+		{
+			int bufferSize = 1000; //number of bytes to read from the end of the file
+			int entryNum = 0;
+
+			System.IO.FileStream fs = new System.IO.FileStream(trainingDataFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+			if(fs == null)
+			{
+				return 0;
+			}
+
+			if(bufferSize < fs.Length)
+			{
+				fs.Seek(-bufferSize, System.IO.SeekOrigin.End);
+			}
+			else
+			{
+				bufferSize = (int)fs.Length;
+				fs.Seek(0, System.IO.SeekOrigin.Begin);
+			}
+
+			byte[] buffer = new byte[bufferSize];
+			fs.Read(buffer, 0, bufferSize);
+			String strBuf = System.Text.Encoding.Default.GetString(buffer);
+			MatchCollection matches = Regex.Matches(strBuf, @"#query [0-9]+");
+			foreach(Match match in matches)
+			{
+				String number = match.Value.Split().ElementAt(1);
+				int num = Int32.Parse(number);
+				if(num > entryNum) entryNum = num;
+			}
+
+			return entryNum;
 		}
 
 	}
