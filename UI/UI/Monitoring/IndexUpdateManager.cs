@@ -51,6 +51,7 @@ namespace Sando.UI.Monitoring
 				{
 					case IndexOperation.Add:
 						{
+                            _currentIndexer.DeleteDocuments(path); //just to be safe!
 							Update(indexFileState, path, physicalFileState);
 							break;
 						}

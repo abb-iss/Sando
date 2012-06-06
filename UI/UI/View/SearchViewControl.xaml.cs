@@ -243,7 +243,12 @@ namespace Sando.UI.View
 			if (value == null) { return null; }
 
 			ProgramElement element = value as ProgramElement;
-			if (element == null) { return null; }
+            if (element == null) { return GetBitmapImage("../Resources/VS2010Icons/generic.png"); }
+            if(element as CommentElement !=null || element as DocCommentElement !=null)
+            {                
+                string resource = "../Resources/VS2010Icons/comment.png";
+                return GetBitmapImage(resource);   
+            }
 			string accessLevel;
 			PropertyInfo info = element.GetType().GetProperty("AccessLevel");
 			if (info != null)
@@ -253,12 +258,31 @@ namespace Sando.UI.View
 			if (accessLevel.ToLower() == "_public")
 				accessLevel = "";
 
-
-			string resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", element.ProgramElementType, accessLevel);
-			return new BitmapImage(new Uri(resourceName, UriKind.Relative));
+		    ProgramElementType programElementType = element.ProgramElementType;
+            if(programElementType.Equals(ProgramElementType.MethodPrototype))
+            {
+                programElementType = ProgramElementType.Method;
+            }
+		    string resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", programElementType, accessLevel);
+		    return GetBitmapImage(resourceName);
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        static Dictionary<string,BitmapImage>  images = new Dictionary<string, BitmapImage>();
+
+	    private static BitmapImage GetBitmapImage(string resource)
+	    {
+	        BitmapImage image;
+            if (images.TryGetValue(resource, out image))
+                return image;
+            else
+            {
+                image = new BitmapImage(new Uri(resource, UriKind.Relative));
+                images[resource] = image;
+                return image;
+            }
+	    }
+
+	    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			return new NotImplementedException();
 		}

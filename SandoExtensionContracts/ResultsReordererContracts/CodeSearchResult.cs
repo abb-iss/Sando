@@ -29,6 +29,20 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
            private set;
        }
 
+        public string ParentOrFile
+        {
+            get
+            {
+                if(string.IsNullOrEmpty(Parent))
+                {
+                    return Path.GetFileName(this.FileName);
+                }else
+                {
+                    return Parent;
+                }
+            }
+        }
+
        public ProgramElementType ProgramElementType
        {
            get { return Element.ProgramElementType; }

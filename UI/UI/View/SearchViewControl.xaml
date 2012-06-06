@@ -161,7 +161,7 @@
 								<DataTemplate>
 									<Grid Margin="0,2,0,0">
 										<Grid.RowDefinitions>
-											<RowDefinition Height="{Binding ElementName=Parent, Path=Text.Length, Converter={StaticResource NullOrEmptyIsHidden}}"/>
+											<RowDefinition Height="20"/>
 											<RowDefinition Height="1"/>
 											<RowDefinition Height="60"/>
 											<RowDefinition Height="0" />
@@ -169,24 +169,23 @@
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
-										<Grid Grid.Row="0" Grid.Column="0">
+										<Grid Grid.Row="0" Grid.Column="0" >
 											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="70"/>
-												<ColumnDefinition Width="20"/>
 												<ColumnDefinition Width="Auto"/>
+												<ColumnDefinition Width="Auto"/>
+												<ColumnDefinition Width="*"/>
 											</Grid.ColumnDefinitions>
 											<Grid.RowDefinitions>
-												<RowDefinition Height="20"/>
-												<RowDefinition Height="20"/>												
+												<RowDefinition Height="20"/>																							
 											</Grid.RowDefinitions>
-											<Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="0" Grid.Column="1" />
-											<Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="1" Grid.Column="1" Visibility="{Binding ElementName=Parent, Path=Text.Length, Converter={StaticResource NullOrEmptyToVisibility}}" DataContext="{Binding}" />
+											<Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="14,0,2,2" Grid.Row="0" Grid.Column="1" />
+											<!--<Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="1" Grid.Column="1" Visibility="{Binding ElementName=Parent, Path=Text.Length, Converter={StaticResource NullOrEmptyToVisibility}}" DataContext="{Binding}" />-->
 											<!--<Image Source="{Binding Mode=OneWay, Path=Element.FullFilePath, Converter={StaticResource FileTypeToIcon}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />-->
 
-											<TextBlock Name="Type" Text="{Binding Mode=OneWay, Path=Type}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="0" />
-											<TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="2" FontWeight="Bold" />
-											<TextBlock Text="Parent:" Grid.Row="1" Grid.Column="0"  Visibility="{Binding ElementName=Parent, Path=Text.Length, Converter={StaticResource ResourceKey=NullOrEmptyToVisibility}}" DataContext="{Binding}" />
-											<TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=Parent}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="2" />
+											<!--<TextBlock Name="Type" Text="{Binding Mode=OneWay, Path=Type}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="0" />-->
+                                                <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="0" FontWeight="Bold" />
+                                                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Heavy" Margin="5,0,5,0">></TextBlock>
+                                                <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Bold" />																						
 										</Grid>
 										<Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="1" Grid.Column="0">
 											<Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>

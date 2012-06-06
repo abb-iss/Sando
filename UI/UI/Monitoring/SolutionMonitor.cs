@@ -118,6 +118,7 @@ namespace Sando.UI.Monitoring
                 {
                     //item.ProjectItems == null during shutdown
                     //thus, ignore this error, as it only occurs during shutdown
+                    Debug.WriteLine(nre.StackTrace);
                 }
             }
 		}
@@ -171,6 +172,10 @@ namespace Sando.UI.Monitoring
 			//shut down the current indexer
 			if(_currentIndexer != null)
 			{
+                //cleanup 
+                _currentIndexer.CommitChanges();
+                _indexUpdateManager.SaveFileStates();
+                //dispose
 				_currentIndexer.Dispose();
 				_currentIndexer = null;
 			}
