@@ -242,9 +242,15 @@ namespace Sando.UI
 		
 			if(_currentMonitor != null)
 			{
-				_currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
-				_currentMonitor.Dispose();
-				_currentMonitor = null;
+                try
+                {
+                    _currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
+                }
+                finally
+                {
+                    _currentMonitor.Dispose();
+                    _currentMonitor = null;
+                }
 			}
 		}
 
