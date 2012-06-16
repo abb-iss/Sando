@@ -125,25 +125,29 @@ namespace Sando.UI.Monitoring
 
 		private void ProcessSingleFile(ProjectItem item)
 		{
-		    string fileExtension = Path.GetExtension(item.Name);
-            if (fileExtension != null && !fileExtension.Equals(String.Empty))
-            {
-                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
-                {
-                    Debug.WriteLine("Start: " + item.Name);
-                    try
-                    {
-                        var path = item.FileNames[0];
-                        ProcessFileForTesting(path);
-                        Debug.WriteLine("End: " + item.Name);
-                    }
-                    //TODO - don't catch a generic exception
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.StackTrace);
-                    }
-                }
-            }
+		    try
+		    {
+		        if (item != null && item.Name != null)
+		        {
+		            string path = item.FileNames[0];
+		            string fileExtension = Path.GetExtension(path);
+		            if (fileExtension != null && !fileExtension.Equals(String.Empty))
+		            {
+		                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
+		                {
+		                    Debug.WriteLine("Start: " + path);
+
+		                    ProcessFileForTesting(path);
+		                    Debug.WriteLine("End: " + path);
+		                }
+		            }
+		        }
+		    }
+		        //TODO - don't catch a generic exception
+		    catch (Exception e)
+		    {
+		        Debug.WriteLine(e.StackTrace);
+		    }
 		}
 
 	    public void ProcessFileForTesting(string path)
@@ -158,27 +162,32 @@ namespace Sando.UI.Monitoring
 
 	    public void Dispose()
 		{
-            if (_documentTable != null)
+            try
             {
-                _documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
+                if (_documentTable != null)
+                {
+                    _documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
+                }
+
+                //shut down any current indexing from the startup thread
+                if (_startupThread != null)
+                {
+                    _startupThread.Abort();
+                }
             }
-
-	        //shut down any current indexing from the startup thread
-			if(_startupThread!=null)
-			{
-				_startupThread.Abort();
-			}
-
-			//shut down the current indexer
-			if(_currentIndexer != null)
-			{
-                //cleanup 
-                _currentIndexer.CommitChanges();
-                _indexUpdateManager.SaveFileStates();
-                //dispose
-				_currentIndexer.Dispose();
-				_currentIndexer = null;
-			}
+            finally
+            {
+                //shut down the current indexer
+                if (_currentIndexer != null)
+                {
+                    //cleanup 
+                    _currentIndexer.CommitChanges();
+                    _indexUpdateManager.SaveFileStates();
+                    //dispose
+                    _currentIndexer.Dispose();
+                    _currentIndexer = null;
+                }
+            }
 		}
 
 		public int OnAfterFirstDocumentLock(uint cookie, uint lockType, uint readLocksLeft, uint editLocksLeft)

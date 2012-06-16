@@ -104,6 +104,9 @@
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NHunspell">
+      <HintPath>..\LIBS\Spelling\NHunspell.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\LIBS\nunit.framework.dll</HintPath>
     </Reference>
@@ -125,6 +128,8 @@
     <Compile Include="RelevanceFeedbackExtension\RFRankGenerator.cs" />
     <Compile Include="RelevanceFeedbackExtension\RFTrainingEntry.cs" />
     <Compile Include="RelevanceFeedbackExtension\RFUnitTests.cs" />
+    <Compile Include="SpellChecking\SpellCheckingQueryRewriter.cs" />
+    <Compile Include="SpellChecking\SpellCheckingQueryRewriterTest.cs" />
     <Compile Include="TextFileParserExtension\TextFileElement.cs" />
     <Compile Include="TextFileParserExtension\TextFileParser.cs" />
   </ItemGroup>
