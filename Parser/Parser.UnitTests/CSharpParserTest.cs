@@ -128,6 +128,14 @@ namespace Sando.Parser.UnitTests
                                         "temporary Language   language language  LanguageEnum CSharp Language   LanguageEnum Java");
 	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 	                }
+                    if (method.Name == "GenerateSrcML")
+                    {
+                        seenSetLanguageMethod = true;
+                        Assert.AreEqual(method.Body.Trim(),
+                                        "check whether filename exists  System IO File Exists filename  filename new ParserException  parser input file name does not exist      filename   parser input file name does not exist      filename LaunchSrcML filename  filename another one run srcML and return the generated sourceXML as a string a comment");
+                        Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
+                    }
+
 	            }
 	        }
 	        Assert.IsTrue(seenSetLanguageMethod);
@@ -339,8 +347,8 @@ namespace Sando.Parser.UnitTests
 					DocCommentElement comment = (DocCommentElement)pe;
 					if(comment.DocumentedElementId == methodElement.Id)
 					{
-						methodCommentBody += comment.Body + " ";
-						if(methodCommentBody == "summary Required method for Designer support - do not modify the contents of this method with the code editor. </summary> ")
+						methodCommentBody = comment.Body.Replace("\r\n","");
+						if(methodCommentBody == "summary Required method for Designer support - do not modify the contents of this method with the code editor. </summary>")
 						{
 							foundMethodComment = true;
 						}
@@ -349,8 +357,8 @@ namespace Sando.Parser.UnitTests
 					}
                     else if(comment.DocumentedElementId == classElement.Id)
 					{
-						classCommentBody += comment.Body + " ";
-						if(classCommentBody == "summary Represents a class for managing the capturing and saving of screenshots. </summary> ")
+                        classCommentBody = comment.Body.Replace("\r\n", "");
+						if(classCommentBody == "summary Represents a class for managing the capturing and saving of screenshots. </summary>")
 						{
 							foundClassComment = true;
 						}

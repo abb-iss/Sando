@@ -23,10 +23,10 @@ namespace Sando.IntegrationTests.Search
 			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
 			string keywords = "fetch output stream";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-			Assert.AreEqual(codeSearchResults.Count, 9, "Invalid results number");
+			Assert.AreEqual(codeSearchResults.Count, 3, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "FetchOutputStream");
 			if(methodSearchResult == null)
-			{
+			{ 
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
 			var method = methodSearchResult.Element as MethodElement;
@@ -49,13 +49,13 @@ namespace Sando.IntegrationTests.Search
 			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
 			string keywords = "to string";
 			SearchCriteria searchCriteria = new SimpleSearchCriteria()
-			{
+			{ 
 				AccessLevels = new SortedSet<AccessLevel>() { AccessLevel.Public },
 				SearchByAccessLevel = true,
 				SearchTerms = new SortedSet<string>(keywords.Split(' '))
 			};
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
-			Assert.AreEqual(codeSearchResults.Count, 1, "Invalid results number");
+			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "ToQueryString");
 			if(methodSearchResult == null)
 			{

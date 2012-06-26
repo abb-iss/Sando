@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
@@ -69,17 +70,43 @@ namespace Sando.Parser
 				from el in elements.Descendants(SourceNamespace + "comment")
 				select el;
 
-			foreach(XElement comment in comments)
-			{
-				string commentText = comment.Value;
-				if(commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
-				commentText = commentText.TrimStart();
-				int commentLine = Int32.Parse(comment.Attribute(PositionNamespace + "line").Value);
-				
+            List<List<XElement>> commentGroups = new List<List<XElement>>();
+            List<XElement> lastGroup = null;
+		    foreach (var aComment in comments)
+		    {
+                  if(lastGroup!=null)
+                  {
+                      int line = Int32.Parse(lastGroup.Last().Attribute(PositionNamespace + "line").Value);
+                      int linenext = Int32.Parse(aComment.Attribute(PositionNamespace + "line").Value);
+                      if(line+1==linenext)
+                      {
+                          lastGroup.Add(aComment);
+                      }else
+                      {
+                          var xElements = new List<XElement>();
+                          xElements.Add(aComment);
+                          commentGroups.Add(xElements);
+                          lastGroup = xElements;
+                      }
+                  }
+                  else
+                  {
+                      var xElements = new List<XElement>();
+                      xElements.Add(aComment);
+                      commentGroups.Add(xElements);
+                      lastGroup = xElements;
+                  }
+		    }
 
+
+            foreach (var oneGroup in commentGroups)
+            {
+                var comment = oneGroup.First();
+                var commentText = GetCommentText(oneGroup);
+                int commentLine = Int32.Parse(comment.Attribute(PositionNamespace + "line").Value);				
 				if(commentText == String.Empty) continue;
 
-				//comment above method or class
+				//comments above method or class
 				XElement belowComment = (comment.NextNode is XElement) ? (XElement)comment.NextNode : null;
 				while(belowComment != null &&
 						belowComment.Name == (SourceNamespace + "comment"))
@@ -102,6 +129,7 @@ namespace Sando.Parser
 							programElements.Add(new DocCommentElement(methodElement.Name, methodElement.DefinitionLineNumber, methodElement.FullFilePath,
 																		RetrieveSnippet(methodElement.FullFilePath, commentLine, snippetSize),
 																		commentText, methodElement.Id));
+						    methodElement.Body += " "+commentText.Replace("\r\n","");
 							continue;
 						}
 					}
@@ -118,13 +146,13 @@ namespace Sando.Parser
 						{
 							programElements.Add(new DocCommentElement(classElement.Name, classElement.DefinitionLineNumber, classElement.FullFilePath,
 																		RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize),
-																		commentText, classElement.Id));
+																		commentText, classElement.Id));                            
 							continue;
 						}
 					}
 				}
 
-				//comment inside a method or class
+				//comments inside a method or class
 				MethodElement methodEl = RetrieveMethodElement(comment, programElements);
 				if(methodEl != null)
 				{
@@ -142,12 +170,34 @@ namespace Sando.Parser
 					continue;
 				}
 
-				//comment is not associated with another element, so it's a plain CommentElement
+				//comments is not associated with another element, so it's a plain CommentElement
 				programElements.Add(new CommentElement(commentText, commentLine, fileName, RetrieveSnippet(fileName, commentLine, snippetSize), commentText));
 			}
 		}
 
-		public static string ParseBody(XElement function)
+	    private static string GetCommentText(List<XElement> comments)
+	    {
+            StringBuilder builder = new StringBuilder();
+	        Boolean first = true;
+	        foreach (var comment in comments)
+	        {
+                if (first)
+                {
+                    first = false;
+                }
+                else
+                {
+                    builder.Append("\r\n ");
+                }
+	            var commentText = comment.Value;
+                if (commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
+                builder.Append(commentText.TrimStart());
+
+	        }	        
+	        return builder.ToString();
+	    }
+
+	    public static string ParseBody(XElement function)
 		{
 			string body = String.Empty;
 			XElement block = function.Element(SourceNamespace + "block");
@@ -260,7 +310,7 @@ namespace Sando.Parser
 				XElement name = ownerMethods.First().Element(SourceNamespace + "name");
 				string ownerMethodName = name.Value;
 				//now find the MethodElement object corresponding to ownerMethodName, since those should have been gen'd by now
-				ProgramElement ownerMethod = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerMethodName);
+                ProgramElement ownerMethod = programElements.Find(element => element is MethodElement && ((MethodElement)element).Name == ownerMethodName);
 				return ownerMethod as MethodElement;
 			}
 			else

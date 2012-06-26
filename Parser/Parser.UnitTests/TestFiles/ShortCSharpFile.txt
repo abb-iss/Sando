@@ -42,9 +42,9 @@ namespace Sando.Parser
 		}
 		
 
-		//
+		// another one
 		// run srcML and return the generated sourceXML as a string
-		//
+		// a comment
 		public String GenerateSrcML(String parameterFilename)
 		{
 			//check whether filename exists

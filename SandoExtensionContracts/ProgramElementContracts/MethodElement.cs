@@ -29,7 +29,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		public virtual AccessLevel AccessLevel { get; private set; }
 		public virtual string Arguments { get; private set; }
 		public virtual string ReturnType { get; private set; }
-		public virtual string Body { get; private set; }
+		public virtual string Body { get;  set; }
 		public virtual Guid ClassId { get; private set; }
 		public virtual string ClassName { get; private set; }
 		public virtual string Modifiers { get; private set; }
