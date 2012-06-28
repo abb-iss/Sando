@@ -27,6 +27,25 @@ namespace Sando.Core.Extensions.Configuration
 			return extensionPointsConfiguration;
 		}
 
+        public static void WriteConfiguration(string extensionPointsConfigurationFilePath, ExtensionPointsConfiguration configuration)
+        {
+            StreamWriter writer = null;
+            try
+            {
+                writer = new StreamWriter(extensionPointsConfigurationFilePath);
+                new XmlSerializer(typeof(ExtensionPointsConfiguration)).Serialize(writer,configuration);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Saving extension points configuration file failed! - " + ex.StackTrace);
+            }
+            finally
+            {
+                writer.Close();
+            }
+
+        }
+
 		private static ExtensionPointsConfiguration TryRetrieveConfigurationObject(string extensionPointsConfigurationFilePath)
 		{
 			if(String.IsNullOrWhiteSpace(extensionPointsConfigurationFilePath))
@@ -35,14 +54,18 @@ namespace Sando.Core.Extensions.Configuration
 				throw new Exception("Extension points configuration file wasn't found!");
 
 			ExtensionPointsConfiguration extensionPointsConfiguration = null;
+		    TextReader textReader = null;
 			try
 			{
-				TextReader textReader = new StreamReader(extensionPointsConfigurationFilePath);
+				textReader = new StreamReader(extensionPointsConfigurationFilePath);
 				extensionPointsConfiguration = (ExtensionPointsConfiguration)new XmlSerializer(typeof(ExtensionPointsConfiguration)).Deserialize(textReader);
 			}
 			catch(Exception ex)
 			{
 				throw new Exception("Reading extension points configuration file failed! - " + ex.StackTrace);
+			}finally
+			{
+			    textReader.Close();
 			}
 
 			if(String.IsNullOrWhiteSpace(extensionPointsConfiguration.PluginDirectoryPath))

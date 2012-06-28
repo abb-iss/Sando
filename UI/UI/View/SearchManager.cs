@@ -86,7 +86,7 @@ public  class SearchManager
 				if (searchCriteria == null)
 					searchCriteria = new SimpleSearchCriteria();
 				var criteria = searchCriteria;
-				criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions().NumberOfSearchResultsReturned;
+				criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(UIPackage.GetInstance()).NumberOfSearchResultsReturned;
                 searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
 			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
                 criteria.SearchTerms = new SortedSet<string>(searchTerms);

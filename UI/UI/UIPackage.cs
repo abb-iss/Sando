@@ -69,7 +69,9 @@ namespace Sando.UI
 
     	private SolutionEvents _solutionEvents;
         private ILog logger;
-        private string pluginDirectory;
+        private string pluginDirectory;        
+        private ExtensionPointsConfiguration extensionPointsConfiguration;
+        private DTEEvents _dteEvents;
 
         private static UIPackage MyPackage
 		{
@@ -86,8 +88,7 @@ namespace Sando.UI
         /// </summary>
         public UIPackage()
         {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
-    		MyPackage = this;
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));    		
         }
 
         /// <summary>
@@ -120,14 +121,14 @@ namespace Sando.UI
 			ShowToolWindow(null,null);
 		}
 
-        public static SandoOptions GetSandoOptions()
+        public static SandoOptions GetSandoOptions(UIPackage package)
         {
-            return GetSandoOptions(null, 20);
+            return GetSandoOptions(null, 20,package);
         }
 
-        public static SandoOptions GetSandoOptions(string defaultPluginDirectory, int defaultToReturn)
+        public static SandoOptions GetSandoOptions(string defaultPluginDirectory, int defaultToReturn, UIPackage package)
 		{
-			SandoDialogPage sandoDialogPage = GetInstance().GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
+			SandoDialogPage sandoDialogPage = package.GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
             if(sandoDialogPage.ExtensionPointsPluginDirectoryPath==null&& defaultPluginDirectory!=null)
             {
                 sandoDialogPage.ExtensionPointsPluginDirectoryPath = defaultPluginDirectory;
@@ -150,33 +151,53 @@ namespace Sando.UI
         /// </summary>
         protected override void Initialize()
         {
-            Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
-            base.Initialize();
-
-            SetUpLogger();
-
-            // Add our command handlers for menu (commands must exist in the .vsct file)
-            var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if ( null != mcs )
+            try
             {
-                // Create the command for the tool window
-                var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.sandoSearch);
-                var menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
-                mcs.AddCommand( menuToolWin );
+                Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}",
+                                              this.ToString()));
+                base.Initialize();
+
+                SetUpLogger();
+
+                // Add our command handlers for menu (commands must exist in the .vsct file)
+                var mcs = GetService(typeof (IMenuCommandService)) as OleMenuCommandService;
+                if (null != mcs)
+                {
+                    // Create the command for the tool window
+                    var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int) PkgCmdIDList.sandoSearch);
+                    var menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
+                    mcs.AddCommand(menuToolWin);
+                }
+
+                var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+                if (dte != null)
+                {
+                    _solutionEvents = dte.Events.SolutionEvents;
+                    _solutionEvents.Opened += SolutionHasBeenOpened;
+                    _solutionEvents.AfterClosing += SolutionHasBeenClosed;
+                }
+
+                RegisterExtensionPoints();
+
+                _dteEvents = dte.Events.DTEEvents;
+                _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
+
+                MyPackage = this;
+            }catch(Exception e)
+            {
+                this.logger.Error(e.StackTrace);
             }
-
-			var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-			if(dte != null)
-			{
-				_solutionEvents = dte.Events.SolutionEvents;                
-				_solutionEvents.Opened += SolutionHasBeenOpened;
-				_solutionEvents.AfterClosing += SolutionHasBeenClosed;
-			}
-
-			RegisterExtensionPoints();
         }
 
-     
+        private void DteEventsOnOnBeginShutdown()
+        {
+            if (extensionPointsConfiguration != null)
+            {                                
+                ExtensionPointsConfigurationFileReader.WriteConfiguration(GetExtensionPointsConfigurationFilePath(GetExtensionPointsConfigurationDirectory()), extensionPointsConfiguration);
+            }
+            //TODO - kill file processing threads
+        }
+
 
         private void SetUpLogger()
         {
@@ -189,7 +210,7 @@ namespace Sando.UI
 
         private void RegisterExtensionPoints()
         {
-            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            var extensionPointsRepository = ExtensionPointsRepository.Instance;
 
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(GetSrcMLDirectory()));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
@@ -201,16 +222,15 @@ namespace Sando.UI
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 
 
-			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory,20).ExtensionPointsPluginDirectoryPath;
-            if(extensionPointsConfigurationDirectory==null)
-            {
-                extensionPointsConfigurationDirectory = pluginDirectory;
-            }
-			string extensionPointsConfigurationFilePath = Path.Combine(extensionPointsConfigurationDirectory, "ExtensionPointsConfiguration.xml");
-			var extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath,logger);
-			if(extensionPointsConfiguration != null)
+            
+            var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
+            string extensionPointsConfigurationFilePath = GetExtensionPointsConfigurationFilePath(extensionPointsConfigurationDirectoryPath);
+
+            extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath, logger);
+
+            if(extensionPointsConfiguration != null)
 			{
-                extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationDirectory;
+                extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationDirectoryPath;
 				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			}
 
@@ -228,6 +248,27 @@ namespace Sando.UI
 
 
         }
+
+        private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
+        {
+            return Path.Combine(extensionPointsConfigurationDirectoryPath,
+                                "ExtensionPointsConfiguration.xml");
+        }
+
+        private string GetExtensionPointsConfigurationDirectory()
+        {
+            string extensionPointsConfigurationDirectory =
+                GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
+            if (extensionPointsConfigurationDirectory == null)
+            {
+                extensionPointsConfigurationDirectory = pluginDirectory;
+            }
+            return extensionPointsConfigurationDirectory;
+        }
+
+       
+
+
 
 
         private string GetSrcMLDirectory()
@@ -257,7 +298,7 @@ namespace Sando.UI
 		private void SolutionHasBeenOpened()
 		{
 		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
-			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory, 20).ExtensionPointsPluginDirectoryPath;
+			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
 			if(extensionPointsConfigurationDirectory == null)
 			{
 				extensionPointsConfigurationDirectory = pluginDirectory;
@@ -269,8 +310,26 @@ namespace Sando.UI
 		}
 
   
+        public void AddNewParser(string qualifiedClassName, string dllName, List<string> supportedFileExtensions)
+        {            
+            extensionPointsConfiguration.ParsersConfiguration.Add(new ParserExtensionPointsConfiguration()
+            {
+                FullClassName = qualifiedClassName,
+                LibraryFileRelativePath = dllName,
+                SupportedFileExtensions = supportedFileExtensions,
+                ProgramElementsConfiguration = new List<BaseExtensionPointConfiguration>()
+							{
+								new BaseExtensionPointConfiguration()
+								{
+									FullClassName = qualifiedClassName,
+									LibraryFileRelativePath = dllName
+								}
+							}
+            });
+        }
 
-		public static UIPackage GetInstance()
+
+        public static UIPackage GetInstance()
 		{
 			return MyPackage;
 		}
