@@ -20,3 +20,4 @@ Sando/Sando.crunchsolution.cache
 *.ncrunchproject
 *.ncrunchsolution
 **.crunchsolution.cache
+**.DotSettings.user

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -127,9 +128,19 @@ namespace Sando.UI.View
     		_searchManager = new SearchManager(this);
 			SearchResults = new ObservableCollection<CodeSearchResult>();
 			SearchCriteria = new SimpleSearchCriteria();
+            ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;              
+            
     	}
 
-    	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
+        private void selectFirstResult(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            //searchResultListbox.SelectedIndex = 0;
+            //searchResultListbox_SelectionChanged(searchResultListbox,null);
+            searchResultListbox.SelectedIndex = -1;
+            searchResultListbox.Focus();
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
     	{
 			if (searchAccessLevel.SelectedIndex == 0)
@@ -148,8 +159,7 @@ namespace Sando.UI.View
 				SearchCriteria.ProgramElementTypes.Clear();
 				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 			}
-			_searchManager.Search(SearchString, SearchCriteria);
-			//resultExpander.IsExpanded = true;
+			_searchManager.Search(SearchString, SearchCriteria);            
     	}
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -177,16 +187,14 @@ namespace Sando.UI.View
 					}
 					
 					
-					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);
-					// _searchManager.Search(text.Text, SearchCriteria);
-					//resultExpander.IsExpanded = true;
-					searchResultListbox.SelectedIndex = 0;
-					searchResultListbox.Focus();
+					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);                    
 				}
 			}
     	}
 
-    	private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
+
+
+        private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
             FileOpener.OpenItem(sender);
     	}
@@ -225,10 +233,36 @@ namespace Sando.UI.View
     		foreach (var codeSearchResult in results)
     		{
     			SearchResults.Add(codeSearchResult);
-    		}
+    		}            
     	}
 
     	#endregion
+
+        private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var view = sender as ListView;                        
+            if(view!=null)
+            {
+                int index = view.SelectedIndex;
+                int currentIndex = 0;
+                foreach(var item in view.Items)
+                {
+                    var currentItem = view.ItemContainerGenerator.ContainerFromIndex(currentIndex) as ListViewItem;
+                    if (currentItem != null)
+                    {
+                        if (Math.Abs(currentIndex - index) == 0 && index != -1)
+                        {
+                            currentItem.Height = 89;
+                        }
+                        else
+                        {
+                            currentItem.Height = 24;
+                        }
+                    }
+                    currentIndex++;
+                }
+            }
+        }
 
         
     }

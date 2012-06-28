@@ -119,6 +119,7 @@ namespace Sando.Parser
                     sIn.Close();
 
                     var readInputThread = new Thread(new ThreadStart(() => _readInput_DoWork(sOut, out srcML)));
+                    readInputThread.Name = "SrcML";
                     readInputThread.Start();
 
                     exeProcess.WaitForExit();

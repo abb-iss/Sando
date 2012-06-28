@@ -7,7 +7,7 @@
              xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
              xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" mc:Ignorable="d" 
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
-             d:DesignWidth="300" d:DesignHeight="400"
+             xmlns:System="clr-namespace:System;assembly=mscorlib" d:DesignWidth="300" d:DesignHeight="400"
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" IsTabStop="False">
     <UserControl.Resources>
@@ -27,7 +27,7 @@
 				<x:Type TypeName="ExContract:AccessLevel"/>
 			</ObjectDataProvider.MethodParameters>
 		</ObjectDataProvider>
-	</UserControl.Resources>
+    </UserControl.Resources>
     
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="100" MinWidth="200">
         <Grid.RowDefinitions>
@@ -137,17 +137,23 @@
                        HorizontalAlignment="Stretch"  Height="Auto"
 					   VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
-                Margin="5,0,5,5" SelectedIndex="0" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
-					  KeyboardNavigation.IsTabStop="False" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch" TabIndex="70" IsTabStop="False">
-                <ListView.ItemContainerStyle>
+                Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
+					  KeyboardNavigation.IsTabStop="False" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch" TabIndex="70" IsTabStop="False"
+                       SelectionChanged="searchResultListbox_SelectionChanged"
+                       >
+                        <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment"                            
+                      <Style.Resources>
+                                
+                      </Style.Resources>
+                      <Setter Property="HorizontalContentAlignment"                            
                 Value="Stretch" />
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>
-                        <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
-                        <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>
-                    </Style>
+                            <Setter Property="Height" Value="24"/>
+                                <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
+                        <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>                        
+                        </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
@@ -159,42 +165,44 @@
                                 </GridViewColumn.HeaderContainerStyle>
                                 <GridViewColumn.CellTemplate>
 								<DataTemplate>
-									<Grid Margin="0,2,0,0">
-										<Grid.RowDefinitions>
-											<RowDefinition Height="20"/>
-											<RowDefinition Height="1"/>
-											<RowDefinition Height="60"/>
-											<RowDefinition Height="0" />
+                                
+								  <Grid Margin="0,0,0,0" >              
+                                            <Grid.RowDefinitions>                                            
+                                            <RowDefinition Height="22"/>											
+											<RowDefinition Height="60"/>											
 										</Grid.RowDefinitions>
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
-										<Grid Grid.Row="0" Grid.Column="0" >
+                                            <Grid Margin="0,0,0,0" Grid.Row="0" Grid.Column="0" >
 											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="20"/>
+                                                <ColumnDefinition Width="Auto"/>
 												<ColumnDefinition Width="Auto"/>
 												<ColumnDefinition Width="*"/>
 											</Grid.ColumnDefinitions>
 											<Grid.RowDefinitions>
-												<RowDefinition Height="20"/>																							
-											</Grid.RowDefinitions>
-											<Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="14,0,2,2" Grid.Row="0" Grid.Column="1" />
-											<!--<Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2,2,2,2" Grid.Row="1" Grid.Column="1" Visibility="{Binding ElementName=Parent, Path=Text.Length, Converter={StaticResource NullOrEmptyToVisibility}}" DataContext="{Binding}" />-->
-											<!--<Image Source="{Binding Mode=OneWay, Path=Element.FullFilePath, Converter={StaticResource FileTypeToIcon}}" Width="20" Height="20" Grid.Row="2" Grid.Column="0" />-->
+                                                    <RowDefinition Height="1"/>
+                                                    <RowDefinition Height="20"/>
+                                                    <RowDefinition Height="1"/>
+                                                </Grid.RowDefinitions>
+                                                <Canvas Width="Auto" Height="0" Margin="-5,-2,0,0" Grid.Row="0" Grid.Column="0">
+                                                    <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
+                                                </Canvas>
+                                                <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" />
+                                                <TextBlock Name="Name" MaxWidth="210" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="Bold" />
+                                                <TextBlock Grid.Row="1" Grid.Column="2" FontWeight="Heavy" Margin="5,0,5,0">in</TextBlock>
+                                                <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="3" FontWeight="Bold" />
+                                                <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="2" Grid.Column="0">
+                                                    <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
+                                                </Canvas>
+                                            </Grid>
 
-											<!--<TextBlock Name="Type" Text="{Binding Mode=OneWay, Path=Type}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="0" />-->
-                                                <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="0" FontWeight="Bold" />
-                                                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="Heavy" Margin="5,0,5,0">></TextBlock>
-                                                <TextBlock Name="Name" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="WordEllipsis" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" FontWeight="Bold" />																						
-										</Grid>
-										<Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="1" Grid.Column="0">
+                                            <TextBlock Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="10" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
+                                               Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="3" Grid.Column="0" TextTrimming="CharacterEllipsis"/>
+										<!--<Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="3" Grid.Column="0">
 											<Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
-										</Canvas>
-										<TextBlock Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="10" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
-                                               Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="2" Grid.Column="0" TextTrimming="CharacterEllipsis"/>
-										<Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="3" Grid.Column="0">
-											<Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="1"></Line>
-										</Canvas>
+										</Canvas>-->
 									</Grid>
 								</DataTemplate>
 							</GridViewColumn.CellTemplate>
