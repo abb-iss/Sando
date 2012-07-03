@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ExtensionPointsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <PluginDirectoryPath>C:\</PluginDirectoryPath>
+<ExtensionPointsConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <PluginDirectoryPath>C:\Users\kosta\sando\ExperimentalExtensions\PaiceStemmer</PluginDirectoryPath>
   <ParsersConfiguration>
     <ParserExtensionPointsConfiguration>
       <FullClassName>Sando.ExperimentalExtensions.PaiceStemmer.PaiceStemmerExtension</FullClassName>
@@ -8,6 +8,7 @@
       <SupportedFileExtensions>
         <string>.cs</string>
       </SupportedFileExtensions>
+      <ProgramElementsConfiguration />
     </ParserExtensionPointsConfiguration>
   </ParsersConfiguration>
   <QueryRewriterConfiguration>

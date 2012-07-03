@@ -106,6 +106,10 @@ namespace Sando.Parser
                 int commentLine = Int32.Parse(comment.Attribute(PositionNamespace + "line").Value);				
 				if(commentText == String.Empty) continue;
 
+				//comment name doesn't contain non-word characters and is compact-er than its body
+				var commentName = Regex.Replace(commentText, @"(\w+)\W+", "$1 ");
+            	commentName = commentName.TrimStart('*', ' ', '\n', '\r');
+
 				//comments above method or class
 				XElement belowComment = (comment.NextNode is XElement) ? (XElement)comment.NextNode : null;
 				while(belowComment != null &&
@@ -123,10 +127,10 @@ namespace Sando.Parser
 					if(name != null)
 					{
 						string methodName = name.Value;
-						MethodElement methodElement = (MethodElement)programElements.Find(element => element is MethodElement && ((MethodElement)element).Name == methodName);
+						var methodElement = (MethodElement)programElements.Find(element => element is MethodElement && ((MethodElement)element).Name == methodName);
 						if(methodElement != null)
 						{
-							programElements.Add(new DocCommentElement(methodElement.Name, methodElement.DefinitionLineNumber, methodElement.FullFilePath,
+							programElements.Add(new DocCommentElement(commentName, commentLine, methodElement.FullFilePath,
 																		RetrieveSnippet(methodElement.FullFilePath, commentLine, snippetSize),
 																		commentText, methodElement.Id));
 						    methodElement.Body += " "+commentText.Replace("\r\n","");
@@ -141,10 +145,10 @@ namespace Sando.Parser
 					if(name != null)
 					{
 						string className = name.Value;
-						ClassElement classElement = (ClassElement)programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == className);
+						var classElement = (ClassElement)programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == className);
 						if(classElement != null)
 						{
-							programElements.Add(new DocCommentElement(classElement.Name, classElement.DefinitionLineNumber, classElement.FullFilePath,
+							programElements.Add(new DocCommentElement(commentName, commentLine, classElement.FullFilePath,
 																		RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize),
 																		commentText, classElement.Id));                            
 							continue;
@@ -156,7 +160,7 @@ namespace Sando.Parser
 				MethodElement methodEl = RetrieveMethodElement(comment, programElements);
 				if(methodEl != null)
 				{
-					programElements.Add(new DocCommentElement(methodEl.Name, methodEl.DefinitionLineNumber, methodEl.FullFilePath,
+					programElements.Add(new DocCommentElement(commentName, commentLine, methodEl.FullFilePath,
 																RetrieveSnippet(methodEl.FullFilePath, commentLine, snippetSize),
 																commentText, methodEl.Id));
 					continue;
@@ -164,14 +168,14 @@ namespace Sando.Parser
 				ClassElement classEl = RetrieveClassElement(comment, programElements);
 				if(classEl != null)
 				{
-					programElements.Add(new DocCommentElement(classEl.Name, classEl.DefinitionLineNumber, classEl.FullFilePath,
+					programElements.Add(new DocCommentElement(commentName, commentLine, classEl.FullFilePath,
 																RetrieveSnippet(classEl.FullFilePath, commentLine, snippetSize),
 																commentText, classEl.Id));
 					continue;
 				}
 
 				//comments is not associated with another element, so it's a plain CommentElement
-				programElements.Add(new CommentElement(commentText, commentLine, fileName, RetrieveSnippet(fileName, commentLine, snippetSize), commentText));
+				programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSnippet(fileName, commentLine, snippetSize), commentText));
 			}
 		}
 
@@ -187,7 +191,7 @@ namespace Sando.Parser
                 }
                 else
                 {
-                    builder.Append("\r\n ");
+                    builder.Append(Environment.NewLine + " ");
                 }
 	            var commentText = comment.Value;
                 if (commentText.StartsWith("/")) commentText = commentText.TrimStart('/');

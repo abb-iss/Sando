@@ -13,8 +13,8 @@ namespace Sando.Parser
 
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
-		private static readonly int SnippetSize = 5;
-	    public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
+		private const int SnippetSize = 5;
+		public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
 
         public SrcMLCppParser():this(null)
         {
