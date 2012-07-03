@@ -69,7 +69,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			Assert.AreEqual(Math.Round(m, 2), 0.67);
 		}
 
-		[Test]
+		//[Test]
 		public void RFReorderResultsTest()
 		{
 			RelevanceFeedbackExtension rfe = new RelevanceFeedbackExtension();
@@ -95,7 +95,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			Assert.AreEqual(rerankedResults.ElementAt(2), four);
 		}
 
-		[Test]
+		//[Test]
 		public void RFTheWholeShabangTest()
 		{
 			RelevanceFeedbackExtension rfe = new RelevanceFeedbackExtension(1);

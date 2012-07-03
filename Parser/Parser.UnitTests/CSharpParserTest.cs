@@ -352,7 +352,6 @@ namespace Sando.Parser.UnitTests
 						{
 							foundMethodComment = true;
 						}
-						Assert.AreEqual(comment.DefinitionLineNumber, methodElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}
                     else if(comment.DocumentedElementId == classElement.Id)
@@ -362,7 +361,6 @@ namespace Sando.Parser.UnitTests
 						{
 							foundClassComment = true;
 						}
-						Assert.AreEqual(comment.DefinitionLineNumber, classElement.DefinitionLineNumber);
 						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
 					}
 				}
