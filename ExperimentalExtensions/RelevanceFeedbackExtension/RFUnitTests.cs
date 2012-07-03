@@ -37,7 +37,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		}
 
 		[Test]
-		public void RFMetric1Test()
+		public void RFFileNameMetricTest()
 		{
 			CodeSearchResult result = new CodeSearchResult(new CommentElement("a", 1, "a\\b\\c\\abc.cs", "a", "a"), 1);
 			string query = "a b c d e";
@@ -48,12 +48,23 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		}
 
 		[Test]
-		public void RFMetric2Test()
+		public void RFNameMetricTest()
 		{
 			CodeSearchResult result = new CodeSearchResult(new CommentElement("AaBbCcFf", 1, "abc.cs", "a", "a"), 1);
 			string query = "aa bb cc dd ee";
 
 			QueryElementNameCosine cosMetric = new QueryElementNameCosine();
+			double m = cosMetric.runMetric(query, result);
+			Assert.AreEqual(Math.Round(m, 2), 0.67);
+		}
+
+		[Test]
+		public void RFSnippetMetricTest()
+		{
+			CodeSearchResult result = new CodeSearchResult(new CommentElement("a", 1, "abc.cs", "Aa Bb Cc Ff", "a"), 1);
+			string query = "aa bb cc dd ee";
+
+			QuerySnippetCosine cosMetric = new QuerySnippetCosine();
 			double m = cosMetric.runMetric(query, result);
 			Assert.AreEqual(Math.Round(m, 2), 0.67);
 		}

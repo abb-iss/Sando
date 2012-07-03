@@ -5,6 +5,7 @@ using System.Text;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 {
@@ -24,6 +25,27 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			Contract.Ensures(Contract.Result<double>() >= 0.0, "Metric constructor: metric return value out of range");
 			Contract.Ensures(Contract.Result<double>() <= 1.0, "Metric constructor: metric return value out of range");
 			return default(double);
+		}
+	}
+
+	#region ProgramElementMetrics
+
+	public class TopOfFile : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			//consider only the first 100 lines of code
+			double lineNum = (result.Element.DefinitionLineNumber > 100) ? 100 : result.Element.DefinitionLineNumber;
+
+			return (1 - (lineNum / 100));
+		}
+	}
+
+	public class OriginalSandoRank : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			return 1 - (1 / (1 + result.Score));
 		}
 	}
 
@@ -57,13 +79,100 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		}
 	}
 
-	public class OriginalSandoRank : IMetric
+	public class QuerySnippetCosine : IMetric
 	{
 		public double runMetric(string query, CodeSearchResult result)
 		{
-			return 1 - (1 / (1 + result.Score));
+			string elementName = result.Element.Snippet;
+			char[] delimiters = new char[] { '_', ' ' };
+			string[] elementNameParts = elementName.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+			string[] queryParts = query.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+			double cosine = MetricUtils.SentenceCosineSimilarity(elementNameParts, queryParts);
+			return cosine;
 		}
 	}
+
+	#endregion
+
+	#region MethodElementMetrics
+
+	public class Method_QueryArgsCosine : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			if(result.Element is MethodElement)
+			{
+				MethodElement methodElement = (MethodElement)result.Element;
+				string argumentsStr = methodElement.Arguments;
+				char[] delimiters = new char[] { '_', ' ', ',' };
+				string[] argumentStrParts = argumentsStr.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+				string[] queryParts = query.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+				double cosine = MetricUtils.SentenceCosineSimilarity(argumentStrParts, queryParts);
+				return cosine;
+			}
+			else
+			{
+				return 0.0;
+			}
+		}
+	}
+
+	public class Method_QueryClassNameCosine : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			if(result.Element is MethodElement)
+			{
+				MethodElement methodElement = (MethodElement)result.Element;
+				string argumentsStr = methodElement.ClassName;
+				char[] delimiters = new char[] { '_', ' ', ',' };
+				string[] argumentStrParts = argumentsStr.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+				string[] queryParts = query.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+				double cosine = MetricUtils.SentenceCosineSimilarity(argumentStrParts, queryParts);
+				return cosine;
+			}
+			else
+			{
+				return 0.0;
+			}
+		}
+	}
+	 
+	public class IsMethod : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			if(result.Element is MethodElement)
+			{
+				return 1.0;
+			}
+			else
+			{
+				return 0.0;
+			}
+		}
+	}
+
+	#endregion
+
+	#region CommentElementMetrics
+
+	public class IsComment : IMetric
+	{
+		public double runMetric(string query, CodeSearchResult result)
+		{
+			if(result.Element is CommentElement)
+			{
+				return 1.0;
+			}
+			else
+			{
+				return 0.0;
+			}
+		}
+	}
+
+	#endregion
 
 	public static class MetricUtils
 	{
