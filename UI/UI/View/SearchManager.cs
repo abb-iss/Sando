@@ -37,7 +37,7 @@ public  class SearchManager
 				return codeSearcher;
 			}
 
-			public void Search(String searchString, SimpleSearchCriteria searchCriteria = null)
+			public void Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
 			{
 				if (!string.IsNullOrEmpty(searchString))
 				{				    
@@ -51,13 +51,14 @@ public  class SearchManager
                             ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                         results = resultsReorderer.ReorderSearchResults(results);
                         _myDaddy.Update(results);
-                        if(myPackage.IsPerformingInitialIndexing())
+                        if(myPackage.IsPerformingInitialIndexing() && interactive)
                         {
                             MessageBox.Show("Sando is still performing its initial index of this project, results may be incomplete.", "Indexing in Progress", MessageBoxButton.OK, MessageBoxImage.Warning);    
                         }
                     }else
                     {
-                        MessageBox.Show("Sando searches only the currently open Solution.  Please open a Solution and try again.", "Sando Search Scope", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        if(interactive)
+                            MessageBox.Show("Sando searches only the currently open Solution.  Please open a Solution and try again.", "Sando Search Scope", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
 				}
 			}
