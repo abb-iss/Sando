@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -164,8 +165,18 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		{
 			int bufferSize = 1000; //number of bytes to read from the end of the file
 			int entryNum = 0;
+			System.IO.FileStream fs = null;
 
-			System.IO.FileStream fs = new System.IO.FileStream(trainingDataFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+			try
+			{
+				 fs = new System.IO.FileStream(trainingDataFile, System.IO.FileMode.Open,
+												   System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+			}
+			catch(FileNotFoundException)
+			{
+				return 0;
+			}
+
 			if(fs == null)
 			{
 				return 0;
