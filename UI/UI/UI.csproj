@@ -163,6 +163,8 @@
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
+    <Compile Include="MyFontConverter.cs" />
+    <Compile Include="MyStrokeConverter.cs" />
     <Compile Include="View\FileOpener.cs" />
     <Compile Include="View\ISearchResultListener.cs" />
     <Compile Include="View\SearchManager.cs" />
