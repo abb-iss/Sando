@@ -15,6 +15,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 	{
 		Training,
 		Operating,
+		Evaluating,
 		Off
 	}
 
@@ -56,10 +57,17 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			RecQuery = String.Empty;
 			CurrentTrainingEntry = null;
 			RankGenerator = new RFRankGenerator(StandardSvmRankLocation);
+
 			Metrics = new List<IMetric>();
 			Metrics.Add(new QueryFileNameCosine());
 			Metrics.Add(new QueryElementNameCosine());
+			Metrics.Add(new QuerySnippetCosine());
 			Metrics.Add(new OriginalSandoRank());
+			Metrics.Add(new TopOfFile());
+			Metrics.Add(new Method_QueryArgsCosine());
+			Metrics.Add(new Method_QueryClassNameCosine());
+			Metrics.Add(new IsMethod());
+			Metrics.Add(new IsComment());
 
 			ReadNumberOfTrainingEntries(TrainingFile);
 		}
@@ -84,7 +92,6 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 				if(TrainingCount >= TrainingSetSize)
 				{
 					//build model and change op mode
-
 					//TODO: this could take a while, so use a background thread
 					RankGenerator.GenerateModel(TrainingFile, ModelFile);
 
@@ -99,11 +106,17 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 				}
 			}
 			
-			if(OpMode == RFMode.Operating)
+			if(OpMode == RFMode.Operating || OpMode == RFMode.Evaluating)
 			{
 				WriteRankingEntry(InputRankingFile, new RFTrainingEntry(1, RecQuery, searchResults.ToList(), Metrics));
 				RankGenerator.GenerateRanking(InputRankingFile, ModelFile, OutputRankingFile);
 				var rerankedResults = RerankResults(searchResults, OutputRankingFile);
+
+				if(OpMode == RFMode.Evaluating)
+				{
+					//call InterleavedEvaluation.GetInterleaving(searchResults,rerankedResults)
+				}
+
 				return rerankedResults;
 			}
 			return searchResults;
@@ -112,9 +125,16 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 		//called from UI.FileOpener
 		public void NotifySelection(CodeSearchResult clickedElement)
 		{
-			if(CurrentTrainingEntry != null)
+			if(OpMode == RFMode.Training)
 			{
-				CurrentTrainingEntry.AddRelevance(clickedElement);
+				if(CurrentTrainingEntry != null)
+				{
+					CurrentTrainingEntry.AddRelevance(clickedElement);
+				}
+			}
+			else if(OpMode == RFMode.Evaluating)
+			{
+				//call InterleavedEvaluation.NotifySelection
 			}
 		}
 
