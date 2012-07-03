@@ -160,7 +160,7 @@ namespace Sando.Parser
 		private string AdaptCSharpToJavaParsing(string inputCode)
 		{
 			//replace ':' with extends in class definitions 
-			inputCode = Regex.Replace(inputCode, @"([class|struct])(\s*\w+\s*):(\s*\w+)", "$1$2implements$3");
+			inputCode = Regex.Replace(inputCode, @"([class|struct])(\s*\w+\s*):(\s*\w+)", "$1$2 implements $3");
             
             //remove generics
             inputCode = Regex.Replace(inputCode, "<([\\w_]*)>", "$1");            
