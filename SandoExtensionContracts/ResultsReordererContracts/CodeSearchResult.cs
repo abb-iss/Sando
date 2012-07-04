@@ -38,7 +38,12 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                     return Path.GetFileName(this.FileName);
                 }else
                 {
-                    return Parent;
+                    string fileName = Path.GetFileName(this.FileName);
+                    if (fileName.StartsWith(Parent))
+                    {
+                        return fileName;
+                    }
+                    return Parent +" ("+fileName+")";
                 }
             }
         }
