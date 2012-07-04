@@ -84,7 +84,7 @@ namespace Sando.UI.Monitoring
 		{
 			
             _startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
-            _startupThread.Priority = ThreadPriority.Lowest;                 
+            _startupThread.Priority = ThreadPriority.BelowNormal;                 
             _startupThread.Start();
 
 			// Register events for doc table
