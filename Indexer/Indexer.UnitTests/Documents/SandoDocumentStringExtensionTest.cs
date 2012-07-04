@@ -12,7 +12,7 @@ namespace Sando.Indexer.UnitTests.Documents
 		public void SandoDocumentStringExtension_ToSandoSearchableReturnsValidString()
 		{
 			string testString = "SetFileExtension";
-			Assert.AreEqual(testString.ToSandoSearchable(), "SetFileExtension#Set File Extension");
+			Assert.AreEqual(testString.ToSandoSearchable(), "SetFileExtension"+SandoDocumentStringExtension.Delimiter+"Set File Extension");
 
 			testString = "donothing";
 			Assert.AreEqual(testString.ToSandoSearchable(), "donothing");
@@ -24,7 +24,7 @@ namespace Sando.Indexer.UnitTests.Documents
 		[Test]
 		public void SandoDocumentStringExtension_ToSandoDisplayableReturnsValidString()
 		{
-			string testString = "SetFileExtension#Set File Extension";
+            string testString = "SetFileExtension" + SandoDocumentStringExtension.Delimiter + "Set File Extension";
 			Assert.AreEqual(testString.ToSandoDisplayable(), "SetFileExtension");
 
 			testString = "donothing";

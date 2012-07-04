@@ -24,7 +24,7 @@ namespace Sando.Indexer.Documents
             }
 			if(splitWords == fieldValue)
 				return fieldValue;
-			string result = fieldValue + delimiter + splitWords;
+			string result = fieldValue + Delimiter + splitWords;
 			return result;
 		}
 
@@ -32,12 +32,12 @@ namespace Sando.Indexer.Documents
 		{
 			if(String.IsNullOrWhiteSpace(fieldValue))
 				return fieldValue;
-			if(fieldValue.IndexOf(delimiter) < 0)
+			if(fieldValue.IndexOf(Delimiter) < 0)
 				return fieldValue;
-			string result = fieldValue.Substring(0, fieldValue.IndexOf(delimiter));
+			string result = fieldValue.Substring(0, fieldValue.IndexOf(Delimiter));
 			return result;
 		}
 
-		private static string delimiter = "#";
+	    public const string Delimiter = "✉∞";
 	}
 }
