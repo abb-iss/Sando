@@ -109,7 +109,7 @@ namespace Sando.UI.Monitoring
 
 		private void ProcessChildren(ProjectItem item)
 		{
-            if (item.ProjectItems != null)
+            if (item !=null && item.ProjectItems != null)
             {
                 try
                 {
