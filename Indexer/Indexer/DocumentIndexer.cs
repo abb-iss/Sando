@@ -127,13 +127,19 @@ namespace Sando.Indexer
 		    return true;
 		}
 
-		public void Dispose()
+        public void Dispose()
         {
-            Dispose(true);
+            Dispose(false);
+        }
+
+
+		public void Dispose(bool killReaders)
+        {
+            Dispose(true,killReaders);
             GC.SuppressFinalize(this);
         }
 		
-		protected virtual void Dispose(bool disposing)
+		protected virtual void Dispose(bool disposing, bool killReaders)
         {
             if(!this.disposed)
             {
@@ -141,8 +147,8 @@ namespace Sando.Indexer
                 {
 					IndexWriter.Close();
 					IndexReader indexReader = IndexSearcher.GetIndexReader();
-                    //if(indexReader != null)
-                    //    indexReader.Close();
+                    if(indexReader != null && killReaders)
+                        indexReader.Close();
 					IndexSearcher.Close();
 					LuceneIndexesDirectory.Close();
                 }

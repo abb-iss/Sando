@@ -197,12 +197,12 @@ namespace Sando.UI.Monitoring
 	        _indexUpdateManager.UpdateFile(path);
 	    }
 
-        public void StopMonitoring()
+        public void StopMonitoring(bool killReaders=false)
         {
-            Dispose();
+            Dispose(killReaders);
         }
 
-	    public void Dispose()
+	    public void Dispose(bool killReaders=false)
 		{
             try
             {
@@ -232,7 +232,7 @@ namespace Sando.UI.Monitoring
                     _currentIndexer.CommitChanges();
                     _indexUpdateManager.SaveFileStates();
                     //dispose
-                    _currentIndexer.Dispose();
+                    _currentIndexer.Dispose(killReaders);
                     _currentIndexer = null;
                 }
             }

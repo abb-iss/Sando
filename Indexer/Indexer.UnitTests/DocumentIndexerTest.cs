@@ -162,7 +162,7 @@ namespace Sando.Indexer.UnitTests
 		public void CloseDocumentIndexer()
 		{
 			if(documentIndexer != null)
-				documentIndexer.Dispose();
+                documentIndexer.Dispose(true);
 		}
 
 		private bool contractFailed;

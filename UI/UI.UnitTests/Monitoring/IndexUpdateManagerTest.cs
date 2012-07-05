@@ -112,7 +112,7 @@ namespace Sando.UI.UnitTests.Monitoring
 		[TearDown]
 		public void ClearResources()
 		{
-			documentIndexer.Dispose();
+            documentIndexer.Dispose(true);
 			if(Directory.Exists(solutionPath))
 				Directory.Delete(solutionPath, true);
 		}

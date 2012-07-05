@@ -101,7 +101,7 @@ namespace Sando.IntegrationTests.Search
 		[TearDown]
 		public void TearDown()
 		{
-			monitor.StopMonitoring();
+            monitor.StopMonitoring(true);
 			Directory.Delete(indexPath, true);
 		}
 

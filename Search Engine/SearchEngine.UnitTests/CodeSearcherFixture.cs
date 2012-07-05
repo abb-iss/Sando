@@ -94,7 +94,7 @@ namespace Sando.SearchEngine.UnitTests
     	{
 			Indexer.ClearIndex();
 			Indexer.CommitChanges();
-			Indexer.Dispose();   
+			Indexer.Dispose(true);   
     	}
     }
 }

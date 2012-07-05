@@ -96,7 +96,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
             finally
             {
                 if (indexer != null)
-                    indexer.Dispose();
+                    indexer.Dispose(true);
             }
         }
 
