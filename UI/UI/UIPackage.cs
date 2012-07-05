@@ -174,7 +174,7 @@ namespace Sando.UI
                 {
                     _solutionEvents = dte.Events.SolutionEvents;
                     _solutionEvents.Opened += SolutionHasBeenOpened;
-                    _solutionEvents.AfterClosing += SolutionHasBeenClosed;
+                    _solutionEvents.BeforeClosing += SolutionAboutToClose;
                 }
 
                 RegisterExtensionPoints();
@@ -278,7 +278,7 @@ namespace Sando.UI
 
 
 
-        private void SolutionHasBeenClosed()
+        private void SolutionAboutToClose()
 		{
 		
 			if(_currentMonitor != null)

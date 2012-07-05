@@ -115,7 +115,16 @@ namespace Sando.Indexer
 
 		public bool IsUsable()
 		{
-			return !this.disposed;
+            if (this.disposed)
+                return false;
+            try
+            {
+                this.IndexSearcher.Search(new TermQuery(new Term("asdf")));
+            }catch(AlreadyClosedException ace)
+            {
+                return false;
+            }
+		    return true;
 		}
 
 		public void Dispose()
@@ -132,8 +141,8 @@ namespace Sando.Indexer
                 {
 					IndexWriter.Close();
 					IndexReader indexReader = IndexSearcher.GetIndexReader();
-					if(indexReader != null)
-						indexReader.Close();
+                    //if(indexReader != null)
+                    //    indexReader.Close();
 					IndexSearcher.Close();
 					LuceneIndexesDirectory.Close();
                 }
@@ -176,9 +185,10 @@ namespace Sando.Indexer
 			}
 			else
 			{
-				documentIndexers.Add(solutionId, CreateInstance(solutionKey.GetIndexPath(), analyzerType));
-			}			
-			return documentIndexers[solutionId];
+			    DocumentIndexer documentIndexer = CreateInstance(solutionKey.GetIndexPath(), analyzerType);
+			    documentIndexers.Add(solutionId, documentIndexer);
+			}
+		    return documentIndexers[solutionId];
 		}
 
 		private static DocumentIndexer CreateInstance(string luceneIndex, AnalyzerType analyzerType)
