@@ -4,8 +4,9 @@
     <Name>Sando</Name>
     <Author>OSS</Author>
     <Version>0.1</Version>
-    <Description xml:space="preserve">This package provides a new search box for visual studio</Description>
+    <Description xml:space="preserve">Search your C, C++, and C# Solutions using the latest advances in code search research.  Sando provides a great replacement for Find in Files and even the Open Type Dialog.</Description>
     <Locale>1033</Locale>
+    <Icon>sandoFolder.png</Icon>
     <InstalledByMsi>false</InstalledByMsi>
     <SupportedProducts>
       <VisualStudio Version="10.0">
