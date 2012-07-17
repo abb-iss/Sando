@@ -14,6 +14,7 @@ using Sando.Indexer;
 using Sando.Translation;
 using Sando.Indexer.Searching.Criteria;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Sando.UI.View
 {
@@ -196,14 +197,28 @@ namespace Sando.UI.View
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
-            FileOpener.OpenItem(sender);
+            try
+            {
+                FileOpener.OpenItem(sender);
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("The file cannot be opened. Probably it was deleted and it no longer exists.", "File opening error", MessageBoxButton.OK);
+            }
     	}
 
         private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
             {
-                FileOpener.OpenItem(sender);
+                try
+                {
+                    FileOpener.OpenItem(sender);
+                }
+                catch(ArgumentException)
+                {
+                    MessageBox.Show("The file cannot be opened. Probably it was deleted and it no longer exists.", "File opening error", MessageBoxButton.OK);
+                }
             }
         }
 
