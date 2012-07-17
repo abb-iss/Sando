@@ -10,6 +10,8 @@ namespace Sando.Parser
 {
     public class TextFileParser: IParser 
     {
+        private static readonly int SnippetSize = 5;
+
         public List<ProgramElement> Parse(string filename)
         {
             var list = new List<ProgramElement>(); 
@@ -30,7 +32,7 @@ namespace Sando.Parser
 						var name = Regex.Replace(line, @"(\w+)\W+", "$1 ");
             			name = name.TrimStart('<', ' ', '\n', '\r', '\t', '/');
 						name = name.TrimEnd(' ');
-                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(filename, linenum, 4); 
+                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(filename, linenum, SnippetSize); 
                     	var element = new TextLineElement(name, linenum, filename, snippet, line);
                     	list.Add(element);
                     }
