@@ -36,6 +36,8 @@ namespace Sando.Indexer.Searching
 					return new MethodPrototypeDocument(document).ReadProgramElementFromDocument();
                 case ProgramElementType.Struct:
                     return new StructDocument(document).ReadProgramElementFromDocument();
+				case ProgramElementType.TextLine:
+					return new TextLineDocument(document).ReadProgramElementFromDocument();
                 case ProgramElementType.Custom:
                     return new SandoDocument(document).ReadProgramElementFromDocument();
 				default:

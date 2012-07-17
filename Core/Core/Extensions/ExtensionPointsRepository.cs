@@ -13,7 +13,7 @@ namespace Sando.Core.Extensions
 		public IParser GetParserImplementation(string fileExtension)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fileExtension), "ExtensionPointsManager:GetParserImplementation - fileExtension cannot be null or an empty string!");
-			
+
 			if(parsers.ContainsKey(fileExtension))
 				return parsers[fileExtension];
 			else
