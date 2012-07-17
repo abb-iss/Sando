@@ -203,7 +203,7 @@ namespace Sando.UI.View
             }
             catch (ArgumentException)
             {
-                MessageBox.Show("The file cannot be opened. Probably it was deleted and it no longer exists.", "File opening error", MessageBoxButton.OK);
+                MessageBox.Show(fileNotFoundPopupMessage, fileNotFoundPopupTitle, MessageBoxButton.OK);
             }
     	}
 
@@ -217,7 +217,7 @@ namespace Sando.UI.View
                 }
                 catch(ArgumentException)
                 {
-                    MessageBox.Show("The file cannot be opened. Probably it was deleted and it no longer exists.", "File opening error", MessageBoxButton.OK);
+                    MessageBox.Show(fileNotFoundPopupMessage, fileNotFoundPopupTitle, MessageBoxButton.OK);
                 }
             }
         }
@@ -279,7 +279,8 @@ namespace Sando.UI.View
             }
         }
 
-        
+        private static string fileNotFoundPopupMessage = "The file cannot be opened. Probably it was deleted and it no longer exists.";
+        private static string fileNotFoundPopupTitle = "File opening error";
     }
 
 	#region ValueConverter of SearchResult's Icon
