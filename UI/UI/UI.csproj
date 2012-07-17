@@ -61,8 +61,9 @@
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DeployExtension>False</DeployExtension>
+    <DeployExtension>True</DeployExtension>
     <CreateVsixContainer>True</CreateVsixContainer>
+    <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -216,6 +217,7 @@
   <ItemGroup>
     <VSCTCompile Include="UI.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +288,10 @@
     </Content>
     <Resource Include="Resources\VS2010Icons\comment.png" />
     <Resource Include="Resources\VS2010Icons\generic.png" />
+    <Content Include="sandoFolder.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="sandosearch.bmp" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property.png" />
     <Resource Include="Resources\VS2010Icons\VSObject_Property_Friend.png" />
