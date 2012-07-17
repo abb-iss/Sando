@@ -25,7 +25,7 @@ namespace Sando.UI.View
     		public static void OpenFile(string filePath, int lineNumber)
     		{
     			InitDte2();
-    			dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindCode);
+    			dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
     			try
     			{
     				var selection = (TextSelection) dte.ActiveDocument.Selection;

@@ -11,6 +11,7 @@
 		Method,
 		Property,
 		MethodPrototype,
+		TextLine,
 		Custom
 	}
 }

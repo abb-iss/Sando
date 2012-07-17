@@ -130,8 +130,6 @@
     <Compile Include="RelevanceFeedbackExtension\RFUnitTests.cs" />
     <Compile Include="SpellChecking\SpellCheckingQueryRewriter.cs" />
     <Compile Include="SpellChecking\SpellCheckingQueryRewriterTest.cs" />
-    <Compile Include="TextFileParserExtension\TextFileElement.cs" />
-    <Compile Include="TextFileParserExtension\TextFileParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\Parser\Parser.csproj">
