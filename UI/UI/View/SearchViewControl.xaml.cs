@@ -279,7 +279,7 @@ namespace Sando.UI.View
             }
         }
 
-        private static string fileNotFoundPopupMessage = "The file cannot be opened. Probably it was deleted and it no longer exists.";
+        private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";
     }
 
