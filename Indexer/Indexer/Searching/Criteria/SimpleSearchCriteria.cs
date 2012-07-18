@@ -16,7 +16,6 @@ namespace Sando.Indexer.Searching.Criteria
 		{
 			SearchTerms = new SortedSet<string>();
 			MatchCase = false;
-			MatchWholeWord = false;
 			ExactMode = true;
 			SearchByAccessLevel = false;
 			AccessLevels = new SortedSet<AccessLevel>();
@@ -226,7 +225,6 @@ namespace Sando.Indexer.Searching.Criteria
 
 		public virtual SortedSet<string> SearchTerms { get; set; }
 		public virtual bool MatchCase { get; set; }
-		public virtual bool MatchWholeWord { get; set; }
 		public virtual bool ExactMode { get; set; }
 		public virtual bool SearchByAccessLevel { get; set; }
 		public virtual SortedSet<AccessLevel> AccessLevels { get; set; }
