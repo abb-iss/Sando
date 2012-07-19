@@ -435,6 +435,34 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			}
 		}
 
+        [Test]
+		public void SimpleSearchCriteria_ToQueryStringCreatesValidQueryString_SpecialCharacters()
+		{
+			SearchCriteria simpleSearchCriteria = new SimpleSearchCriteria()
+													{
+                                                        SearchByUsageType = true,
+                                                        UsageTypes = new SortedSet<UsageType>()
+																		{
+																			UsageType.Bodies
+																		},
+														SearchTerms = new SortedSet<string>()
+																		{
+																			"+ - && || ! ( ) { } [ ] ^ \" ~ : \\"
+																		}
+													};
+			string queryString = simpleSearchCriteria.ToQueryString();
+            Assert.AreEqual("((Body:\"\\+ \\- \\&\\& \\|\\| \\! \\( \\) \\{ \\} \\[ \\] \\^ \\\" \\~ \\: \\\\\"))", queryString, "Created query string is invalid!");
+			try
+			{
+				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
+				Assert.NotNull(query, "Generated query object is null!");
+			}
+			catch(Exception ex)
+			{
+				Assert.Fail(ex.Message);
+			}
+		}
+
 		[SetUp]
 		public void resetContract()
 		{
