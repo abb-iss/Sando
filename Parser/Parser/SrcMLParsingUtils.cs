@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -324,16 +325,33 @@ namespace Sando.Parser
 			}
 		}
 
-		public static string RetrieveSnippet(string filename, int line, int snippetNumLines)
+		public static string RetrieveSnippet(string filename, int lineNum, int snippetNumLines, int linesAbove = 0)
 		{
-			string[] lines = System.IO.File.ReadAllLines(System.IO.Path.GetFullPath(filename));
+			int startLine = lineNum - linesAbove - 1;
+			string snip = String.Empty;
+			using(var reader = new StreamReader(filename))
+			{
+				try
+				{
+					//discard lines preceeding snippet
+					string line = null;
+					for (int i = 0; i < startLine; ++i)
+					{
+						line = reader.ReadLine();
+					}
 
-			//start at a number of lines above the definition of the program element
-			int linesAbove = 0;
-
-			int startLine = line - linesAbove - 1;
-			IEnumerable<string> snipLines = lines.Skip(startLine).Take(snippetNumLines - linesAbove);
-			return snipLines.Aggregate((snip, nextLine) => snip + Environment.NewLine + nextLine);
+					for (int i = 0; i < snippetNumLines; ++i)
+					{
+						line = reader.ReadLine();
+						snip += line + Environment.NewLine;
+					}
+				}
+				catch(IOException)
+				{
+					return snip;
+				}
+			}
+			return snip;
 		}
 
 		public static AccessLevel StrToAccessLevel(string level)

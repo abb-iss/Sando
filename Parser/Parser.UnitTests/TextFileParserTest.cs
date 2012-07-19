@@ -22,7 +22,7 @@ namespace Sando.Parser.UnitTests
 			{
 				if(element.DefinitionLineNumber == 218)
 				{
-					Assert.AreEqual("UserControl", element.Name);
+					Assert.AreEqual("</UserControl>", element.Name);
 				}
 
 			}

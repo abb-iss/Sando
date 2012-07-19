@@ -213,9 +213,9 @@ namespace Sando.UI
             var extensionPointsRepository = ExtensionPointsRepository.Instance;
 
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(GetSrcMLDirectory()));
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"},
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" },
                                                                    new SrcMLCppParser(GetSrcMLDirectory()));
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".xaml", ".htm", ".html", ".xml" },
+			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx", ".asp", ".txt" },
 																   new TextFileParser());
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	

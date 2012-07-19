@@ -61,47 +61,53 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             }
         }
 
-       public string Snippet
-       {
-           get
-           {
-               var snip = Element.Snippet;
-               return FixSnip(snip);               
-           }           
-       }
+		public string Snippet
+		{
+			get
+			{
+				var snip = Element.Snippet;
+				return FixSnip(snip);               
+			}           
+		}
 
-       public static string FixSnip(string snip)
-       {
-           int toRemove = 0;
-           if (snip.StartsWith("\t\t"))
-           {
-               toRemove = 2;
-           }
-           else if (snip.StartsWith("\t"))
-           {
-               toRemove = 1;
-           }
-           else if (snip.StartsWith(" "))
-           {
-               toRemove = snip.Length - snip.TrimStart(' ').Length;
-           }
-           if(toRemove>0)
-           {
-               var newSnip = "";
-               var split = snip.Split('\n');
-               foreach (var line in split)
-               {
-                   if(line.Length>toRemove+1)
-                   newSnip += line.Remove(0,toRemove)+"\n";
-               }
-               return newSnip;
-           }
-           //if (snip.StartsWith("\r\n"))
-           //{
-           //    snip = snip.Substring(2);
-           //}
-           return snip;
-       }
+		public static string FixSnip(string snip)
+		{
+			int toRemove = int.MaxValue;
+			string[] split = snip.Split('\n');
+
+			//measure the shortest amount of empty space in all the lines in the snip
+			foreach (string line in split)
+			{
+				int lineToRemove = 0;
+				if(snip.StartsWith("\t"))
+				{
+					lineToRemove = snip.Length - snip.TrimStart('\t').Length;
+				}
+				else if(snip.StartsWith(" "))
+				{
+					lineToRemove = snip.Length - snip.TrimStart(' ').Length;
+				}
+
+				if(lineToRemove > 0 && lineToRemove < toRemove)
+				{
+					toRemove = lineToRemove;
+				}
+			}
+
+			if (toRemove > 0 && toRemove < int.MaxValue)
+			{
+				string newSnip = "";
+				foreach (string line in split)
+				{
+       				if (line.Length > toRemove + 1)
+       					newSnip += line.Remove(0, toRemove) + "\n";
+				}
+				return newSnip;
+			}
+
+			return snip;
+		}
+
     	public string FileName
     	{
     		get

@@ -11,6 +11,7 @@ namespace Sando.Parser
     public class TextFileParser: IParser 
     {
         private static readonly int SnippetSize = 5;
+		private static readonly int SnippetLinesAbove = 0;
 
         public List<ProgramElement> Parse(string filename)
         {
@@ -29,10 +30,10 @@ namespace Sando.Parser
                     {
                     	linenum++;
 						if (String.IsNullOrWhiteSpace(line)) continue;
-						var name = Regex.Replace(line, @"(\w+)\W+", "$1 ");
-            			name = name.TrimStart('<', ' ', '\n', '\r', '\t', '/');
+						//var name = Regex.Replace(line, @"(\w+)\W+", "$1 ");
+						var name = line.TrimStart(' ', '\n', '\r', '\t');
 						name = name.TrimEnd(' ');
-                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(filename, linenum, SnippetSize); 
+                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(filename, linenum, SnippetSize, SnippetLinesAbove); 
                     	var element = new TextLineElement(name, linenum, filename, snippet, line);
                     	list.Add(element);
                     }
