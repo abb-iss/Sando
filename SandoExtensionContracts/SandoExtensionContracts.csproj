@@ -105,6 +105,7 @@
     <Compile Include="QueryContracts\IQueryWeightsSupplier.cs" />
     <Compile Include="ResultsReordererContracts\CodeSearchResult.cs" />
     <Compile Include="ResultsReordererContracts\IResultsReorderer.cs" />
+    <Compile Include="ResultsReordererContracts\NoSearchResults.cs" />
     <Compile Include="SplitterContracts\IWordSplitter.cs" />
   </ItemGroup>
   <ItemGroup>

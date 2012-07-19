@@ -144,6 +144,7 @@
 					  KeyboardNavigation.IsTabStop="False" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch" TabIndex="70" IsTabStop="False"
                        SelectionChanged="searchResultListbox_SelectionChanged"
                        >
+                
                         <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
 
@@ -158,10 +159,10 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-						<GridViewColumn Width="Auto" Header="Code Snippet">
+						<GridViewColumn Width="Auto" Header="Search Results" >                                
                                 <GridViewColumn.HeaderContainerStyle>
                                     <Style  TargetType="{x:Type GridViewColumnHeader}">
-                                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Left" />                                                                                
                                     </Style>
                                 </GridViewColumn.HeaderContainerStyle>
                                 <GridViewColumn.CellTemplate>

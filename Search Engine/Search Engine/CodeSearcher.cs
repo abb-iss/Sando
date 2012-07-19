@@ -65,7 +65,7 @@ namespace Sando.SearchEngine
 			if (res != null && !indexingChanged)
 			{
 				//cache hits and index not changed
-				return res;
+				return GetResultOrEmpty(res,searchString,"");
 			}
 			else
 			{
@@ -73,7 +73,7 @@ namespace Sando.SearchEngine
 				res = this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
 				//add into cache even the res contains no contents
 				lruCache.Put(searchCrit, res);
-				return res;
+                return GetResultOrEmpty(res,searchString,"");
 			}
 		}
 
@@ -82,7 +82,7 @@ namespace Sando.SearchEngine
 		/// </summary>
 		/// <param name="searchCriteria">The search criteria.</param>
 		/// <returns>List of Search Result</returns>
-		public virtual List<CodeSearchResult> Search(SearchCriteria searchCriteria)
+		public virtual List<CodeSearchResult> Search(SearchCriteria searchCriteria, String solutionName="")
 		{
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
@@ -90,7 +90,7 @@ namespace Sando.SearchEngine
 			if(res != null && !indexingChanged)
 			{
 				//cache hits and index not changed
-				return res;
+                return GetResultOrEmpty(res, GetSearchTerms(searchCriteria), solutionName);
 			}
 			else
 			{
@@ -98,10 +98,36 @@ namespace Sando.SearchEngine
 				res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
 				//add into cache even the res contains no contents
 				lruCache.Put(searchCriteria, res);
-				return res;
+                return GetResultOrEmpty(res,GetSearchTerms(searchCriteria),solutionName);
 			}
 		}
-		#endregion
+
+        private string GetSearchTerms(SearchCriteria searchCriteria)
+        {
+            var simple = searchCriteria as SimpleSearchCriteria;
+            if(simple!=null)
+            {
+                return String.Join(" ",simple.SearchTerms.Reverse());
+            }else
+            {
+                return "";
+            }
+        }
+
+        private List<CodeSearchResult> GetResultOrEmpty(List<CodeSearchResult> res, string searchTerm, string solutionName)
+        {
+            if(res!=null && res.Count>0)
+            {
+                return res;
+            }else
+            {
+                var empty = new List<CodeSearchResult>();
+                empty.Add(NoSearchResults.Instance(searchTerm,solutionName));
+                return empty;
+            }
+        }
+
+        #endregion
 
 		#region Private Mthods
 		/// <summary>

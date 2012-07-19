@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -46,7 +47,7 @@ public  class SearchManager
                     {
                         _currentSearcher = GetSearcher(myPackage);
                         IQueryable<CodeSearchResult> results =
-                            _currentSearcher.Search(GetCriteria(searchString, searchCriteria)).AsQueryable();
+                            _currentSearcher.Search(GetCriteria(searchString, searchCriteria),GetSolutionName(myPackage)).AsQueryable();
                         IResultsReorderer resultsReorderer =
                             ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                         results = resultsReorderer.ReorderSearchResults(results);
@@ -63,7 +64,18 @@ public  class SearchManager
 				}
 			}
 
-			public void SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
+    private string GetSolutionName(UIPackage myPackage)
+    {
+        try
+        {
+            return Path.GetFileNameWithoutExtension(myPackage.GetCurrentSolutionKey().GetSolutionPath());
+        }catch(Exception e)
+        {
+            return "";
+        }
+    }
+
+    public void SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
 			{
 				if(e.Key == Key.Return)
 				{
