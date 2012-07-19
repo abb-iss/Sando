@@ -25,7 +25,11 @@ namespace Sando.Indexer.IndexState
 				//as other included files are unlikely to be part of the same project and therefore 
 				//should not need to be parsed
 				string headerPath = System.IO.Path.GetDirectoryName(filePath) + "\\" + headerFile;
-				if(!System.IO.File.Exists(headerPath)) continue;
+				if(!System.IO.File.Exists(headerPath))
+				{
+					Debug.WriteLine("????? header file -" + headerFile + "- was not found.. this can lead to issues");					
+					continue;
+				}
 				Debug.WriteLine("*** parsing header = " + headerPath);
 				var headerInfo = new FileInfo(headerPath);
 				headerElements.AddRange(ExtensionPointsRepository.Instance.GetParserImplementation(headerInfo.Extension).Parse(headerPath));
@@ -43,7 +47,12 @@ namespace Sando.Indexer.IndexState
 			{
 				return DocumentFactory.Create(methodElement);
 			}
-			return null;
+			else
+			{
+				Debug.WriteLine("????? " + unresolvedMethod.Name + " is not resolved, this is bad!!");
+				methodElement = unresolvedMethod.Copy();
+				return DocumentFactory.Create(methodElement);
+			}
 		}
 	}
 }

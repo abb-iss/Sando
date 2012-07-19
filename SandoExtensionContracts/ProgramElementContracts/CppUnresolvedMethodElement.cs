@@ -33,9 +33,14 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		                                 Arguments, ReturnType, Body,
 		                                 classId, ClassName, String.Empty, IsConstructor) as MethodElement;
 		    SetCustomFields(unresolvedMethod, outMethodElement);
-                //new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel, Arguments, ReturnType, Body, 
-                //                                    classId, ClassName, String.Empty, IsConstructor);
 			return true;
+		}
+
+		//TODO: Remove this method
+		public MethodElement Copy()
+		{
+			return new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, AccessLevel.Protected, Arguments, ReturnType, Body, 
+		                               Guid.NewGuid(), ClassName, String.Empty, IsConstructor);	
 		}
 
 	    private void SetCustomFields(CppUnresolvedMethodElement oldElement, MethodElement newElement)

@@ -105,11 +105,12 @@ namespace Sando.Parser
                 var comment = oneGroup.First();
                 var commentText = GetCommentText(oneGroup);
                 int commentLine = Int32.Parse(comment.Attribute(PositionNamespace + "line").Value);				
-				if(commentText == String.Empty) continue;
+				if(String.IsNullOrWhiteSpace(commentText)) continue;
 
 				//comment name doesn't contain non-word characters and is compact-er than its body
 				var commentName = Regex.Replace(commentText, @"(\w+)\W+", "$1 ");
             	commentName = commentName.TrimStart('*', ' ', '\n', '\r');
+				if(String.IsNullOrWhiteSpace(commentName)) commentName = commentText;
 
 				//comments above method or class
 				XElement belowComment = (comment.NextNode is XElement) ? (XElement)comment.NextNode : null;

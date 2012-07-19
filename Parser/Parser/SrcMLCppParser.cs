@@ -98,6 +98,10 @@ namespace Sando.Parser
 			string returnType = String.Empty;
 
 			SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber);
+			if(name.Contains("::"))
+			{
+				name = name.Substring(name.LastIndexOf("::")+2);
+			}
 			AccessLevel accessLevel = RetrieveCppAccessLevel(function);
 			XElement type = function.Element(SourceNamespace + "type");
 			if(type != null)
