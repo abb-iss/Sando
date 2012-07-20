@@ -39,8 +39,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		//TODO: Remove this method
 		public MethodElement Copy()
 		{
-			return new MethodElement(Name, DefinitionLineNumber, FullFilePath, Snippet, AccessLevel.Protected, Arguments, ReturnType, Body, 
-		                               Guid.NewGuid(), ClassName, String.Empty, IsConstructor);	
+            return Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, Snippet, AccessLevel.Protected,
+                                         Arguments, ReturnType, Body,
+                                         Guid.NewGuid(), ClassName, String.Empty, IsConstructor) as MethodElement;
 		}
 
 	    private void SetCustomFields(CppUnresolvedMethodElement oldElement, MethodElement newElement)
