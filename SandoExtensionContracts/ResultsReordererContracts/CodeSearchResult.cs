@@ -75,25 +75,34 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 			int toRemove = int.MaxValue;
 			string[] split = snip.Split('\n');
 
-			//measure the shortest amount of empty space in all the lines in the snip
+			//measure the shortest empty space prefix in all the lines in the snip
 			foreach (string line in split)
 			{
-				int lineToRemove = 0;
-				if(snip.StartsWith("\t"))
+				if (! string.IsNullOrWhiteSpace(line))
 				{
-					lineToRemove = snip.Length - snip.TrimStart('\t').Length;
-				}
-				else if(snip.StartsWith(" "))
-				{
-					lineToRemove = snip.Length - snip.TrimStart(' ').Length;
-				}
+					int perLineToRemove;
 
-				if(lineToRemove > 0 && lineToRemove < toRemove)
-				{
-					toRemove = lineToRemove;
+					if (snip.StartsWith("\t"))
+					{
+						perLineToRemove = snip.Length - snip.TrimStart('\t').Length;
+					}
+					else if (snip.StartsWith(" "))
+					{
+						perLineToRemove = snip.Length - snip.TrimStart(' ').Length;
+					}
+					else
+					{
+						perLineToRemove = 0;
+					}
+
+					if (perLineToRemove < toRemove)
+					{
+						toRemove = perLineToRemove;
+					}
 				}
 			}
-
+		
+			//remove the empty spaces in front
 			if (toRemove > 0 && toRemove < int.MaxValue)
 			{
 				string newSnip = "";
