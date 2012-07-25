@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XMLFileParser.cs" />
     <Compile Include="SrcMLParsingUtils.cs" />
     <Compile Include="SrcMLCppParser.cs" />
     <Compile Include="ParserException.cs" />

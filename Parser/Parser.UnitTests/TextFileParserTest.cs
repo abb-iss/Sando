@@ -29,5 +29,23 @@ namespace Sando.Parser.UnitTests
 		}
 
 
+		[Test]
+		public void ParseXAMLFile2()
+		{
+			var parser = new XMLFileParser();
+			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\SearchViewControl.xaml.txt");
+			Assert.IsNotNull(elements);
+			Assert.AreEqual(84, elements.Count);
+			foreach(var element in elements)
+			{
+				if(element.DefinitionLineNumber == 204)
+				{
+					Assert.AreEqual("Auto 0 -5,0,0,0 2 0", element.Name);
+				}
+
+			}
+		}
+
+
 	}
 }
