@@ -108,11 +108,10 @@ namespace Sando.Parser
 				if(String.IsNullOrWhiteSpace(commentText)) continue;
 
 				//comment name doesn't contain non-word characters and is compact-er than its body
-				var commentName = Regex.Replace(commentText, @"(\w+)\W+", "$1 ");
-            	commentName = commentName.TrimStart('*', ' ', '\n', '\r');
-				if(String.IsNullOrWhiteSpace(commentName)) commentName = commentText;
+                var commentName = "";
+                commentName = GetCommentSummary(GetCommentText(oneGroup,true));
 
-				//comments above method or class
+                //comments above method or class
 				XElement belowComment = (comment.NextNode is XElement) ? (XElement)comment.NextNode : null;
 				while(belowComment != null &&
 						belowComment.Name == (SourceNamespace + "comment"))
@@ -181,7 +180,32 @@ namespace Sando.Parser
 			}
 		}
 
-	    private static string GetCommentText(List<XElement> comments)
+	    public static string GetCommentSummary(string commentText)
+	    {
+	        string commentName="";
+	        char[] splits = {'\n', '\r'};
+	        var splitString = commentText.Split(splits);
+            foreach (var line in splitString)
+            {
+                char[] arr = line.ToCharArray();
+
+                arr = Array.FindAll<char>(arr, (c => (char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) )));
+                var textLine = new string(arr);
+                if (textLine.Trim().Length > 10)
+                {
+                    if (!Regex.Match(line, @"\s*/+\s*<\w*>\s*[\r\n]*").Success)
+                    {
+                        commentName = line.Trim();
+                        break;
+                    }
+                }
+            }	        
+	        if (String.IsNullOrWhiteSpace(commentName)) commentName = commentText;
+            if (commentName.StartsWith("/")) commentName = commentName.TrimStart('/');
+	        return commentName.Trim();
+	    }
+
+	    private static string GetCommentText(List<XElement> comments, bool preserveSlashes=false)
 	    {
             StringBuilder builder = new StringBuilder();
 	        Boolean first = true;
@@ -196,7 +220,8 @@ namespace Sando.Parser
                     builder.Append(Environment.NewLine + " ");
                 }
 	            var commentText = comment.Value;
-                if (commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
+                if(!preserveSlashes)
+                    if (commentText.StartsWith("/")) commentText = commentText.TrimStart('/');
                 builder.Append(commentText.TrimStart());
 
 	        }	        
@@ -292,7 +317,11 @@ namespace Sando.Parser
 			{
 				//this ignores the possibility that a field may be part of an inner class
 				XElement name = ownerClasses.First().Element(SourceNamespace + "name");
-				string ownerClassName = name.Value;
+			    string ownerClassName="";
+                if(name==null)
+                    ownerClassName = "anonymous";
+                else
+				    ownerClassName = name.Value;
 				//now find the ClassElement object corresponding to ownerClassName, since those should have been gen'd by now
 				ProgramElement ownerClass = programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == ownerClassName);
 				return ownerClass as ClassElement;
@@ -357,7 +386,13 @@ namespace Sando.Parser
 
 		public static AccessLevel StrToAccessLevel(string level)
 		{
-			return (AccessLevel)Enum.Parse(typeof(AccessLevel), level, true);
+            try
+            {
+                return (AccessLevel) Enum.Parse(typeof (AccessLevel), level, true);
+            }catch(Exception e)
+            {
+                return AccessLevel.Internal;
+            }
 		}
 	}
 }

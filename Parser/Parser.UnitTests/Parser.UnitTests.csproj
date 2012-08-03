@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommentTest.cs" />
     <Compile Include="CSharpParserTest.cs" />
     <Compile Include="CppParserTest.cs" />
     <Compile Include="InheritanceParserTest.cs" />
