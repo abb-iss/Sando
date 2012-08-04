@@ -66,8 +66,8 @@ namespace Sando.Core.UnitTests
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");
-            Assert.AreEqual(parts.Count, 3);
-            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another_word");
+            Assert.AreEqual(parts.Count, 4);
+            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another*word");
         }
 
         [Test]
@@ -82,8 +82,8 @@ namespace Sando.Core.UnitTests
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word words inside quotes another_word");
-            Assert.AreEqual(parts.Count, 5);
-            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another_word");
+            Assert.AreEqual(parts.Count, 6);
+            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another*word");
         }
 
         [Test]

@@ -46,8 +46,9 @@ public  class SearchManager
                     if (myPackage.GetCurrentDirectory() != null)
                     {
                         _currentSearcher = GetSearcher(myPackage);
+                        bool searchStringContainedInvalidCharacters = false;
                         IQueryable<CodeSearchResult> results =
-                            _currentSearcher.Search(GetCriteria(searchString, searchCriteria),GetSolutionName(myPackage)).AsQueryable();
+                            _currentSearcher.Search(GetCriteria(searchString, out searchStringContainedInvalidCharacters, searchCriteria), GetSolutionName(myPackage)).AsQueryable();
                         IResultsReorderer resultsReorderer =
                             ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                         results = resultsReorderer.ReorderSearchResults(results);
@@ -94,13 +95,14 @@ public  class SearchManager
 			/// </summary>
 			/// <param name="searchString">Search string.</param>
 			/// <returns>search criteria</returns>
-			private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
+            private SearchCriteria GetCriteria(string searchString, out bool searchStringContainedInvalidCharacters, SimpleSearchCriteria searchCriteria = null)
 			{
 				if (searchCriteria == null)
 					searchCriteria = new SimpleSearchCriteria();
 				var criteria = searchCriteria;
 				criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(UIPackage.GetInstance()).NumberOfSearchResultsReturned;
                 searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
+                searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
 			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
                 criteria.SearchTerms = new SortedSet<string>(searchTerms);
 				return criteria;
