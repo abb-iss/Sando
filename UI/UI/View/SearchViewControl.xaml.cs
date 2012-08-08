@@ -23,7 +23,8 @@ namespace Sando.UI.View
     /// </summary>
     public partial class SearchViewControl : UserControl, IIndexUpdateListener, ISearchResultListener
     {
-		
+	
+
 		private static IIndexUpdateListener _instance;
 
 		public ObservableCollection<CodeSearchResult> SearchResults
@@ -49,6 +50,18 @@ namespace Sando.UI.View
 				SetValue(SearchStringProperty, value);
 			}
 		}
+
+        public string SearchStatus
+        {
+            get
+            {
+                return (string)GetValue(SearchStatusProperty);
+            }
+            private set
+            {
+                SetValue(SearchStatusProperty, value);
+            }
+        }
 
 		public SimpleSearchCriteria SearchCriteria
 		{
@@ -111,7 +124,11 @@ namespace Sando.UI.View
 		public static readonly DependencyProperty SearchStringProperty =
 			DependencyProperty.Register("SearchString", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
-		public static readonly DependencyProperty SearchCriteriaProperty =
+        public static readonly DependencyProperty SearchStatusProperty =
+             DependencyProperty.Register("SearchStatus", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+
+        public static readonly DependencyProperty SearchCriteriaProperty =
 			DependencyProperty.Register("SearchCriteria", typeof(SimpleSearchCriteria), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
 		public static readonly DependencyProperty ProgramElementTypeListProperty =
@@ -129,8 +146,9 @@ namespace Sando.UI.View
     		_searchManager = new SearchManager(this);
 			SearchResults = new ObservableCollection<CodeSearchResult>();
 			SearchCriteria = new SimpleSearchCriteria();
-            ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;              
-            
+            ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;
+
+    	    SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
     	}
 
         private void selectFirstResult(object sender, NotifyCollectionChangedEventArgs e)
@@ -160,7 +178,7 @@ namespace Sando.UI.View
 				SearchCriteria.ProgramElementTypes.Clear();
 				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 			}
-			_searchManager.Search(SearchString, SearchCriteria);            
+			SearchStatus = _searchManager.Search(SearchString, SearchCriteria);            
     	}
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -186,9 +204,9 @@ namespace Sando.UI.View
 						SearchCriteria.ProgramElementTypes.Clear();
 						SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 					}
-					
-					
-					_searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);                    
+
+
+                    SearchStatus = _searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);                    
 				}
 			}
     	}

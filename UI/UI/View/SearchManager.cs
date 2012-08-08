@@ -38,8 +38,9 @@ public  class SearchManager
 				return codeSearcher;
 			}
 
-			public void Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
+			public string Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
 			{
+			    var returnString = "";
 				if (!string.IsNullOrEmpty(searchString))
 				{				    
 					var myPackage = UIPackage.GetInstance();
@@ -53,16 +54,29 @@ public  class SearchManager
                             ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                         results = resultsReorderer.ReorderSearchResults(results);
                         _myDaddy.Update(results);
-                        if(myPackage.IsPerformingInitialIndexing() && interactive)
+                        if(searchStringContainedInvalidCharacters)
                         {
-                            MessageBox.Show("Sando is still performing its initial index of this project, results may be incomplete.", "Indexing in Progress", MessageBoxButton.OK, MessageBoxImage.Warning);    
+                            return "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.";
                         }
+                        if(myPackage.IsPerformingInitialIndexing() )
+                        {
+                            returnString += "Sando is still performing its initial index of this project, results may be incomplete.";    
+                        }
+                        if (returnString.Length == 0)
+                        {
+                            returnString = results.Count() + " results returned";
+                        }
+                        else
+                        {
+                            returnString = results.Count() + " results returned. "+returnString;
+                        }
+                        return returnString;
                     }else
-                    {
-                        if(interactive)
-                            MessageBox.Show("Sando searches only the currently open Solution.  Please open a Solution and try again.", "Sando Search Scope", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    {                        
+                      return "Sando searches only the currently open Solution.  Please open a Solution and try again.";
                     }
 				}
+			    return "";
 			}
 
     private string GetSolutionName(UIPackage myPackage)
@@ -76,12 +90,13 @@ public  class SearchManager
         }
     }
 
-    public void SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
+    public string SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
 			{
 				if(e.Key == Key.Return)
 				{
-					Search(searchString, searchCriteria);
+					return Search(searchString, searchCriteria);
 				}
+                return "";
 			}
 
 			public void MarkInvalid()

@@ -21,7 +21,7 @@ namespace Sando.Core.Tools
 
             searchTerms = Regex.Replace(searchTerms, pattern, " ");
 
-            MatchCollection matchCollection = Regex.Matches(searchTerms, "\"[^\"]*\"");
+            MatchCollection matchCollection = Regex.Matches(searchTerms, "\"[^\"]\"");
             List<string> matches = new List<string>();
             foreach (Match match in matchCollection)
             {
