@@ -5,12 +5,12 @@ using System.Runtime.CompilerServices;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Sando.Core;
+using Sando.Core.Extensions.Logging;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
@@ -37,14 +37,17 @@ namespace Sando.Indexer
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(corruptIndexEx));
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexIsCorrupt, corruptIndexEx);
 			}
 			catch(LockObtainFailedException lockObtainFailedEx)
 			{
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(lockObtainFailedEx));
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexAlreadyOpened, lockObtainFailedEx);
 			}
 			catch(System.IO.IOException ioEx)
 			{
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(ioEx));
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
 		}
@@ -120,7 +123,7 @@ namespace Sando.Indexer
             try
             {
                 this.IndexSearcher.Search(new TermQuery(new Term("asdf")));
-            }catch(AlreadyClosedException ace)
+            }catch(AlreadyClosedException)
             {
                 return false;
             }

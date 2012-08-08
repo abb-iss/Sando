@@ -247,7 +247,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             }
 
             logFilePath = Path.Combine(pluginDirectory, "ExtensionAnalyzer.log");
-            logger = new FileLogger(logFilePath).Logger;
+            logger = FileLogger.CreateCustomLogger(logFilePath);
         }
 
         [TearDown]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -8,13 +9,12 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
-using Sando.Translation;
 using Sando.Indexer.Searching.Criteria;
-using System.Collections.Generic;
-using System.IO;
+using Sando.Translation;
 
 namespace Sando.UI.View
 {
@@ -219,8 +219,9 @@ namespace Sando.UI.View
             {
                 FileOpener.OpenItem(sender);
             }
-            catch (ArgumentException)
+            catch (ArgumentException aex)
             {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
                 MessageBox.Show(fileNotFoundPopupMessage, fileNotFoundPopupTitle, MessageBoxButton.OK);
             }
     	}
@@ -233,8 +234,9 @@ namespace Sando.UI.View
                 {
                     FileOpener.OpenItem(sender);
                 }
-                catch(ArgumentException)
+                catch(ArgumentException aex)
                 {
+                    FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
                     MessageBox.Show(fileNotFoundPopupMessage, fileNotFoundPopupTitle, MessageBoxButton.OK);
                 }
             }

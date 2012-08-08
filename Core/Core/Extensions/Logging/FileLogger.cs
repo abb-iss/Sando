@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using log4net;
 using log4net.Config;
@@ -7,7 +10,30 @@ namespace Sando.Core.Extensions.Logging
 {
 	public class FileLogger
 	{
-		public FileLogger(string loggerLogFile)
+        public static ILog CreateCustomLogger(string logFilePath)
+        {
+            if(!logs.ContainsKey(logFilePath))
+                logs.Add(logFilePath, CreateLog(logFilePath));
+            return logs[logFilePath];
+        }
+
+        static FileLogger()
+        {
+            FileInfo fileInfo = new FileInfo(Assembly.GetCallingAssembly().Location);
+            defaultLogPath = Path.Combine(fileInfo.DirectoryName, "Sando" + Guid.NewGuid() + ".log");
+            defaultInstance = CreateLog(defaultLogPath);
+            logs = new Dictionary<string, ILog>();
+        }
+        
+        public static ILog DefaultLogger
+        {
+            get
+            {
+                return defaultInstance;
+            }
+        }
+
+        private static ILog CreateLog(string loggerLogFile)
 		{
 			string configurationContent =
 				@"<?xml version='1.0'?>
@@ -28,9 +54,12 @@ namespace Sando.Core.Extensions.Logging
 					</root>
 				</log4net>";
 			XmlConfigurator.Configure(new MemoryStream(ASCIIEncoding.Default.GetBytes(configurationContent)));
-			Logger = LogManager.GetLogger("ExtensionLogger");
+			return LogManager.GetLogger("ExtensionLogger");
 		}
 
-		public ILog Logger { get; set; }
+        private static ILog defaultInstance;
+        private static Dictionary<string, ILog> logs;
+
+        private static string defaultLogPath;
 	}
 }

@@ -11,9 +11,9 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Core.Extensions;
+using Sando.Core.Extensions.Logging;
 using Sando.Indexer;
 using Thread = System.Threading.Thread;
-using ThreadState = System.Threading.ThreadState;
 
 namespace Sando.UI.Monitoring
 {
@@ -188,7 +188,7 @@ namespace Sando.UI.Monitoring
 		        //TODO - don't catch a generic exception
 		    catch (Exception e)
 		    {
-		        Debug.WriteLine("Problem parsing file: "+path+"\n" + e.StackTrace);
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing file: " + path));
 		    }
 		}
 

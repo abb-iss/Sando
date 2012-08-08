@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml;
 using Sando.Core;
 using Sando.Core.Extensions;
+using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
@@ -72,18 +73,19 @@ namespace Sando.UI.Monitoring
 			catch(ArgumentException argumentException)
 			{
 				//ignore items with no associated file
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(argumentException));
 			}
 			catch(XmlException xmlException)
 			{
 				//TODO - should fix this if it happens too often
 				//TODO - need to investigate why this is happening during parsing
-				Debug.WriteLine(xmlException);
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(xmlException));
 			}
 			catch(NullReferenceException nre)
 			{
 				//TODO - these need to be handled
 				//TODO - need to investigate why this is happening during parsing
-				Debug.WriteLine(nre);
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(nre));
 			}
 
 		}

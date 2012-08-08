@@ -155,6 +155,7 @@ namespace Sando.UI
             {
                 Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}",
                                               this.ToString()));
+                FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
 
                 SetUpLogger();
@@ -185,7 +186,7 @@ namespace Sando.UI
                 MyPackage = this;
             }catch(Exception e)
             {
-                this.logger.Error(e.StackTrace);
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
         }
 
@@ -205,7 +206,7 @@ namespace Sando.UI
             var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
             pluginDirectory = directoryProvider.GetExtensionDirectory();
             var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
-            logger = new FileLogger(logFilePath).Logger;
+            logger = FileLogger.CreateCustomLogger(logFilePath);
         }
 
         private void RegisterExtensionPoints()

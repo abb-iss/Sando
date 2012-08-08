@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Sando.Core.Extensions;
+using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
@@ -36,7 +36,7 @@ namespace Sando.Parser
                 }
                 catch (Exception e)
                 {
-                    //
+                    FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
                 }
             }	        
 		}

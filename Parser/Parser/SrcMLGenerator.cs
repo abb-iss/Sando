@@ -1,11 +1,10 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
-using Sando.Translation;
-using System.ComponentModel;
-using System;
-using System.Threading;
+﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using System.Threading;
+using Sando.Core.Extensions.Logging;
+using Sando.Translation;
 
 namespace Sando.Parser
 {
@@ -130,8 +129,9 @@ namespace Sando.Parser
                     sOut.Close();
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(ex));
                 throw new ParserException(TranslationCode.Exception_General_IOException, "sr2srcml.exe execution error, check parameters");
             }
 
