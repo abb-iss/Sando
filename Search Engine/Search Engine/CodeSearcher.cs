@@ -121,8 +121,7 @@ namespace Sando.SearchEngine
                 return res;
             }else
             {
-                var empty = new List<CodeSearchResult>();
-                empty.Add(NoSearchResults.Instance(searchTerm,solutionName));
+                var empty = new List<CodeSearchResult>();                
                 return empty;
             }
         }

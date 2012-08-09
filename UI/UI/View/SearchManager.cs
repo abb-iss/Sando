@@ -62,12 +62,11 @@ public  class SearchManager
                         {
                             returnString += "Sando is still performing its initial index of this project, results may be incomplete.";    
                         }
-                        if (returnString.Length == 0)
-                        {
+                        if(!results.Any()){
+                            returnString = "No results found. " + returnString;
+                        }else if (returnString.Length == 0){
                             returnString = results.Count() + " results returned";
-                        }
-                        else
-                        {
+                        }else{
                             returnString = results.Count() + " results returned. "+returnString;
                         }
                         return returnString;
