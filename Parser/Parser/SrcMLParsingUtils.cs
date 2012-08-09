@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
+using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser
@@ -391,6 +392,7 @@ namespace Sando.Parser
                 return (AccessLevel) Enum.Parse(typeof (AccessLevel), level, true);
             }catch(Exception e)
             {
+                FileLogger.DefaultLogger.Error("Problem parsing access level.  Input was: "+level);
                 return AccessLevel.Internal;
             }
 		}
