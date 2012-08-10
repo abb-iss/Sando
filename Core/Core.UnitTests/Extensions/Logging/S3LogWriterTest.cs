@@ -1,5 +1,4 @@
 ﻿using System;
-using Amazon.S3;
 using NUnit.Framework;
 using Sando.Core.Extensions.Logging;
 
