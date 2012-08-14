@@ -63,6 +63,20 @@ namespace Sando.Core.UnitTests
         }
 
         [Test]
+        public void ShortcutInName()
+        {
+            string[] parts = wordSplitter.ExtractWords("FBIInUnderscore");
+            Assert.AreEqual(parts.Length, 3);
+        }
+
+        [Test]
+        public void PseudoShortcutInName()
+        {
+            string[] parts = wordSplitter.ExtractWords("IInUnderscore");
+            Assert.AreEqual(parts.Length, 3);
+        }
+
+        [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");

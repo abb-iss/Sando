@@ -170,8 +170,8 @@ namespace Sando.Parser
 			inputCode = Regex.Replace(inputCode, @"#endregion", "");
 
 			//place semicolons after set and get in C# properties
-			inputCode = Regex.Replace(inputCode, @"set(\s*){", "set;$1{");
-			inputCode = Regex.Replace(inputCode, @"get(\s*){", "get;$1{");
+			inputCode = Regex.Replace(inputCode, @"(\s+|})set(\s*){", "$1set;$2{");
+            inputCode = Regex.Replace(inputCode, @"(\s+|})get(\s*){", "$1get;$2{");
 
 			//converting foreach C# loops into regular fors (java 5 capability not yet in srcml)
 			inputCode = Regex.Replace(inputCode, @"foreach[ ]*\((\w+\s*)(\w+\s*)in(\s*\w+)\)", "for ($1 $2; $3; )");

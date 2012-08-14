@@ -10,7 +10,9 @@ namespace Sando.Core.Tools
     {
         public string[] ExtractWords(string word)
         {
-            word = Regex.Replace(word, @"([A-Z][a-z]+|[A-Z]+|[0-9]+)", "_$1").Replace(" _", "_");
+            word = Regex.Replace(word, @"([A-Z][a-z]+)", "_$1");
+            word = Regex.Replace(word, @"([A-Z]+|[0-9]+)", "_$1");
+            word = word.Replace(" _", "_");
             char[] delimiters = new char[] { '_', ':' };
             return word.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
         }
@@ -21,7 +23,7 @@ namespace Sando.Core.Tools
 
             searchTerms = Regex.Replace(searchTerms, pattern, " ");
 
-            MatchCollection matchCollection = Regex.Matches(searchTerms, "\"[^\"]\"");
+            MatchCollection matchCollection = Regex.Matches(searchTerms, "\"[^\"]+\"");
             List<string> matches = new List<string>();
             foreach (Match match in matchCollection)
             {
