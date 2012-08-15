@@ -5,6 +5,8 @@ using System.Text;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using EnvDTE;
+using EnvDTE80;
 
 namespace Sando.Core.Extensions.PairedInterleaving
 {
