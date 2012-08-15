@@ -75,6 +75,9 @@ namespace Sando.UI.Monitoring
                             try
                             {
                                 ProcessItems(project.ProjectItems.GetEnumerator());
+                            }catch(Exception e)
+                            {
+                                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
                             }
                             finally
                             {
@@ -171,7 +174,13 @@ namespace Sando.UI.Monitoring
 		    {
 		        if (item != null && item.Name != null)
 		        {
-		            path = item.FileNames[0];
+                    try
+                    {
+                        path = item.FileNames[0];
+                    }catch(Exception e)
+                    {
+                        path = item.FileNames[1];
+                    }
 		            string fileExtension = Path.GetExtension(path);
 		            if (fileExtension != null && !fileExtension.Equals(String.Empty))
 		            {
