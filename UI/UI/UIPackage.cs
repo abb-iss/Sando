@@ -26,6 +26,7 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
+using Sando.Core.Extensions.PairedInterleaving;
 
 namespace Sando.UI
 {
@@ -222,11 +223,13 @@ namespace Sando.UI
 																   new TextFileParser());
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
-            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
- 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 
-
+            //extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+            //extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
+            InterleavingManager interleavingManager = InterleavingManagerSingleton.GetInstance();
+            extensionPointsRepository.RegisterQueryRewriterImplementation(interleavingManager);
+            extensionPointsRepository.RegisterResultsReordererImplementation(interleavingManager);
             
             var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
             string extensionPointsConfigurationFilePath = GetExtensionPointsConfigurationFilePath(extensionPointsConfigurationDirectoryPath);

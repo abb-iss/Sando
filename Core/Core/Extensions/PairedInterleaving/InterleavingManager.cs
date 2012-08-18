@@ -10,9 +10,9 @@ using EnvDTE80;
 
 namespace Sando.Core.Extensions.PairedInterleaving
 {
-	public class PairedInterleavingManager : IQueryRewriter, IResultsReorderer
+	public class InterleavingManager : IQueryRewriter, IResultsReorderer
 	{
-		public PairedInterleavingManager()
+		public InterleavingManager()
 		{
 			LogCount = 0;
             ClickIdx = new List<int>();
@@ -34,9 +34,8 @@ namespace Sando.Core.Extensions.PairedInterleaving
 				WriteLogEntry(LogFile, entry);
             }
 
-			//TODO: capture the query and reissue it to the secondary FLT getting the secondary results
-			SecondaryResults = SandoResults;
-			SecondaryResults.Reverse();
+			//capture the query and reissue it to the secondary FLT getting the secondary results
+            SecondaryResults = LexSearch.GetResults(query);
 
 			//write log to S3
             if (LogCount >= LOG_ENTRIES_PER_FILE)

@@ -5,31 +5,46 @@ using System.Text;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using Sando.ExtensionContracts.ResultsReordererContracts;
+using System.Diagnostics;
 
 namespace Sando.Core.Extensions.PairedInterleaving
 {
-    public class LexSearch
+    public static class LexSearch
     {
         private static DTE2 dte = null;
 
-        public void GetResults(string query)
+        public static List<CodeSearchResult> GetResults(string query)
         {
             InitDte2();
-            
-            FindEvents _findEvents = dte.Events.FindEvents;
-            _findEvents.FindDone += new _dispFindEvents_FindDoneEventHandler(OnFindDone);
+                       
+            dte.Events.FindEvents.FindDone += new _dispFindEvents_FindDoneEventHandler(OnFindDone);
+            Find _objFind = dte.Find;
+            vsFindResult _findResult = _objFind.FindReplace(vsFindAction.vsFindActionFindAll, query, 0, "", 
+                                                            vsFindTarget.vsFindTargetSolution, "", "", 
+                                                            vsFindResultsLocation.vsFindResults1);
 
-            TextDocument _objDoc = dte.ActiveSolutionProjects.Object();
-            Find _objFind = _objDoc.DTE.Find;
-            _objFind.Action = vsFindAction.vsFindActionFindAll;
-            _objFind.FindWhat = query;
-            _objFind.Execute();
+            string _selectionText = "";
+            return ParseFindInFilesText(_selectionText);
         }
 
-        void OnFindDone(vsFindResult result, bool cancelled) 
+        private static List<CodeSearchResult> ParseFindInFilesText(string text)
         {
-            Console.Write("FindDone event fired with vsFindResult = ");
-            Console.WriteLine(result.ToString());
+            return null;
+        }
+
+        private static void OnFindDone(vsFindResult result, bool cancelled) 
+        {
+            if (result == vsFindResult.vsFindResultFound)
+            {
+                string vsWindowKindFindResults1 = "{0F887920-C2B6-11D2-9375-0080C747D9A0}";
+                Window _resultsWin = dte.Windows.Item(vsWindowKindFindResults1);
+                TextSelection _selection = _resultsWin.Selection;
+                _selection.SelectAll();
+                string _selectionText = _selection.Text;
+                _resultsWin.Visible = false;
+            }
+            //dte.Events.FindEvents.FindDone -= OnFindDone;
         }
 
         private static void InitDte2()

@@ -4,12 +4,12 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.Core.Extensions.PairedInterleaving;
 
 namespace Sando.UI.View
 {
 		public static class FileOpener
     	{
-			
 			private static DTE2 dte = null;
 
     		public static void OpenItem(object sender)
@@ -19,6 +19,9 @@ namespace Sando.UI.View
     			{
 					var myResult = result.Content as CodeSearchResult;
     				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
+
+                    InterleavingManager interleavingManager = InterleavingManagerSingleton.GetInstance();
+                    interleavingManager.NotifyClicked(myResult);
     			}
     		}
 

@@ -176,7 +176,8 @@
     <Compile Include="Extensions\Logging\S3LogWriter.cs" />
     <Compile Include="Extensions\PairedInterleaving\BalancedInterleaving.cs" />
     <Compile Include="Extensions\PairedInterleaving\LexSearch.cs" />
-    <Compile Include="Extensions\PairedInterleaving\PairedInterleavingManager.cs" />
+    <Compile Include="Extensions\PairedInterleaving\InterleavingManager.cs" />
+    <Compile Include="Extensions\PairedInterleaving\InterleavingManagerSingleton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SolutionKey.cs" />
     <Compile Include="Tools\WordSplitter.cs" />

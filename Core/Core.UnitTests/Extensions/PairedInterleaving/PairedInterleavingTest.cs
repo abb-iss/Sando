@@ -66,12 +66,12 @@ namespace Sando.Core.UnitTests.Extensions.PairedInterleaving
             Assert.AreEqual(scoreB, 1);
         }
 
-        [Test]
-        public void TestLex()
-        {
-            LexSearch lex = new LexSearch();
-            lex.GetResults("test");
-        }
+//        [Test]
+//        public void TestLex()
+//        {
+//            LexSearch lex = new LexSearch();
+//            lex.GetResults("test");
+//        }
 
     }
 }
