@@ -32,8 +32,8 @@ namespace Sando.Core.Extensions.PairedInterleaving
                                 vsFindTarget.vsFindTargetSolution, "", "",
                                 vsFindResultsLocation.vsFindResults1);
 
-            //_auto.WaitOne();
-            //_findEvents.FindDone -= OnFindDone;
+            _auto.WaitOne();
+            _findEvents.FindDone -= OnFindDone;
       
             return ParseFindInFilesText(_selectionText);
         }

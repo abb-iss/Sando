@@ -7,6 +7,8 @@ using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using EnvDTE;
 using EnvDTE80;
+using System.ComponentModel;
+using System.Threading;
 
 namespace Sando.Core.Extensions.PairedInterleaving
 {
@@ -35,8 +37,11 @@ namespace Sando.Core.Extensions.PairedInterleaving
 				WriteLogEntry(LogFile, entry);
             }
 
-			//capture the query and reissue it to the secondary FLT getting the secondary results
-            SecondaryResults = LexSearch.GetResults(query);
+            //capture the query and reissue it to the secondary FLT getting the secondary results
+            BackgroundWorker findInFilesWorker = new BackgroundWorker();
+            findInFilesWorker.DoWork += new DoWorkEventHandler((s, e) => findInFilesWorker_DoWork(s, e, query));
+            findInFilesWorker.RunWorkerAsync();
+            findInFilesWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(findInFilesWorker_RunWorkerCompleted);
 
 			//write log to S3
             if (LogCount >= LOG_ENTRIES_PER_FILE)
@@ -48,8 +53,19 @@ namespace Sando.Core.Extensions.PairedInterleaving
             return query;
 		}
 
+        void findInFilesWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            semaphore.Set();
+        }
+
+        void findInFilesWorker_DoWork(object sender, DoWorkEventArgs e, string query)
+        {
+            SecondaryResults = LexSearch.GetResults(query);
+        }
+
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
+            semaphore.WaitOne();
             SandoResults = searchResults.ToList();
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 
@@ -83,6 +99,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
         private List<CodeSearchResult> SecondaryResults;
         private List<CodeSearchResult> SandoResults;
         private bool searchRecievedClick;
+        private static AutoResetEvent semaphore = new AutoResetEvent(false);
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }
