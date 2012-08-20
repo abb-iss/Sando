@@ -19,6 +19,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
 			LogCount = 0;
             ClickIdx = new List<int>();
             searchRecievedClick = false;
+            semaphore = new AutoResetEvent(false);
 			InitializeLogFileName();
 		}
 
@@ -99,7 +100,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
         private List<CodeSearchResult> SecondaryResults;
         private List<CodeSearchResult> SandoResults;
         private bool searchRecievedClick;
-        private static AutoResetEvent semaphore = new AutoResetEvent(false);
+        private static AutoResetEvent semaphore;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }
