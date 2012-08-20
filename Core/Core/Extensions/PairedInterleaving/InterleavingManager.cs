@@ -30,7 +30,8 @@ namespace Sando.Core.Extensions.PairedInterleaving
                 BalancedInterleaving.DetermineWinner(SandoResults, SecondaryResults, InterleavedResults, 
 														ClickIdx, out scoreA, out scoreB);
 
-            	string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " + FLT_B_NAME + "=" + scoreB + Environment.NewLine;
+            	string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " + 
+                    FLT_B_NAME + "=" + scoreB + Environment.NewLine;
 				WriteLogEntry(LogFile, entry);
             }
 
