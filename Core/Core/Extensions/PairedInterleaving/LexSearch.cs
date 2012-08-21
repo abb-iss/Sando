@@ -26,7 +26,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
             InitDte2();
 
             _findEvents = _dte.Events.FindEvents;
-            _findEvents.FindDone += new _dispFindEvents_FindDoneEventHandler(LexSearch.OnFindDone);
+            _findEvents.FindDone += LexSearch.OnFindDone;
             Find objFind = _dte.Find;
             objFind.FindReplace(vsFindAction.vsFindActionFindAll, query, 0, "",
                                 vsFindTarget.vsFindTargetSolution, "", "",

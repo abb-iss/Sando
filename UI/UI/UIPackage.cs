@@ -224,13 +224,9 @@ namespace Sando.UI
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
-
-            //extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            //extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
-            InterleavingManager interleavingManager = InterleavingManagerSingleton.GetInstance();
-            extensionPointsRepository.RegisterQueryRewriterImplementation(interleavingManager);
-            extensionPointsRepository.RegisterResultsReordererImplementation(interleavingManager);
-            
+            extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());			
+ 
             var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
             string extensionPointsConfigurationFilePath = GetExtensionPointsConfigurationFilePath(extensionPointsConfigurationDirectoryPath);
 
@@ -253,8 +249,10 @@ namespace Sando.UI
                 cppParser.SetSrcMLPath(GetSrcMLDirectory());
             }
 
-
-
+			//////////////////////////////
+			InterleavingManager interleavingManager = InterleavingManagerSingleton.GetInstance();
+			ExtensionPointsRepository.Instance.RegisterResultsReordererImplementation(interleavingManager);
+			ExtensionPointsRepository.Instance.RegisterQueryRewriterImplementation(interleavingManager);
         }
 
         private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
