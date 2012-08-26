@@ -39,10 +39,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
             }
 
             //capture the query and reissue it to the secondary FLT getting the secondary results
-            BackgroundWorker findInFilesWorker = new BackgroundWorker();
-            findInFilesWorker.DoWork += new DoWorkEventHandler((s, e) => findInFilesWorker_DoWork(s, e, query));
-            findInFilesWorker.RunWorkerAsync();
-            findInFilesWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(findInFilesWorker_RunWorkerCompleted);
+            SecondaryResults = LexSearch.GetResults(query);
 
 			//write log to S3
             if (LogCount >= LOG_ENTRIES_PER_FILE)
@@ -56,7 +53,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
 
         void findInFilesWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            semaphore.Set();
+            //semaphore.Set();
         }
 
         void findInFilesWorker_DoWork(object sender, DoWorkEventArgs e, string query)
@@ -66,7 +63,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
 
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
-            semaphore.WaitOne();
+            //semaphore.WaitOne();
             SandoResults = searchResults.ToList();
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 

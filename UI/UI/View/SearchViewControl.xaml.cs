@@ -15,6 +15,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
+using System.ComponentModel;
 
 namespace Sando.UI.View
 {
@@ -136,6 +137,12 @@ namespace Sando.UI.View
 
     	private SearchManager _searchManager;
 
+        private class WorkerSearchParameters
+        {
+            public SimpleSearchCriteria criteria;
+            public String query;
+        }
+
 
     	public SearchViewControl()
     	{
@@ -178,7 +185,12 @@ namespace Sando.UI.View
 				SearchCriteria.ProgramElementTypes.Clear();
 				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 			}
-			SearchStatus = _searchManager.Search(SearchString, SearchCriteria);            
+
+            BackgroundWorker sandoWorker = new BackgroundWorker();
+            sandoWorker.DoWork += new DoWorkEventHandler(sandoWorker_DoWork);
+            var workerSearchParams = new WorkerSearchParameters() { query = SearchString, criteria = SearchCriteria };
+            sandoWorker.RunWorkerAsync(workerSearchParams);
+			//SearchStatus = _searchManager.Search(SearchString, SearchCriteria);            
     	}
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -205,13 +217,21 @@ namespace Sando.UI.View
 						SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 					}
 
-
-                    SearchStatus = _searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);                    
+                    BackgroundWorker sandoWorker = new BackgroundWorker();
+                    sandoWorker.DoWork += new DoWorkEventHandler(sandoWorker_DoWork);
+                    var workerSearchParams = new WorkerSearchParameters() { query = text.Text, criteria = SearchCriteria };
+                    sandoWorker.RunWorkerAsync(workerSearchParams);
+                    //SearchStatus = _searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);                    
 				}
 			}
     	}
 
-
+        void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var searchParams = (WorkerSearchParameters)e.Argument;
+            var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+            e.Result = searchStatus;
+        }
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
