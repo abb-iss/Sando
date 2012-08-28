@@ -118,7 +118,11 @@ namespace Sando.UI
 
 		public void EnsureSandoRunning()
 		{
-			ShowToolWindow(null,null);
+            ToolWindowPane window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+            if ((null == window) || (null == window.Frame))
+            {
+                throw new NotSupportedException(Resources.CanNotCreateWindow);
+            }
 		}
 
         public static SandoOptions GetSandoOptions(UIPackage package)
@@ -137,6 +141,10 @@ namespace Sando.UI
             {
                 sandoDialogPage.NumberOfSearchResultsReturned = defaultToReturn+"";
             }
+            if (Directory.Exists(sandoDialogPage.ExtensionPointsPluginDirectoryPath) == false && defaultPluginDirectory != null)
+		    {
+		        sandoDialogPage.ExtensionPointsPluginDirectoryPath = defaultPluginDirectory;
+		    }
 			SandoOptions sandoOptions = new SandoOptions(sandoDialogPage.ExtensionPointsPluginDirectoryPath, sandoDialogPage.NumberOfSearchResultsReturned);
 			return sandoOptions;
 		}
@@ -302,16 +310,25 @@ namespace Sando.UI
 
 		private void SolutionHasBeenOpened()
 		{
-		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
-			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
-			if(extensionPointsConfigurationDirectory == null)
-			{
-				extensionPointsConfigurationDirectory = pluginDirectory;
-			}
-			bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
-			_currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
-            _currentMonitor.StartMonitoring();		    
-			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+            try
+            {
+                SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
+                string extensionPointsConfigurationDirectory =
+                    GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;                
+                if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory)==false)
+                {
+                    extensionPointsConfigurationDirectory = pluginDirectory;
+                }
+
+                bool isIndexRecreationRequired =
+                    IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                _currentMonitor.StartMonitoring();
+                _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+            }catch(Exception e)
+            {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
+            }            
 		}
 
   
