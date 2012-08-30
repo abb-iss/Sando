@@ -18,7 +18,7 @@ namespace Sando.UI.Monitoring
 
 		public static SolutionMonitor CreateMonitor(bool isIndexRecreationRequired)
 		{
-			var openSolution = GetOpenSolution();
+			var openSolution = UIPackage.GetOpenSolution();
 			return CreateMonitor(openSolution, isIndexRecreationRequired);
 		}
 
@@ -64,18 +64,7 @@ namespace Sando.UI.Monitoring
 			return split[split.Length - 1]+fullName.GetHashCode();
 		}
 
-		private static Solution GetOpenSolution()
-		{
-			var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
-			if(dte != null)
-			{
-				var openSolution = dte.Solution;
-				return openSolution;
-			}else
-			{
-				return null;
-			}
-		}
+
 
 		private static string GetLuceneDirectoryForSolution(Solution openSolution)
 		{
