@@ -305,7 +305,7 @@ namespace Sando.UI
 		{
 		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
 			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
-			if(extensionPointsConfigurationDirectory == null)
+            if (extensionPointsConfigurationDirectory == null || !Directory.Exists(extensionPointsConfigurationDirectory))
 			{
 				extensionPointsConfigurationDirectory = pluginDirectory;
 			}

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Sando.Core.Extensions.PairedInterleaving;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Core.UnitTests.Extensions.PairedInterleaving
 {
@@ -66,12 +67,13 @@ namespace Sando.Core.UnitTests.Extensions.PairedInterleaving
             Assert.AreEqual(scoreB, 1);
         }
 
-//        [Test]
-//        public void TestLex()
-//        {
-//            LexSearch lex = new LexSearch();
-//            lex.GetResults("test");
-//        }
+        [Test]
+        public void TestLex()
+        {
+            var tuple = LexSearch.GetCriteria(@"C:\Users\USDASHE1\Documents\VsProjects\Sando-clone\Indexer\Indexer\IndexState\CppHeaderElementResolver.cs(20):			//first parse all the included header files. they are the same in all the unresolved elements");
+            Assert.IsTrue(tuple.Item2==20);
+            Assert.IsTrue((tuple.Item1 as SimpleSearchCriteria).Locations.First().Equals(@"C:\Users\USDASHE1\Documents\VsProjects\Sando-clone\Indexer\Indexer\IndexState\CppHeaderElementResolver.cs"));
+        }
 
     }
 }

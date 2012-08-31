@@ -4,11 +4,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -284,12 +286,25 @@ namespace Sando.UI.View
 
     	public void Update(IQueryable<CodeSearchResult> results)
     	{
-    		SearchResults.Clear();
-    		foreach (var codeSearchResult in results)
-    		{
-    			SearchResults.Add(codeSearchResult);
-    		}            
+            if (Thread.CurrentThread == this.Dispatcher.Thread)
+            {
+                UpdateResults(results);
+            }else
+            {
+                Dispatcher.Invoke(
+                (Action)(() => UpdateResults(results)));
+            }
     	}
+
+        private void UpdateResults(IQueryable<CodeSearchResult> results)
+        {
+                SearchResults.Clear();
+                foreach (var codeSearchResult in results)
+                {
+                    SearchResults.Add(codeSearchResult);
+                }
+        }
+
 
     	#endregion
 

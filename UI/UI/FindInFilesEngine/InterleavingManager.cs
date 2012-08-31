@@ -28,14 +28,21 @@ namespace Sando.Core.Extensions.PairedInterleaving
 			//dump the previous query stuff to the log, assuming it was clicked
             if (searchRecievedClick)
             {
-                LogCount++;
-                int scoreA, scoreB;
-                BalancedInterleaving.DetermineWinner(SandoResults, SecondaryResults, InterleavedResults, 
-														ClickIdx, out scoreA, out scoreB);
+                try
+                {
+                    LogCount++;
+                    int scoreA, scoreB;
+                    BalancedInterleaving.DetermineWinner(SandoResults, SecondaryResults, InterleavedResults,
+                                                         ClickIdx, out scoreA, out scoreB);
 
-            	string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " + 
-                    FLT_B_NAME + "=" + scoreB + Environment.NewLine;
-				WriteLogEntry(LogFile, entry);
+                    string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " +
+                                   FLT_B_NAME + "=" + scoreB + Environment.NewLine;
+                    WriteLogEntry(LogFile, entry);
+                }catch(Exception e)
+                {
+                    //TODO - Kosta, something messed up here
+                    FileLogger.DefaultLogger.Error(e.StackTrace);
+                }
             }
 
             //capture the query and reissue it to the secondary FLT getting the secondary results

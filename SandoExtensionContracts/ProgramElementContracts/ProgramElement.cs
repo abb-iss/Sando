@@ -7,6 +7,24 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
     public class ProgramElement
     {
+        public override int GetHashCode()
+        {
+            return this.FullFilePath.GetHashCode()+this.DefinitionLineNumber;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var element = obj as ProgramElement;
+            if (element == null)
+                return false;
+            else
+            {
+                return
+                    (this.FullFilePath + this.DefinitionLineNumber + this.Name + this.ProgramElementType.ToString()).
+                        Equals(element.FullFilePath + element.DefinitionLineNumber + element.Name + element.ProgramElementType.ToString());
+            }
+        }
+
         public const string CustomTypeTag = "CustomType";
 
         public String CustomType1534213765

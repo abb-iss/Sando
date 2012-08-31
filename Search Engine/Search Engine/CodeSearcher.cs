@@ -61,23 +61,56 @@ namespace Sando.SearchEngine
 			SearchCriteria searchCrit = this.GetCriteria(searchString);
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
-			List<CodeSearchResult> res = lruCache.Get(searchCrit);
-			if (res != null && !indexingChanged)
-			{
-				//cache hits and index not changed
-				return GetResultOrEmpty(res,searchString,"");
-			}
-			else
-			{
-				//no cache hits, new search and update the cache
-				res = this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
-				//add into cache even the res contains no contents
-				lruCache.Put(searchCrit, res);
-                return GetResultOrEmpty(res,searchString,"");
-			}
+            return ExecuteSearch(searchCrit,indexingChanged);
 		}
 
-		/// <summary>
+        private List<CodeSearchResult> ExecuteSearch(SearchCriteria searchCrit,bool indexingChanged, bool ignoreAnalyzer =false)
+        {
+            List<CodeSearchResult> res = lruCache.Get(searchCrit);
+            if (res != null && !indexingChanged)
+            {
+                //cache hits and index not changed
+                return GetResultOrEmpty(res,  "");
+            }
+            else
+            {
+                //no cache hits, new search and update the cache
+                if (ignoreAnalyzer)
+                {
+                    res = UnanalyzedQuerySearch(searchCrit);
+                }
+                else
+                {                    
+                    res = NormalSearch(searchCrit);
+                }
+                //add into cache even the res contains no contents
+                lruCache.Put(searchCrit, res);
+                return GetResultOrEmpty(res,  "");
+            }
+        }
+
+        private List<CodeSearchResult> NormalSearch(SearchCriteria searchCrit)
+        {
+            List<CodeSearchResult> res;
+            res =
+                this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2))
+                    .ToList();
+            return res;
+        }
+
+        private List<CodeSearchResult> UnanalyzedQuerySearch(SearchCriteria searchCrit)
+        {
+            List<CodeSearchResult> res;
+            //don't mess with the query terms when creating query
+            //the analyzer will stem stuff and remove '\', etc.  Sometimes you don't want that,
+            //like when matching a filepath
+            res =
+                this.searcher.SearchNoAnalyzer(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2))
+                    .ToList();
+            return res;
+        }
+
+        /// <summary>
 		/// Searches using the specified search criteria.
 		/// </summary>
 		/// <param name="searchCriteria">The search criteria.</param>
@@ -90,7 +123,7 @@ namespace Sando.SearchEngine
 			if(res != null && !indexingChanged)
 			{
 				//cache hits and index not changed
-                return GetResultOrEmpty(res, GetSearchTerms(searchCriteria), solutionName);
+                return GetResultOrEmpty(res,  solutionName);
 			}
 			else
 			{
@@ -98,7 +131,7 @@ namespace Sando.SearchEngine
 				res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
 				//add into cache even the res contains no contents
 				lruCache.Put(searchCriteria, res);
-                return GetResultOrEmpty(res,GetSearchTerms(searchCriteria),solutionName);
+                return GetResultOrEmpty(res,solutionName);
 			}
 		}
 
@@ -114,7 +147,7 @@ namespace Sando.SearchEngine
             }
         }
 
-        private List<CodeSearchResult> GetResultOrEmpty(List<CodeSearchResult> res, string searchTerm, string solutionName)
+        private List<CodeSearchResult> GetResultOrEmpty(List<CodeSearchResult> res,  string solutionName)
         {
             if(res!=null && res.Count>0)
             {
@@ -143,5 +176,11 @@ namespace Sando.SearchEngine
 			return criteria;
 		}
 		#endregion
-	}
+
+        public List<CodeSearchResult> UnalteredSearch(SearchCriteria whatToGet)
+        {            
+            return ExecuteSearch(whatToGet, false, true);
+        }
+
+    }
 }

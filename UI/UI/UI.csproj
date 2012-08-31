@@ -160,6 +160,10 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FindInFilesEngine\BalancedInterleaving.cs" />
+    <Compile Include="FindInFilesEngine\InterleavingManager.cs" />
+    <Compile Include="FindInFilesEngine\InterleavingManagerSingleton.cs" />
+    <Compile Include="FindInFilesEngine\LexSearch.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
