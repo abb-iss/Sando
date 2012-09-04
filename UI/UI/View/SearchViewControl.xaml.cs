@@ -268,7 +268,7 @@ namespace Sando.UI.View
     	{
 			if(_instance==null)
 			{
-				UIPackage.GetInstance().EnsureSandoRunning();
+				UIPackage.GetInstance().EnsureViewExists();
 			}
     		return _instance;
     	}

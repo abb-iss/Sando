@@ -91,6 +91,10 @@ namespace Sando.UI.Monitoring
                     }
                 }
             } 
+            catch(Exception e)
+            {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem getting projects to process."));
+            }
             finally
             {
                 _initialIndexDone = true;

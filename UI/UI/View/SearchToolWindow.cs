@@ -39,5 +39,7 @@ namespace Sando.UI.View
             // the object returned by the Content property.
             base.Content = new SearchViewControl();
         }
+
+        
     }
 }

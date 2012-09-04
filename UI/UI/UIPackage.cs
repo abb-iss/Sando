@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
@@ -49,13 +52,16 @@ namespace Sando.UI
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
-    [ProvideToolWindow(typeof(SearchToolWindow))]
+    [ProvideToolWindow(typeof(SearchToolWindow), Transient = true, MultiInstances = false, Style = VsDockStyle.Tabbed)]
+    
     [Guid(GuidList.guidUIPkgString)]
-	// This attribute starts up our extension early so that it can listen to solution events
+	// This attribute starts up our extension early so that it can listen to solution events    
 	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
+    // Start when solution exists
+    //[ProvideAutoLoad("f1536ef8-92ec-443c-9ed7-fdadf150da82")]    
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
-	public sealed class UIPackage: Package
+    public sealed class UIPackage : Package, IVsPackageDynamicToolOwnerEx
     {    	
     	
 		private SolutionMonitor _currentMonitor;
@@ -99,28 +105,40 @@ namespace Sando.UI
         /// </summary>
         private void ShowToolWindow(object sender, EventArgs e)
         {
+            ShowSando();
+        }
+
+        /// <summary>
+        /// Side affect is creating the tool window if it doesn't exist yet
+        /// </summary>
+        /// <returns></returns>
+        private IVsWindowFrame GetWindowFrame()
+        {
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
-            ToolWindowPane window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
-			
-			
+            ToolWindowPane window = this.FindToolWindow(typeof (SearchToolWindow), 0, true);            
             if ((null == window) || (null == window.Frame))
             {
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
             }
-			
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-			// Dock Sando to the bottom of Visual Studio.
-			windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockBottom, Guid.Empty, 0, 0, 0, 0);
-
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+            return windowFrame;
         }
 
-		public void EnsureSandoRunning()
+        private bool isRunning = false;
+        private int ShouldShow = 0;
+
+        public void EnsureViewExists()
 		{
-			ShowToolWindow(null,null);
+            if (!isRunning)
+            {
+                var windowFrame = GetWindowFrame();
+                isRunning = true;
+            }		    
 		}
+
+   
 
         public static SandoOptions GetSandoOptions(UIPackage package)
         {
@@ -138,6 +156,10 @@ namespace Sando.UI
             {
                 sandoDialogPage.NumberOfSearchResultsReturned = defaultToReturn+"";
             }
+            if (Directory.Exists(sandoDialogPage.ExtensionPointsPluginDirectoryPath) == false && defaultPluginDirectory != null)
+		    {
+		        sandoDialogPage.ExtensionPointsPluginDirectoryPath = defaultPluginDirectory;
+		    }
 			SandoOptions sandoOptions = new SandoOptions(sandoDialogPage.ExtensionPointsPluginDirectoryPath, sandoDialogPage.NumberOfSearchResultsReturned);
 			return sandoOptions;
 		}
@@ -158,38 +180,68 @@ namespace Sando.UI
                                               this.ToString()));
                 FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
-
                 SetUpLogger();
-
-                // Add our command handlers for menu (commands must exist in the .vsct file)
-                var mcs = GetService(typeof (IMenuCommandService)) as OleMenuCommandService;
-                if (null != mcs)
-                {
-                    // Create the command for the tool window
-                    var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int) PkgCmdIDList.sandoSearch);
-                    var menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
-                    mcs.AddCommand(menuToolWin);
-                }
-
-                var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
-                if (dte != null)
-                {
-                    _solutionEvents = dte.Events.SolutionEvents;
-                    _solutionEvents.Opened += SolutionHasBeenOpened;
-                    _solutionEvents.BeforeClosing += SolutionAboutToClose;
-                }
-
+                AddCommand();                
                 RegisterExtensionPoints();
-
-                _dteEvents = dte.Events.DTEEvents;
-                _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
-
-                MyPackage = this;
+                SetUpLifeCycleEvents();
+                MyPackage = this;                
             }catch(Exception e)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
         }
+
+        private void SetUpLifeCycleEvents()
+        {
+            var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+            _dteEvents = dte.Events.DTEEvents;
+            _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
+            _dteEvents.OnStartupComplete += StartupCompleted;
+        }
+
+        private void AddCommand()
+        {
+// Add our command handlers for menu (commands must exist in the .vsct file)
+            var mcs = GetService(typeof (IMenuCommandService)) as OleMenuCommandService;
+            if (null != mcs)
+            {
+                // Create the command for the tool window
+                var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int) PkgCmdIDList.sandoSearch);
+                var menuToolWin = new MenuCommand(ShowToolWindow, toolwndCommandID);
+                mcs.AddCommand(menuToolWin);
+            }
+        }
+
+        private void StartupCompleted()
+        {
+            ShouldShow = 1;
+            ShowSando();
+            RegisterSolutionEvents();
+            if(GetOpenSolution()!=null && _currentMonitor==null)
+            {
+                SolutionHasBeenOpened();
+            }
+        }
+
+        private void RegisterSolutionEvents()
+        {
+            var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+            if (dte != null)
+            {
+                _solutionEvents = dte.Events.SolutionEvents;
+                _solutionEvents.Opened += SolutionHasBeenOpened;
+                _solutionEvents.BeforeClosing += SolutionAboutToClose;
+            }
+        }
+
+        private void ShowSando()
+        {
+            var windowFrame = GetWindowFrame();
+            // Dock Sando to the bottom of Visual Studio.
+            windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);
+            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+        }
+
 
         private void DteEventsOnOnBeginShutdown()
         {
@@ -208,6 +260,7 @@ namespace Sando.UI
             pluginDirectory = directoryProvider.GetExtensionDirectory();
             var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
             logger = FileLogger.CreateCustomLogger(logFilePath);
+            FileLogger.DefaultLogger.Info("pluginDir: "+pluginDirectory);
         }
 
         private void RegisterExtensionPoints()
@@ -301,21 +354,55 @@ namespace Sando.UI
 			}
 		}
 
+        public static Solution GetOpenSolution()
+        {
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            if (dte != null)
+            {
+                var openSolution = dte.Solution;
+                return openSolution;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 		private void SolutionHasBeenOpened()
 		{
-		    SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
-			string extensionPointsConfigurationDirectory = GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
-            if (extensionPointsConfigurationDirectory == null || !Directory.Exists(extensionPointsConfigurationDirectory))
-			{
-				extensionPointsConfigurationDirectory = pluginDirectory;
-			}
-			bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
-			_currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
-            _currentMonitor.StartMonitoring();		    
-			_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+            BackgroundWorker bw = new BackgroundWorker();
+            bw.WorkerReportsProgress = false;
+            bw.WorkerSupportsCancellation = false;
+            bw.DoWork += new DoWorkEventHandler(RespondToSolutionOpened);
+		    bw.RunWorkerAsync();
 		}
 
-  
+        private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
+        {
+            try
+            {
+                SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
+                string extensionPointsConfigurationDirectory =
+                    GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
+                if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory) == false)
+                {
+                    extensionPointsConfigurationDirectory = pluginDirectory;
+                }
+
+                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
+                bool isIndexRecreationRequired =
+                    IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                _currentMonitor.StartMonitoring();
+                _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
+            }    
+        }
+
+
         public void AddNewParser(string qualifiedClassName, string dllName, List<string> supportedFileExtensions)
         {            
             extensionPointsConfiguration.ParsersConfiguration.Add(new ParserExtensionPointsConfiguration()
@@ -401,6 +488,12 @@ namespace Sando.UI
             {
                 return false;
             }
+        }
+
+        public int QueryShowTool(ref Guid rguidPersistenceSlot, uint dwId, out int pfShowTool)
+        {
+            pfShowTool =  ShouldShow;
+            return pfShowTool;
         }
     }
 }

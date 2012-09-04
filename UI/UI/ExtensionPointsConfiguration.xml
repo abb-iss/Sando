@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ExtensionPointsConfiguration xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <PluginDirectoryPath>C:\</PluginDirectoryPath>
+  <ParsersConfiguration>
+  </ParsersConfiguration>
   <WordSplitterConfiguration>
     <FullClassName>Sando.Core.Tools.WordSplitter</FullClassName>
     <LibraryFileRelativePath>Core.dll</LibraryFileRelativePath>

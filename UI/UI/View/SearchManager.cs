@@ -48,7 +48,7 @@ public  class SearchManager
 			    var returnString = "";
 				if (!string.IsNullOrEmpty(searchString))
 				{				    
-					var myPackage = UIPackage.GetInstance();
+					var myPackage = UIPackage.GetInstance();                    
                     if (myPackage.GetCurrentDirectory() != null)
                     {
                         _currentSearcher = GetSearcher(myPackage);
