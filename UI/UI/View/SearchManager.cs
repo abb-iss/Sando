@@ -56,7 +56,8 @@ public  class SearchManager
                         _myDaddy.Update(results);
                         if(searchStringContainedInvalidCharacters)
                         {
-                            return "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.";
+                            _myDaddy.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
+                            return null;
                         }
                         if(myPackage.IsPerformingInitialIndexing() )
                         {
@@ -69,13 +70,15 @@ public  class SearchManager
                         }else{
                             returnString = results.Count() + " results returned. "+returnString;
                         }
-                        return returnString;
+                        _myDaddy.UpdateMessage(returnString);
+                        return null;
                     }else
                     {                        
-                      return "Sando searches only the currently open Solution.  Please open a Solution and try again.";
+                      _myDaddy.UpdateMessage("Sando searches only the currently open Solution.  Please open a Solution and try again.");
+                        return null;
                     }
 				}
-			    return "";
+			    return null;
 			}
 
     private string GetSolutionName(UIPackage myPackage)

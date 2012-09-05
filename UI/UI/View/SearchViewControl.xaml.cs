@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -178,7 +180,7 @@ namespace Sando.UI.View
 				SearchCriteria.ProgramElementTypes.Clear();
 				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 			}
-			SearchStatus = _searchManager.Search(SearchString, SearchCriteria);            
+            SearchAsync(SearchString, SearchCriteria);       
     	}
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
@@ -205,13 +207,31 @@ namespace Sando.UI.View
 						SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 					}
 
-
-                    SearchStatus = _searchManager.SearchOnReturn(sender, e, text.Text, SearchCriteria);                    
+                    SearchAsync(text.Text,SearchCriteria);
 				}
 			}
     	}
 
+        private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)
+        {
+            BackgroundWorker sandoWorker = new BackgroundWorker();
+            sandoWorker.DoWork += new DoWorkEventHandler(sandoWorker_DoWork);
+            var workerSearchParams = new WorkerSearchParameters() { query = text, criteria = searchCriteria };
+            sandoWorker.RunWorkerAsync(workerSearchParams);
+        }
 
+        private class WorkerSearchParameters
+    	{
+	        public SimpleSearchCriteria criteria;
+	        public String query;
+	    }
+	  
+	    void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
+	    {
+	        var searchParams = (WorkerSearchParameters)e.Argument;
+	        var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+	        e.Result = searchStatus;
+	    }
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
@@ -264,14 +284,44 @@ namespace Sando.UI.View
 
     	public void Update(IQueryable<CodeSearchResult> results)
     	{
-    		SearchResults.Clear();
-    		foreach (var codeSearchResult in results)
-    		{
-    			SearchResults.Add(codeSearchResult);
-    		}            
+            if (Thread.CurrentThread == this.Dispatcher.Thread)
+            {
+	            UpdateResults(results);
+	        }else
+	        {
+	            Dispatcher.Invoke(
+	            (Action)(() => UpdateResults(results)));
+	        }     	    
     	}
 
-    	#endregion
+        private void UpdateResults(IQueryable<CodeSearchResult> results)
+        {
+            SearchResults.Clear();
+            foreach (var codeSearchResult in results)
+            {
+                SearchResults.Add(codeSearchResult);
+            }
+        }
+
+        public void UpdateMessage(string message)
+        {
+            if (Thread.CurrentThread == this.Dispatcher.Thread)
+            {
+                SetMessage(message);
+            }
+            else
+            {
+                Dispatcher.Invoke(
+                (Action)(() =>  SetMessage(message)));
+            }
+        }
+
+        private void SetMessage(string message)
+        {
+            SearchStatus = message;
+        }
+
+        #endregion
 
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
