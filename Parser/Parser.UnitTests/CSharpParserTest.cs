@@ -348,7 +348,7 @@ namespace Sando.Parser.UnitTests
 					if(comment.DocumentedElementId == methodElement.Id)
 					{
 						methodCommentBody = comment.Body.Replace("\r\n","");
-						if(methodCommentBody == "summary Required method for Designer support - do not modify the contents of this method with the code editor. </summary>")
+						if(methodCommentBody == "<summary> Required method for Designer support - do not modify the contents of this method with the code editor. </summary>")
 						{
 							foundMethodComment = true;
 						}
@@ -357,7 +357,7 @@ namespace Sando.Parser.UnitTests
                     else if(comment.DocumentedElementId == classElement.Id)
 					{
                         classCommentBody = comment.Body.Replace("\r\n", "");
-						if(classCommentBody == "summary Represents a class for managing the capturing and saving of screenshots. </summary>")
+						if(classCommentBody == "<summary> Represents a class for managing the capturing and saving of screenshots. </summary>")
 						{
 							foundClassComment = true;
 						}

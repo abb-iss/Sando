@@ -32,7 +32,7 @@ using Sando.Indexer.IndexState;
 
 namespace Sando.UI
 {
-    /// <summary>
+    /// <summary> 
     /// This is the class that implements the package exposed by this assembly.
     ///
     /// The minimum requirement for a class to be considered a valid package for Visual Studio
@@ -216,7 +216,8 @@ namespace Sando.UI
             ShouldShow = 1;
             ShowSando();
             RegisterSolutionEvents();
-            if(GetOpenSolution()!=null && _currentMonitor==null)
+            Solution openSolution = GetOpenSolution();
+            if(openSolution!=null && !"".Equals(openSolution.FullName)&& _currentMonitor==null)
             {
                 SolutionHasBeenOpened();
             }
@@ -240,7 +241,7 @@ namespace Sando.UI
             windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
-
+         
 
         private void DteEventsOnOnBeginShutdown()
         {
