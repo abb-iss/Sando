@@ -39,7 +39,8 @@ namespace Sando.Core.Extensions.PairedInterleaving
                     string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " +
                                    FLT_B_NAME + "=" + scoreB + Environment.NewLine;
                     WriteLogEntry(LogFile, entry);
-                }catch(Exception e)
+                }
+				catch(Exception e)
                 {
                     //TODO - Kosta, something messed up here
                     FileLogger.DefaultLogger.Error(e.StackTrace);
@@ -54,15 +55,14 @@ namespace Sando.Core.Extensions.PairedInterleaving
             {
             	S3LogWriter.WriteLogFile(LogFile);
 				InitializeLogFileName();
+				LogCount = 0;
             }
 
+			ClickIdx.Clear();
+			searchRecievedClick = false;
+			
             return query;
 		}
-
-        void findInFilesWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            //semaphore.Set();
-        }
 
         void findInFilesWorker_DoWork(object sender, DoWorkEventArgs e, string query)
         {
@@ -97,7 +97,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
 			LogFile = Environment.CurrentDirectory + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".dat";
 		}
 
-		private const int LOG_ENTRIES_PER_FILE = 50;
+		private const int LOG_ENTRIES_PER_FILE = 5;
 		private const string FLT_A_NAME = "Sando";
         private const string FLT_B_NAME = "Lex";
 		private string LogFile;
