@@ -27,8 +27,7 @@ namespace Sando.UI.Monitoring
 		
 		private readonly string _currentPath;		
 		private readonly System.ComponentModel.BackgroundWorker _processFileInBackground;
-		private readonly SolutionKey _solutionKey;
-		private Thread _startupThread;
+		private readonly SolutionKey _solutionKey;		
 	    public volatile bool ShouldStop = false;
 
         public bool PerformingInitialIndexing()
@@ -55,12 +54,13 @@ namespace Sando.UI.Monitoring
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 		{
 			ProjectItem projectItem = e.Argument as ProjectItem;
-			ProcessItem(projectItem);			
+			ProcessItem(projectItem,null);			
             UpdateAfterAdditions();
 		}
 
-		private void _runStartupInBackground_DoWork()
-		{
+        private void _runStartupInBackground_DoWork(object sender, DoWorkEventArgs anEvent)
+        {
+            var worker = sender as BackgroundWorker;
             try
             {
                 var allProjects = _openSolution.getProjects();
@@ -74,7 +74,7 @@ namespace Sando.UI.Monitoring
                         {
                             try
                             {
-                                ProcessItems(project.ProjectItems.GetEnumerator());
+                                ProcessItems(project.ProjectItems.GetEnumerator(), worker);
                             }catch(Exception e)
                             {
                                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
@@ -84,10 +84,10 @@ namespace Sando.UI.Monitoring
                                 UpdateAfterAdditions();
                             }
                         }
-                        if (ShouldStop && InStartupThread())
+                        if (worker != null && worker.CancellationPending)
                         {
-                            break;
-                        }
+                            return;
+                        }                     
                     }
                 }
             } 
@@ -98,8 +98,7 @@ namespace Sando.UI.Monitoring
             finally
             {
                 _initialIndexDone = true;
-                ShouldStop = false;
-                Thread.CurrentThread.Interrupt();        
+                ShouldStop = false;                
             }            
 		}
 
@@ -109,69 +108,55 @@ namespace Sando.UI.Monitoring
 	        _indexUpdateManager.SaveFileStates();
 	    }
 
+
+	    private BackgroundWorker startupWorker;
+
 	    public void StartMonitoring()
 		{
-			
-            _startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
-	        _startupThread.Name = StartupThreadName;
-            _startupThread.Priority = ThreadPriority.BelowNormal;                 
-            _startupThread.Start();
+            startupWorker = new BackgroundWorker();
+            startupWorker.WorkerSupportsCancellation = true;
+            startupWorker.DoWork +=
+                    new DoWorkEventHandler(_runStartupInBackground_DoWork);
+            startupWorker.RunWorkerAsync();
 
 			// Register events for doc table
 			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
 			_documentTable.AdviseRunningDocTableEvents(this, out _documentTableItemId);
 		}
 
-		private void ProcessItems(IEnumerator items)
+		private void ProcessItems(IEnumerator items, BackgroundWorker worker)
 		{			
 			while (items.MoveNext())
 			{
-				var item = (ProjectItem) items.Current;
-				ProcessItem(item);
-                if(ShouldStop && InStartupThread())
-                {
+                if(worker!=null && worker.CancellationPending)
+                {                    
                     return;
                 }
+				var item = (ProjectItem) items.Current;
+				ProcessItem(item,worker);   
 			}
 		}
 
-        private bool InStartupThread()
-        {        
-            try
-            {
-        
-                Thread current = Thread.CurrentThread;
-                if (StartupThreadName.Equals(current.Name))
-                {
-                    return true;
-                }
-                return false;
-            }
-            catch (Exception ex)
-            {
-                return false; 
-            }    
-        }
 
-		private void ProcessItem(ProjectItem item)
+		private void ProcessItem(ProjectItem item,BackgroundWorker worker)
 		{
-			ProcessSingleFile(item);
-			ProcessChildren(item);
-		} 
+			ProcessSingleFile(item,worker);
+			ProcessChildren(item,worker);
+		}
 
-		private void ProcessChildren(ProjectItem item)
+        private void ProcessChildren(ProjectItem item, BackgroundWorker worker)
 		{
             try
             {
                 if(item!=null && item.ProjectItems!=null)
-                    ProcessItems(item.ProjectItems.GetEnumerator());
+                    ProcessItems(item.ProjectItems.GetEnumerator(),worker);
             }catch(COMException dll)
             {
                 //ignore, can't parse these types of files
             }
 		}
 
-		private void ProcessSingleFile(ProjectItem item)
+        private void ProcessSingleFile(ProjectItem item, BackgroundWorker worker)
 		{
 		    string path = "";
 		    try
@@ -224,17 +209,11 @@ namespace Sando.UI.Monitoring
                     _documentTable.UnadviseRunningDocTableEvents(_documentTableItemId);
                 }
 
-                //shut down any current indexing from the startup thread
-                if (_startupThread != null)
-                {
-                    if (_startupThread.IsAlive)
-                    {                    
-                        ShouldStop = true;
-                        _startupThread.Join();
-                        //while(_startupThread.ThreadState==ThreadState.Running) 
-                        //    Thread.Sleep(500);
-                    }
+                if(startupWorker!=null)
+                {                    
+                    startupWorker.CancelAsync();
                 }
+
             }
             finally
             {

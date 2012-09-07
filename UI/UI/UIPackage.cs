@@ -29,11 +29,10 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
-using Sando.Core.Extensions.PairedInterleaving;
 
 namespace Sando.UI
 {
-    /// <summary>
+    /// <summary> 
     /// This is the class that implements the package exposed by this assembly.
     ///
     /// The minimum requirement for a class to be considered a valid package for Visual Studio
@@ -217,7 +216,8 @@ namespace Sando.UI
             ShouldShow = 1;
             ShowSando();
             RegisterSolutionEvents();
-            if(GetOpenSolution()!=null && _currentMonitor==null)
+            Solution openSolution = GetOpenSolution();
+            if(openSolution!=null && !"".Equals(openSolution.FullName)&& _currentMonitor==null)
             {
                 SolutionHasBeenOpened();
             }
@@ -241,7 +241,7 @@ namespace Sando.UI
             windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
-
+         
 
         private void DteEventsOnOnBeginShutdown()
         {
@@ -276,10 +276,12 @@ namespace Sando.UI
 																   new TextFileParser());
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
+            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
-            extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());			
- 
+ 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+
+
+            
             var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
             string extensionPointsConfigurationFilePath = GetExtensionPointsConfigurationFilePath(extensionPointsConfigurationDirectoryPath);
 
@@ -302,10 +304,8 @@ namespace Sando.UI
                 cppParser.SetSrcMLPath(GetSrcMLDirectory());
             }
 
-			//////////////////////////////
-			InterleavingManager interleavingManager = InterleavingManagerSingleton.GetInstance();
-			ExtensionPointsRepository.Instance.RegisterResultsReordererImplementation(interleavingManager);
-			ExtensionPointsRepository.Instance.RegisterQueryRewriterImplementation(interleavingManager);
+
+
         }
 
         private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
@@ -348,8 +348,14 @@ namespace Sando.UI
                 }
                 finally
                 {
-                    _currentMonitor.Dispose();
-                    _currentMonitor = null;
+                    try
+                    {
+                        _currentMonitor.Dispose();
+                        _currentMonitor = null;
+                    }catch(Exception e)
+                    {
+                        FileLogger.DefaultLogger.Error(e);
+                    }
                 }
 			}
 		}

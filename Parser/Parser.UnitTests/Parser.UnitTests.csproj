@@ -88,6 +88,7 @@
     <Content Include="TestFiles\InheritanceCSharpFile.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestFiles\LongFile.txt" />
     <Content Include="TestFiles\Message.H.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -97,6 +98,7 @@
     <Content Include="TestFiles\MultiParentTest.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestFiles\NotSoLongFile.txt" />
     <Content Include="TestFiles\Parameters.h">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

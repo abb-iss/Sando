@@ -14,6 +14,10 @@ namespace Sando.Parser
 
         public List<ProgramElement> Parse(string filename)
         {
+            if(File.Exists(filename)&&GetSizeInMb(filename)>0.4)
+            {
+                return new List<ProgramElement>();
+            }
             var list = new List<ProgramElement>(); 
             try
             {
@@ -32,7 +36,7 @@ namespace Sando.Parser
 						//var name = Regex.Replace(line, @"(\w+)\W+", "$1 ");
 						var name = line.TrimStart(' ', '\n', '\r', '\t');
 						name = name.TrimEnd(' ');
-                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(filename, linenum, SnippetSize, SnippetLinesAbove); 
+                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(name, SnippetSize); 
                     	var element = new TextLineElement(name, linenum, filename, snippet, line);
                     	list.Add(element);
                     }
@@ -44,6 +48,12 @@ namespace Sando.Parser
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "The file could not be read:"));
             }
             return list;
+        }
+
+        private float GetSizeInMb(string filename)
+        {
+            float sizeInMb = (new FileInfo(filename).Length/1024f)/1024f;
+            return sizeInMb;
         }
     }
 }
