@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using System.Diagnostics;
 using System.Threading;
 using Sando.Indexer.Searching.Criteria;
 using Sando.UI.View;
 
-
-namespace Sando.Core.Extensions.PairedInterleaving
+namespace Sando.UI.FindInFilesEngine
 {
     public static class LexSearch
     {
         private static DTE2 _dte = null;
-        private static AutoResetEvent _auto = new AutoResetEvent(false);
+        private static readonly AutoResetEvent _auto = new AutoResetEvent(false);
         private static string _selectionText = String.Empty;
 
         //has to be at class level, http://support.microsoft.com/kb/555430
@@ -124,8 +120,8 @@ namespace Sando.Core.Extensions.PairedInterleaving
             var file = splitLine[0];
             var lineNumber = int.Parse(splitLine[1]);
             var criteria = new SimpleSearchCriteria();
-            criteria.SearchByProgramElementType = true;
-            criteria.ProgramElementTypes.Add(ProgramElementType.Method);
+            //criteria.SearchByProgramElementType = true;
+            //criteria.ProgramElementTypes.Add(ProgramElementType.Method);
             criteria.SearchByLocation = true;
             criteria.Locations.Add(file.Trim());
             return Tuple.Create(criteria as SearchCriteria, lineNumber);
@@ -135,7 +131,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
         {
             if (result == vsFindResult.vsFindResultFound)
             {
-                string vsWindowKindFindResults1 = "{0F887920-C2B6-11D2-9375-0080C747D9A0}";
+				string vsWindowKindFindResults1 = "{0F887920-C2B6-11D2-9375-0080C747D9A0}";
                 EnvDTE.Window resultsWin = _dte.Windows.Item(vsWindowKindFindResults1);                
                 var selection = resultsWin.Selection as TextSelection;
                 _selectionText = String.Empty;
@@ -144,7 +140,7 @@ namespace Sando.Core.Extensions.PairedInterleaving
                     selection.SelectAll();
                     _selectionText = selection.Text;
                 }
-                resultsWin.Visible = false;
+				resultsWin.Visible = false;
             }
             _auto.Set();
         }

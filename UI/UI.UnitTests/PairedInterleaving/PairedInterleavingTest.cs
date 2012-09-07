@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using Sando.Core.Extensions.PairedInterleaving;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
+using Sando.UI.FindInFilesEngine;
 
-namespace Sando.Core.UnitTests.Extensions.PairedInterleaving
+namespace Sando.UI.UnitTests.PairedInterleaving
 {
     [TestFixture]
     class PairedInterleavingTest

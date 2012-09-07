@@ -9,6 +9,7 @@ using EnvDTE;
 using EnvDTE80;
 using System.ComponentModel;
 using System.Threading;
+using Sando.UI.FindInFilesEngine;
 
 namespace Sando.Core.Extensions.PairedInterleaving
 {
