@@ -27,8 +27,7 @@ namespace Sando.UI.Monitoring
 		
 		private readonly string _currentPath;		
 		private readonly System.ComponentModel.BackgroundWorker _processFileInBackground;
-		private readonly SolutionKey _solutionKey;
-		private Thread _startupThread;
+		private readonly SolutionKey _solutionKey;		
 	    public volatile bool ShouldStop = false;
 
         public bool PerformingInitialIndexing()
@@ -119,11 +118,6 @@ namespace Sando.UI.Monitoring
             startupWorker.DoWork +=
                     new DoWorkEventHandler(_runStartupInBackground_DoWork);
             startupWorker.RunWorkerAsync();
-
-            //_startupThread = new System.Threading.Thread(new ThreadStart(_runStartupInBackground_DoWork));
-	        //_startupThread.Name = StartupThreadName;
-            //_startupThread.Priority = ThreadPriority.BelowNormal;                 
-            //_startupThread.Start();
 
 			// Register events for doc table
 			_documentTable = (IVsRunningDocumentTable)Package.GetGlobalService(typeof(SVsRunningDocumentTable));
@@ -220,17 +214,6 @@ namespace Sando.UI.Monitoring
                     startupWorker.CancelAsync();
                 }
 
-                ////shut down any current indexing from the startup thread
-                //if (_startupThread != null)
-                //{
-                //    if (_startupThread.IsAlive)
-                //    {                    
-                //        ShouldStop = true;
-                //        _startupThread.Join();
-                //        //while(_startupThread.ThreadState==ThreadState.Running) 
-                //        //    Thread.Sleep(500);
-                //    }
-                //}
             }
             finally
             {

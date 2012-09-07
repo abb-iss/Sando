@@ -347,8 +347,14 @@ namespace Sando.UI
                 }
                 finally
                 {
-                    _currentMonitor.Dispose();
-                    _currentMonitor = null;
+                    try
+                    {
+                        _currentMonitor.Dispose();
+                        _currentMonitor = null;
+                    }catch(Exception e)
+                    {
+                        FileLogger.DefaultLogger.Error(e);
+                    }
                 }
 			}
 		}

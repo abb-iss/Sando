@@ -52,7 +52,7 @@ namespace Sando.Parser
 
 			if(srcml != String.Empty)
 			{
-				XElement sourceElements = XElement.Parse(srcml);
+				XElement sourceElements = XElement.Parse(srcml,LoadOptions.PreserveWhitespace);
 
 				//classes and structs have to parsed first
 				ParseClasses(programElements, sourceElements, fileName);
@@ -123,7 +123,7 @@ namespace Sando.Parser
 			arguments = arguments.TrimEnd();
 
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
-			string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+            string snippet = SrcMLParsingUtils.RetrieveSnippet(function, SnippetSize);
 
 			return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor);
 		}
@@ -218,7 +218,7 @@ namespace Sando.Parser
 			}
 
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
-			string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+            string snippet = SrcMLParsingUtils.RetrieveSnippet(cls, SnippetSize);
 
             if(parseStruct)
             {
@@ -295,7 +295,7 @@ namespace Sando.Parser
 				string funcName = twonames[2];
 				string className = twonames[0];
 				definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
-				snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+                snippet = SrcMLParsingUtils.RetrieveSnippet(function, SnippetSize);
 
                 return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, 
 														className, isConstructor, includedFiles) as MethodElement;
@@ -305,7 +305,7 @@ namespace Sando.Parser
 				//regular C-type function, or an inlined class function
 				string funcName = wholeName;
 				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
-				snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, SnippetSize);
+                snippet = SrcMLParsingUtils.RetrieveSnippet(function, SnippetSize);
 				AccessLevel accessLevel = RetrieveCppAccessLevel(function);
 
                 Guid classId = Guid.Empty;
@@ -392,7 +392,7 @@ namespace Sando.Parser
 				}
 
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
-				string snippet = SrcMLParsingUtils.RetrieveSnippet(fileName, definitionLineNumber, snippetSize);
+                string snippet = SrcMLParsingUtils.RetrieveSnippet(enm, snippetSize);
 
 				programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
 			}

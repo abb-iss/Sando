@@ -29,6 +29,20 @@ namespace Sando.Parser.UnitTests
 		}
 
 
+        [Test]
+        public void ParseTxtFile()
+        {
+            var parser = new TextFileParser();
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LongFile.txt");
+            Assert.IsNotNull(elements);
+            Assert.AreEqual(0, elements.Count);
+            elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\NotSoLongFile.txt");
+            Assert.IsNotNull(elements);
+            Assert.AreEqual(23945, elements.Count);
+
+        }
+
+
 		[Test]
 		public void ParseXAMLFile2()
 		{

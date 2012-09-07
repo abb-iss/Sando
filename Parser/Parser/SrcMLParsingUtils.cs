@@ -60,7 +60,7 @@ namespace Sando.Parser
 					initialValue = initialValueElement.Element(SourceNamespace + "expr").Value;
 
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
-				string snippet = RetrieveSnippet(fileName, definitionLineNumber, snippetSize);
+                string snippet = RetrieveSnippet(field, snippetSize);
 
 				programElements.Add(new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue));
 			}
@@ -133,7 +133,7 @@ namespace Sando.Parser
 						if(methodElement != null)
 						{
 							programElements.Add(new DocCommentElement(commentName, commentLine, methodElement.FullFilePath,
-																		RetrieveSnippet(methodElement.FullFilePath, commentLine, snippetSize),
+                                                                        RetrieveSnippet(commentText, snippetSize),
 																		commentText, methodElement.Id));
 						    methodElement.Body += " "+commentText.Replace("\r\n","");
 							continue;
@@ -151,7 +151,7 @@ namespace Sando.Parser
 						if(classElement != null)
 						{
 							programElements.Add(new DocCommentElement(commentName, commentLine, classElement.FullFilePath,
-																		RetrieveSnippet(classElement.FullFilePath, commentLine, snippetSize),
+																		RetrieveSnippet(commentText, snippetSize),
 																		commentText, classElement.Id));                            
 							continue;
 						}
@@ -163,7 +163,7 @@ namespace Sando.Parser
 				if(methodEl != null)
 				{
 					programElements.Add(new DocCommentElement(commentName, commentLine, methodEl.FullFilePath,
-																RetrieveSnippet(methodEl.FullFilePath, commentLine, snippetSize),
+																RetrieveSnippet(commentText, snippetSize),
 																commentText, methodEl.Id));
 					continue;
 				}
@@ -171,15 +171,17 @@ namespace Sando.Parser
 				if(classEl != null)
 				{
 					programElements.Add(new DocCommentElement(commentName, commentLine, classEl.FullFilePath,
-																RetrieveSnippet(classEl.FullFilePath, commentLine, snippetSize),
+																RetrieveSnippet(commentText,  snippetSize),
 																commentText, classEl.Id));
 					continue;
 				}
 
 				//comments is not associated with another element, so it's a plain CommentElement
-				programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSnippet(fileName, commentLine, snippetSize), commentText));
+				programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSnippet(commentText, snippetSize), commentText));
 			}
 		}
+
+	 
 
 	    public static string GetCommentSummary(string commentText)
 	    {
@@ -206,7 +208,7 @@ namespace Sando.Parser
 	        return commentName.Trim();
 	    }
 
-	    private static string GetCommentText(List<XElement> comments, bool preserveSlashes=false)
+	    private static string GetCommentText(List<XElement> comments, bool preserveSlashes=true)
 	    {
             StringBuilder builder = new StringBuilder();
 	        Boolean first = true;
@@ -217,7 +219,7 @@ namespace Sando.Parser
                     first = false;
                 }
                 else
-                {
+                {                    
                     builder.Append(Environment.NewLine + " ");
                 }
 	            var commentText = comment.Value;
@@ -334,6 +336,8 @@ namespace Sando.Parser
 			}
 		}
 
+      
+
 		public static MethodElement RetrieveMethodElement(XElement field, List<ProgramElement> programElements)
 		{
 			IEnumerable<XElement> ownerMethods =
@@ -356,36 +360,41 @@ namespace Sando.Parser
 			}
 		}
 
-		public static string RetrieveSnippet(string filename, int lineNum, int snippetNumLines, int linesAbove = 0)
-		{
-			int startLine = lineNum - linesAbove - 1;
-			string snip = String.Empty;
-			using(var reader = new StreamReader(filename))
-			{
-				try
-				{
-					//discard lines preceeding snippet
-					string line = null;
-					for (int i = 0; i < startLine; ++i)
-					{
-						line = reader.ReadLine();
-					}
+        public static string RetrieveSnippet(string retrieveSnippet, int numLines)
+        {
+            try
+            {
+                string snip = "";
+                string[] lines = retrieveSnippet.Split('\n');
+                if (lines.Length > 0)
+                {
+                    int count = 0;
+                    foreach (var line in lines)
+                    {
+                        if (count >= numLines)
+                            break;
+                        char[] trim = {'\n', '\r'};
+                        var myLine = line.TrimEnd(trim);
+                        myLine.TrimStart(trim);
+                        snip += myLine + Environment.NewLine;
+                    }
+                }
+                return snip;
+            }
+            catch (Exception e)
+            {
+                return retrieveSnippet;
+            }
+        }
 
-					for (int i = 0; i < snippetNumLines; ++i)
-					{
-						line = reader.ReadLine();
-						snip += line + Environment.NewLine;
-					}
-				}
-				catch(IOException)
-				{
-					return snip;
-				}
-			}
-			return snip;
+		public static string RetrieveSnippet(XElement theThang, int numLines)
+		{
+		    string retrieveSnippet = theThang.Value;
+            return RetrieveSnippet(retrieveSnippet, numLines);
+
 		}
 
-		public static AccessLevel StrToAccessLevel(string level)
+	    public static AccessLevel StrToAccessLevel(string level)
 		{
             try
             {
