@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using Sando.Core.Extensions.PairedInterleaving;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
-using Sando.UI.FindInFilesEngine;
+using Sando.UI.InterleavingExperiment;
 
 namespace Sando.UI.UnitTests.PairedInterleaving
 {

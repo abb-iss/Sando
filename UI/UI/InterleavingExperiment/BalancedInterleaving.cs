@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
-namespace Sando.Core.Extensions.PairedInterleaving
+namespace Sando.UI.InterleavingExperiment
 {
 	public static class BalancedInterleaving
 	{

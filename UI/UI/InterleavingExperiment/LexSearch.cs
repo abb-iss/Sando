@@ -9,7 +9,7 @@ using System.Threading;
 using Sando.Indexer.Searching.Criteria;
 using Sando.UI.View;
 
-namespace Sando.UI.FindInFilesEngine
+namespace Sando.UI.InterleavingExperiment
 {
     public static class LexSearch
     {

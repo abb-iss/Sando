@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Sando.Core.Extensions.PairedInterleaving
+﻿namespace Sando.UI.InterleavingExperiment
 {
     public static class InterleavingManagerSingleton
     {

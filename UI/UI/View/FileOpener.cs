@@ -4,7 +4,7 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.Core.Extensions.PairedInterleaving;
+using Sando.UI.InterleavingExperiment;
 
 namespace Sando.UI.View
 {

@@ -11,7 +11,7 @@ using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
-using Sando.Core.Extensions.PairedInterleaving;
+using Sando.UI.InterleavingExperiment;
 using log4net;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;

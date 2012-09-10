@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using EnvDTE;
-using EnvDTE80;
 using System.ComponentModel;
 using System.Threading;
-using Sando.UI.FindInFilesEngine;
 
-namespace Sando.Core.Extensions.PairedInterleaving
+namespace Sando.UI.InterleavingExperiment
 {
 	public class InterleavingManager : IQueryRewriter, IResultsReorderer
 	{
