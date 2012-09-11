@@ -17,7 +17,7 @@ namespace Sando.UI.InterleavingExperiment
             ClickIdx = new List<int>();
             searchRecievedClick = false;
             semaphore = new AutoResetEvent(false);
-			InitializeLogFileName();
+			InitializeNewLogFileName();
 		}
 
 		public string RewriteQuery(string query)
@@ -34,7 +34,7 @@ namespace Sando.UI.InterleavingExperiment
 
                     string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " +
                                    FLT_B_NAME + "=" + scoreB + Environment.NewLine;
-                    WriteLogEntry(LogFile, entry);
+                    WriteLogEntry(entry);
                 }
 				catch(Exception e)
                 {
@@ -49,9 +49,17 @@ namespace Sando.UI.InterleavingExperiment
 			//write log to S3
             if (LogCount >= LOG_ENTRIES_PER_FILE)
             {
-            	S3LogWriter.WriteLogFile(LogFile);
-				InitializeLogFileName();
-				LogCount = 0;
+            	bool success = S3LogWriter.WriteLogFile(LogFile);
+				if(success == true)
+				{
+					System.IO.File.Delete(LogFile);
+					InitializeNewLogFileName();
+					LogCount = 0;
+				}
+				else
+				{
+					LogCount -= 10; //try again after 10 more entries
+				}
             }
 
 			ClickIdx.Clear();
@@ -83,17 +91,17 @@ namespace Sando.UI.InterleavingExperiment
             }
 		}
 
-		private void WriteLogEntry(string filename, string entry)
+		private void WriteLogEntry(string entry)
 		{
-			System.IO.File.AppendAllText(filename, entry);
+			System.IO.File.AppendAllText(LogFile, entry);
 		}
 
-		private void InitializeLogFileName()
+		private void InitializeNewLogFileName()
 		{
 			LogFile = Environment.CurrentDirectory + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".dat";
 		}
 
-		private const int LOG_ENTRIES_PER_FILE = 5;
+		private const int LOG_ENTRIES_PER_FILE = 25;
 		private const string FLT_A_NAME = "Sando";
         private const string FLT_B_NAME = "Lex";
 		private string LogFile;
