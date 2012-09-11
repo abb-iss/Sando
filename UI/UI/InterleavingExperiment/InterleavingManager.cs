@@ -15,7 +15,7 @@ namespace Sando.UI.InterleavingExperiment
 		{
 			LogCount = 0;
             ClickIdx = new List<int>();
-            searchRecievedClick = false;
+            SearchRecievedClick = false;
             semaphore = new AutoResetEvent(false);
 			InitializeNewLogFileName();
 		}
@@ -23,7 +23,7 @@ namespace Sando.UI.InterleavingExperiment
 		public string RewriteQuery(string query)
 		{
 			//dump the previous query stuff to the log, assuming it was clicked
-            if (searchRecievedClick)
+            if (SearchRecievedClick)
             {
                 try
                 {
@@ -63,15 +63,10 @@ namespace Sando.UI.InterleavingExperiment
             }
 
 			ClickIdx.Clear();
-			searchRecievedClick = false;
+			SearchRecievedClick = false;
 			
             return query;
 		}
-
-        void findInFilesWorker_DoWork(object sender, DoWorkEventArgs e, string query)
-        {
-            SecondaryResults = LexSearch.GetResults(query);
-        }
 
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
@@ -87,7 +82,7 @@ namespace Sando.UI.InterleavingExperiment
             if (InterleavedResults != null && InterleavedResults.Count > 0)
             {
                 ClickIdx.Add(InterleavedResults.IndexOf(clickedElement));
-                searchRecievedClick = true;
+                SearchRecievedClick = true;
             }
 		}
 
@@ -108,7 +103,7 @@ namespace Sando.UI.InterleavingExperiment
 
         private List<CodeSearchResult> SecondaryResults;
         private List<CodeSearchResult> SandoResults;
-        private bool searchRecievedClick;
+        private bool SearchRecievedClick;
         private static AutoResetEvent semaphore;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }

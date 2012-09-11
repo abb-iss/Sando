@@ -18,7 +18,7 @@ namespace Sando.Core.Extensions.Logging
 			{
 				if(ReadS3Credentials() == false)
 				{
-					Console.WriteLine("S3LogWriter -- Cannot load S3 credentials. Log collecting is aborted.");
+					FileLogger.DefaultLogger.Debug("S3LogWriter -- Cannot load S3 credentials. Log collecting is aborted.");
 					return false;
 				}
 				AmazonS3 client = Amazon.AWSClientFactory.CreateAmazonS3Client(AccessKeyID, SecretAccessKey);
@@ -34,11 +34,11 @@ namespace Sando.Core.Extensions.Logging
 				    (amazonS3Exception.ErrorCode.Equals("InvalidAccessKeyId") ||
 				     amazonS3Exception.ErrorCode.Equals("InvalidSecurity")))
 				{
-					Console.WriteLine("S3LogWriter -- Check the provided AWS Credentials.");
+					FileLogger.DefaultLogger.Debug("S3LogWriter -- Check the provided AWS Credentials.");
 				}
 				else
 				{
-					Console.WriteLine("S3LogWriter -- AWS Error occurred. Message:'{0}' when writing an object", amazonS3Exception.Message);
+					FileLogger.DefaultLogger.Debug("S3LogWriter -- AWS Error occurred. Message:'{0}' when writing an object; " + amazonS3Exception.Message);
 				}
 				return false;
 			}
@@ -48,13 +48,13 @@ namespace Sando.Core.Extensions.Logging
 		{
 			if (! System.IO.File.Exists(S3CredentialFileLocation))
 			{
-				Console.WriteLine("S3LogWriter -- Cannot find S3 credential file");
+				FileLogger.DefaultLogger.Debug("S3LogWriter -- Cannot find S3 credential file");
 				return false;				
 			}
 			string[] lines = System.IO.File.ReadAllLines(S3CredentialFileLocation);
 			if (lines.Length < 3)
 			{
-				Console.WriteLine("S3LogWriter -- Corrupt S3 credential file");
+				FileLogger.DefaultLogger.Debug("S3LogWriter -- Corrupt S3 credential file");
 				return false;
 			}
 			AccessKeyID = lines[0];
