@@ -67,8 +67,8 @@
             <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
 						KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
             <!--Query String Input-->
-            <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="15" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
-								  KeyboardNavigation.IsTabStop="False" ></TextBox>
+            <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
+								  KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
             <!-- details -->
             <Expander Grid.Row="2" Grid.ColumnSpan="2" >
