@@ -55,9 +55,9 @@
             
             <!--Query String Input-->
 
-            <Grid Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="15" Grid.ColumnSpan="2">
+            <Grid Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" Grid.Column="0" Grid.ColumnSpan="2">
                 <ProgressBar Name="searchProgressBar" />
-                <TextBlock Margin="4,0,4,0" FontSize="10" FontStyle="Italic" Text="{Binding Path=SearchStatus}" KeyboardNavigation.IsTabStop="False" />
+                <TextBlock Name="statusTextBlock" Margin="4,0,4,0" Height="Auto" TextWrapping="Wrap" FontSize="10" FontStyle="Italic" Text="{Binding Path=SearchStatus}" KeyboardNavigation.IsTabStop="False" />
             </Grid>
 
             <!-- details -->
