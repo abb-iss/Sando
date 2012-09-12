@@ -217,6 +217,8 @@ namespace Sando.UI.View
             BackgroundWorker sandoWorker = new BackgroundWorker();
             sandoWorker.DoWork += new DoWorkEventHandler(sandoWorker_DoWork);
             var workerSearchParams = new WorkerSearchParameters() { query = text, criteria = searchCriteria };
+			sandoWorker.ProgressChanged += new ProgressChangedEventHandler(sandoWorker_ProgressChanged);
+        	sandoWorker.WorkerReportsProgress = true;
             sandoWorker.RunWorkerAsync(workerSearchParams);
         }
 
@@ -228,10 +230,17 @@ namespace Sando.UI.View
 	  
 	    void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
 	    {
-	        var searchParams = (WorkerSearchParameters)e.Argument;
-	        var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+			var worker = sender as BackgroundWorker;
+			var searchParams = (WorkerSearchParameters)e.Argument;
+	        var searchStatus = _searchManager.Search(searchParams.query, worker, searchParams.criteria);
 	        e.Result = searchStatus;
+			worker.ReportProgress(100);
 	    }
+
+		void sandoWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			searchProgressBar.Value = e.ProgressPercentage;
+		}
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
     	{
