@@ -32,41 +32,28 @@
       <local:MyStrokeConverter x:Key="StrokeConverter" />
     </UserControl.Resources>
     
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" MinHeight="100" MinWidth="200">
+
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition MinHeight="200" Height="*"/>
+            <RowDefinition Height="Auto" MinHeight="30"/>
+            <RowDefinition Height="Auto" MinHeight="15"/>
+            <RowDefinition Height="Auto" MinHeight="20"/>
+            <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="300" Width="*"/>
+        <Grid.ColumnDefinitions> 
+            <ColumnDefinition Width="*" MinWidth="100"/>
+            <ColumnDefinition Width="65" />        
         </Grid.ColumnDefinitions>
-        <Grid.Resources></Grid.Resources>
 
-        <!--Left Part: Query-->
-
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" MinHeight="30"/>
-                <RowDefinition Height="Auto" MinHeight="15"/>
-                <RowDefinition Height="Auto" MinHeight="20"/>
-                <RowDefinition Height="*" MinHeight="200"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="65" />
-                
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,0" >
-                <StackPanel.Resources>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Margin" Value="0,0,0,0"/>
-                    </Style>
-                </StackPanel.Resources>
-                <TextBox Margin="5,5,5,0" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="25" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray" Text="{Binding Path=SearchString}"
+            <!-- Top Part: Query -->
+            
+            <TextBox Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Stretch" Height="25" Width="Auto" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray" Text="{Binding Path=SearchString}"
 								  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10"></TextBox>
-            </StackPanel>
+          
             <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
 						KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
-            <!--Query String Input-->
+            
+            <!-- info string -->
             <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
 								  KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
@@ -135,11 +122,7 @@
                 </StackPanel>
             </Expander>
 
-        <!--Right Part: Result-->
-        <!--<Expander Name="resultExpander" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" ExpandDirection="Right" Header="" IsExpanded="False" 
-				   HorizontalContentAlignment="Stretch" MinWidth="150" MinHeight="100" 
-				  TabIndex="60" IsTabStop="False">
-			-->
+            <!--Bottom Part: Result-->
             <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
 					   VerticalAlignment="Stretch" >
@@ -218,6 +201,5 @@
             </ListView>
             </DockPanel>
             <!--</Expander>-->
-    </Grid>
     </Grid>
 </UserControl>
