@@ -43,6 +43,6 @@ namespace Sando.Core.Tools
             return Regex.IsMatch(searchTerms, pattern);
         }
 
-        private static string pattern = "[^a-zA-Z0-9\\s\"]";
+        private static string pattern = "[^a-zA-Z0-9\\s\"\\*]";
     }
 }

@@ -55,7 +55,7 @@ namespace Sando.IntegrationTests.Search
 				SearchTerms = new SortedSet<string>(keywords.Split(' '))
 			};
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
-			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
+			Assert.AreEqual(1, codeSearchResults.Count, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "ToQueryString");
 			if(methodSearchResult == null)
 			{
