@@ -174,6 +174,22 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 		   this.Score = score;
 	   }
        #endregion
-       
+
+       public override bool Equals(object obj)
+       {
+           var searchResult = obj as CodeSearchResult;
+           if (searchResult == null)
+               return false;
+           else
+           {
+               return Element.Equals(searchResult.Element);
+           }
+       }
+
+       public override int GetHashCode()
+       {
+           return Element.GetHashCode();
+       }
+
     }
 }

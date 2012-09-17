@@ -9,5 +9,6 @@ namespace Sando.Indexer.Searching
 	{
 		List<Tuple<ProgramElement,float>> Search(SearchCriteria searchCriteria);
 
-    }
+        List<Tuple<ProgramElement, float>> SearchNoAnalyzer(SearchCriteria searchCrit);
+	}
 }

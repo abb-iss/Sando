@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -16,7 +17,7 @@ namespace Sando.UI.View
 public  class SearchManager
 		{
 
-			private CodeSearcher _currentSearcher;
+			private static CodeSearcher _currentSearcher;
 			private string _currentDirectory = "";
 			private bool _invalidated = true;
 			private ISearchResultListener _myDaddy;
@@ -25,6 +26,11 @@ public  class SearchManager
 			{
 				_myDaddy = daddy;
 			}
+
+            public static CodeSearcher GetCurrentSearcher()
+            {
+                return _currentSearcher;
+            }
 
 			private CodeSearcher GetSearcher(UIPackage myPackage)
 			{
@@ -38,7 +44,7 @@ public  class SearchManager
 				return codeSearcher;
 			}
 
-			public string Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
+			public string Search(String searchString, BackgroundWorker worker = null, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
 			{
 			    var returnString = "";
 				if (!string.IsNullOrEmpty(searchString))
@@ -48,8 +54,10 @@ public  class SearchManager
                     {
                         _currentSearcher = GetSearcher(myPackage);
                         bool searchStringContainedInvalidCharacters = false;
+						if(worker != null) worker.ReportProgress(33);
                         IQueryable<CodeSearchResult> results =
                             _currentSearcher.Search(GetCriteria(searchString, out searchStringContainedInvalidCharacters, searchCriteria), GetSolutionName(myPackage)).AsQueryable();
+						if(worker != null) worker.ReportProgress(66);
                         IResultsReorderer resultsReorderer =
                             ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                         results = resultsReorderer.ReorderSearchResults(results);
@@ -92,39 +100,30 @@ public  class SearchManager
         }
     }
 
-    public string SearchOnReturn(object sender, KeyEventArgs e, String searchString, SimpleSearchCriteria searchCriteria)
-			{
-				if(e.Key == Key.Return)
-				{
-					return Search(searchString, searchCriteria);
-				}
-                return "";
-			}
+	public void MarkInvalid()
+	{
+		_invalidated = true;
+	}
 
-			public void MarkInvalid()
-			{
-				_invalidated = true;
-			}
-
-			#region Private Mthods
-			/// <summary>
-			/// Gets the criteria.
-			/// </summary>
-			/// <param name="searchString">Search string.</param>
-			/// <returns>search criteria</returns>
-            private SearchCriteria GetCriteria(string searchString, out bool searchStringContainedInvalidCharacters, SimpleSearchCriteria searchCriteria = null)
-			{
-				if (searchCriteria == null)
-					searchCriteria = new SimpleSearchCriteria();
-				var criteria = searchCriteria;
-				criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(UIPackage.GetInstance()).NumberOfSearchResultsReturned;
-                searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
-                searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
-			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
-                criteria.SearchTerms = new SortedSet<string>(searchTerms);
-				return criteria;
-			}
-			#endregion
-		}
+	#region Private Methods
+	/// <summary>
+	/// Gets the criteria.
+	/// </summary>
+	/// <param name="searchString">Search string.</param>
+	/// <returns>search criteria</returns>
+	private SearchCriteria GetCriteria(string searchString, out bool searchStringContainedInvalidCharacters, SimpleSearchCriteria searchCriteria = null)
+	{
+		if(searchCriteria == null)
+			searchCriteria = new SimpleSearchCriteria();
+		var criteria = searchCriteria;
+		criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(UIPackage.GetInstance()).NumberOfSearchResultsReturned;
+		searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
+		searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
+		List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
+		criteria.SearchTerms = new SortedSet<string>(searchTerms);
+		return criteria;
+	}
+	#endregion
+	}
 
 }
