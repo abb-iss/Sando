@@ -8,6 +8,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using System.Threading;
 using Sando.Indexer.Searching.Criteria;
 using Sando.UI.View;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.UI.InterleavingExperiment
 {
@@ -120,8 +121,17 @@ namespace Sando.UI.InterleavingExperiment
             var file = splitLine[0];
             var lineNumber = int.Parse(splitLine[1]);
             var criteria = new SimpleSearchCriteria();
-            //criteria.SearchByProgramElementType = true;
-            //criteria.ProgramElementTypes.Add(ProgramElementType.Method);
+            criteria.SearchByProgramElementType = true;
+            criteria.ProgramElementTypes.Add(ProgramElementType.Method);
+            criteria.ProgramElementTypes.Add(ProgramElementType.Class);
+            criteria.ProgramElementTypes.Add(ProgramElementType.Comment);
+            criteria.ProgramElementTypes.Add(ProgramElementType.DocComment);
+            criteria.ProgramElementTypes.Add(ProgramElementType.Enum);
+            criteria.ProgramElementTypes.Add(ProgramElementType.Field);
+            criteria.ProgramElementTypes.Add(ProgramElementType.MethodPrototype);
+            criteria.ProgramElementTypes.Add(ProgramElementType.Property);
+            criteria.ProgramElementTypes.Add(ProgramElementType.Struct);
+            criteria.ProgramElementTypes.Add(ProgramElementType.TextLine);
             criteria.SearchByLocation = true;
             criteria.Locations.Add(file.Trim());
             return Tuple.Create(criteria as SearchCriteria, lineNumber);
