@@ -97,7 +97,7 @@ namespace Sando.Parser
 				IEnumerable<XElement> types = prop.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
 
 				//oops, namespaces have the same structure in srcml so need this check
-				if(types.First().Value == "namespace") continue;
+				if(types.Count() == 0 || types.First().Value == "namespace") continue;
 
 				string propertyType = String.Empty;
 				foreach(XElement type in types)

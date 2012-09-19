@@ -122,16 +122,10 @@ namespace Sando.UI.InterleavingExperiment
             var lineNumber = int.Parse(splitLine[1]);
             var criteria = new SimpleSearchCriteria();
             criteria.SearchByProgramElementType = true;
-            criteria.ProgramElementTypes.Add(ProgramElementType.Method);
-            criteria.ProgramElementTypes.Add(ProgramElementType.Class);
-            criteria.ProgramElementTypes.Add(ProgramElementType.Comment);
-            criteria.ProgramElementTypes.Add(ProgramElementType.DocComment);
-            criteria.ProgramElementTypes.Add(ProgramElementType.Enum);
-            criteria.ProgramElementTypes.Add(ProgramElementType.Field);
-            criteria.ProgramElementTypes.Add(ProgramElementType.MethodPrototype);
-            criteria.ProgramElementTypes.Add(ProgramElementType.Property);
-            criteria.ProgramElementTypes.Add(ProgramElementType.Struct);
-            criteria.ProgramElementTypes.Add(ProgramElementType.TextLine);
+            foreach (var aType in Enum.GetValues(typeof(ProgramElementType)).Cast<ProgramElementType>().ToList())
+            {
+                criteria.ProgramElementTypes.Add(aType);
+            }     
             criteria.SearchByLocation = true;
             criteria.Locations.Add(file.Trim());
             return Tuple.Create(criteria as SearchCriteria, lineNumber);

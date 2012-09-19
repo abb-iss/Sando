@@ -25,24 +25,22 @@ namespace Sando.Indexer.Searching
 		}
 
         public List<Tuple<ProgramElement, float>> SearchNoAnalyzer(SearchCriteria searchCriteria)
-	    {
+        {
+            var query = new BooleanQuery();
             int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
-            var query = new BooleanQuery();        
-
             var locations = (searchCriteria as SimpleSearchCriteria).Locations.GetEnumerator();
             locations.MoveNext();
             var filePath = new Term("FullFilePath", SandoDocument.StandardizeFilePath(locations.Current));
             query.Add(new TermQuery(filePath), BooleanClause.Occur.MUST);
-
-            var programElementType = (searchCriteria as SimpleSearchCriteria).ProgramElementTypes.GetEnumerator();
-            while (programElementType.MoveNext() == true)
+            foreach (var myType in (searchCriteria as SimpleSearchCriteria).ProgramElementTypes)
             {
-                var elementType = new Term(SandoField.ProgramElementType.ToString(), programElementType.Current.ToString().ToLower());
+                var elementType = new Term(SandoField.ProgramElementType.ToString(), myType.ToString().ToLower());
                 query.Add(new TermQuery(elementType), BooleanClause.Occur.SHOULD);
+
             }
             return ExecuteSearch(query, hitsPerPage);
-	        
-	    }
+
+        }
 
 	    private List<Tuple<ProgramElement, float>> ExecuteSearch(Query query, int hitsPerPage)
         {        			
