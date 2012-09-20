@@ -29,6 +29,7 @@ namespace Sando.Indexer.Documents
 			string namespaceName = document.GetField(SandoField.Namespace.ToString()).StringValue().ToSandoDisplayable();
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string values = document.GetField(SandoField.Values.ToString()).StringValue().ToSandoDisplayable();
+			if(name == String.Empty) name = ProgramElement.UndefinedName;
 			return new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values);
 		}
 	}
