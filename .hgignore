@@ -21,3 +21,4 @@ Sando/Sando.crunchsolution.cache
 *.ncrunchsolution
 **.crunchsolution.cache
 **.DotSettings.user
+Core/Core/Extensions/Logging/S3Credentials.txt

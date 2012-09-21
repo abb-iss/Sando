@@ -53,9 +53,12 @@
             <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
 						KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
             
-            <!-- info string -->
-            <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
-								  KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
+            <!--Query String Input-->
+
+            <Grid Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch" Grid.Column="0" Grid.ColumnSpan="2">
+                <ProgressBar Name="searchProgressBar" />
+                <TextBlock Name="statusTextBlock" Margin="4,0,4,0" Height="Auto" TextWrapping="Wrap" FontSize="10" FontStyle="Italic" Text="{Binding Path=SearchStatus}" KeyboardNavigation.IsTabStop="False" />
+            </Grid>
 
             <!-- details -->
             <Expander Grid.Row="2" Grid.ColumnSpan="2" >
@@ -126,7 +129,7 @@
             <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
 					   VerticalAlignment="Stretch" >
-            <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                <ListView  Name="searchResultListbox" ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
                 Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
 					  KeyboardNavigation.IsTabStop="False" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch" TabIndex="70" IsTabStop="False"
                        SelectionChanged="searchResultListbox_SelectionChanged"

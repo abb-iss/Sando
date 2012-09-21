@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Lucene.Net.Index;
 using Lucene.Net.Search;
 using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.Indexer.Documents;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.Searching
@@ -18,7 +20,30 @@ namespace Sando.Indexer.Searching
 		{
 			string searchQueryString = searchCriteria.ToQueryString();
 			Query query = documentIndexer.QueryParser.Parse(searchQueryString);
-			int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
+            int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
+		    return ExecuteSearch(query, hitsPerPage);
+		}
+
+        public List<Tuple<ProgramElement, float>> SearchNoAnalyzer(SearchCriteria searchCriteria)
+        {
+            var query = new BooleanQuery();
+            int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
+            var locations = (searchCriteria as SimpleSearchCriteria).Locations.GetEnumerator();
+            locations.MoveNext();
+            var filePath = new Term("FullFilePath", SandoDocument.StandardizeFilePath(locations.Current));
+            query.Add(new TermQuery(filePath), BooleanClause.Occur.MUST);
+            foreach (var myType in (searchCriteria as SimpleSearchCriteria).ProgramElementTypes)
+            {
+                var elementType = new Term(SandoField.ProgramElementType.ToString(), myType.ToString().ToLower());
+                query.Add(new TermQuery(elementType), BooleanClause.Occur.SHOULD);
+
+            }
+            return ExecuteSearch(query, hitsPerPage);
+
+        }
+
+	    private List<Tuple<ProgramElement, float>> ExecuteSearch(Query query, int hitsPerPage)
+        {        			
 			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
 			documentIndexer.IndexSearcher.Search(query, collector);
 
@@ -33,8 +58,9 @@ namespace Sando.Indexer.Searching
 				ProgramElement programElement = ProgramElementReader.ReadProgramElementFromDocument(hitDocument);
 				searchResults.Add(Tuple.Create(programElement, score));
 			}
-			return searchResults;
-		}
+			return searchResults;    
+
+        }
 
 		private DocumentIndexer documentIndexer;
 	}
