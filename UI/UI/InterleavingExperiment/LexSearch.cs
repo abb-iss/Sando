@@ -55,8 +55,8 @@ namespace Sando.UI.InterleavingExperiment
                         var results = searcher.UnalteredSearch(searchCriteria.Item1);
                         if (results != null && results.Count > 0)
                         {
-                            var closest = FindClosestMatch(results, searchCriteria);
-                            if(closest!=null)
+                            var closest = FindSandoMatch(results, searchCriteria);
+                            if (closest != null)
                                 relevantMethods.Add(closest);
                         }
                     }
@@ -65,12 +65,29 @@ namespace Sando.UI.InterleavingExperiment
             return relevantMethods.Distinct().ToList();
         }
 
-        private static CodeSearchResult FindClosestMatch(List<CodeSearchResult> results, Tuple<SearchCriteria, int> searchCriteria)
+        private static CodeSearchResult FindSandoMatch(List<CodeSearchResult> results, Tuple<SearchCriteria, int> searchCriteria)
         {
-            var closest = InitializeClosest(searchCriteria, results);
+            List<CodeSearchResult> containerTypeResults = new List<CodeSearchResult>();
+            foreach (var current in results)
+            {
+                if (searchCriteria.Item2 == current.Element.DefinitionLineNumber) return current;
+                if (current.Element is MethodElement || current.Element is ClassElement) containerTypeResults.Add(current);
+            }
+
+            if (containerTypeResults.Count > 0)
+            {
+                return FindClosestMatch(containerTypeResults, searchCriteria);
+            }
+
+            return null;
+        }
+
+        private static CodeSearchResult FindClosestMatch(List<CodeSearchResult> containerTypeResults, Tuple<SearchCriteria, int> searchCriteria)
+        {
+            var closest = InitializeClosest(searchCriteria, containerTypeResults);
             if (closest != null)
             {
-                foreach (var current in results)
+                foreach (var current in containerTypeResults)
                 {
                     var distanceClosest =
                         Math.Abs(closest.Element.DefinitionLineNumber - searchCriteria.Item2);
