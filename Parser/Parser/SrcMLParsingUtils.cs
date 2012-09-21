@@ -113,50 +113,23 @@ namespace Sando.Parser
                 commentName = GetCommentSummary(GetCommentText(oneGroup,true));
 
                 //comments above method or class
-				XElement belowComment = (comment.NextNode is XElement) ? (XElement)comment.NextNode : null;
-				while(belowComment != null &&
-						belowComment.Name == (SourceNamespace + "comment"))
-				{
-					//proceed down the list of comments until I get to some other program element
-					belowComment = (belowComment.NextNode is XElement) ? (XElement)belowComment.NextNode : null;
-				}
-
-				if(belowComment != null &&
-					(belowComment.Name == (SourceNamespace + "function") ||
-						belowComment.Name == (SourceNamespace + "constructor")))
-				{
-					XElement name = belowComment.Element(SourceNamespace + "name");
-					if(name != null)
-					{
-						string methodName = name.Value;
-						var methodElement = (MethodElement)programElements.Find(element => element is MethodElement && ((MethodElement)element).Name == methodName);
-						if(methodElement != null)
-						{
-							programElements.Add(new DocCommentElement(commentName, commentLine, methodElement.FullFilePath,
+                var lastComment = oneGroup.Last() as XElement;
+                ProgramElement programElement=null;
+                if (lastComment !=null && lastComment.Attribute(PositionNamespace + "line") != null)
+                {
+                    var definitionLineNumber = Int32.Parse(lastComment.Attribute(PositionNamespace + "line").Value);
+                    programElement =
+                        programElements.Find(element => element.DefinitionLineNumber == definitionLineNumber + 1);
+                }
+                if(programElement!=null)
+                {
+                    programElements.Add(new DocCommentElement(commentName, commentLine, programElement.FullFilePath,
                                                                         RetrieveSnippet(commentText, snippetSize),
-																		commentText, methodElement.Id));
-						    methodElement.Body += " "+commentText.Replace("\r\n","");
-							continue;
-						}
-					}
-				}
-				else if(belowComment != null &&
-							belowComment.Name == (SourceNamespace + "class"))
-				{
-					XElement name = belowComment.Element(SourceNamespace + "name");
-					if(name != null)
-					{
-						string className = name.Value;
-						var classElement = (ClassElement)programElements.Find(element => element is ClassElement && ((ClassElement)element).Name == className);
-						if(classElement != null)
-						{
-							programElements.Add(new DocCommentElement(commentName, commentLine, classElement.FullFilePath,
-																		RetrieveSnippet(commentText, snippetSize),
-																		commentText, classElement.Id));                            
-							continue;
-						}
-					}
-				}
+                                                                        commentText, programElement.Id));                    
+                    continue;                    
+                }
+
+				
 
 				//comments inside a method or class
 				MethodElement methodEl = RetrieveMethodElement(comment, programElements);
