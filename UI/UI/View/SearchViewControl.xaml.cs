@@ -383,7 +383,22 @@ namespace Sando.UI.View
             {
                 programElementType = ProgramElementType.Method;
             }
-		    string resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", programElementType, accessLevel);
+            if (programElementType.Equals(ProgramElementType.Field))
+            {
+                programElementType = ProgramElementType.Property;
+            }
+		    string resourceName = "";
+            if (programElementType.Equals(ProgramElementType.Struct))
+            {
+                resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", "Structure", accessLevel);    
+            }
+            else if(programElementType.Equals(ProgramElementType.TextLine))
+            {
+                resourceName = string.Format("../Resources/VS2010Icons/xmlIcon.png", programElementType, accessLevel);    
+            }else
+            {
+                resourceName = string.Format("../Resources/VS2010Icons/VSObject_{0}{1}.png", programElementType, accessLevel);    
+            }		    
 		    return GetBitmapImage(resourceName);
 		}
 
