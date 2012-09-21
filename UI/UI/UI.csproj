@@ -288,6 +288,70 @@
     </Content>
     <Resource Include="Resources\VS2010Icons\comment.png" />
     <Resource Include="Resources\VS2010Icons\generic.png" />
+    <Content Include="LIBS\srcML-Win-cSharp\bz2-1.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\iconv.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libantlr2-0.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libarchive-2.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libexslt.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libgcc_s_sjlj-1.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libgcrypt-11.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libgnurx-0.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libgpg-error-0.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libsrcml.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libstdc++-6.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libxml2.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\libxslt.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\src2srcml.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\srcml2src.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LIBS\srcML-Win-cSharp\zlib1.dll">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="sandoFolder.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -533,6 +597,8 @@
   <Target Name="AfterBuild">
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win" "$(OutDir)"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win" "$(OutDir)"
+mkdir "$(OutDir)\srcML-Win-cSharp"
+xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win-cSharp" "$(OutDir)\srcML-Win-cSharp"</PostBuildEvent>
   </PropertyGroup>
 </Project>

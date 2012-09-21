@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Sando.Core.Extensions.Logging;
@@ -43,6 +44,10 @@ namespace Sando.Parser
 
         public void SetSrcMLPath(string getSrcMlDirectory)
         {
+            if (getSrcMlDirectory.EndsWith("srcML-Win") || getSrcMlDirectory.EndsWith("srcML-Win\\"))
+                getSrcMlDirectory = getSrcMlDirectory.Replace("srcML-Win", "srcML-Win-cSharp");
+            if (getSrcMlDirectory.EndsWith("LIBS") || getSrcMlDirectory.EndsWith("LIBS\\"))
+                getSrcMlDirectory = Path.Combine(getSrcMlDirectory, "srcML-Win-cSharp");            
             Generator.SetSrcMLLocation(getSrcMlDirectory);
         }
 
@@ -129,10 +134,10 @@ namespace Sando.Parser
         private void ParseStructs(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> structs =
-				from el in elements.Descendants(SourceNamespace + "decl")
-				where el.Element(SourceNamespace + "type") != null &&
-					  el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
-					  el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "struct"
+				from el in elements.Descendants(SourceNamespace + "struct")
+                //where el.Element(SourceNamespace + "type") != null &&
+                //      el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
+                //      el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "struct"
                 select el;
             foreach (XElement strct in structs)
             {
@@ -153,10 +158,11 @@ namespace Sando.Parser
 				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
 			}
 
+            var anc = strct.Ancestors();
+            var x = anc;
             //parse namespace
             IEnumerable<XElement> ownerNamespaces =
-                from el in strct.Ancestors(SourceNamespace + "decl")
-                where el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+                from el in strct.Ancestors(SourceNamespace + "namespace")                
                 select el;
             string namespaceName = String.Empty;
             foreach (XElement ownerNamespace in ownerNamespaces)
@@ -192,8 +198,7 @@ namespace Sando.Parser
 
 			//parse namespace
 			IEnumerable<XElement> ownerNamespaces =
-				from el in cls.Ancestors(SourceNamespace + "decl")
-				where el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+				from el in cls.Ancestors(SourceNamespace + "namespace")				
 				select el;
 			string namespaceName = String.Empty;
 			foreach(XElement ownerNamespace in ownerNamespaces)
@@ -209,19 +214,15 @@ namespace Sando.Parser
 			string extendedClasses = String.Empty;
 			XElement super = cls.Element(SourceNamespace + "super");
 			if(super != null)
-			{
-				XElement implements = super.Element(SourceNamespace + "implements");
-				if(implements != null)
-				{
+			{				
 					IEnumerable<XElement> impNames =
-						from el in implements.Descendants(SourceNamespace + "name")
+                        from el in super.Descendants(SourceNamespace + "name")
 						select el;
 					foreach(XElement impName in impNames)
 					{
 						extendedClasses += impName.Value + " ";
 					}
-					extendedClasses = extendedClasses.TrimEnd();
-				}
+					extendedClasses = extendedClasses.TrimEnd();				
 			}
 			//interfaces are treated as extended classes in SrcML for now
 			string implementedInterfaces = String.Empty;
@@ -292,15 +293,19 @@ namespace Sando.Parser
 
 			//parse arguments
 			XElement paramlist = method.Element(SourceNamespace + "parameter_list");
-			IEnumerable<XElement> argumentElements =
-				from el in paramlist.Descendants(SourceNamespace + "name")
-				select el;
-			string arguments = String.Empty;
-			foreach(XElement elem in argumentElements)
-			{                
-				arguments += elem.Value + " ";
-			}
-			arguments = arguments.TrimEnd();
+            string arguments = String.Empty;
+            if (paramlist != null)
+            {
+                IEnumerable<XElement> argumentElements =
+                    from el in paramlist.Descendants(SourceNamespace + "name")
+                    select el;
+
+                foreach (XElement elem in argumentElements)
+                {
+                    arguments += elem.Value + " ";
+                }
+            }
+		    arguments = arguments.TrimEnd();
 
 			string body = SrcMLParsingUtils.ParseBody(method);
 
@@ -338,10 +343,7 @@ namespace Sando.Parser
 
 				//parse namespace
 				IEnumerable<XElement> ownerNamespaces =
-					from el in enm.Ancestors(SourceNamespace + "decl")
-					where el.Element(SourceNamespace + "type") != null &&
-							el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
-							el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "namespace"
+					from el in enm.Ancestors(SourceNamespace + "namespace")
 					select el;
 				string namespaceName = String.Empty;
 				foreach(XElement ownerNamespace in ownerNamespaces)

@@ -202,7 +202,7 @@ namespace Sando.Parser.UnitTests
 	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 	    {
             var parser = new SrcMLCppParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LargeCppFile.txt");     
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\xmlMatchedTagsHighlighter.cpp");     
 	    }
 
         [Test]

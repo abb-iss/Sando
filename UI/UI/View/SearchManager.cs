@@ -40,44 +40,62 @@ public  class SearchManager
 
 			public string Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
 			{
-			    var returnString = "";
-				if (!string.IsNullOrEmpty(searchString))
-				{				    
-					var myPackage = UIPackage.GetInstance();                    
-                    if (myPackage.GetCurrentDirectory() != null)
+                try
+                {
+                    var returnString = "";
+                    if (!string.IsNullOrEmpty(searchString))
                     {
-                        _currentSearcher = GetSearcher(myPackage);
-                        bool searchStringContainedInvalidCharacters = false;
-                        IQueryable<CodeSearchResult> results =
-                            _currentSearcher.Search(GetCriteria(searchString, out searchStringContainedInvalidCharacters, searchCriteria), GetSolutionName(myPackage)).AsQueryable();
-                        IResultsReorderer resultsReorderer =
-                            ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
-                        results = resultsReorderer.ReorderSearchResults(results);
-                        _myDaddy.Update(results);
-                        if(searchStringContainedInvalidCharacters)
+                        var myPackage = UIPackage.GetInstance();
+                        if (myPackage.GetCurrentDirectory() != null)
                         {
-                            _myDaddy.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
+                            _currentSearcher = GetSearcher(myPackage);
+                            bool searchStringContainedInvalidCharacters = false;
+                            IQueryable<CodeSearchResult> results =
+                                _currentSearcher.Search(
+                                    GetCriteria(searchString, out searchStringContainedInvalidCharacters, searchCriteria),
+                                    GetSolutionName(myPackage)).AsQueryable();
+                            IResultsReorderer resultsReorderer =
+                                ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+                            results = resultsReorderer.ReorderSearchResults(results);
+                            _myDaddy.Update(results);
+                            if (searchStringContainedInvalidCharacters)
+                            {
+                                _myDaddy.UpdateMessage(
+                                    "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
+                                return null;
+                            }
+                            if (myPackage.IsPerformingInitialIndexing())
+                            {
+                                returnString +=
+                                    "Sando is still performing its initial index of this project, results may be incomplete.";
+                            }
+                            if (!results.Any())
+                            {
+                                returnString = "No results found. " + returnString;
+                            }
+                            else if (returnString.Length == 0)
+                            {
+                                returnString = results.Count() + " results returned";
+                            }
+                            else
+                            {
+                                returnString = results.Count() + " results returned. " + returnString;
+                            }
+                            _myDaddy.UpdateMessage(returnString);
                             return null;
                         }
-                        if(myPackage.IsPerformingInitialIndexing() )
+                        else
                         {
-                            returnString += "Sando is still performing its initial index of this project, results may be incomplete.";    
+                            _myDaddy.UpdateMessage(
+                                "Sando searches only the currently open Solution.  Please open a Solution and try again.");
+                            return null;
                         }
-                        if(!results.Any()){
-                            returnString = "No results found. " + returnString;
-                        }else if (returnString.Length == 0){
-                            returnString = results.Count() + " results returned";
-                        }else{
-                            returnString = results.Count() + " results returned. "+returnString;
-                        }
-                        _myDaddy.UpdateMessage(returnString);
-                        return null;
-                    }else
-                    {                        
-                      _myDaddy.UpdateMessage("Sando searches only the currently open Solution.  Please open a Solution and try again.");
-                        return null;
                     }
-				}
+                }catch(Exception e)
+                {
+                    _myDaddy.UpdateMessage(
+                       "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");  
+                }
 			    return null;
 			}
 

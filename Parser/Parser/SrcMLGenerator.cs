@@ -42,6 +42,13 @@ namespace Sando.Parser
 
 		public SrcMLGenerator SetSrcMLLocation(string location)
 		{
+            if(Language!=null && Language==LanguageEnum.CSharp)
+            {
+                if(location.EndsWith("srcML-Win"))
+                {
+                    location = location.Replace("srcML-Win", "srcML-Win-cSharp");
+                }   
+            }
 			SrcMLFolderPath = location;
 
 			if(!System.IO.File.Exists(SrcMLFolderPath+Src2SrcmlExe))
@@ -75,12 +82,14 @@ namespace Sando.Parser
 
             if (Language == LanguageEnum.CSharp)
             {
-                tmpFilename = filename + ".tmp";
+                //--
+                //tmpFilename = filename + ".tmp";
 
-                string allCode = System.IO.File.ReadAllText(filename);
-                allCode = AdaptCSharpToJavaParsing(allCode);
-                tmpFilename = filename + ".tmp";
-                System.IO.File.WriteAllText(tmpFilename, allCode);
+                //string allCode = System.IO.File.ReadAllText(filename);
+                //allCode = AdaptCSharpToJavaParsing(allCode);
+                //tmpFilename = filename + ".tmp";
+                //System.IO.File.WriteAllText(tmpFilename, allCode);
+                //--
 
                 //StreamReader reader = (new FileInfo(filename)).OpenText();
                 //string line;
@@ -92,11 +101,13 @@ namespace Sando.Parser
                 //}
                 //writer.Flush();
                 //writer.Close();
-                langText = "Java";
+
+                langText = "-l C#";
+                //langText = "-l Java";
             }
             else if (Language == LanguageEnum.CPP)
             {
-                langText = "C++";
+                langText = "-l C++";
             }
 
 
@@ -107,7 +118,7 @@ namespace Sando.Parser
             startInfo.RedirectStandardInput = true;
             startInfo.FileName = SrcMLFolderPath + Src2SrcmlExe;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = "--position -l " + langText + " \"" + tmpFilename + "\"";
+            startInfo.Arguments = "--position " + langText + " \"" + tmpFilename + "\"";
 
             try
             {
@@ -138,7 +149,7 @@ namespace Sando.Parser
             //erase the temp file we generate for csharp parsing
             if (Language == LanguageEnum.CSharp)
             {
-                System.IO.File.Delete(tmpFilename);
+                //System.IO.File.Delete(tmpFilename);
             }
 
             return srcML;
