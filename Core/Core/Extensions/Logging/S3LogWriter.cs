@@ -6,11 +6,11 @@ namespace Sando.Core.Extensions.Logging
 {
 	public class S3LogWriter
 	{
-		private static string AccessKeyID;
-		private static string SecretAccessKey;
-		private static string BucketName;
+		private static string _accessKeyId;
+		private static string _secretAccessKey;
+		private static string _bucketName;
 
-		public static readonly string S3CredentialFileLocation = Environment.CurrentDirectory + "\\..\\..\\Core\\Core\\Extensions\\Logging\\S3Credentials.txt";
+		public static string S3CredentialDirectory; 
 
 		public static bool WriteLogFile(string filePath)
 		{
@@ -21,10 +21,10 @@ namespace Sando.Core.Extensions.Logging
 					FileLogger.DefaultLogger.Debug("S3LogWriter -- Cannot load S3 credentials. Log collecting is aborted.");
 					return false;
 				}
-				AmazonS3 client = Amazon.AWSClientFactory.CreateAmazonS3Client(AccessKeyID, SecretAccessKey);
+				AmazonS3 client = Amazon.AWSClientFactory.CreateAmazonS3Client(_accessKeyId, _secretAccessKey);
 				PutObjectRequest request = new PutObjectRequest();
 				string fileName = System.IO.Path.GetFileName(filePath);
-				request.WithFilePath(filePath).WithBucketName(BucketName).WithKey(fileName);
+				request.WithFilePath(filePath).WithBucketName(_bucketName).WithKey(fileName);
 				S3Response responseWithMetadata = client.PutObject(request);
 				return true;
 			}
@@ -46,20 +46,22 @@ namespace Sando.Core.Extensions.Logging
 
 		private static bool ReadS3Credentials()
 		{
-			if (! System.IO.File.Exists(S3CredentialFileLocation))
+			string s3CredentialFileLocation = S3CredentialDirectory + "\\S3Credentials.txt";
+
+			if (! System.IO.File.Exists(s3CredentialFileLocation))
 			{
 				FileLogger.DefaultLogger.Debug("S3LogWriter -- Cannot find S3 credential file");
 				return false;				
 			}
-			string[] lines = System.IO.File.ReadAllLines(S3CredentialFileLocation);
+			string[] lines = System.IO.File.ReadAllLines(s3CredentialFileLocation);
 			if (lines.Length < 3)
 			{
 				FileLogger.DefaultLogger.Debug("S3LogWriter -- Corrupt S3 credential file");
 				return false;
 			}
-			AccessKeyID = lines[0];
-			SecretAccessKey = lines[1];
-			BucketName = lines[2];
+			_accessKeyId = lines[0];
+			_secretAccessKey = lines[1];
+			_bucketName = lines[2];
 			return true;
 		}
 	}

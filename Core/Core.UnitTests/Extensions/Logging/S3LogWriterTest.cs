@@ -10,7 +10,8 @@ namespace Sando.Core.UnitTests.Extensions.Logging
 		[Test]
 		public void TestWriteLog()
 		{
-			if(!System.IO.File.Exists(S3LogWriter.S3CredentialFileLocation))
+			S3LogWriter.S3CredentialDirectory = Environment.CurrentDirectory + "\\..\\..\\Core\\Core\\Extensions\\Logging";
+			if(!System.IO.File.Exists(S3LogWriter.S3CredentialDirectory + "\\S3Credentials.txt "))
 			{
 				//logging is off due to unavailabily of S3 credentials
 				return;

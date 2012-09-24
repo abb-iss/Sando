@@ -1,11 +1,19 @@
-﻿namespace Sando.UI.InterleavingExperiment
+﻿
+
+namespace Sando.UI.InterleavingExperiment
 {
     public static class InterleavingManagerSingleton
     {
-        private static InterleavingManager instance = new InterleavingManager();
+    	private static InterleavingManager instance = null;
  
-        public static InterleavingManager GetInstance() {
-            return instance;
+		public static void CreateInstance(string pluginDir)
+		{
+			instance = new InterleavingManager(pluginDir);
+		}
+
+        public static InterleavingManager GetInstance()
+        {
+			return instance;
         }
     }
 }

@@ -11,13 +11,15 @@ namespace Sando.UI.InterleavingExperiment
 {
 	public class InterleavingManager : IQueryRewriter, IResultsReorderer
 	{
-		public InterleavingManager()
+		public InterleavingManager(string pluginDir)
 		{
 			LogCount = 0;
-            ClickIdx = new List<int>();
-            SearchRecievedClick = false;
-            semaphore = new AutoResetEvent(false);
-			InitializeNewLogFileName();
+			ClickIdx = new List<int>();
+			SearchRecievedClick = false;
+			semaphore = new AutoResetEvent(false);
+			S3LogWriter.S3CredentialDirectory = pluginDir;
+			InitializeNewLogFileName(pluginDir);
+			PluginDirectory = pluginDir;
 		}
 
 		public string RewriteQuery(string query)
@@ -53,7 +55,7 @@ namespace Sando.UI.InterleavingExperiment
 				if(success == true)
 				{
 					System.IO.File.Delete(LogFile);
-					InitializeNewLogFileName();
+					InitializeNewLogFileName(PluginDirectory);
 					LogCount = 0;
 				}
 				else
@@ -91,15 +93,16 @@ namespace Sando.UI.InterleavingExperiment
 			System.IO.File.AppendAllText(LogFile, entry);
 		}
 
-		private void InitializeNewLogFileName()
+		private void InitializeNewLogFileName(string Dir)
 		{
-			LogFile = Environment.CurrentDirectory + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".dat";
+			LogFile = Dir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
 		}
 
-		private const int LOG_ENTRIES_PER_FILE = 25;
+		private const int LOG_ENTRIES_PER_FILE = 15;
 		private const string FLT_A_NAME = "Sando";
         private const string FLT_B_NAME = "Lex";
 		private string LogFile;
+		private string PluginDirectory;
 
         private List<CodeSearchResult> SecondaryResults;
         private List<CodeSearchResult> SandoResults;
