@@ -138,6 +138,7 @@ namespace Sando.UI.View
 
     	private SearchManager _searchManager;
 
+        private string[] autoListItems;
 
     	public SearchViewControl()
     	{
@@ -151,6 +152,25 @@ namespace Sando.UI.View
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;
 
     	    SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+
+    	    autoListItems = new string[] {
+    	                                     "foo",
+    	                                     "bar",
+    	                                     "baz",
+    	                                     "dogs",
+    	                                     "xyzzy",
+    	                                     "punctual"
+    	                                 };
+
+    	    autoCompleteBox1.ItemsSource = autoListItems;
+            //autoCompleteBox1.ItemFilter = (search, item) => {
+            //                                  string listItem = item as string;
+            //                                  if(listItem != null) {
+            //                                      return listItem.Length >= search.Length;
+            //                                  } else {
+            //                                      return false;
+            //                                  }
+            //                              };
     	}
 
         private void selectFirstResult(object sender, NotifyCollectionChangedEventArgs e)
@@ -180,8 +200,14 @@ namespace Sando.UI.View
 				SearchCriteria.ProgramElementTypes.Clear();
 				SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
 			}
-            SearchAsync(SearchString, SearchCriteria);       
-    	}
+            SearchAsync(SearchString, SearchCriteria);
+
+            autoCompleteBox1.ItemsSource = new string[] {
+                                                            "new",
+                                                            "list",
+                                                            "items!"
+                                                        };
+        }
 
     	private void OnKeyDownHandler(object sender, KeyEventArgs e)
     	{
