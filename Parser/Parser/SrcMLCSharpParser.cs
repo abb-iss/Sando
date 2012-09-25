@@ -279,7 +279,13 @@ namespace Sando.Parser
 				}
 
 				XElement typeName = type.Element(SourceNamespace + "name");
-				returnType = typeName.Value;
+                if (typeName != null)
+                {
+                    returnType = typeName.Value;
+                }else
+                {
+                    returnType = "void";
+                }
 			}
 			else
 			{
