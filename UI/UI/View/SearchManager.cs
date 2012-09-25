@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Sando.Core.Extensions;
+using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
@@ -104,8 +105,10 @@ namespace Sando.UI.View
 			}
 			catch(Exception e)
 			{
-			    _myDaddy.UpdateMessage(
-                    "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
+				FileLogger.DefaultLogger.Error("An unexpected exception occured in searcher");
+				FileLogger.DefaultLogger.Error(e.StackTrace);
+				_myDaddy.UpdateMessage(
+					"Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
 			}
 			return null;
 		}
