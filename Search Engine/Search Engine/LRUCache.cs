@@ -24,20 +24,23 @@ namespace Sando.SearchEngine
 		//return the value related to key if key is in lruMap, and update its order to most recently used; 
 		//return default(V) if key is not in lruMap
 		public V Get(K key)
-		{ 
-			LinkedListNode<CacheItem<K, V>> node;
-			//check whether the key is in lruMap,
-			if(lruMap.TryGetValue(key, out node))
+		{
+			lock(lruList)
 			{
-				//update the order to most recently used
-				lruList.Remove(node);
-				lruList.AddLast(node);
-				return node.Value.value;
-			}
-			else
-			{
-				//return null
-				return default(V);
+				LinkedListNode<CacheItem<K, V>> node;
+				//check whether the key is in lruMap,
+				if(lruMap.TryGetValue(key, out node))
+				{
+					//update the order to most recently used
+					lruList.Remove(node);
+					lruList.AddLast(node);
+					return node.Value.value;
+				}
+				else
+				{
+					//return null
+					return default(V);
+				}
 			}
 
 		}
@@ -45,30 +48,33 @@ namespace Sando.SearchEngine
 		// add the <Key, value> into the lruMap and lruList
 		public void Put(K key, V value)
 		{
-			LinkedListNode<CacheItem<K, V>> node;
-			//if the key is already in lruMap
-			if(lruMap.TryGetValue(key, out node))
+			lock(lruList)
 			{
-				//remove the old node of key in the lruList
-				lruList.Remove(node);
-				//update the value and the order to most recently used
-				node.Value.value = value;
-				lruList.AddLast(node);
-				return;
+				LinkedListNode<CacheItem<K, V>> node;
+				//if the key is already in lruMap
+				if (lruMap.TryGetValue(key, out node))
+				{
+					//remove the old node of key in the lruList
+					lruList.Remove(node);
+					//update the value and the order to most recently used
+					node.Value.value = value;
+					lruList.AddLast(node);
+					return;
+				}
+				//if the cache is full
+				if (lruMap.Count() == this.capacity)
+				{
+					//remove the least recently used node
+					LinkedListNode<CacheItem<K, V>> firstNode = lruList.First;
+					lruList.RemoveFirst();
+					lruMap.Remove(firstNode.Value.key);
+				}
+				//add the <key, value>
+				CacheItem<K, V> item = new CacheItem<K, V>(key, value);
+				LinkedListNode<CacheItem<K, V>> newnode = new LinkedListNode<CacheItem<K, V>>(item);
+				lruList.AddLast(newnode);
+				lruMap.Add(key, newnode);
 			}
-			//if the cache is full
-			if(lruMap.Count() == this.capacity)
-			{
-				//remove the least recently used node
-				LinkedListNode<CacheItem<K, V>> firstNode = lruList.First;
-				lruList.RemoveFirst();
-				lruMap.Remove(firstNode.Value.key);
-			}
-			//add the <key, value>
-			CacheItem<K, V> item = new CacheItem<K,V>(key, value);
-			LinkedListNode<CacheItem<K, V>> newnode = new LinkedListNode<CacheItem<K, V>>(item);
-			lruList.AddLast(newnode);
-			lruMap.Add(key, newnode);
 		}
 	}
 
