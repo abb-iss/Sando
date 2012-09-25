@@ -11,6 +11,7 @@ using Sando.SearchEngine;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Sando.UI.View
 {
@@ -43,7 +44,8 @@ namespace Sando.UI.View
 			}
 			return codeSearcher;
 		}
-
+        
+        [MethodImpl(MethodImplOptions.Synchronized)]
 		public string Search(String searchString, BackgroundWorker worker = null, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
 		{
 			try
@@ -102,8 +104,8 @@ namespace Sando.UI.View
 			}
 			catch(Exception e)
 			{
-				_myDaddy.UpdateMessage(
-				   "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
+			    _myDaddy.UpdateMessage(
+                    "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
 			}
 			return null;
 		}
