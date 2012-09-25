@@ -246,9 +246,11 @@ namespace Sando.Parser
 
 		private void ParseMethods(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
-			IEnumerable<XElement> functions =
-				from el in elements.Descendants(SourceNamespace + "function")
-				select el;
+            IEnumerable<XElement> functions =
+                from el in elements.Descendants(SourceNamespace + "function")
+                where el.Element(SourceNamespace + "name") != null &&
+                    el.Element(SourceNamespace + "type") != null
+                select el;
 			foreach(XElement func in functions)
 			{
 				programElements.Add(ParseMethod(func, programElements, fileName));
