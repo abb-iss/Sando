@@ -248,8 +248,7 @@ namespace Sando.Parser
 		{
             IEnumerable<XElement> functions =
                 from el in elements.Descendants(SourceNamespace + "function")
-                where el.Element(SourceNamespace + "name") != null &&
-                    el.Element(SourceNamespace + "type") != null
+                where el.Element(SourceNamespace + "name") != null                 
                 select el;
 			foreach(XElement func in functions)
 			{
