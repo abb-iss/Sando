@@ -281,7 +281,13 @@ namespace Sando.Parser
 				}
 
 				XElement typeName = type.Element(SourceNamespace + "name");
-				returnType = typeName.Value;
+                if (typeName != null)
+                {
+                    returnType = typeName.Value;
+                }else
+                {
+                    returnType = "void";
+                }
 			}
 			else
 			{
@@ -291,6 +297,27 @@ namespace Sando.Parser
 					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
 				}
 			}
+
+            if(String.IsNullOrEmpty(returnType))
+            {
+                if (name.Equals("get"))
+                {
+                    try
+                    {
+                        var myName =
+                            method.Ancestors(SourceNamespace + "decl_stmt").Descendants(SourceNamespace + "decl").
+                                Descendants(SourceNamespace + "type").Elements(SourceNamespace + "name");
+                        returnType = myName.First().Value;
+                    }catch(NullReferenceException nre)
+                    {
+                        returnType = "";
+                    }
+                }
+                else if (name.Equals("set"))
+                {
+                    returnType = "void";
+                }
+            }
 
 
 			//parse arguments
