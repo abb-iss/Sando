@@ -296,6 +296,27 @@ namespace Sando.Parser
 				}
 			}
 
+            if(String.IsNullOrEmpty(returnType))
+            {
+                if (name.Equals("get"))
+                {
+                    try
+                    {
+                        var myName =
+                            method.Ancestors(SourceNamespace + "decl_stmt").Descendants(SourceNamespace + "decl").
+                                Descendants(SourceNamespace + "type").Elements(SourceNamespace + "name");
+                        returnType = myName.First().Value;
+                    }catch(NullReferenceException nre)
+                    {
+                        returnType = "";
+                    }
+                }
+                else if (name.Equals("set"))
+                {
+                    returnType = "void";
+                }
+            }
+
 
 			//parse arguments
 			XElement paramlist = method.Element(SourceNamespace + "parameter_list");
