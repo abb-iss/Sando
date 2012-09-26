@@ -315,6 +315,19 @@ namespace Sando.Parser
                 else if (name.Equals("set"))
                 {
                     returnType = "void";
+                }else if(name.Equals("add")||name.Equals("remove"))
+                {
+                    try
+                    {
+                        var myName =
+                            method.Parent.Parent.Elements(SourceNamespace + "type").First().Elements(SourceNamespace +
+                                                                                                     "name").First();
+                        returnType = myName.Value;
+                    }
+                    catch (NullReferenceException nre)
+                    {
+                        returnType = "";
+                    }   
                 }
             }
 
