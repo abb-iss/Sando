@@ -1,68 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using System.ComponentModel;
-using System.Threading;
+using Sando.UI.InterleavingExperiment.FLTs;
 
 namespace Sando.UI.InterleavingExperiment
 {
 	public class InterleavingManager : IQueryRewriter, IResultsReorderer
 	{
-		public InterleavingManager(string pluginDir)
+		public InterleavingManager(string pluginDir, ExtensionPointsRepository extensionPointsRepository)
 		{
-			LogCount = 0;
 			ClickIdx = new List<int>();
-			SearchRecievedClick = false;
-			semaphore = new AutoResetEvent(false);
+
+			ExtPointsRepository = extensionPointsRepository;
 			S3LogWriter.S3CredentialDirectory = pluginDir;
 			InitializeNewLogFileName(pluginDir);
 			PluginDirectory = pluginDir;
+
+			InitializeExperimentParticipants();
 		}
 
 		public string RewriteQuery(string query)
 		{
-			//dump the previous query stuff to the log, assuming it was clicked
-            if (SearchRecievedClick)
-            {
-                try
-                {
-                    LogCount++;
-                    int scoreA, scoreB;
-                    BalancedInterleaving.DetermineWinner(SandoResults, SecondaryResults, InterleavedResults,
-                                                         ClickIdx, out scoreA, out scoreB);
+            WriteExpRoundToFile();
+            WriteLogToS3();
 
-                    string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " +
-                                   FLT_B_NAME + "=" + scoreB + Environment.NewLine;
-                    WriteLogEntry(entry);
-                }
-				catch(Exception e)
-                {
-                    //TODO - Kosta, something messed up here
-                    FileLogger.DefaultLogger.Error(e.StackTrace);
-                }
-            }
-
-            //capture the query and reissue it to the secondary FLT getting the secondary results
-            //SecondaryResults = LexSearch.GetResults(query);
-
-			//write log to S3
-            if (LogCount >= LOG_ENTRIES_PER_FILE)
-            {
-            	bool success = S3LogWriter.WriteLogFile(LogFile);
-				if(success == true)
-				{
-					System.IO.File.Delete(LogFile);
-					InitializeNewLogFileName(PluginDirectory);
-					LogCount = 0;
-				}
-				else
-				{
-					LogCount -= 10; //try again after 10 more entries
-				}
-            }
+			fltA.IssueQuery(query);
+			fltB.IssueQuery(query);
 
 			ClickIdx.Clear();
 			SearchRecievedClick = false;
@@ -72,9 +39,7 @@ namespace Sando.UI.InterleavingExperiment
 
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
-            //semaphore.WaitOne();
-            SandoResults = searchResults.ToList();
-            InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
+            InterleavedResults = BalancedInterleaving.Interleave(fltA.GetResults(), fltB.GetResults());
             return InterleavedResults.AsQueryable(); 
         }
 
@@ -88,29 +53,71 @@ namespace Sando.UI.InterleavingExperiment
             }
 		}
 
-		private void WriteLogEntry(string entry)
+		private void WriteExpRoundToFile()
 		{
-			System.IO.File.AppendAllText(LogFile, entry);
+			if(SearchRecievedClick)
+			{
+				try
+				{
+					LogCount++;
+					int scoreA, scoreB;
+					BalancedInterleaving.DetermineWinner(fltA.GetResults(), fltB.GetResults(), InterleavedResults,
+														 ClickIdx, out scoreA, out scoreB);
+					string entry = LogCount + ": " + fltA.Name + "=" + scoreA + ", " +
+								   fltB.Name + "=" + scoreB + Environment.NewLine;
+					System.IO.File.AppendAllText(LogFile, entry);
+				}
+				catch(Exception e)
+				{
+					FileLogger.DefaultLogger.Error(e.StackTrace);
+				}
+			}
 		}
 
-		private void InitializeNewLogFileName(string Dir)
+		private void WriteLogToS3()
 		{
-			LogFile = Dir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
+			if (LogCount < LogEntriesPerFile) return;
+			var success = S3LogWriter.WriteLogFile(LogFile);
+			if(success == true)
+			{
+				System.IO.File.Delete(LogFile);
+				InitializeNewLogFileName(PluginDirectory);
+				LogCount = 0;
+			}
+			else
+			{
+				//try again after 10 more log entries
+				LogEntriesPerFile += 10; 
+			}
 		}
 
-		private const int LOG_ENTRIES_PER_FILE = 15;
-		private const string FLT_A_NAME = "Sando";
-        private const string FLT_B_NAME = "Lex";
+
+		private void InitializeExperimentParticipants()
+		{
+			fltA = new SandoFLT();
+			fltB = new SandoFLT(); //TODO: change
+
+			//*register any additional extension points here
+			//ExtPointsRepository.RegisterParserImplementation(fltA);
+		}
+
+		private void InitializeNewLogFileName(string logDir)
+		{
+			LogFile = logDir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
+		}
+
+		private readonly string PluginDirectory;
+
 		private string LogFile;
-		private string PluginDirectory;
+		private int LogEntriesPerFile = 15;
+		private int LogCount = 0;
 
-        private List<CodeSearchResult> SecondaryResults;
-        private List<CodeSearchResult> SandoResults;
-        private bool SearchRecievedClick;
-        private static AutoResetEvent semaphore;
+		private FeatureLocationTechnique fltA;
+		private FeatureLocationTechnique fltB;
+		private bool SearchRecievedClick = false;
+		private ExtensionPointsRepository ExtPointsRepository;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }
-        public int LogCount { get; private set; }
 	}
 }
