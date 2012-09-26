@@ -150,15 +150,7 @@ namespace Sando.UI.View
     	                                     "punctual"
     	                                 };
 
-    	    autoCompleteBox1.ItemsSource = autoListItems;
-            //autoCompleteBox1.ItemFilter = (search, item) => {
-            //                                  string listItem = item as string;
-            //                                  if(listItem != null) {
-            //                                      return listItem.Length >= search.Length;
-            //                                  } else {
-            //                                      return false;
-            //                                  }
-            //                              };
+    	    searchBox.ItemsSource = autoListItems;
         }
 
         private void selectFirstResult(object sender, NotifyCollectionChangedEventArgs e)
@@ -176,23 +168,22 @@ namespace Sando.UI.View
 
         private void OnKeyDownHandler(object sender, KeyEventArgs e) {
             if(e.Key == Key.Return) {
-                var text = sender as TextBox;
+                var text = sender as AutoCompleteBox;
                 if(text != null) {
                     BeginSearch(text.Text);
                 }
             }
 
-            autoCompleteBox1.ItemsSource = new string[] {
-                                                            "new",
-                                                            "list",
-                                                            "items!"
-                                                        };
+            searchBox.ItemsSource = new string[] {
+                                                     "new",
+                                                     "list",
+                                                     "items!"
+                                                 };
         }
 
         private void BeginSearch(string searchString) {
             //set search criteria
             if(searchAccessLevel.SelectedIndex == 0) {
-                var text = sender as AutoCompleteBox;
                 SearchCriteria.SearchByAccessLevel = false;
             } else {
                 SearchCriteria.SearchByAccessLevel = true;

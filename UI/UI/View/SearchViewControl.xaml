@@ -49,9 +49,10 @@
 
         <!-- Top Part: Query -->
         <!--Test autocomplete box-->
-        <controls:AutoCompleteBox Grid.Row="2" Name="autoCompleteBox1" Margin="5,5,5,0" FilterMode="None" KeyboardNavigation.TabIndex="100" Height="25" BorderBrush="DimGray" 
-                                  KeyboardNavigation.IsTabStop="True" KeyDown="OnKeyDownHandler" Text="{Binding Path=SearchString, Mode=TwoWay}" />
+        <controls:AutoCompleteBox Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" KeyboardNavigation.TabIndex="10" Height="25" BorderBrush="DimGray" 
+                                  KeyboardNavigation.IsTabStop="True" KeyDown="OnKeyDownHandler" />
 
+        <!--
         <TextBox Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Stretch" Height="25" Width="Auto" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray"
                                   KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" Name="searchBox"></TextBox>
         -->
