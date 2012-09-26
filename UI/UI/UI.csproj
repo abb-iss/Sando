@@ -61,7 +61,7 @@
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DeployExtension>False</DeployExtension>
+    <DeployExtension>True</DeployExtension>
     <CreateVsixContainer>True</CreateVsixContainer>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -160,6 +160,9 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InterleavingExperiment\BalancedInterleaving.cs" />
+    <Compile Include="InterleavingExperiment\InterleavingManager.cs" />
+    <Compile Include="InterleavingExperiment\InterleavingManagerSingleton.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
