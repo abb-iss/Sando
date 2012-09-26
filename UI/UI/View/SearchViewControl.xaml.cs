@@ -166,19 +166,13 @@ namespace Sando.UI.View
             BeginSearch(searchBox.Text);
         }
 
-        private void OnKeyDownHandler(object sender, KeyEventArgs e) {
+        private void OnKeyUpHandler(object sender, KeyEventArgs e) {
             if(e.Key == Key.Return) {
                 var text = sender as AutoCompleteBox;
                 if(text != null) {
                     BeginSearch(text.Text);
                 }
             }
-
-            searchBox.ItemsSource = new string[] {
-                                                     "new",
-                                                     "list",
-                                                     "items!"
-                                                 };
         }
 
         private void BeginSearch(string searchString) {
