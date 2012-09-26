@@ -77,7 +77,7 @@
   </Commands>
 
 	<KeyBindings>
-		<KeyBinding guid="guidUICmdSet" id="sandoSearch" mod1="Control" mod2="Control" key1="K" key2="Q" editor="guidVSStd97" />
+		<KeyBinding guid="guidUICmdSet" id="sandoSearch" mod1="Alt Shift" key1="S" editor="guidVSStd97" />
 	</KeyBindings>
 
   <Symbols>
