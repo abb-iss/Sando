@@ -52,9 +52,8 @@
         <controls:AutoCompleteBox Grid.Row="2" Name="autoCompleteBox1" Margin="5,5,5,0" FilterMode="None" KeyboardNavigation.TabIndex="100" Height="25" BorderBrush="DimGray" 
                                   KeyboardNavigation.IsTabStop="True" KeyDown="OnKeyDownHandler" Text="{Binding Path=SearchString, Mode=TwoWay}" />
 
-        <!--
-        <TextBox Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Stretch" Height="25" Width="Auto" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray" Text="{Binding Path=SearchString}"
-                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" Name="textBox1"></TextBox>
+        <TextBox Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Stretch" Height="25" Width="Auto" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray"
+                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" Name="searchBox"></TextBox>
         -->
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 

@@ -41,18 +41,6 @@ namespace Sando.UI.View
             }
         }
 
-        public string SearchString
-        {
-            get
-            {
-                return (string)GetValue(SearchStringProperty);
-            }
-            set
-            {
-                SetValue(SearchStringProperty, value);
-            }
-        }
-
         public string SearchStatus
         {
             get
@@ -182,25 +170,17 @@ namespace Sando.UI.View
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
-        private void SearchButtonClick(object sender, RoutedEventArgs e)
-        {
-            if (searchAccessLevel.SelectedIndex == 0)
-                SearchCriteria.SearchByAccessLevel = false;
-            else
-            {
-                SearchCriteria.SearchByAccessLevel = true;
-                SearchCriteria.AccessLevels.Clear();
-                SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
+        private void SearchButtonClick(object sender, RoutedEventArgs e) {
+            BeginSearch(searchBox.Text);
+        }
+
+        private void OnKeyDownHandler(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Return) {
+                var text = sender as TextBox;
+                if(text != null) {
+                    BeginSearch(text.Text);
+                }
             }
-            if (searchElementType.SelectedIndex == 0)
-                SearchCriteria.SearchByProgramElementType = false;
-            else
-            {
-                SearchCriteria.SearchByProgramElementType = true;
-                SearchCriteria.ProgramElementTypes.Clear();
-                SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
-            }
-            SearchAsync(SearchString, SearchCriteria);
 
             autoCompleteBox1.ItemsSource = new string[] {
                                                             "new",
@@ -209,36 +189,27 @@ namespace Sando.UI.View
                                                         };
         }
 
-        private void OnKeyDownHandler(object sender, KeyEventArgs e)
-        {
-            if(e.Key == Key.Return)
-            {
-                //var text = sender as TextBox;
+        private void BeginSearch(string searchString) {
+            //set search criteria
+            if(searchAccessLevel.SelectedIndex == 0) {
                 var text = sender as AutoCompleteBox;
-                if (text != null)
-                {
-                    if (searchAccessLevel.SelectedIndex == 0)
-                        SearchCriteria.SearchByAccessLevel = false;
-                    else
-                    {
-                        SearchCriteria.SearchByAccessLevel = true;
-                        SearchCriteria.AccessLevels.Clear();
-                        SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
-                    }
-                    if (searchElementType.SelectedIndex == 0)
-                        SearchCriteria.SearchByProgramElementType = false;
-                    else
-                    {
-                        SearchCriteria.SearchByProgramElementType = true;
-                        SearchCriteria.ProgramElementTypes.Clear();
-                        SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
-                    }
-
-                    SearchAsync(text.Text, SearchCriteria);
-                }
+                SearchCriteria.SearchByAccessLevel = false;
+            } else {
+                SearchCriteria.SearchByAccessLevel = true;
+                SearchCriteria.AccessLevels.Clear();
+                SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
             }
+            if(searchElementType.SelectedIndex == 0) {
+                SearchCriteria.SearchByProgramElementType = false;
+            } else {
+                SearchCriteria.SearchByProgramElementType = true;
+                SearchCriteria.ProgramElementTypes.Clear();
+                SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
+            }
+            //execute search
+            SearchAsync(searchString, SearchCriteria);
         }
-
+        
         private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)
         {
             BackgroundWorker sandoWorker = new BackgroundWorker();
