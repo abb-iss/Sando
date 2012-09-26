@@ -213,7 +213,8 @@ namespace Sando.UI.View
         {
             if(e.Key == Key.Return)
             {
-                var text = sender as TextBox;
+                //var text = sender as TextBox;
+                var text = sender as AutoCompleteBox;
                 if (text != null)
                 {
                     if (searchAccessLevel.SelectedIndex == 0)
@@ -233,7 +234,7 @@ namespace Sando.UI.View
                         SearchCriteria.ProgramElementTypes.Add((ProgramElementType)searchElementType.SelectedItem);
                     }
 
-                    SearchAsync(text.Text,SearchCriteria);
+                    SearchAsync(text.Text, SearchCriteria);
                 }
             }
         }
