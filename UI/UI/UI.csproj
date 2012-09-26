@@ -76,6 +76,10 @@
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK, Version=1.4.15.1, Culture=neutral, PublicKeyToken=cd2d24cd2bace800, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\AWS\AWSSDK.dll</HintPath>
+    </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -169,6 +173,7 @@
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="MyFontConverter.cs" />
     <Compile Include="MyStrokeConverter.cs" />
+    <Compile Include="InterleavingExperiment\S3LogWriter.cs" />
     <Compile Include="View\FileOpener.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\ISearchResultListener.cs" />
