@@ -165,7 +165,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InterleavingExperiment\BalancedInterleaving.cs" />
-    <Compile Include="InterleavingExperiment\FeatureLocationTechnique.cs" />
+    <Compile Include="InterleavingExperiment\FLTs\FeatureLocationTechnique.cs" />
+    <Compile Include="InterleavingExperiment\FLTs\SamuraiFLT.cs" />
+    <Compile Include="InterleavingExperiment\FLTs\SamuraiProgramElements\SamuraiClassElement.cs" />
     <Compile Include="InterleavingExperiment\InterleavingManager.cs" />
     <Compile Include="InterleavingExperiment\InterleavingManagerSingleton.cs" />
     <Compile Include="InterleavingExperiment\FLTs\SandoFLT.cs" />

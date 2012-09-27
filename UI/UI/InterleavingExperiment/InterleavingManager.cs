@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
+using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UI.InterleavingExperiment.FLTs;
 
 namespace Sando.UI.InterleavingExperiment
@@ -95,10 +97,11 @@ namespace Sando.UI.InterleavingExperiment
 		private void InitializeExperimentParticipants()
 		{
 			fltA = new SandoFLT();
-			fltB = new SandoFLT(); //TODO: change
+			fltB = new SamuraiFLT(); 
 
 			//*register any additional extension points here
-			//ExtPointsRepository.RegisterParserImplementation(fltA);
+			ExtPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, (IParser)fltB);
+			ExtPointsRepository.RegisterWordSplitterImplementation((IWordSplitter)fltB);
 		}
 
 		private void InitializeNewLogFileName(string logDir)
