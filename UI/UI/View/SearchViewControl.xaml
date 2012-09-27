@@ -49,7 +49,7 @@
 
         <!-- Top Part: Query -->
         <controls:AutoCompleteBox Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
-                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" KeyUp="OnKeyUpHandler" />
+                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" KeyUp="OnKeyUpHandler" Populating="searchBox_Populating"/>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
                         KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="11" />

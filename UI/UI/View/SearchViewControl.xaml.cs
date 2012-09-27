@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -17,6 +18,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
+using Sando.Recommender;
 
 namespace Sando.UI.View
 {
@@ -126,7 +128,7 @@ namespace Sando.UI.View
 
         private SearchManager _searchManager;
 
-        private string[] autoListItems;
+        private QueryRecommender recommender;
 
         public SearchViewControl()
         {
@@ -141,16 +143,7 @@ namespace Sando.UI.View
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
 
-    	    autoListItems = new string[] {
-    	                                     "foo",
-    	                                     "bar",
-    	                                     "baz",
-    	                                     "dogs",
-    	                                     "xyzzy",
-    	                                     "punctual"
-    	                                 };
-
-    	    searchBox.ItemsSource = autoListItems;
+            recommender = new QueryRecommender();
         }
 
         private void selectFirstResult(object sender, NotifyCollectionChangedEventArgs e)
@@ -334,6 +327,29 @@ namespace Sando.UI.View
 
         private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";
+
+        private void searchBox_Populating(object sender, PopulatingEventArgs e) {
+            var recommendationWorker = new BackgroundWorker();
+            recommendationWorker.DoWork += new DoWorkEventHandler(recommendationWorker_DoWork);
+            e.Cancel = true;
+            recommendationWorker.RunWorkerAsync(searchBox.Text);
+        }
+
+        private void recommendationWorker_DoWork(object sender, DoWorkEventArgs e) {
+            string queryString = (string)e.Argument;
+            var result = recommender.GenerateRecommendations(queryString);
+            var recList = new List<string>(result) {"asyncronously!"};
+            if(Thread.CurrentThread == this.Dispatcher.Thread) {
+                UpdateRecommendations(recList);
+            } else {
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(recList)));
+            }
+        }
+
+        private void UpdateRecommendations(IEnumerable recommendations ) {
+            searchBox.ItemsSource = recommendations;
+            searchBox.PopulateComplete();
+        }
     }
 
     #region ValueConverter of SearchResult's Icon
