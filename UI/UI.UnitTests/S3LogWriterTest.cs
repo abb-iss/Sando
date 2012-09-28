@@ -1,9 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
-using Sando.Core.Extensions.Logging;
-using Sando.UI.InterleavingExperiment;
+using Sando.UI.InterleavingExperiment.Logging;
 
-namespace Sando.Core.UnitTests.Extensions.Logging
+namespace Sando.UI.UnitTests
 {
 	[TestFixture]
 	class S3LogWriterTest

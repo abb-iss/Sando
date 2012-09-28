@@ -2,7 +2,7 @@
 using Amazon.S3.Model;
 using Sando.Core.Extensions.Logging;
 
-namespace Sando.UI.InterleavingExperiment
+namespace Sando.UI.InterleavingExperiment.Logging
 {
 	public class S3LogWriter
 	{

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Sando.ExtensionContracts.ProgramElementContracts;
+﻿using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.UI.InterleavingExperiment.FLTs.SamuraiProgramElements
 {

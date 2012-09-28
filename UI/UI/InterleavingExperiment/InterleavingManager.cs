@@ -3,26 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
-using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UI.InterleavingExperiment.FLTs;
+using Sando.UI.InterleavingExperiment.Logging;
+using Sando.UI.InterleavingExperiment.Multiplexing;
 
 namespace Sando.UI.InterleavingExperiment
 {
 	public class InterleavingManager : IQueryRewriter, IResultsReorderer
 	{
-		public InterleavingManager(string pluginDir, ExtensionPointsRepository extensionPointsRepository)
+		public InterleavingManager(string pluginDir, ExtensionPointsRepository extensionRepo)
 		{
 			ClickIdx = new List<int>();
 
-			ExtPointsRepository = extensionPointsRepository;
 			S3LogWriter.S3CredentialDirectory = pluginDir;
 			InitializeNewLogFileName(pluginDir);
 			PluginDirectory = pluginDir;
 
-			InitializeExperimentParticipants();
+			InitializeExperimentParticipants(extensionRepo);
 		}
 
 		public string RewriteQuery(string query)
@@ -94,14 +94,14 @@ namespace Sando.UI.InterleavingExperiment
 		}
 
 
-		private void InitializeExperimentParticipants()
+		private void InitializeExperimentParticipants(ExtensionPointsRepository extensionRepo)
 		{
-			fltA = new SandoFLT();
-			fltB = new SamuraiFLT(); 
 
-			//*register any additional extension points here
-			ExtPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, (IParser)fltB);
-			ExtPointsRepository.RegisterWordSplitterImplementation((IWordSplitter)fltB);
+			fltA = new SandoFLT();
+			fltB = new SamuraiSplitterFLT();
+
+			var experiment = new SplitterExperimentMultiplexer(extensionRepo, (IWordSplitter)fltB);
+
 		}
 
 		private void InitializeNewLogFileName(string logDir)
@@ -118,7 +118,6 @@ namespace Sando.UI.InterleavingExperiment
 		private FeatureLocationTechnique fltA;
 		private FeatureLocationTechnique fltB;
 		private bool SearchRecievedClick = false;
-		private ExtensionPointsRepository ExtPointsRepository;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }
