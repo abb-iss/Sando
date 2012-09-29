@@ -80,38 +80,110 @@ namespace Sando.Core.UnitTests
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");
-            Assert.AreEqual(parts.Count, 4);
-            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another*word");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another");
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedWithInvalidQuote()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another\"word");
-            Assert.AreEqual(parts.Count, 4);
-            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another*word");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another");
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenColonUsed()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("file::open::now");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual("file open now", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenEqualityOperatorUsed()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("file=new");
+            Assert.AreEqual(2, parts.Count);
+            Assert.AreEqual("file new", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenBracketsUsed()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("file(new File())");
+            Assert.AreEqual(2, parts.Count);
+            Assert.AreEqual("file new", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUpperCasesUsed1()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("fileOpenNow");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual("file open now", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUpperCasesUsed2()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("FileOpenNow");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual("file open now", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUpperCasesUsed3()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("FileTXTOpenNow");
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("file txt open now", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNumbersUsed()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("file324");
+            Assert.AreEqual(2, parts.Count);
+            Assert.AreEqual("file 324", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNumbersUsed2()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("Mp3Player");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual("mp 3 player", String.Join(" ", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUnderscoreUsed()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("file_open_now");
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual("file open now", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word words inside quotes another_word");
-            Assert.AreEqual(parts.Count, 6);
-            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another*word");
+            Assert.AreEqual(5, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another");
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsEmptyListWhenSearchTermIsEmptyString()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms(String.Empty);
-            Assert.AreEqual(parts.Count, 0);
+            Assert.AreEqual(0, parts.Count);
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsEmptyListWhenSearchTermContainsInvalidCharacters()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("\\/:~");
-            Assert.AreEqual(parts.Count, 0);
+            Assert.AreEqual(0, parts.Count);
         }
 
         [Test]
