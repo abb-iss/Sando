@@ -23,13 +23,21 @@ namespace Sando.UI.InterleavingExperiment.Multiplexing
 			var regElements = regParser.Parse(filename);
 			allElements.AddRange(regElements);
 
+			//produce a Mux element for each type of element
 			foreach(var element in regElements)
 			{
-				//produce a Mux element for each type of element
                 if (element is ClassElement)
                 {
                     allElements.Add(new MuxClassElement(element as ClassElement));
                 }
+				else if(element is CommentElement)
+				{
+					allElements.Add(new MuxCommentElement(element as CommentElement));
+				}
+				else if(element is MethodElement)
+				{
+					allElements.Add(new MuxMethodElement(element as MethodElement));					
+				}
 			}
 
 			return allElements;

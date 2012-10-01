@@ -170,6 +170,8 @@
     <Compile Include="InterleavingExperiment\Multiplexing\MuxProgramElements\MuxClassElement.cs" />
     <Compile Include="InterleavingExperiment\InterleavingManager.cs" />
     <Compile Include="InterleavingExperiment\FLTs\SandoFLT.cs" />
+    <Compile Include="InterleavingExperiment\Multiplexing\MuxProgramElements\MuxCommentElement.cs" />
+    <Compile Include="InterleavingExperiment\Multiplexing\MuxProgramElements\MuxMethodElement.cs" />
     <Compile Include="InterleavingExperiment\Multiplexing\SplitterExperimentMultiplexer.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
