@@ -39,7 +39,10 @@ namespace Sando.Core.Tools
             matches.AddRange(searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             for(int i = 0; i < matches.Count; ++i)
             {
-                matches[i] = matches[i].Trim().ToLower();
+                string lower = matches[i].Trim().ToLower();
+                while (lower.Contains("  "))
+                    lower = lower.Replace("  ", " ");
+                matches[i] = lower;
             }
             return matches.Distinct().ToList();
         }
