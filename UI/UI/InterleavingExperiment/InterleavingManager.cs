@@ -96,12 +96,10 @@ namespace Sando.UI.InterleavingExperiment
 
 		private void InitializeExperimentParticipants(ExtensionPointsRepository extensionRepo)
 		{
-
 			fltA = new SandoFLT();
 			fltB = new SamuraiSplitterFLT();
 
 			var experiment = new SplitterExperimentMultiplexer(extensionRepo, (IWordSplitter)fltB);
-
 		}
 
 		private void InitializeNewLogFileName(string logDir)

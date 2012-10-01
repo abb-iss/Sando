@@ -3,6 +3,7 @@ using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.SplitterContracts;
+using Sando.UI.InterleavingExperiment.Multiplexing.MuxProgramElements;
 
 namespace Sando.UI.InterleavingExperiment.Multiplexing
 {
@@ -24,7 +25,11 @@ namespace Sando.UI.InterleavingExperiment.Multiplexing
 
 			foreach(var element in regElements)
 			{
-				//produce a Mux element for each type of element				
+				//produce a Mux element for each type of element
+                if (element is ClassElement)
+                {
+                    allElements.Add(new MuxClassElement(element as ClassElement));
+                }
 			}
 
 			return allElements;
