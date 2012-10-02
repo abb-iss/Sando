@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Sando.ExtensionContracts.SplitterContracts;
 
@@ -22,6 +23,8 @@ namespace Sando.Core.Tools
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
 
             searchTerms = Regex.Replace(searchTerms, pattern, " ");
+            searchTerms = Regex.Replace(searchTerms, @"([A-Z][a-z]+)", " $1");
+            searchTerms = Regex.Replace(searchTerms, @"([A-Z]+|[0-9]+)", " $1");
 
             MatchCollection matchCollection = Regex.Matches(searchTerms, "\"[^\"]+\"");
             List<string> matches = new List<string>();
@@ -34,8 +37,14 @@ namespace Sando.Core.Tools
             }
             searchTerms = searchTerms.Replace("\"", " ");
             matches.AddRange(searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            matches.ForEach(m => m.Trim().ToLower());
-            return matches;
+            for(int i = 0; i < matches.Count; ++i)
+            {
+                string lower = matches[i].Trim().ToLower();
+                while (lower.Contains("  "))
+                    lower = lower.Replace("  ", " ");
+                matches[i] = lower;
+            }
+            return matches.Distinct().ToList();
         }
 
         public static bool InvalidCharactersFound(string searchTerms)

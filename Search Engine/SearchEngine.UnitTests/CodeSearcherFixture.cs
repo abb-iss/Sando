@@ -54,7 +54,7 @@ namespace Sando.SearchEngine.UnitTests
 			var alsoDifferent = cs.Search("Simple Name 4");
 			Assert.IsTrue(alsoDifferent != different);
 			var original = cs.Search("Simple Name");
-			Assert.IsTrue(result != original);
+			Assert.IsTrue(result == original);
 
 		}
 
