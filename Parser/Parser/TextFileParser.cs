@@ -14,7 +14,7 @@ namespace Sando.Parser
 
         public List<ProgramElement> Parse(string filename)
         {
-            if(File.Exists(filename)&&GetSizeInMb(filename)>0.4)
+            if(File.Exists(filename)&&GetSizeInMb(filename)>15)
             {
                 return new List<ProgramElement>();
             }
