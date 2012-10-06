@@ -150,7 +150,7 @@ namespace Sando.Indexer.Searching.Criteria
 				stringBuilder.Append(")"); 
 				if(searchTermsLeft > 1)
 				{
-					stringBuilder.Append(" OR ");
+					stringBuilder.Append(" AND ");
 				}
 				--searchTermsLeft;
 			}
