@@ -30,6 +30,17 @@ namespace Sando.UI.View
 
         private static IIndexUpdateListener _instance;
 
+        public ObservableCollection<AccessWrapper> AccessLevels
+        {
+            get { return (ObservableCollection<AccessWrapper>)GetValue(AccessLevelsProperty); }
+            set
+            {
+                SetValue(AccessLevelsProperty, value);
+            }
+        }
+
+       
+
         public ObservableCollection<CodeSearchResult> SearchResults
         {
             get
@@ -57,7 +68,7 @@ namespace Sando.UI.View
         public SimpleSearchCriteria SearchCriteria
         {
             get
-            {
+            {                
                 return (SimpleSearchCriteria)GetValue(SearchCriteriaProperty);
             }
             set
@@ -109,6 +120,11 @@ namespace Sando.UI.View
             }
         }
 
+
+        public static readonly DependencyProperty AccessLevelsProperty =
+    DependencyProperty.Register("AccessLevels", typeof(ObservableCollection<AccessWrapper>), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+
         public static readonly DependencyProperty SearchResultsProperty =
             DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
@@ -137,9 +153,19 @@ namespace Sando.UI.View
             _searchManager = new SearchManager(this);
             SearchResults = new ObservableCollection<CodeSearchResult>();
             SearchCriteria = new SimpleSearchCriteria();
+            InitAccessLevels();
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+        }
+
+        private void InitAccessLevels()
+        {
+            AccessLevels = new ObservableCollection<AccessWrapper>();           
+            AccessLevels.Add(new AccessWrapper(true, AccessLevel.Private));
+            AccessLevels.Add(new AccessWrapper(true, AccessLevel.Protected));
+            AccessLevels.Add(new AccessWrapper(true, AccessLevel.Internal));
+            AccessLevels.Add(new AccessWrapper(true, AccessLevel.Public));
         }
 
         private void selectFirstResult(object sender, NotifyCollectionChangedEventArgs e)
@@ -165,14 +191,23 @@ namespace Sando.UI.View
         }
 
         private void BeginSearch(string searchString) {
-            //set search criteria
-            if(searchAccessLevel.SelectedIndex == 0) {
-                SearchCriteria.SearchByAccessLevel = false;
-            } else {
-                SearchCriteria.SearchByAccessLevel = true;
-                SearchCriteria.AccessLevels.Clear();
-                SearchCriteria.AccessLevels.Add((AccessLevel)searchAccessLevel.SelectedItem);
+            //set access type
+            SearchCriteria.SearchByAccessLevel = true;
+            bool allchecked = true;
+            SearchCriteria.AccessLevels.Clear();
+            foreach (var accessWrapper in AccessLevels)
+            {
+                if(accessWrapper.Checked)
+                {
+                    SearchCriteria.AccessLevels.Add(accessWrapper.Access);       
+                }else
+                {
+                    allchecked = false;
+                }
             }
+            if (allchecked) SearchCriteria.SearchByAccessLevel = false;
+            
+            //set program type
             if(searchElementType.SelectedIndex == 0) {
                 SearchCriteria.SearchByProgramElementType = false;
             } else {
@@ -329,6 +364,19 @@ namespace Sando.UI.View
 
         private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";
+    }
+
+    public  class AccessWrapper
+    {
+        public AccessWrapper(bool b, AccessLevel access
+            )
+        {
+            this.Checked = b;
+            this.Access = access;
+        }
+
+        public bool Checked { get; set; }
+        public AccessLevel Access { get; set; }
     }
 
     #region ValueConverter of SearchResult's Icon
