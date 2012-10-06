@@ -94,14 +94,18 @@
                     </Grid.RowDefinitions>
                     <TextBlock Margin="5,0,5,5" Text="Element type:" Grid.Row="0"/>
                     <ComboBox Name="searchElementType" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
-                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByProgramElementType,Path=IsChecked}" KeyboardNavigation.TabIndex="50" TabIndex="30">
-                        <ComboBox.ItemsSource>
-                            <CompositeCollection>
-                                <ComboBoxItem Content="All"/>
-                                <CollectionContainer Collection="{Binding Source={StaticResource ResourceKey=ProgramElementType}}"/>
-                            </CompositeCollection>
-                        </ComboBox.ItemsSource>
-                    </ComboBox>
+                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByProgramElementType,Path=IsChecked}" KeyboardNavigation.TabIndex="50" TabIndex="30" ItemsSource="{Binding ProgramElements}">
+                                <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox Width="20" IsChecked="{Binding Path=Checked}"
+                                               />
+                        <TextBlock 
+                                       Width="100" Text="{Binding Path=ProgramElement}" />
+            </StackPanel>
+            </DataTemplate>
+            </ComboBox.ItemTemplate>
+            </ComboBox>
                 </Grid>
 
 
