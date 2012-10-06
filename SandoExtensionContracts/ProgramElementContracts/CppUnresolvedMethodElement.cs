@@ -76,6 +76,11 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 					outGuid = ((ClassElement)element).Id;
 					return true;
 				}
+                else if (element is StructElement && element.Name == className)
+                {
+                    outGuid = ((StructElement)element).Id;
+                    return true;
+                }
 			}
 
 			outGuid = Guid.Empty;
