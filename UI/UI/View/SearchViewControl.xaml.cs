@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Sando.Core.Extensions.Logging;
+using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -201,6 +202,12 @@ namespace Sando.UI.View
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
             var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+            if (ExtensionPointsRepository.Instance.IsCloned)
+            {
+                ExtensionPointsRepository.Instance.SwitchToClonedSet();
+                _searchManager.Search(searchParams.query, searchParams.criteria);
+                ExtensionPointsRepository.Instance.SwitchToOriginalSet();
+            }
             e.Result = searchStatus;
         }
 
