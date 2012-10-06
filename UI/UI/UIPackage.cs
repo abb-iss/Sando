@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.CommandBars;
 using log4net;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
@@ -154,6 +155,10 @@ namespace Sando.UI
             _dteEvents.OnStartupComplete += StartupCompleted;
         }
 
+     
+
+    
+
         private void AddCommand()
         {
             // Add our command handlers for menu (commands must exist in the .vsct file)
@@ -170,8 +175,11 @@ namespace Sando.UI
         
         private void StartupCompleted()
         {
-            if(_viewManager.ShouldShow())
+            if (_viewManager.ShouldShow())
+            {
                 _viewManager.ShowSando();
+                _viewManager.ShowToolbar();
+            }
             RegisterSolutionEvents();
             Solution openSolution = GetOpenSolution();
             if(openSolution!=null && !"".Equals(openSolution.FullName)&& _currentMonitor==null)
@@ -454,6 +462,11 @@ namespace Sando.UI
         public string PluginDirectory()
         {
             return pluginDirectory;
+        }
+
+        public DTE2 GetDte()
+        {
+            return GetService(typeof(DTE)) as DTE2;
         }
 
         public void EnsureViewExists()

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core.Extensions.Logging;
@@ -88,6 +91,19 @@ namespace Sando.UI.View
             return true;
         }
 
+        public void ShowToolbar()
+        {
+            try
+            {
+                var dte = _toolWindowFinder.GetDte();
+                var cbs = ((CommandBars) dte.CommandBars);
+                CommandBar cb = cbs["Sando Toolbar"];
+                cb.Visible = true;
+            }catch(Exception e)
+            {
+                FileLogger.DefaultLogger.Error(e);
+            }
+        }
     }
 
     public  interface IToolWindowFinder
@@ -95,5 +111,6 @@ namespace Sando.UI.View
         ToolWindowPane FindToolWindow(Type type, int i, bool b);
 
         string PluginDirectory();
+        DTE2 GetDte();
     }
 }

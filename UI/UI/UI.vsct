@@ -29,6 +29,26 @@
   <!--The Commands section is where we the commands, menus and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
   <Commands package="guidUIPkg">
+
+    <Menus>
+      <Menu guid="guidIDEToolbarCmdSet" id="Toolbar"
+      type="Toolbar" >
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <Strings>
+          <ButtonText>Sando Toolbar</ButtonText>
+          <CommandName>Sando Toolbar</CommandName>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <Group guid="guidIDEToolbarCmdSet" id="ToolbarGroup"
+      priority="0x0000">
+        <Parent guid="guidIDEToolbarCmdSet" id="Toolbar"/>
+      </Group>
+    </Groups>
+    
+
     <!-- Inside this section we have different sub-sections: one for the menus, another  
     for the menu groups, one for the buttons (the actual commands), one for the combos 
     and the last one for the bitmaps used. Each element is identified by a command id that  
@@ -50,7 +70,16 @@
           If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> -->
 
 
-      <Button guid="guidUICmdSet" id="sandoSearch" priority="0x0100" type="Button">
+      <Button guid="guidIDEToolbarCmdSet" id="sandoSearch" priority="0x0100" type="Button">        
+        <Parent guid="guidIDEToolbarCmdSet" id="ToolbarGroup" />       
+        <Icon guid="guidSandoImages" id="sandosearchicon" />
+        <Strings>
+          <CommandName>sandoSearch</CommandName>
+          <ButtonText>Sando Search</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidIDEToolbarCmdSet" id="sandoSearch" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
         <Icon guid="guidSandoImages" id="sandosearchicon" />
         <Strings>
@@ -58,7 +87,6 @@
           <ButtonText>Sando Search</ButtonText>
         </Strings>
       </Button>
-
 
     </Buttons>
    
@@ -73,23 +101,29 @@
      
 
     </Bitmaps>
- 
-  </Commands>
 
+  </Commands>
 	<KeyBindings>
-		<KeyBinding guid="guidUICmdSet" id="sandoSearch" mod1="Alt Shift" key1="S" editor="guidVSStd97" />
+		<KeyBinding guid="guidIDEToolbarCmdSet" id="sandoSearch" mod1="Alt Shift" key1="S" editor="guidVSStd97" />
 	</KeyBindings>
 
   <Symbols>
+
+
     <!-- This is the package guid. -->
     <GuidSymbol name="guidUIPkg" value="{7e03caf3-06ed-4ff5-962a-effa1fb2f383}" />
     
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidUICmdSet" value="{61e80ffa-f99b-46ac-8dd0-f3f4171568f3}">
+    <GuidSymbol name="guidIDEToolbarCmdSet" value="{61e80ffa-f99b-46ac-8dd0-f3f4171568f3}">
 
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <!--<IDSymbol name="MyMenuGroup" value="0x1020" />-->
       <IDSymbol name="sandoSearch" value="0x0101" />
+      <IDSymbol name="sandoSearchTool" value="0x0102" />
+      <IDSymbol name="Toolbar" value="0x1000" />
+      <IDSymbol name="ToolbarGroup" value="0x1050" />
     </GuidSymbol>
+    
+    
 
     <GuidSymbol name="guidSandoImages" value="{61e80fff-f99b-46ac-8dd0-f3f4171568f3}" >
       <IDSymbol name="sandosearchicon" value="1" />
