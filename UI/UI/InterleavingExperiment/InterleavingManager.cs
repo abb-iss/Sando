@@ -99,13 +99,9 @@ namespace Sando.UI.InterleavingExperiment
             fltA = new SandoFLT();
             fltB = new SamuraiSplitterFLT();
 
-            ExtensionPointsRepository.Instance.CloneExtensionSet();
-            ExtensionPointsRepository.Instance.SwitchExtensionSet();
-
-            //TODO:
-            //ExtensionPointsRepository.Instance.RegisterParserImplementation(?);
+            ExtensionPointsRepository.Instance.SwitchToClonedSet();
             //ExtensionPointsRepository.Instance.RegisterSplitterImplementation(?);
-            ExtensionPointsRepository.Instance.SwitchExtensionSet();
+            ExtensionPointsRepository.Instance.SwitchToOriginalSet();
         }
 
 

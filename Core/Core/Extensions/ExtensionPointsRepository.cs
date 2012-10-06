@@ -79,24 +79,30 @@ namespace Sando.Core.Extensions
 			currentExtensionSet.queryRewriter = queryRewriter;
 		}
 
-		public void CloneExtensionSet()
+		public void SwitchToClonedSet()
 		{
-			var newExtensionSet = currentExtensionSet.Clone();
-			extensionSets.Add(newExtensionSet);
-            IsCloned = true;
+            if (!IsCloned) 
+                CloneExtensionSet();
+            currentExtensionSet = clonedExtensionSet;
 		}
 
-		public void SwitchExtensionSet()
-		{
-            currentExtensionSet = extensionSets.Find(set => set != currentExtensionSet);
-		}
+        private void CloneExtensionSet()
+        {
+            clonedExtensionSet = originalExtensionSet.Clone();
+            IsCloned = true;
+        }
+
+        public void SwitchToOriginalSet()
+        {
+            currentExtensionSet = originalExtensionSet;
+        }
 
 		public void ClearRepository()
 		{
-			foreach (var extensionPointsSet in extensionSets)
-			{
-				extensionPointsSet.ClearSet();
-			}
+            originalExtensionSet.ClearSet();
+            if(IsCloned)
+                clonedExtensionSet.ClearSet();
+            currentExtensionSet = null;
 		}
 
 		public static ExtensionPointsRepository Instance
@@ -113,23 +119,18 @@ namespace Sando.Core.Extensions
 
 		private ExtensionPointsRepository()
 		{
-			extensionSets = new List<ExtensionPointsSet>();
-			currentExtensionSet = new ExtensionPointsSet();
-			extensionSets.Add(currentExtensionSet);
+			originalExtensionSet = new ExtensionPointsSet();
+            currentExtensionSet = originalExtensionSet;
             IsCloned = false;
 		}
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(extensionSets.Count <= 2, "ExtensionPointsRepository class invariant - extension sets exceeds 2");
-        }
 
         public bool IsCloned { get; private set; }
 
 		private static ExtensionPointsRepository extensionManager;
 
-		private List<ExtensionPointsSet> extensionSets;
 		private ExtensionPointsSet currentExtensionSet;
+
+        private ExtensionPointsSet originalExtensionSet;
+        private ExtensionPointsSet clonedExtensionSet;
 	}
 }

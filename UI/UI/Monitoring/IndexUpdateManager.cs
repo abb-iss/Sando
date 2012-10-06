@@ -103,9 +103,9 @@ namespace Sando.UI.Monitoring
             if (ExtensionPointsRepository.Instance.IsCloned)
             {
                 //Index again if we have multiple extension points
-                ExtensionPointsRepository.Instance.SwitchExtensionSet();
+                ExtensionPointsRepository.Instance.SwitchToClonedSet();
                 PerformSandoIndexing(filePath, fileInfo);
-                ExtensionPointsRepository.Instance.SwitchExtensionSet();
+                ExtensionPointsRepository.Instance.SwitchToOriginalSet();
             }
 
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
