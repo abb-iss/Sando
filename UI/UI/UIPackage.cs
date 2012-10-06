@@ -51,7 +51,7 @@ namespace Sando.UI
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
-    [ProvideToolWindow(typeof(SearchToolWindow), Transient = true, MultiInstances = false, Style = VsDockStyle.Tabbed)]
+    [ProvideToolWindow(typeof(SearchToolWindow), Transient = false, MultiInstances = false, Style = VsDockStyle.Tabbed)]
     
     [Guid(GuidList.guidUIPkgString)]
 	// This attribute starts up our extension early so that it can listen to solution events    
@@ -60,7 +60,7 @@ namespace Sando.UI
     //[ProvideAutoLoad("f1536ef8-92ec-443c-9ed7-fdadf150da82")]    
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
-    public sealed class UIPackage : Package, IVsPackageDynamicToolOwnerEx, IToolWindowFinder
+    public sealed class UIPackage : Package, IToolWindowFinder
     {        
 
         private SolutionMonitor _currentMonitor;
@@ -448,11 +448,7 @@ namespace Sando.UI
             }
         }
 
-        public int QueryShowTool(ref Guid rguidPersistenceSlot, uint dwId, out int pfShowTool)
-        {
-            pfShowTool = _viewManager.ShouldShow() ? 1 : 0;            
-            return pfShowTool;
-        }
+    
 
 
         public string PluginDirectory()
