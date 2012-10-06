@@ -14,8 +14,8 @@ namespace Sando.Core.Extensions
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fileExtension), "ExtensionPointsManager:GetParserImplementation - fileExtension cannot be null or an empty string!");
 
-			if(parsers.ContainsKey(fileExtension))
-				return parsers[fileExtension];
+			if(currentExtensionSet.parsers.ContainsKey(fileExtension))
+				return currentExtensionSet.parsers[fileExtension];
 			else
 				return null;
 		}
@@ -28,64 +28,75 @@ namespace Sando.Core.Extensions
 			Contract.Requires(parserImplementation != null, "ExtensionPointsManager:RegisterParserImplementation - parserImplementation cannot be null!");
 			
 			foreach(string supportedFileExtension in supportedFileExtensions)
-				parsers[supportedFileExtension] = parserImplementation;
+				currentExtensionSet.parsers[supportedFileExtension] = parserImplementation;
 		}
 
 		public IWordSplitter GetWordSplitterImplementation()
 		{
-			return wordSplitter;
+			return currentExtensionSet.wordSplitter;
 		}
 
 		public void RegisterWordSplitterImplementation(IWordSplitter wordSplitter)
 		{
 			Contract.Requires(wordSplitter != null, "ExtensionPointsManager:RegisterWordSplitterImplementation - wordSplitter cannot be null!");
 			
-			this.wordSplitter = wordSplitter;
+			currentExtensionSet.wordSplitter = wordSplitter;
 		}
 
 		public IResultsReorderer GetResultsReordererImplementation()
 		{
-			return resultsReorderer;
+			return currentExtensionSet.resultsReorderer;
 		}
 
 		public void RegisterResultsReordererImplementation(IResultsReorderer resultsReorderer)
 		{
 			Contract.Requires(resultsReorderer != null, "ExtensionPointsManager:RegisterResultsReordererImplementation - resultsReorderer cannot be null!");
 
-			this.resultsReorderer = resultsReorderer;
+			currentExtensionSet.resultsReorderer = resultsReorderer;
 		}
 
 		public IQueryWeightsSupplier GetQueryWeightsSupplierImplementation()
 		{
-			return queryWeightsSupplier;
+			return currentExtensionSet.queryWeightsSupplier;
 		}
 
 		public void RegisterQueryWeightsSupplierImplementation(IQueryWeightsSupplier queryWeightsSupplier)
 		{
 			Contract.Requires(queryWeightsSupplier != null, "ExtensionPointsManager:RegisterQueryWeightsSupplierImplementation - queryWeightsSupplier cannot be null!");
 
-			this.queryWeightsSupplier = queryWeightsSupplier;
+			currentExtensionSet.queryWeightsSupplier = queryWeightsSupplier;
 		}
 
 		public IQueryRewriter GetQueryRewriterImplementation()
 		{
-			return queryRewriter;
+			return currentExtensionSet.queryRewriter;
 		}
 
 		public void RegisterQueryRewriterImplementation(IQueryRewriter queryRewriter)
 		{
 			Contract.Requires(queryRewriter != null, "ExtensionPointsManager:RegisterQueryRewriterImplementation - queryRewriter cannot be null!");
 
-			this.queryRewriter = queryRewriter;
+			currentExtensionSet.queryRewriter = queryRewriter;
+		}
+
+		public void CloneExtensionSet()
+		{
+			var newExtensionSet = currentExtensionSet.Clone();
+			extensionSets.Add(newExtensionSet);
+            IsCloned = true;
+		}
+
+		public void SwitchExtensionSet()
+		{
+            currentExtensionSet = extensionSets.Find(set => set != currentExtensionSet);
 		}
 
 		public void ClearRepository()
 		{
-			parsers.Clear();
-			wordSplitter = null;
-			resultsReorderer = null;
-			queryWeightsSupplier = null;
-			queryRewriter = null;
+			foreach (var extensionPointsSet in extensionSets)
+			{
+				extensionPointsSet.ClearSet();
+			}
 		}
 
 		public static ExtensionPointsRepository Instance
@@ -102,15 +113,23 @@ namespace Sando.Core.Extensions
 
 		private ExtensionPointsRepository()
 		{
-			parsers = new Dictionary<string, IParser>();
+			extensionSets = new List<ExtensionPointsSet>();
+			currentExtensionSet = new ExtensionPointsSet();
+			extensionSets.Add(currentExtensionSet);
+            IsCloned = false;
 		}
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(extensionSets.Count <= 2, "ExtensionPointsRepository class invariant - extension sets exceeds 2");
+        }
+
+        public bool IsCloned { get; private set; }
 
 		private static ExtensionPointsRepository extensionManager;
 
-		private Dictionary<string, IParser> parsers;
-		private IWordSplitter wordSplitter;
-		private IResultsReorderer resultsReorderer;
-		private IQueryWeightsSupplier queryWeightsSupplier;
-		private IQueryRewriter queryRewriter;
+		private List<ExtensionPointsSet> extensionSets;
+		private ExtensionPointsSet currentExtensionSet;
 	}
 }

@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
+using Sando.UI.InterleavingExperiment;
 using log4net;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
@@ -256,8 +257,9 @@ namespace Sando.UI
                 cppParser.SetSrcMLPath(GetSrcMLDirectory());
             }
 
-
-
+			// Begin of Interleaving Experiment Insert
+            InterleavingManager.Instance.InitializeExperimentParticipants(pluginDirectory);
+			// End of Interleaving Experiment Insert
         }
 
         private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
