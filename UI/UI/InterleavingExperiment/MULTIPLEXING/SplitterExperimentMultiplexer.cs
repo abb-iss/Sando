@@ -9,9 +9,8 @@ namespace Sando.UI.InterleavingExperiment.Multiplexing
 {
 	public class SplitterExperimentMultiplexer : IParser, IWordSplitter
 	{
-		public SplitterExperimentMultiplexer(ExtensionPointsRepository extensions, IWordSplitter experimentalSplitter)
+		public SplitterExperimentMultiplexer(IWordSplitter experimentalSplitter)
 		{
-			_extensionsRepo = extensions;
 			_splitter = experimentalSplitter;
 		}
 
@@ -19,6 +18,7 @@ namespace Sando.UI.InterleavingExperiment.Multiplexing
 		{
 			var allElements = new List<ProgramElement>();
 
+            /*
 			var regParser = _extensionsRepo.GetParserImplementation(System.IO.Path.GetExtension(filename));
 			var regElements = regParser.Parse(filename);
 			allElements.AddRange(regElements);
@@ -39,7 +39,7 @@ namespace Sando.UI.InterleavingExperiment.Multiplexing
 					allElements.Add(new MuxMethodElement(element as MethodElement));					
 				}
 			}
-
+            */
 			return allElements;
 		}
 
@@ -51,6 +51,5 @@ namespace Sando.UI.InterleavingExperiment.Multiplexing
 
 
 		private IWordSplitter _splitter;
-		private ExtensionPointsRepository _extensionsRepo;
 	}
 }

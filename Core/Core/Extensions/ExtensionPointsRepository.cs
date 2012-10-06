@@ -81,16 +81,14 @@ namespace Sando.Core.Extensions
 
 		public void CloneExtensionSet()
 		{
-			if(extensionSets.Count <= 2)
-			{
-				currentExtensionSet = currentExtensionSet.Clone();
-				extensionSets.Add(currentExtensionSet);
-			}
+			var newExtensionSet = currentExtensionSet.Clone();
+			extensionSets.Add(newExtensionSet);
+            IsCloned = true;
 		}
 
 		public void SwitchExtensionSet()
 		{
-			currentExtensionSet = extensionSets.Find(set => set != currentExtensionSet);
+            currentExtensionSet = extensionSets.Find(set => set != currentExtensionSet);
 		}
 
 		public void ClearRepository()
@@ -118,7 +116,16 @@ namespace Sando.Core.Extensions
 			extensionSets = new List<ExtensionPointsSet>();
 			currentExtensionSet = new ExtensionPointsSet();
 			extensionSets.Add(currentExtensionSet);
+            IsCloned = false;
 		}
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(extensionSets.Count <= 2, "ExtensionPointsRepository class invariant - extension sets exceeds 2");
+        }
+
+        public bool IsCloned { get; private set; }
 
 		private static ExtensionPointsRepository extensionManager;
 

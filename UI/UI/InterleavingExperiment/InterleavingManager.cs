@@ -9,22 +9,13 @@ using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UI.InterleavingExperiment.FLTs;
 using Sando.UI.InterleavingExperiment.Logging;
 using Sando.UI.InterleavingExperiment.Multiplexing;
+using Microsoft.VisualStudio.ExtensionManager;
+using Microsoft.VisualStudio.Shell;
 
 namespace Sando.UI.InterleavingExperiment
 {
 	public class InterleavingManager : IQueryRewriter, IResultsReorderer
 	{
-		public InterleavingManager(string pluginDir, ExtensionPointsRepository extensionRepo)
-		{
-			ClickIdx = new List<int>();
-
-			S3LogWriter.S3CredentialDirectory = pluginDir;
-			InitializeNewLogFileName(pluginDir);
-			PluginDirectory = pluginDir;
-
-			InitializeExperimentParticipants(extensionRepo);
-		}
-
 		public string RewriteQuery(string query)
 		{
             WriteExpRoundToFile();
@@ -93,22 +84,51 @@ namespace Sando.UI.InterleavingExperiment
 			}
 		}
 
-
-		private void InitializeExperimentParticipants(ExtensionPointsRepository extensionRepo)
-		{
-			fltA = new SandoFLT();
-			fltB = new SamuraiSplitterFLT();
-
-			var experiment = new SplitterExperimentMultiplexer(extensionRepo, (IWordSplitter)fltB);
-		}
-
 		private void InitializeNewLogFileName(string logDir)
 		{
 			LogFile = logDir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
 		}
 
-		private readonly string PluginDirectory;
 
+        public void InitializeExperimentParticipants(string pluginDir)
+        {
+            S3LogWriter.S3CredentialDirectory = pluginDir;
+            InitializeNewLogFileName(pluginDir);
+            PluginDirectory = pluginDir;
+
+            fltA = new SandoFLT();
+            fltB = new SamuraiSplitterFLT();
+
+            ExtensionPointsRepository.Instance.CloneExtensionSet();
+            ExtensionPointsRepository.Instance.SwitchExtensionSet();
+
+            //TODO:
+            //ExtensionPointsRepository.Instance.RegisterParserImplementation(?);
+            //ExtensionPointsRepository.Instance.RegisterSplitterImplementation(?);
+            ExtensionPointsRepository.Instance.SwitchExtensionSet();
+        }
+
+
+        public static InterleavingManager Instance
+		{
+			get
+			{
+                if (interleavingMgr == null)
+                {
+                    interleavingMgr = new InterleavingManager();
+                }
+			    return interleavingMgr;
+			}
+		}
+
+        private InterleavingManager()
+		{
+			ClickIdx = new List<int>();
+		}
+
+        private static InterleavingManager interleavingMgr;
+
+		private string PluginDirectory;
 		private string LogFile;
 		private int LogEntriesPerFile = 15;
 		private int LogCount = 0;

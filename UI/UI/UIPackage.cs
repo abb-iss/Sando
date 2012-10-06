@@ -306,9 +306,7 @@ namespace Sando.UI
             }
 
 			// Begin of Interleaving Experiment Insert
-			var interleavingManager = new InterleavingManager(pluginDirectory, extensionPointsRepository);
-			extensionPointsRepository.RegisterResultsReordererImplementation(interleavingManager);
-			extensionPointsRepository.RegisterQueryRewriterImplementation(interleavingManager);
+            InterleavingManager.Instance.InitializeExperimentParticipants(pluginDirectory);
 			// End of Interleaving Experiment Insert
         }
 
