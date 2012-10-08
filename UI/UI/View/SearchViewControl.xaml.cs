@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -18,6 +19,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
+using Sando.Recommender;
 
 namespace Sando.UI.View
 {
@@ -136,6 +138,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
         private SearchManager _searchManager;
 
+        private QueryRecommender recommender;
 
         public SearchViewControl()
         {
@@ -151,6 +154,8 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+
+            recommender = new QueryRecommender();
         }
 
         private void InitProgramElements()
@@ -191,9 +196,9 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             BeginSearch(searchBox.Text);
         }
 
-        private void OnKeyDownHandler(object sender, KeyEventArgs e) {
+        private void OnKeyUpHandler(object sender, KeyEventArgs e) {
             if(e.Key == Key.Return) {
-                var text = sender as TextBox;
+                var text = sender as AutoCompleteBox;
                 if(text != null) {
                     BeginSearch(text.Text);
                 }
@@ -383,9 +388,31 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
         private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";
-    }
 
-    public  class AccessWrapper
+        private void searchBox_Populating(object sender, PopulatingEventArgs e) {
+            var recommendationWorker = new BackgroundWorker();
+            recommendationWorker.DoWork += new DoWorkEventHandler(recommendationWorker_DoWork);
+            e.Cancel = true;
+            recommendationWorker.RunWorkerAsync(searchBox.Text);
+        }
+
+        private void recommendationWorker_DoWork(object sender, DoWorkEventArgs e) {
+            string queryString = (string)e.Argument;
+            var result = recommender.GenerateRecommendations(queryString);
+            var recList = new List<string>(result) {"asyncronously!"};
+            if(Thread.CurrentThread == this.Dispatcher.Thread) {
+                UpdateRecommendations(recList);
+            } else {
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(recList)));
+            }
+        }
+
+        private void UpdateRecommendations(IEnumerable recommendations ) {
+            searchBox.ItemsSource = recommendations;
+            searchBox.PopulateComplete();
+        }
+        }
+public  class AccessWrapper
     {
         public AccessWrapper(bool b, AccessLevel access
             )
@@ -411,6 +438,8 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         public bool Checked { get; set; }
         public ProgramElementType ProgramElement { get; set; }
     }
+
+
 
     #region ValueConverter of SearchResult's Icon
     [ValueConversion(typeof(string), typeof(BitmapImage))] 

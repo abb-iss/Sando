@@ -9,8 +9,9 @@
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Drawing="clr-namespace:System.Drawing;assembly=System.Drawing" d:DesignWidth="300" d:DesignHeight="400"
+             xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
              Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" IsTabStop="False">
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" IsTabStop="False" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit">
     <UserControl.Resources>
         <view:ElementToIcon x:Key="ElementToIcon"/>
         <view:FileTypeToIcon x:Key="FileTypeToIcon"/>
@@ -33,6 +34,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="30"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" MinHeight="20"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
@@ -42,19 +44,18 @@
         </Grid.ColumnDefinitions>
 
         <!-- Top Part: Query -->
-
-        <TextBox Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Stretch" Height="25" Width="Auto" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray"
-                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" Name="searchBox"></TextBox>
+        <controls:AutoCompleteBox Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
+                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" KeyUp="OnKeyUpHandler" Populating="searchBox_Populating"/>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
-                        KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
+                        KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="11" />
 
         <!-- info string -->
         <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- details -->
-        <Expander Grid.Row="2" Grid.ColumnSpan="2" >
+        <Expander Grid.Row="3" Grid.ColumnSpan="2" >
             <Expander.HeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -127,7 +128,7 @@
         </Expander>
 
         <!--Bottom Part: Result-->
-        <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
+        <DockPanel Grid.Row="4" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"

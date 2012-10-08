@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sando.UI</RootNamespace>
     <AssemblyName>UI</AssemblyName>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
@@ -156,12 +156,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\LIBS\dotnet\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
+    <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\LIBS\dotnet\WPFToolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InterleavingExperiment\BalancedInterleaving.cs" />
@@ -573,6 +579,10 @@
     <ProjectReference Include="..\..\Parser\Parser\Parser.csproj">
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
       <Name>Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Recommender\Recommender\Recommender.csproj">
+      <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>
+      <Name>Recommender</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
