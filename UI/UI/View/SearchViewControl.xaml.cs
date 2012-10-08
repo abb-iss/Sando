@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -13,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Sando.Core.Extensions.Logging;
 using Sando.Core.Extensions;
+using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -255,15 +257,26 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
-            var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
-			/*
-            if (ExtensionPointsRepository.Instance.IsCloned)
-            {
-                ExtensionPointsRepository.Instance.SwitchToClonedSet();
-                _searchManager.Search(searchParams.query, searchParams.criteria);
-                ExtensionPointsRepository.Instance.SwitchToOriginalSet();
-            }
-			*/
+        	string searchStatus = String.Empty;
+
+			if(ExtensionPointsRepository.IsInterleavingExperimentOn)
+			{
+				Task.Factory.StartNew(() =>
+				{
+					ExtensionPointsRepository.ExpFlow.Value = ExperimentFlow.A;
+					searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+				});
+				Task.Factory.StartNew(() =>
+				{
+					ExtensionPointsRepository.ExpFlow.Value = ExperimentFlow.B;
+					_searchManager.Search(searchParams.query, searchParams.criteria);
+				});
+			}
+			else
+			{
+				searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+			}
+
             e.Result = searchStatus;
         }
 

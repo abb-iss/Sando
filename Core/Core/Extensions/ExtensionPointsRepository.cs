@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ParserContracts;
@@ -28,7 +29,7 @@ namespace Sando.Core.Extensions
 			Contract.Requires(supportedFileExtensions.Count > 0, "ExtensionPointsManager:RegisterParserImplementation - supportedFileExtensions must contain at least one item!");
 			Contract.Requires(supportedFileExtensions.FindAll(sfe => String.IsNullOrWhiteSpace(sfe)).Count == 0, "ExtensionPointsManager:RegisterParserImplementation - supportedFileExtensions cannot contain empty items!");
 			Contract.Requires(parserImplementation != null, "ExtensionPointsManager:RegisterParserImplementation - parserImplementation cannot be null!");
-			
+
 			foreach(string supportedFileExtension in supportedFileExtensions)
 				parsers[supportedFileExtension] = parserImplementation;
 		}
@@ -41,7 +42,7 @@ namespace Sando.Core.Extensions
 		public void RegisterWordSplitterImplementation(IWordSplitter wordSplitter)
 		{
 			Contract.Requires(wordSplitter != null, "ExtensionPointsManager:RegisterWordSplitterImplementation - wordSplitter cannot be null!");
-			
+
 			this.wordSplitter = wordSplitter;
 		}
 
@@ -90,24 +91,29 @@ namespace Sando.Core.Extensions
 			queryRewriter = null;
 		}
 
+		[MethodImpl(MethodImplOptions.Synchronized)] 
 		public static ExtensionPointsRepository GetInstance(ExperimentFlow extensionSet = ExperimentFlow.A)
 		{
-			if (extensionSet == ExperimentFlow.A)
+			if(extensionSet == ExperimentFlow.A)
 			{
+
 				if(ExtensionManagerSetA == null)
 				{
 					ExtensionManagerSetA = new ExtensionPointsRepository();
 					IsInterleavingExperimentOn = false;
 				}
 				return ExtensionManagerSetA;
+
 			}
-			else if (extensionSet == ExperimentFlow.B)
+			else if(extensionSet == ExperimentFlow.B)
 			{
+
 				if(ExtensionManagerSetB == null)
 				{
 					ExtensionManagerSetB = new ExtensionPointsRepository();
 				}
 				return ExtensionManagerSetB;
+
 			}
 			return null;
 		}
@@ -130,10 +136,7 @@ namespace Sando.Core.Extensions
 
 		public static bool IsInterleavingExperimentOn { get; private set; }
 
-		public static ThreadLocal<ExperimentFlow> ExpFlow = new ThreadLocal<ExperimentFlow>(() =>
-																	  (Thread.CurrentThread.ManagedThreadId % 2 == 0)
-																		? ExperimentFlow.A
-																		: ExperimentFlow.B);
+		public static ThreadLocal<ExperimentFlow> ExpFlow = new ThreadLocal<ExperimentFlow>();
 
 		private static ExtensionPointsRepository ExtensionManagerSetA;
 		private static ExtensionPointsRepository ExtensionManagerSetB;

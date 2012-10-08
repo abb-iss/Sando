@@ -14,13 +14,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
             get { return GetType().AssemblyQualifiedName; }
         }
 
-		public const string ParentExperimentFlowTag = "ParentExperimentFlow";
-
-		//TODO: read the thread local variable here
-    	public ExperimentFlow ParentExperimentFlow
-    	{
-    		get { return ExperimentFlow.A; } 
-    	}
+		public const string ExperimentFlowTag = "ExperimentFlow";
 
         public ProgramElement(string name, int definitionLineNumber, string fullFilePath, string snippet)
         {

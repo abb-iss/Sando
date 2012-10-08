@@ -60,7 +60,7 @@ public  class SearchManager
                                     GetCriteria(searchString, out searchStringContainedInvalidCharacters, searchCriteria),
                                     GetSolutionName(myPackage)).AsQueryable();
                             IResultsReorderer resultsReorderer =
-                                ExtensionPointsRepository.GetInstance().GetResultsReordererImplementation();
+                                ExtensionPointsRepository.GetInstance(ExtensionPointsRepository.ExpFlow.Value).GetResultsReordererImplementation();
                             results = resultsReorderer.ReorderSearchResults(results);
                             _myDaddy.Update(results);
                             if (searchStringContainedInvalidCharacters)

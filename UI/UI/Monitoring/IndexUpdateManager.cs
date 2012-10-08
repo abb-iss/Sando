@@ -104,8 +104,17 @@ namespace Sando.UI.Monitoring
 
 			if(ExtensionPointsRepository.IsInterleavingExperimentOn)
 			{
-				var action = new Action(() => PerformSandoIndexing(filePath, fileInfo));
-				Parallel.Invoke(action, action);
+				Task.Factory.StartNew(() =>
+										{
+											ExtensionPointsRepository.ExpFlow.Value = ExperimentFlow.A;
+											PerformSandoIndexing(filePath, fileInfo);
+										});
+				Task.Factory.StartNew(() =>
+										{
+											ExtensionPointsRepository.ExpFlow.Value = ExperimentFlow.B;
+											PerformSandoIndexing(filePath, fileInfo);
+										});
+
 			}
 			else
 			{
