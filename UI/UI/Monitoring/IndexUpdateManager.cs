@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
+using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
@@ -99,22 +102,22 @@ namespace Sando.UI.Monitoring
 				indexFileState.LastIndexingDate = lastModificationDate;
 			FileInfo fileInfo = new FileInfo(filePath);
 
-            PerformSandoIndexing(filePath, fileInfo);
-			/*
-            if (ExtensionPointsRepository.Instance.IsCloned)
-            {
-                //Index again if we have multiple extension points
-                ExtensionPointsRepository.Instance.SwitchToClonedSet();
-                PerformSandoIndexing(filePath, fileInfo);
-                ExtensionPointsRepository.Instance.SwitchToOriginalSet();
-            }
-			*/
+			if(ExtensionPointsRepository.IsInterleavingExperimentOn)
+			{
+				var action = new Action(() => PerformSandoIndexing(filePath, fileInfo));
+				Parallel.Invoke(action, action);
+			}
+			else
+			{
+				PerformSandoIndexing(filePath, fileInfo);
+			}
+
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
 		}
 
-        private void PerformSandoIndexing(string filePath, FileInfo fileInfo)
+		private void PerformSandoIndexing(string filePath, FileInfo fileInfo)
         {
-            var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath);
+            var parsed = ExtensionPointsRepository.GetInstance(ExtensionPointsRepository.ExpFlow.Value).GetParserImplementation(fileInfo.Extension).Parse(filePath);
 
             var unresolvedElements = parsed.FindAll(pe => pe is CppUnresolvedMethodElement);
             if (unresolvedElements.Count > 0)

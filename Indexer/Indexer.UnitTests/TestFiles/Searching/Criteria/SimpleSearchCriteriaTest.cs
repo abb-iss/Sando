@@ -466,7 +466,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 		[SetUp]
 		public void resetContract()
 		{
-            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.GetInstance();
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
             extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());        

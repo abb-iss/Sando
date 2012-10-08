@@ -28,7 +28,7 @@ namespace Sando.Indexer.Searching.Criteria
 
 		public override string ToQueryString()
 		{
-			queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
+			queryWeights = ExtensionPointsRepository.GetInstance().GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
 			StringBuilder stringBuilder = new StringBuilder();
 			if(SearchByAccessLevel)
 			{

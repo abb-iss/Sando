@@ -96,7 +96,7 @@ namespace Sando.IntegrationTests.Search
 		[SetUp]
 		public void Setup()
 		{              
-            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.GetInstance();
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
             extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());

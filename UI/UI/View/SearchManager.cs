@@ -60,7 +60,7 @@ public  class SearchManager
                                     GetCriteria(searchString, out searchStringContainedInvalidCharacters, searchCriteria),
                                     GetSolutionName(myPackage)).AsQueryable();
                             IResultsReorderer resultsReorderer =
-                                ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+                                ExtensionPointsRepository.GetInstance().GetResultsReordererImplementation();
                             results = resultsReorderer.ReorderSearchResults(results);
                             _myDaddy.Update(results);
                             if (searchStringContainedInvalidCharacters)
@@ -141,7 +141,7 @@ public  class SearchManager
 					searchCriteria = new SimpleSearchCriteria();
 				var criteria = searchCriteria;
 				criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(UIPackage.GetInstance()).NumberOfSearchResultsReturned;
-                searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
+                searchString = ExtensionPointsRepository.GetInstance().GetQueryRewriterImplementation().RewriteQuery(searchString);
                 searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
 			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
                 criteria.SearchTerms = new SortedSet<string>(searchTerms);

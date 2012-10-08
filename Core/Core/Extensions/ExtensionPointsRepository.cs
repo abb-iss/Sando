@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Threading;
+using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -88,16 +90,37 @@ namespace Sando.Core.Extensions
 			queryRewriter = null;
 		}
 
-		public static ExtensionPointsRepository Instance
+		public static ExtensionPointsRepository GetInstance(ExperimentFlow extensionSet = ExperimentFlow.A)
 		{
-			get
+			if (extensionSet == ExperimentFlow.A)
 			{
-                if (extensionManager == null)
-                {
-                    extensionManager = new ExtensionPointsRepository();
-                }
-			    return extensionManager;
+				if(ExtensionManagerSetA == null)
+				{
+					ExtensionManagerSetA = new ExtensionPointsRepository();
+					IsInterleavingExperimentOn = false;
+				}
+				return ExtensionManagerSetA;
 			}
+			else if (extensionSet == ExperimentFlow.B)
+			{
+				if(ExtensionManagerSetB == null)
+				{
+					ExtensionManagerSetB = new ExtensionPointsRepository();
+				}
+				return ExtensionManagerSetB;
+			}
+			return null;
+		}
+
+		public static void InitializeInterleavingExperiment()
+		{
+			ExtensionManagerSetB.parsers = ExtensionManagerSetA.parsers;
+			ExtensionManagerSetB.queryRewriter = ExtensionManagerSetA.queryRewriter;
+			ExtensionManagerSetB.queryWeightsSupplier = ExtensionManagerSetA.queryWeightsSupplier;
+			ExtensionManagerSetB.resultsReorderer = ExtensionManagerSetA.resultsReorderer;
+			ExtensionManagerSetB.wordSplitter = ExtensionManagerSetB.wordSplitter;
+
+			IsInterleavingExperimentOn = true;
 		}
 
 		private ExtensionPointsRepository()
@@ -105,7 +128,15 @@ namespace Sando.Core.Extensions
 			parsers = new Dictionary<string, IParser>();
 		}
 
-		private static ExtensionPointsRepository extensionManager;
+		public static bool IsInterleavingExperimentOn { get; private set; }
+
+		public static ThreadLocal<ExperimentFlow> ExpFlow = new ThreadLocal<ExperimentFlow>(() =>
+																	  (Thread.CurrentThread.ManagedThreadId % 2 == 0)
+																		? ExperimentFlow.A
+																		: ExperimentFlow.B);
+
+		private static ExtensionPointsRepository ExtensionManagerSetA;
+		private static ExtensionPointsRepository ExtensionManagerSetB;
 
 		private Dictionary<string, IParser> parsers;
 		private IWordSplitter wordSplitter;

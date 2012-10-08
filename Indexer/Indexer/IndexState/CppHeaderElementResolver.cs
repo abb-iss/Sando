@@ -32,7 +32,7 @@ namespace Sando.Indexer.IndexState
 				}
 				Debug.WriteLine("*** parsing header = " + headerPath);
 				var headerInfo = new FileInfo(headerPath);
-				headerElements.AddRange(ExtensionPointsRepository.Instance.GetParserImplementation(headerInfo.Extension).Parse(headerPath));
+				headerElements.AddRange(ExtensionPointsRepository.GetInstance().GetParserImplementation(headerInfo.Extension).Parse(headerPath));
 			}
 			return headerElements;
 		}

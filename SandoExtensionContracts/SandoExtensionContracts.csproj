@@ -84,6 +84,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExperimentFlow.cs" />
     <Compile Include="ProgramElementContracts\AccessLevel.cs" />
     <Compile Include="ProgramElementContracts\ClassElement.cs" />
     <Compile Include="ProgramElementContracts\CommentElement.cs" />

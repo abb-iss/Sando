@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
+using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.UI.InterleavingExperiment.FLTs;
@@ -96,9 +97,8 @@ namespace Sando.UI.InterleavingExperiment
             fltA = new SandoFLT();
             fltB = new SamuraiSplitterFLT();
 
-            //ExtensionPointsRepository.Instance.SwitchToClonedSet();
-            //ExtensionPointsRepository.Instance.RegisterSplitterImplementation(?);
-            //ExtensionPointsRepository.Instance.SwitchToOriginalSet();
+			ExtensionPointsRepository.InitializeInterleavingExperiment();
+            //ExtensionPointsRepository.GetInstance(ExperimentFlow.B).RegisterSplitterImplementation(?);
         }
 
 

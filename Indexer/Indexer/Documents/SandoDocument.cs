@@ -29,6 +29,7 @@ namespace Sando.Indexer.Documents
 				document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), programElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
 				document.Add(new Field(SandoField.Snippet.ToString(), programElement.Snippet, Field.Store.YES, Field.Index.NO));
                 document.Add(new Field(ProgramElement.CustomTypeTag, programElement.GetType().AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
+				document.Add(new Field(ProgramElement.ParentExperimentFlowTag, programElement.ParentExperimentFlow.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				AddDocumentFields();
 			    AddCustomFields();
 			}

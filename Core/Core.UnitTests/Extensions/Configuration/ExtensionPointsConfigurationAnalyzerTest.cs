@@ -26,7 +26,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addValidParserConfigurations: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IParser parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cs");
+            IParser parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".cs");
 
             Assert.IsNotNull(parser, "Parser for '.cs' extension should be registered!");
             List<ProgramElement> programElements = null;
@@ -42,7 +42,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addValidWordSplitterConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IWordSplitter wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+            IWordSplitter wordSplitter = ExtensionPointsRepository.GetInstance().GetWordSplitterImplementation();
             Assert.IsNotNull(wordSplitter, "Word splitter should be registered!");
             Assert.AreEqual(wordSplitter.GetType().FullName, "Sando.TestExtensionPoints.TestWordSplitter", "Invalid word splitter returned!");
 
@@ -59,7 +59,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addValidResultsReordererConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+            IResultsReorderer resultsReorderer = ExtensionPointsRepository.GetInstance().GetResultsReordererImplementation();
             Assert.IsNotNull(resultsReorderer, "Results reorderer should be registered!");
             Assert.AreEqual(resultsReorderer.GetType().FullName, "Sando.TestExtensionPoints.TestResultsReorderer", "Invalid results reorderer returned!");
 
@@ -80,7 +80,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addValidQueryWeightsSupplierConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IQueryWeightsSupplier queryWeightsSupplier = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation();
+            IQueryWeightsSupplier queryWeightsSupplier = ExtensionPointsRepository.GetInstance().GetQueryWeightsSupplierImplementation();
             Assert.IsNotNull(queryWeightsSupplier, "Query weights supplier should be registered!");
             Assert.AreEqual(queryWeightsSupplier.GetType().FullName, "Sando.TestExtensionPoints.TestQueryWeightsSupplier", "Invalid query weights supplier returned!");
 
@@ -97,7 +97,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addValidQueryRewriterConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IQueryRewriter queryRewriter = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation();
+            IQueryRewriter queryRewriter = ExtensionPointsRepository.GetInstance().GetQueryRewriterImplementation();
             Assert.IsNotNull(queryRewriter, "Query rewriter should be registered!");
             Assert.AreEqual(queryRewriter.GetType().FullName, "Sando.TestExtensionPoints.TestQueryRewriter", "Invalid query rewriter returned!");
 
@@ -113,19 +113,19 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addValidParserConfigurations: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IParser parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cs");
+            IParser parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".cs");
             Assert.IsNotNull(parser, "Parser for '.cs' extension should be registered!");
             Assert.AreEqual(parser.GetType().FullName, "Sando.TestExtensionPoints.TestCSharpParser", "Invalid parser returned for '.cs' extension!");
 
-            parser = ExtensionPointsRepository.Instance.GetParserImplementation(".h");
+            parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".h");
             Assert.IsNotNull(parser, "Parser for '.h' extension should be registered!");
             Assert.AreEqual(parser.GetType().FullName, "Sando.TestExtensionPoints.TestCppParser", "Invalid parser returned for '.h' extension!");
 
-            parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cpp");
+            parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".cpp");
             Assert.IsNotNull(parser, "Parser for '.cpp' extension should be registered!");
             Assert.AreEqual(parser.GetType().FullName, "Sando.TestExtensionPoints.TestCppParser", "Invalid parser returned for '.cpp' extension!");
 
-            parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cxx");
+            parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".cxx");
             Assert.IsNotNull(parser, "Parser for '.cxx' extension should be registered!");
             Assert.AreEqual(parser.GetType().FullName, "Sando.TestExtensionPoints.TestCppParser", "Invalid parser returned for '.cxx' extension!");
         }
@@ -136,7 +136,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addInvalidParserConfigurations: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IParser parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cs");
+            IParser parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".cs");
             Assert.IsNotNull(parser, "Default parser for '.cs' extension should be used!");
             Assert.AreEqual(parser.GetType().FullName, "Sando.Parser.SrcMLCSharpParser", "Invalid parser returned for '.cs' extension!");
 
@@ -150,7 +150,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addInvalidWordSplitterConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IWordSplitter wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+            IWordSplitter wordSplitter = ExtensionPointsRepository.GetInstance().GetWordSplitterImplementation();
             Assert.IsNotNull(wordSplitter, "Default word splitter should be used!");
             Assert.AreEqual(wordSplitter.GetType().FullName, "Sando.Core.Tools.WordSplitter", "Invalid word splitter returned!");
 
@@ -164,7 +164,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addInvalidResultsReordererConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+            IResultsReorderer resultsReorderer = ExtensionPointsRepository.GetInstance().GetResultsReordererImplementation();
             Assert.IsNotNull(resultsReorderer, "Default results reorderer should be used!");
             Assert.AreEqual(resultsReorderer.GetType().FullName, "Sando.SearchEngine.SortByScoreResultsReorderer", "Invalid results reorderer returned!");
 
@@ -178,7 +178,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addInvalidQueryWeightsSupplierConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IQueryWeightsSupplier queryWeightsSupplier = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation();
+            IQueryWeightsSupplier queryWeightsSupplier = ExtensionPointsRepository.GetInstance().GetQueryWeightsSupplierImplementation();
             Assert.IsNotNull(queryWeightsSupplier, "Default query weights supplier should be used!");
             Assert.AreEqual(queryWeightsSupplier.GetType().FullName, "Sando.Indexer.Searching.QueryWeightsSupplier", "Invalid query weights supplier returned!");
 
@@ -192,7 +192,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addInvalidQueryRewriterConfiguration: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IQueryRewriter queryRewriter = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation();
+            IQueryRewriter queryRewriter = ExtensionPointsRepository.GetInstance().GetQueryRewriterImplementation();
             Assert.IsNotNull(queryRewriter, "Default query rewriter should be used!");
             Assert.AreEqual(queryRewriter.GetType().FullName, "Sando.Indexer.Searching.DefaultQueryRewriter", "Invalid query rewriter returned!");
 
@@ -206,15 +206,15 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             CreateExtensionPointsConfiguration(addInvalidExtensionPoints: true);
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
-            IParser parser = ExtensionPointsRepository.Instance.GetParserImplementation(".cs");
+            IParser parser = ExtensionPointsRepository.GetInstance().GetParserImplementation(".cs");
             Assert.IsNotNull(parser, "Default parser for '.cs' extension should be used!");
             Assert.AreEqual(parser.GetType().FullName, "Sando.Parser.SrcMLCSharpParser", "Invalid parser returned for '.cs' extension!");
 
-            IWordSplitter wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+            IWordSplitter wordSplitter = ExtensionPointsRepository.GetInstance().GetWordSplitterImplementation();
             Assert.IsNotNull(wordSplitter, "Default word splitter should be used!");
             Assert.AreEqual(wordSplitter.GetType().FullName, "Sando.Core.Tools.WordSplitter", "Invalid word splitter returned!");
 
-            IResultsReorderer resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
+            IResultsReorderer resultsReorderer = ExtensionPointsRepository.GetInstance().GetResultsReordererImplementation();
             Assert.IsNotNull(resultsReorderer, "Default results reorderer should be used!");
             Assert.AreEqual(resultsReorderer.GetType().FullName, "Sando.SearchEngine.SortByScoreResultsReorderer", "Invalid results reorderer returned!");
 
@@ -253,7 +253,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
         [TearDown]
         public void TearDown()
         {
-            ExtensionPointsRepository.Instance.ClearRepository();
+            ExtensionPointsRepository.GetInstance().ClearRepository();
         }
 
         private void CreateExtensionPointsConfiguration(

@@ -232,7 +232,7 @@ namespace Sando.Core.UnitTests
         {
             TestUtils.InitializeDefaultExtensionPoints();
 
-            wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+            wordSplitter = ExtensionPointsRepository.GetInstance().GetWordSplitterImplementation();
         }
 
         private bool contractFailed;

@@ -68,7 +68,7 @@ namespace Sando.Indexer.UnitTests.Documents
         [SetUp]
         public static void InitializeExtensionPoints()
         {
-            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.GetInstance();
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());           

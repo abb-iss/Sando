@@ -11,7 +11,7 @@ namespace Sando.Indexer.Documents
 		{
 			if(String.IsNullOrWhiteSpace(fieldValue))
 				return fieldValue;
-		    IWordSplitter wordSplitterImplementation = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
+		    IWordSplitter wordSplitterImplementation = ExtensionPointsRepository.GetInstance(ExtensionPointsRepository.ExpFlow.Value).GetWordSplitterImplementation();
 		    string splitWords;
             if (wordSplitterImplementation != null)
             {

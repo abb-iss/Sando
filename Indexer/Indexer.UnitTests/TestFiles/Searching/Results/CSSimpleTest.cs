@@ -20,7 +20,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
                 e.SetUnwind();
                 contractFailed = true;
             };
-            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
+            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.GetInstance();
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
             extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());

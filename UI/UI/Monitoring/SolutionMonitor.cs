@@ -173,7 +173,7 @@ namespace Sando.UI.Monitoring
 		            string fileExtension = Path.GetExtension(path);
 		            if (fileExtension != null && !fileExtension.Equals(String.Empty))
 		            {
-		                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
+		                if (ExtensionPointsRepository.GetInstance().GetParserImplementation(fileExtension) != null)
 		                {
 		                    Debug.WriteLine("Start: " + path);
 

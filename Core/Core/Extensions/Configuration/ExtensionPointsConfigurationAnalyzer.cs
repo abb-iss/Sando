@@ -104,7 +104,7 @@ namespace Sando.Core.Extensions.Configuration
 					logger.Info(String.Format("Parser found: {0}, from assembly: {1}", parserConfiguration.FullClassName, parserConfiguration.LibraryFileRelativePath));
 					IParser parser = CreateInstance<IParser>(extensionPointsConfiguration.PluginDirectoryPath, parserConfiguration.LibraryFileRelativePath, parserConfiguration.FullClassName);
 					parserConfiguration.ProgramElementsConfiguration.ForEach(pe => LoadAssembly(extensionPointsConfiguration.PluginDirectoryPath, pe.LibraryFileRelativePath));
-					ExtensionPointsRepository.Instance.RegisterParserImplementation(parserConfiguration.SupportedFileExtensions, parser);
+					ExtensionPointsRepository.GetInstance().RegisterParserImplementation(parserConfiguration.SupportedFileExtensions, parser);
 					logger.Info(String.Format("Parser {0} successfully registered.", parserConfiguration.FullClassName));
 				}
 				catch(Exception ex)
@@ -125,7 +125,7 @@ namespace Sando.Core.Extensions.Configuration
 				{
 					logger.Info(String.Format("Word splitter found: {0}, from assembly: {1}", wordSplitterConfiguration.FullClassName, wordSplitterConfiguration.LibraryFileRelativePath));
 					IWordSplitter wordSplitter = CreateInstance<IWordSplitter>(extensionPointsConfiguration.PluginDirectoryPath, wordSplitterConfiguration.LibraryFileRelativePath, wordSplitterConfiguration.FullClassName);
-					ExtensionPointsRepository.Instance.RegisterWordSplitterImplementation(wordSplitter);
+					ExtensionPointsRepository.GetInstance().RegisterWordSplitterImplementation(wordSplitter);
 					logger.Info(String.Format("Word splitter {0} successfully registered.", wordSplitterConfiguration.FullClassName));
 				}
 				catch(Exception ex)
@@ -146,7 +146,7 @@ namespace Sando.Core.Extensions.Configuration
 				{
 					logger.Info(String.Format("Results reorderer found: {0}, from assembly: {1}", resultsReordererConfiguration.FullClassName, resultsReordererConfiguration.LibraryFileRelativePath));
 					IResultsReorderer resultsReorderer = CreateInstance<IResultsReorderer>(extensionPointsConfiguration.PluginDirectoryPath, resultsReordererConfiguration.LibraryFileRelativePath, resultsReordererConfiguration.FullClassName);
-					ExtensionPointsRepository.Instance.RegisterResultsReordererImplementation(resultsReorderer);
+					ExtensionPointsRepository.GetInstance().RegisterResultsReordererImplementation(resultsReorderer);
 					logger.Info(String.Format("Results reorderer {0} successfully registered.", resultsReordererConfiguration.FullClassName));
 				}
 				catch(Exception ex)
@@ -167,7 +167,7 @@ namespace Sando.Core.Extensions.Configuration
 				{
 					logger.Info(String.Format("Query weights supplier found: {0}, from assembly: {1}", queryWeightsSupplierConfiguration.FullClassName, queryWeightsSupplierConfiguration.LibraryFileRelativePath));
 					IQueryWeightsSupplier queryWeightsSupplier = CreateInstance<IQueryWeightsSupplier>(extensionPointsConfiguration.PluginDirectoryPath, queryWeightsSupplierConfiguration.LibraryFileRelativePath, queryWeightsSupplierConfiguration.FullClassName);
-					ExtensionPointsRepository.Instance.RegisterQueryWeightsSupplierImplementation(queryWeightsSupplier);
+					ExtensionPointsRepository.GetInstance().RegisterQueryWeightsSupplierImplementation(queryWeightsSupplier);
 					logger.Info(String.Format("Query weights supplier {0} successfully registered.", queryWeightsSupplierConfiguration.FullClassName));
 				}
 				catch(Exception ex)
@@ -188,7 +188,7 @@ namespace Sando.Core.Extensions.Configuration
 				{
 					logger.Info(String.Format("Query rewriter found: {0}, from assembly: {1}", queryRewriterConfiguration.FullClassName, queryRewriterConfiguration.LibraryFileRelativePath));
 					IQueryRewriter queryRewriter = CreateInstance<IQueryRewriter>(extensionPointsConfiguration.PluginDirectoryPath, queryRewriterConfiguration.LibraryFileRelativePath, queryRewriterConfiguration.FullClassName);
-					ExtensionPointsRepository.Instance.RegisterQueryRewriterImplementation(queryRewriter);
+					ExtensionPointsRepository.GetInstance().RegisterQueryRewriterImplementation(queryRewriter);
 					logger.Info(String.Format("Query rewriter {0} successfully registered.", queryRewriterConfiguration.FullClassName));
 				}
 				catch(Exception ex)

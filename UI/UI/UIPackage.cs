@@ -226,7 +226,7 @@ namespace Sando.UI
 
         private void RegisterExtensionPoints()
         {
-            var extensionPointsRepository = ExtensionPointsRepository.Instance;
+            var extensionPointsRepository = ExtensionPointsRepository.GetInstance();
 
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(GetSrcMLDirectory()));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx", ".c" },
