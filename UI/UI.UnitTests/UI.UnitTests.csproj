@@ -55,7 +55,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="S3LogWriterTest.cs" />
     <Compile Include="SolutionMonitorTest.cs" />
     <None Include="TestFiles\FourCSFiles\FileNameTemplate.cs" />
     <None Include="TestFiles\FourCSFiles\HotKeySelection.cs" />

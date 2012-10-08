@@ -261,12 +261,6 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
             var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
-            if (ExtensionPointsRepository.Instance.IsCloned)
-            {
-                ExtensionPointsRepository.Instance.SwitchToClonedSet();
-                _searchManager.Search(searchParams.query, searchParams.criteria);
-                ExtensionPointsRepository.Instance.SwitchToOriginalSet();
-            }
             e.Result = searchStatus;
         }
 

@@ -16,7 +16,7 @@ namespace Sando.UI.View
 public  class SearchManager
 		{
 
-			private static CodeSearcher _currentSearcher;
+			private CodeSearcher _currentSearcher;
 			private string _currentDirectory = "";
 			private bool _invalidated = true;
 			private ISearchResultListener _myDaddy;
@@ -24,11 +24,6 @@ public  class SearchManager
 			public SearchManager(ISearchResultListener daddy)
 			{
 				_myDaddy = daddy;
-			}
-
-			public static CodeSearcher GetCurrentSearcher()
-			{
-				return _currentSearcher;
 			}
 
 			private CodeSearcher GetSearcher(UIPackage myPackage)
