@@ -5,12 +5,9 @@ using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UI.InterleavingExperiment.FLTs;
 using Sando.UI.InterleavingExperiment.Logging;
-using Sando.UI.InterleavingExperiment.Multiplexing;
-using Microsoft.VisualStudio.ExtensionManager;
-using Microsoft.VisualStudio.Shell;
+
 
 namespace Sando.UI.InterleavingExperiment
 {
@@ -99,9 +96,9 @@ namespace Sando.UI.InterleavingExperiment
             fltA = new SandoFLT();
             fltB = new SamuraiSplitterFLT();
 
-            ExtensionPointsRepository.Instance.SwitchToClonedSet();
+            //ExtensionPointsRepository.Instance.SwitchToClonedSet();
             //ExtensionPointsRepository.Instance.RegisterSplitterImplementation(?);
-            ExtensionPointsRepository.Instance.SwitchToOriginalSet();
+            //ExtensionPointsRepository.Instance.SwitchToOriginalSet();
         }
 
 

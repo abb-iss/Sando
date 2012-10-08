@@ -100,6 +100,7 @@ namespace Sando.UI.Monitoring
 			FileInfo fileInfo = new FileInfo(filePath);
 
             PerformSandoIndexing(filePath, fileInfo);
+			/*
             if (ExtensionPointsRepository.Instance.IsCloned)
             {
                 //Index again if we have multiple extension points
@@ -107,7 +108,7 @@ namespace Sando.UI.Monitoring
                 PerformSandoIndexing(filePath, fileInfo);
                 ExtensionPointsRepository.Instance.SwitchToOriginalSet();
             }
-
+			*/
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
 		}
 
