@@ -71,7 +71,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		{
 			foreach(ProgramElement element in includeElements)
 			{
-				if(element is ClassElement && element.Name == ClassName)
+				if(element is ClassElement && element.Name == className)
 				{
 					outGuid = ((ClassElement)element).Id;
 					return true;

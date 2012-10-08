@@ -8,7 +8,6 @@ using System.Text;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
-//using ABB.SrcML.Data;
 
 namespace Sando.Recommender {
     /// <summary>
@@ -113,7 +112,7 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="methodElement">The XElement of the method to get SWUM data about. This element can be a Function, Constructor, Destructor or Call.</param>
         /// <returns>A SwumDataRecord containing the SWUM data about the given method, or null if no data is found.</returns>
-        public SwumDataRecord GetSwumData(XElement methodElement) {
+        public SwumDataRecord GetSwumForElement(XElement methodElement) {
             if(methodElement == null) { throw new ArgumentNullException("methodElement"); }
             var methodNames = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
             if(!methodNames.Contains(methodElement.Name) && methodElement.Name != SRC.Call) {
@@ -128,7 +127,7 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="methodSignature">The method signature to get SWUM data about.</param>
         /// <returns>A SwumDataRecord containing the SWUM data about the given method, or null if no data is found.</returns>
-        public SwumDataRecord GetSwumData(string methodSignature) {
+        public SwumDataRecord GetSwumForSignature(string methodSignature) {
             if(methodSignature == null) { throw new ArgumentNullException("methodSignature"); }
 
             if(signaturesToSwum.ContainsKey(methodSignature)) {
@@ -137,6 +136,13 @@ namespace Sando.Recommender {
                 return null;
             }
         }
+
+        /// <summary>
+        /// Returns a dictionary mapping method signatures to their SWUM data.
+        /// </summary>
+        public Dictionary<string,SwumDataRecord> GetSwumData() {
+            return signaturesToSwum;
+        } 
 
         #region Protected methods
         /// <summary>
