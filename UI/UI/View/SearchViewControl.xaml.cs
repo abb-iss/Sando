@@ -411,8 +411,9 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             searchBox.ItemsSource = recommendations;
             searchBox.PopulateComplete();
         }
-        }
-public  class AccessWrapper
+    }
+    
+    public  class AccessWrapper
     {
         public AccessWrapper(bool b, AccessLevel access
             )
