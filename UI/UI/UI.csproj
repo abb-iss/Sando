@@ -164,22 +164,12 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InterleavingExperiment\BalancedInterleaving.cs" />
-    <Compile Include="InterleavingExperiment\FLTs\FeatureLocationTechnique.cs" />
-    <Compile Include="InterleavingExperiment\FLTs\SamuraiSplitterFLT.cs" />
-    <Compile Include="InterleavingExperiment\Multiplexing\MuxProgramElements\MuxClassElement.cs" />
-    <Compile Include="InterleavingExperiment\InterleavingManager.cs" />
-    <Compile Include="InterleavingExperiment\FLTs\SandoFLT.cs" />
-    <Compile Include="InterleavingExperiment\Multiplexing\MuxProgramElements\MuxCommentElement.cs" />
-    <Compile Include="InterleavingExperiment\Multiplexing\MuxProgramElements\MuxMethodElement.cs" />
-    <Compile Include="InterleavingExperiment\Multiplexing\SplitterExperimentMultiplexer.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="MyFontConverter.cs" />
-    <Compile Include="MyStrokeConverter.cs" />
-    <Compile Include="InterleavingExperiment\Logging\S3LogWriter.cs" />
+    <Compile Include="MyStrokeConverter.cs" />    
     <Compile Include="View\FileOpener.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\ISearchResultListener.cs" />

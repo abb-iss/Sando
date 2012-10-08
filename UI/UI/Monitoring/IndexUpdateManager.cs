@@ -98,27 +98,12 @@ namespace Sando.UI.Monitoring
 			else
 				indexFileState.LastIndexingDate = lastModificationDate;
 			FileInfo fileInfo = new FileInfo(filePath);
-
-            PerformSandoIndexing(filePath, fileInfo);
-            if (ExtensionPointsRepository.Instance.IsCloned)
-            {
-                //Index again if we have multiple extension points
-                ExtensionPointsRepository.Instance.SwitchToClonedSet();
-                PerformSandoIndexing(filePath, fileInfo);
-                ExtensionPointsRepository.Instance.SwitchToOriginalSet();
-            }
-
-			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
-		}
-
-        private void PerformSandoIndexing(string filePath, FileInfo fileInfo)
-        {
-            var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath);
+			var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath);
 
             var unresolvedElements = parsed.FindAll(pe => pe is CppUnresolvedMethodElement);
             if (unresolvedElements.Count > 0)
             {
-                //first generate program elements for all the included headers
+				//first generate program elements for all the included headers
                 List<ProgramElement> headerElements = CppHeaderElementResolver.GenerateCppHeaderElements(filePath, unresolvedElements);
 
                 //then try to resolve
@@ -130,16 +115,17 @@ namespace Sando.UI.Monitoring
                 }
             }
 
-            foreach (var programElement in parsed)
-            {
-                if (!(programElement is CppUnresolvedMethodElement))
+			foreach(var programElement in parsed)
+			{
+				if(! (programElement is CppUnresolvedMethodElement))
                 {
-                    var document = DocumentFactory.Create(programElement);
-                    if (document != null)
-                        _currentIndexer.AddDocument(document);
-                }
-            }
-        }
+					var document = DocumentFactory.Create(programElement);
+                    if(document!=null)
+					    _currentIndexer.AddDocument(document);
+				}
+			}
+			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
+		}
 
 
 	}

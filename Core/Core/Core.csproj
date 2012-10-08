@@ -91,7 +91,6 @@
     <Compile Include="Extensions\Configuration\ParserExtensionPointsConfiguration.cs" />
     <Compile Include="Extensions\Configuration\ExtensionPointsConfiguration.cs" />
     <Compile Include="Extensions\ExtensionPointsRepository.cs" />
-    <Compile Include="Extensions\ExtensionPointsSet.cs" />
     <Compile Include="Extensions\Logging\ExceptionFormatter.cs" />
     <Compile Include="Extensions\Logging\FileLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
