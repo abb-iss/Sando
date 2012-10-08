@@ -10,6 +10,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
+using Sando.Recommender;
 
 namespace Sando.UI.Monitoring
 {
@@ -42,7 +43,8 @@ namespace Sando.UI.Monitoring
 		{
 			try
 			{
-				
+                //compute SWUM on the file, for the query recommender
+                SwumManager.Instance.AddSourceFile(path);
 
 				IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
 				PhysicalFileState physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);
