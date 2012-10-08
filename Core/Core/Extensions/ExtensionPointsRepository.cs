@@ -120,6 +120,9 @@ namespace Sando.Core.Extensions
 
 		public static void InitializeInterleavingExperiment()
 		{
+			//this creates the instance, if it wasn't created already
+			GetInstance(ExperimentFlow.B);
+
 			ExtensionManagerSetB.parsers = ExtensionManagerSetA.parsers;
 			ExtensionManagerSetB.queryRewriter = ExtensionManagerSetA.queryRewriter;
 			ExtensionManagerSetB.queryWeightsSupplier = ExtensionManagerSetA.queryWeightsSupplier;
