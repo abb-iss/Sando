@@ -257,27 +257,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
-        	string searchStatus = String.Empty;
-
-			if(ExtensionPointsRepository.IsInterleavingExperimentOn)
-			{
-				Task.Factory.StartNew(() =>
-				{
-					ExtensionPointsRepository.ExpFlow.Value = ExperimentFlow.A;
-					searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
-				});
-				Task.Factory.StartNew(() =>
-				{
-					ExtensionPointsRepository.ExpFlow.Value = ExperimentFlow.B;
-					_searchManager.Search(searchParams.query, searchParams.criteria);
-				});
-			}
-			else
-			{
-				searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
-			}
-
-            e.Result = searchStatus;
+			_searchManager.Search(searchParams.query, searchParams.criteria);
         }
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)

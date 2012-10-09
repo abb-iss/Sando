@@ -6,37 +6,35 @@ using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.UI.InterleavingExperiment.FLTs;
 using Sando.UI.InterleavingExperiment.Logging;
+using System.Diagnostics.Contracts;
 
 
 namespace Sando.UI.InterleavingExperiment
 {
-	public class InterleavingManager : IQueryRewriter, IResultsReorderer
+	public class InterleavingExperimentManager 
 	{
-		public string RewriteQuery(string query)
+        public IQueryable<CodeSearchResult> InterleaveResults(IQueryable<CodeSearchResult> AResults, IQueryable<CodeSearchResult> BResults)
 		{
+            Contract.Requires(IsInitialized == true, "Interleaving experiment was started but was not initialized");
+
             WriteExpRoundToFile();
             WriteLogToS3();
 
-			fltA.IssueQuery(query);
-			fltB.IssueQuery(query);
+            ClickIdx.Clear();
+            SearchRecievedClick = false;
 
-			ClickIdx.Clear();
-			SearchRecievedClick = false;
-			
-            return query;
-		}
-
-		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
-		{
-            InterleavedResults = BalancedInterleaving.Interleave(fltA.GetResults(), fltB.GetResults());
+            fltA.Results = AResults.ToList();
+            fltB.Results = BResults.ToList();
+            InterleavedResults = BalancedInterleaving.Interleave(fltA.Results, fltB.Results);
             return InterleavedResults.AsQueryable(); 
         }
 
 		//called from UI.FileOpener
 		public void NotifyClicked(CodeSearchResult clickedElement)
 		{
+            Contract.Requires(IsInitialized == true, "Interleaving experiment was started but was not initialized");
+
             if (InterleavedResults != null && InterleavedResults.Count > 0)
             {
                 ClickIdx.Add(InterleavedResults.IndexOf(clickedElement));
@@ -52,7 +50,7 @@ namespace Sando.UI.InterleavingExperiment
 				{
 					LogCount++;
 					int scoreA, scoreB;
-					BalancedInterleaving.DetermineWinner(fltA.GetResults(), fltB.GetResults(), InterleavedResults,
+					BalancedInterleaving.DetermineWinner(fltA.Results, fltB.Results, InterleavedResults,
 														 ClickIdx, out scoreA, out scoreB);
 					string entry = LogCount + ": " + fltA.Name + "=" + scoreA + ", " +
 								   fltB.Name + "=" + scoreB + Environment.NewLine;
@@ -94,40 +92,45 @@ namespace Sando.UI.InterleavingExperiment
             InitializeNewLogFileName(pluginDir);
             PluginDirectory = pluginDir;
 
-            fltA = new SandoFLT();
-            fltB = new SamuraiSplitterFLT();
+            fltA = new FeatureLocationTechnique("Sando");
+            fltA = new FeatureLocationTechnique("Samurai");
 
 			ExtensionPointsRepository.InitializeInterleavingExperiment();
             //ExtensionPointsRepository.GetInstance(ExperimentFlow.B).RegisterSplitterImplementation(?);
+
+            IsInitialized = true;
         }
 
 
-        public static InterleavingManager Instance
+        public static InterleavingExperimentManager Instance
 		{
 			get
 			{
                 if (interleavingMgr == null)
                 {
-                    interleavingMgr = new InterleavingManager();
+                    interleavingMgr = new InterleavingExperimentManager();
                 }
 			    return interleavingMgr;
 			}
 		}
 
-        private InterleavingManager()
+        private InterleavingExperimentManager()
 		{
 			ClickIdx = new List<int>();
+            IsInitialized = false;
 		}
 
-        private static InterleavingManager interleavingMgr;
+        private static InterleavingExperimentManager interleavingMgr;
 
 		private string PluginDirectory;
 		private string LogFile;
 		private int LogEntriesPerFile = 15;
 		private int LogCount = 0;
 
-		private FeatureLocationTechnique fltA;
-		private FeatureLocationTechnique fltB;
+        public bool IsInitialized { get; private set; }
+
+        private FeatureLocationTechnique fltA;
+        private FeatureLocationTechnique fltB;
 		private bool SearchRecievedClick = false;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }

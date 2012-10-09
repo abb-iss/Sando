@@ -265,8 +265,8 @@ namespace Sando.UI
                 cppParser.SetSrcMLPath(GetSrcMLDirectory());
             }
 
-			// Begin of Interleaving Experiment Insert
-            InterleavingManager.Instance.InitializeExperimentParticipants(pluginDirectory);
+			// Begin of Interleaving Experiment Insert (this is the on/off switch)
+            InterleavingExperimentManager.Instance.InitializeExperimentParticipants(pluginDirectory);
 			// End of Interleaving Experiment Insert
         }
 

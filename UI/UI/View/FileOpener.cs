@@ -4,6 +4,8 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.Core.Extensions;
+using Sando.UI.InterleavingExperiment;
 
 namespace Sando.UI.View
 {
@@ -19,6 +21,11 @@ namespace Sando.UI.View
     			{
 					var myResult = result.Content as CodeSearchResult;
     				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
+
+                    if (ExtensionPointsRepository.IsInterleavingExperimentOn)
+                    {
+                        InterleavingExperimentManager.Instance.NotifyClicked(myResult);
+                    }
     			}
     		}
 
