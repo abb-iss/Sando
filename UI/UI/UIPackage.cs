@@ -195,7 +195,7 @@ namespace Sando.UI
             var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
             if (dte != null)
             {
-                _solutionEvents = dte.Events.SolutionEvents;
+                _solutionEvents = dte.Events.SolutionEvents;                
                 _solutionEvents.Opened += SolutionHasBeenOpened;
                 _solutionEvents.BeforeClosing += SolutionAboutToClose;
             }
