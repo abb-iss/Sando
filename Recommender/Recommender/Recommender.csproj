@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CamelIdSplitter.cs" />
     <Compile Include="QueryRecommender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SwumDataRecord.cs" />

@@ -393,11 +393,11 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         private void recommendationWorker_DoWork(object sender, DoWorkEventArgs e) {
             string queryString = (string)e.Argument;
             var result = recommender.GenerateRecommendations(queryString);
-            var recList = new List<string>(result) {"asyncronously!"};
+            //var recList = new List<string>(result) {"asyncronously!"};
             if(Thread.CurrentThread == this.Dispatcher.Thread) {
-                UpdateRecommendations(recList);
+                UpdateRecommendations(result);
             } else {
-                Dispatcher.Invoke((Action)(() => UpdateRecommendations(recList)));
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result)));
             }
         }
 

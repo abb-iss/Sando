@@ -26,7 +26,7 @@ namespace Sando.Recommender {
         /// Private constructor for a new SwumManager.
         /// </summary>
         private SwumManager() {
-            builder = new UnigramSwumBuilder();
+            builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
             signaturesToSwum = new Dictionary<string, SwumDataRecord>();
             xelementsToSwum = new Dictionary<XElement, SwumDataRecord>();
         }

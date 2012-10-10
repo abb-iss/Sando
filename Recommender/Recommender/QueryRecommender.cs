@@ -13,42 +13,107 @@ namespace Sando.Recommender {
             }
             //TODO: split query into words, search each one
 
-            var recommendations = new HashSet<string>();
+            var recommendations = new SortedSet<string>();
 
+            //search through all the SWUM data
             Dictionary<string,SwumDataRecord> swumData = SwumManager.Instance.GetSwumData();
-            bool addAction = false, addTheme = false, addIndirect = false;
             foreach(var swumRecord in swumData.Values) {
-                if(string.Compare(swumRecord.Action, query, StringComparison.InvariantCultureIgnoreCase) == 0) {
-                    addTheme = true;
-                    addIndirect = true;
+                bool addAction = false, addTheme = false, addIndirect = false;
+
+                var actionWords = new string[] {};
+                var themeWords = new string[] {};
+                var indirectWords = new string[] {};
+                bool queryInAction = false, queryInTheme = false, queryInIndirect = false;
+                if(!string.IsNullOrWhiteSpace(swumRecord.Action)) {
+                    actionWords = swumRecord.Action.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+                    if(actionWords.Contains(query, StringComparer.InvariantCultureIgnoreCase)) {
+                        queryInAction = true;
+                    }
                 }
-                if(string.Compare(swumRecord.Theme, query, StringComparison.InvariantCultureIgnoreCase) == 0) {
-                    addAction = true;
-                    addIndirect = true;
+                if(!string.IsNullOrWhiteSpace(swumRecord.Theme)) {
+                    themeWords = swumRecord.Theme.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if(themeWords.Contains(query, StringComparer.InvariantCultureIgnoreCase)) {
+                        queryInTheme = true;
+                    }
                 }
-                if(string.Compare(swumRecord.IndirectObject, query, StringComparison.InvariantCultureIgnoreCase) == 0) {
-                    addAction = true;
-                    addTheme = true;
+                if(!string.IsNullOrWhiteSpace(swumRecord.IndirectObject)) {
+                    indirectWords = swumRecord.IndirectObject.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if(indirectWords.Contains(query, StringComparer.InvariantCultureIgnoreCase)) {
+                        queryInIndirect = true;
+                    }
                 }
 
-                if(addAction) {
-                    recommendations.Add(string.Format("{0} {1}", query, swumRecord.Action));
+                if(queryInAction||queryInTheme||queryInIndirect) {
+                    //add words from action
+                    foreach(var word in actionWords) {
+                        if(string.Compare(query, word, StringComparison.InvariantCultureIgnoreCase) != 0) {
+                            recommendations.Add(string.Format("{0} {1}", query, word));
+                        }
+                    }
+                    if(queryInAction && actionWords.Count() > 2) {
+                        recommendations.Add(swumRecord.Action);
+                    } else if(!queryInAction && actionWords.Count() > 1) {
+                        recommendations.Add(string.Format("{0} {1}", query, swumRecord.Action));
+                    }
+
+                    //add words from theme
+                    foreach(var word in themeWords) {
+                        if(string.Compare(query, word, StringComparison.InvariantCultureIgnoreCase) != 0) {
+                            recommendations.Add(string.Format("{0} {1}", query, word));
+                        }
+                    }
+                    if(queryInTheme && themeWords.Count() > 2) {
+                        recommendations.Add(swumRecord.Theme);
+                    } else if(!queryInTheme && themeWords.Count() > 1) {
+                        recommendations.Add(string.Format("{0} {1}", query, swumRecord.Theme));
+                    }
+
+                    //add words from indirect object
+                    foreach(var word in indirectWords) {
+                        if(string.Compare(query, word, StringComparison.InvariantCultureIgnoreCase) != 0) {
+                            recommendations.Add(string.Format("{0} {1}", query, word));
+                        }
+                    }
+                    if(queryInIndirect && indirectWords.Count() > 2) {
+                        recommendations.Add(swumRecord.IndirectObject);
+                    } else if(!queryInIndirect && indirectWords.Count() > 1) {
+                        recommendations.Add(string.Format("{0} {1}", query, swumRecord.IndirectObject));
+                    }
                 }
-                if(addTheme) {
-                    recommendations.Add(string.Format("{0} {1}", query, swumRecord.Theme));
-                }
-                if(addIndirect) {
-                    recommendations.Add(string.Format("{0} {1}", query, swumRecord.IndirectObject));
-                }
+
+
+                
+                
+
+
+                //if(string.Compare(swumRecord.Action, query, StringComparison.InvariantCultureIgnoreCase) == 0) {
+                //    addTheme = true;
+                //    addIndirect = true;
+                //}
+                //if(string.Compare(swumRecord.Theme, query, StringComparison.InvariantCultureIgnoreCase) == 0) {
+                //    addAction = true;
+                //    addIndirect = true;
+                //}
+                //if(string.Compare(swumRecord.IndirectObject, query, StringComparison.InvariantCultureIgnoreCase) == 0) {
+                //    addAction = true;
+                //    addTheme = true;
+                //}
+
+                //if(addAction) {
+                //    string rec = string.Format("{0} {1}", query, swumRecord.Action);
+                //    recommendations.Add(rec);
+                //}
+                //if(addTheme) {
+                //    string rec = string.Format("{0} {1}", query, swumRecord.Theme);
+                //    recommendations.Add(rec);
+                //}
+                //if(addIndirect) {
+                //    string rec = string.Format("{0} {1}", query, swumRecord.IndirectObject);
+                //    recommendations.Add(rec);
+                //}
             }
 
             return recommendations.ToArray();
-
-            //if(char.IsUpper(query[0])) {
-            //    return new string[] { "starts", "with", "upper", "case" };
-            //} else {
-            //    return new string[] {"begins", "with", "lower", "case"};
-            //}
         }
     }
 }
