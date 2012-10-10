@@ -129,7 +129,7 @@ namespace Sando.Indexer.Searching.Criteria
 			if(stringBuilder.Length > 0)
 				stringBuilder.Append(" AND ");
 			
-			//stringBuilder.Append("(");
+			stringBuilder.Append("(");
 			if(!SearchByUsageType)
 			{
 				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
@@ -159,7 +159,7 @@ namespace Sando.Indexer.Searching.Criteria
 				}
 				--searchTermsLeft;
 			}
-			//stringBuilder.Append(")");
+			stringBuilder.Append(")");
 		}
 
         private string EscapeSpecialCharacters(string searchTerm)
