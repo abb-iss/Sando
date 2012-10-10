@@ -81,7 +81,12 @@ namespace Sando.Indexer.Searching.Criteria
 			foreach(ProgramElementType programElementType in ProgramElementTypes)
 			{
 				stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
-				stringBuilder.Append(programElementType.ToString());
+			    string value = programElementType.ToString();
+                if(!value.Equals(ProgramElementType.Method.ToString()))
+                {
+                    value = value + "*";
+                }
+			    stringBuilder.Append(value);
 				AppendBoostFactor(stringBuilder, SandoField.ProgramElementType.ToString());
 				if(collectionSize > 1)
 				{
