@@ -66,11 +66,13 @@ namespace Sando.UI
 
         private SolutionMonitor _currentMonitor;
     	private SolutionEvents _solutionEvents;
-        private ILog logger;
+		private ILog logger;
         private string pluginDirectory;        
         private ExtensionPointsConfiguration extensionPointsConfiguration;
         private DTEEvents _dteEvents;
         private ViewManager _viewManager;
+		private SolutionReloadEventListener listener;
+		private IVsUIShellDocumentWindowMgr winmgr;
 
         private static UIPackage MyPackage
 		{
@@ -155,10 +157,6 @@ namespace Sando.UI
             _dteEvents.OnStartupComplete += StartupCompleted;
         }
 
-     
-
-    
-
         private void AddCommand()
         {
             // Add our command handlers for menu (commands must exist in the .vsct file)
@@ -171,7 +169,6 @@ namespace Sando.UI
                 mcs.AddCommand(menuToolWin);
             }
         }
-
         
         private void StartupCompleted()
         {
@@ -186,9 +183,7 @@ namespace Sando.UI
             {
                 SolutionHasBeenOpened();
             }
-        }
-
-  
+        }  
 
         private void RegisterSolutionEvents()
         {
@@ -199,6 +194,14 @@ namespace Sando.UI
                 _solutionEvents.Opened += SolutionHasBeenOpened;
                 _solutionEvents.BeforeClosing += SolutionAboutToClose;
             }
+
+			listener = new SolutionReloadEventListener();
+			winmgr = Package.GetGlobalService(typeof(IVsUIShellDocumentWindowMgr)) as IVsUIShellDocumentWindowMgr;
+			listener.OnQueryUnloadProject += () =>
+			{
+				SolutionAboutToClose();
+				SolutionHasBeenOpened();
+			};
         }
 
          
@@ -283,17 +286,10 @@ namespace Sando.UI
             return extensionPointsConfigurationDirectory;
         }
 
-       
-
-
-
-
         private string GetSrcMLDirectory()
         {
             return pluginDirectory + "\\LIBS";
         }
-
-
 
         private void SolutionAboutToClose()
 		{
