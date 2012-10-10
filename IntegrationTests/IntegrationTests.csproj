@@ -49,6 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Search\SelfSearchTest.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Search\StemmingSearchTest.cs" />
     <Compile Include="Search\NameWithNumbersSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
