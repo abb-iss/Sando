@@ -35,7 +35,7 @@ namespace Sando.Parser.UnitTests
             var parser = new TextFileParser();
             var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\LongFile.txt");
             Assert.IsNotNull(elements);
-            Assert.AreEqual(0, 987386);
+            Assert.AreEqual(elements.Count, 987386);
             elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\NotSoLongFile.txt");
             Assert.IsNotNull(elements);
             Assert.AreEqual(23945, elements.Count);

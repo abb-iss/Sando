@@ -42,7 +42,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			{
 				SearchCriteria andSearchCriteria = new ParenthesisSearchCriteria(simpleSearchCriteria);
 				string queryString = andSearchCriteria.ToQueryString();
-				Assert.AreEqual(queryString, "((" + SandoField.ProgramElementType.ToString() + ":Class))", "Created query string is invalid!");
+				Assert.AreEqual(queryString, "((" + SandoField.ProgramElementType.ToString() + ":Class*))", "Created query string is invalid!");
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ProgramElementType.ToString(), new SimpleAnalyzer()).Parse(queryString);
 				Assert.NotNull(query, "Generated query object is null!");
 			}
