@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{52D7ED5F-BAEA-4A50-8AA3-07B625B53E65}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Indexer", "..\Indexer\Indexer\Indexer.csproj", "{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "..\Parser\Parser\Parser.csproj", "{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}"
@@ -10,8 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "..\UI\UI\UI.csproj", "{301DCCF5-C559-4CB2-BF1A-CE167B3BF33A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "..\Core\Core\Core.csproj", "{DB482A0E-4294-4008-BC79-D22505B5B661}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{52D7ED5F-BAEA-4A50-8AA3-07B625B53E65}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Indexer.UnitTests", "..\Indexer\Indexer.UnitTests\Indexer.UnitTests.csproj", "{BC331A14-2CAB-4C33-BEFC-9A3F97193D59}"
 EndProject
