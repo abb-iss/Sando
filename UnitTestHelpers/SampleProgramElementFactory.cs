@@ -17,7 +17,7 @@ namespace Sando.UnitTestHelpers
 			string modifiers = ""
 		)
 		{
-			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers);
+			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, "junk body");
 		}
 
 		public static CommentElement GetSampleCommentElement(
