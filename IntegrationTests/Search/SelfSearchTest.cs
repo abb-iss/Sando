@@ -20,9 +20,9 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void ElementNameSearchesInTop3()
 		{
-            string keywords = "sando document";
+            string keywords = "class document";
 		    var expectedLowestRank = 3;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "SandoDocument");
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ClassDocument");
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 

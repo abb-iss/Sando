@@ -23,7 +23,7 @@ namespace Sando.IntegrationTests.Search
 			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
 			string keywords = "fetch output stream";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-			Assert.AreEqual(codeSearchResults.Count, 4, "Invalid results number");
+			Assert.AreEqual(codeSearchResults.Count, 5, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "FetchOutputStream");
 			if(methodSearchResult == null)
 			{ 
@@ -55,7 +55,7 @@ namespace Sando.IntegrationTests.Search
 				SearchTerms = new SortedSet<string>(keywords.Split(' '))
 			};
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
-			Assert.AreEqual(5, codeSearchResults.Count, "Invalid results number");
+			Assert.AreEqual(7, codeSearchResults.Count, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "ToQueryString");
 			if(methodSearchResult == null)
 			{
