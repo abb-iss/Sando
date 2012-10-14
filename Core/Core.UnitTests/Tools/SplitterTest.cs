@@ -81,7 +81,7 @@ namespace Sando.Core.UnitTests
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");
             Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another");
+            Assert.AreEqual("\"words inside quotes\"*word*another", String.Join("*", parts));
         }
 
         [Test]
@@ -89,7 +89,7 @@ namespace Sando.Core.UnitTests
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another\"word");
             Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual(String.Join("*", parts), "words inside quotes*word*another");
+            Assert.AreEqual(String.Join("*", parts), "\"words inside quotes\"*word*another");
         }
 
         [Test]
@@ -184,6 +184,20 @@ namespace Sando.Core.UnitTests
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("\\/:~");
             Assert.AreEqual(0, parts.Count);
+        }
+
+        [Test]
+        public void InvalidCharactersFound_ReturnsTrueWhenInvalidCharactersUsed()
+        {
+            bool invalidCharactersFound = WordSplitter.InvalidCharactersFound("???");
+            Assert.IsTrue(invalidCharactersFound);
+        }
+
+        [Test]
+        public void InvalidCharactersFound_ReturnsFalseWhenInvalidCharactersUsedInQuotes()
+        {
+            bool invalidCharactersFound = WordSplitter.InvalidCharactersFound("\"???\"");
+            Assert.IsFalse(invalidCharactersFound);
         }
 
         [Test]

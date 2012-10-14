@@ -20,7 +20,7 @@ namespace Sando.Indexer.Documents
 		{
 			PropertyElement propertyElement = (PropertyElement) programElement;
 			document.Add(new Field(SandoField.AccessLevel.ToString(), propertyElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			document.Add(new Field(SandoField.Body.ToString(), propertyElement.Body.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field(SandoField.Body.ToString(), propertyElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.DataType.ToString(), propertyElement.PropertyType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.ClassId.ToString(), propertyElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 			document.Add(new Field(SandoField.ClassName.ToString(), propertyElement.ClassName.ToSandoSearchable(), Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -31,7 +31,7 @@ namespace Sando.Indexer.Documents
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string propertyType = document.GetField(SandoField.DataType.ToString()).StringValue().ToSandoDisplayable();
-			string body = document.GetField(SandoField.Body.ToString()).StringValue().ToSandoDisplayable();
+            string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue().ToSandoDisplayable();
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue().ToSandoDisplayable();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();

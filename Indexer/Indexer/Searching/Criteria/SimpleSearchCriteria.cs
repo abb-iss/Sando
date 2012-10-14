@@ -165,7 +165,7 @@ namespace Sando.Indexer.Searching.Criteria
         private string EscapeSpecialCharacters(string searchTerm)
         {
             StringBuilder escapedSearchTermBuilder = new StringBuilder(searchTerm);
-            escapedSearchTermBuilder.Replace("\\", "\\\\");
+            //escapedSearchTermBuilder.Replace("\\", "\\\\");
             escapedSearchTermBuilder.Replace("+", "\\+");
             escapedSearchTermBuilder.Replace("-", "\\-");
             escapedSearchTermBuilder.Replace("&&", "\\&\\&");
@@ -178,7 +178,7 @@ namespace Sando.Indexer.Searching.Criteria
             escapedSearchTermBuilder.Replace("[", "\\[");
             escapedSearchTermBuilder.Replace("]", "\\]");
             escapedSearchTermBuilder.Replace("^", "\\^");
-            escapedSearchTermBuilder.Replace("\"", "\\\"");
+            //escapedSearchTermBuilder.Replace("\"", "\\\"");
             escapedSearchTermBuilder.Replace("~", "\\~");
             escapedSearchTermBuilder.Replace(":", "\\:");
             return escapedSearchTermBuilder.ToString();
@@ -186,10 +186,6 @@ namespace Sando.Indexer.Searching.Criteria
 
 		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
 		{
-			if(searchTerm.IndexOf(" ") > 0)
-			{
-				searchTerm = "\"" + searchTerm + "\"";
-			}
 			switch(usageType)
 			{
 				case UsageType.Bodies:

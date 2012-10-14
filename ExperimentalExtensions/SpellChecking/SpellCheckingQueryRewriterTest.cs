@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Sando.ExperimentalExtensions.SpellChecking
 {
@@ -15,7 +11,7 @@ namespace Sando.ExperimentalExtensions.SpellChecking
         {
             var spellChecka = new SpellCheckingQueryRewriter();
             var rewritten = spellChecka.RewriteQuery("dogz and catz");
-            Assert.IsTrue(rewritten.Contains("dogs"));
+            Assert.IsTrue(rewritten.Contains("dog"));
         }
 
     }
