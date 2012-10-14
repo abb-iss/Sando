@@ -81,7 +81,12 @@ namespace Sando.Indexer.Searching.Criteria
 			foreach(ProgramElementType programElementType in ProgramElementTypes)
 			{
 				stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
-				stringBuilder.Append(programElementType.ToString());
+			    string value = programElementType.ToString();
+                if(!value.Equals(ProgramElementType.Method.ToString()))
+                {
+                    value = value + "*";
+                }
+			    stringBuilder.Append(value);
 				AppendBoostFactor(stringBuilder, SandoField.ProgramElementType.ToString());
 				if(collectionSize > 1)
 				{
@@ -135,7 +140,7 @@ namespace Sando.Indexer.Searching.Criteria
 			int searchTermsLeft = SearchTerms.Count;
 			foreach(string searchTerm in SearchTerms)
 			{
-				stringBuilder.Append("(");
+				//stringBuilder.Append("(");
                 string searchTermEscaped = EscapeSpecialCharacters(searchTerm);
 				int usageTypesLeft = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
@@ -147,10 +152,10 @@ namespace Sando.Indexer.Searching.Criteria
 					}
 					--usageTypesLeft;
 				}
-				stringBuilder.Append(")"); 
+				//stringBuilder.Append(")"); 
 				if(searchTermsLeft > 1)
 				{
-					stringBuilder.Append(" AND ");
+					stringBuilder.Append(" OR ");
 				}
 				--searchTermsLeft;
 			}
