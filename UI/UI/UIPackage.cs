@@ -30,6 +30,7 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
+using Sando.UI.InterleavingExperiment;
 
 namespace Sando.UI
 {
@@ -269,6 +270,7 @@ namespace Sando.UI
 
 			// Begin of Interleaving Experiment Insert (this is the on/off switch)
             InterleavingExperimentManager.Instance.InitializeExperimentParticipants(pluginDirectory);
+            // End of Interleaving Experiment Insert 
         }
 
         private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
