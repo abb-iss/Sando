@@ -33,7 +33,6 @@ namespace Sando.UI.View
         {
             return _currentSearcher;
         }
-
         private CodeSearcher GetSearcher(UIPackage myPackage)
         {
             CodeSearcher codeSearcher = _currentSearcher;

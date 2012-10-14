@@ -257,7 +257,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
-			_searchManager.Search(searchParams.query, searchParams.criteria);
+                _searchManager.Search(searchParams.query, searchParams.criteria);
         }
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -431,6 +431,8 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                 accessLevel = string.Empty;
             if (accessLevel.ToLower() == "_public")
                 accessLevel = "";
+            if (accessLevel.ToLower() == "_internal")
+                accessLevel = "_Private";
 
             ProgramElementType programElementType = element.ProgramElementType;
             if(programElementType.Equals(ProgramElementType.MethodPrototype))

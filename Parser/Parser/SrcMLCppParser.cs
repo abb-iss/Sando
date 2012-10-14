@@ -228,7 +228,7 @@ namespace Sando.Parser
             {
                 string implementedInterfaces = String.Empty;
                 return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName,
-                    extendedClasses, implementedInterfaces, String.Empty);
+                    extendedClasses, implementedInterfaces, String.Empty, cls.Value);
             }
 		}
 

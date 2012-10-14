@@ -230,7 +230,8 @@ namespace Sando.Parser
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
             string snippet = SrcMLParsingUtils.RetrieveSnippet(cls, SnippetSize);
 
-			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty);
+		    string body = cls.Value;
+		    return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty, body );
 		}
 
 		private void ParseConstructors(List<ProgramElement> programElements, XElement elements, string fileName)

@@ -6,7 +6,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 	public class ClassElement : ProgramElement
 	{
 		public ClassElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
-			string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers) 
+			string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers, string body) 
 			: base(name, definitionLineNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(namespaceName != null, "ClassElement:Constructor - namespace cannot be null!");
@@ -18,8 +18,10 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			ExtendedClasses = extendedClasses;
 			ImplementedInterfaces = implementedInterfaces;
 			Modifiers = modifiers;
+		    Body = body;
 		}
 
+        public virtual string Body { get; set; }
 		public virtual AccessLevel AccessLevel { get; private set; }
 		public virtual string Namespace { get; private set; }
 		public virtual string ExtendedClasses { get; private set; }

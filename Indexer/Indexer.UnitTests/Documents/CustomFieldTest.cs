@@ -65,7 +65,7 @@ namespace Sando.Indexer.UnitTests.Documents
 
     public class MyCustomClassForTesting : ClassElement
     {
-        public MyCustomClassForTesting(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers)
+        public MyCustomClassForTesting(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers, string junk) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers,junk)
         {
         }
         
@@ -94,7 +94,7 @@ namespace Sando.Indexer.UnitTests.Documents
             string modifiers = ""
         )
         {
-            var classElement = new MyCustomClassForTesting(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers);
+            var classElement = new MyCustomClassForTesting(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, "junk body");
             classElement.Bam = "Zaow";
             return classElement;
         }

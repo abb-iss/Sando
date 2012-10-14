@@ -12,7 +12,6 @@ using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.CommandBars;
-using Sando.UI.InterleavingExperiment;
 using log4net;
 using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Shell;
@@ -67,11 +66,13 @@ namespace Sando.UI
 
         private SolutionMonitor _currentMonitor;
     	private SolutionEvents _solutionEvents;
-        private ILog logger;
+		private ILog logger;
         private string pluginDirectory;        
         private ExtensionPointsConfiguration extensionPointsConfiguration;
         private DTEEvents _dteEvents;
         private ViewManager _viewManager;
+		private SolutionReloadEventListener listener;
+		private IVsUIShellDocumentWindowMgr winmgr;
 
         private static UIPackage MyPackage
 		{
@@ -156,10 +157,6 @@ namespace Sando.UI
             _dteEvents.OnStartupComplete += StartupCompleted;
         }
 
-     
-
-    
-
         private void AddCommand()
         {
             // Add our command handlers for menu (commands must exist in the .vsct file)
@@ -172,7 +169,6 @@ namespace Sando.UI
                 mcs.AddCommand(menuToolWin);
             }
         }
-
         
         private void StartupCompleted()
         {
@@ -187,19 +183,25 @@ namespace Sando.UI
             {
                 SolutionHasBeenOpened();
             }
-        }
-
-  
+        }  
 
         private void RegisterSolutionEvents()
         {
             var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
             if (dte != null)
             {
-                _solutionEvents = dte.Events.SolutionEvents;
+                _solutionEvents = dte.Events.SolutionEvents;                
                 _solutionEvents.Opened += SolutionHasBeenOpened;
                 _solutionEvents.BeforeClosing += SolutionAboutToClose;
             }
+
+			listener = new SolutionReloadEventListener();
+			winmgr = Package.GetGlobalService(typeof(IVsUIShellDocumentWindowMgr)) as IVsUIShellDocumentWindowMgr;
+			listener.OnQueryUnloadProject += () =>
+			{
+				SolutionAboutToClose();
+				SolutionHasBeenOpened();
+			};
         }
 
          
@@ -267,7 +269,6 @@ namespace Sando.UI
 
 			// Begin of Interleaving Experiment Insert (this is the on/off switch)
             InterleavingExperimentManager.Instance.InitializeExperimentParticipants(pluginDirectory);
-			// End of Interleaving Experiment Insert
         }
 
         private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
@@ -287,17 +288,10 @@ namespace Sando.UI
             return extensionPointsConfigurationDirectory;
         }
 
-       
-
-
-
-
         private string GetSrcMLDirectory()
         {
             return pluginDirectory + "\\LIBS";
         }
-
-
 
         private void SolutionAboutToClose()
 		{
