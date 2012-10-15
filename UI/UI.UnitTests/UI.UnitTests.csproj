@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InterleavingExperiment\InterleavingIntegrationTests.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManagerTest.cs" />
     <Compile Include="Monitoring\IndexUpdateManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
