@@ -54,7 +54,7 @@
 
   <Target
     Name="CodeContractsRunCodeAnalysisOnTarget"
-    Condition="'$([System.Environment]::GetEnvironmentVariable(`CodeContractsTargetProjectGuid`))' == '$(ProjectGuid)'"
+    Condition="'$(ProjectGuid)' != '' and '$([System.Environment]::GetEnvironmentVariable(`CodeContractsTargetProjectGuid`))' == '$(ProjectGuid)'"
     DependsOnTargets="CodeContractsComputeCodeAnalysisDependencies;CodeContractsLoadEnvVars">
     <CallTarget Targets="CodeContractsRunCodeAnalysisInternal" />
   </Target>
@@ -146,7 +146,7 @@
       <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions) -bounds:$(CodeContractsBounds) -arrays -wp=true -bounds:type=subpolyhedra,reduction=simplex,diseq=false </CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsPointerObligations)' == 'true'">$(CodeContractCodeAnalysisOptions) -buffers:type=subpolyhedra,fastcheck=false</CodeContractCodeAnalysisOptions>
-      <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions)  -adaptive</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions) -arrays -adaptive</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsArithmeticObligations)' == 'true'">$(CodeContractCodeAnalysisOptions) -arithmetic</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
@@ -166,9 +166,7 @@
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsInferEnsures)' == 'true'">$(CodeContractCodeAnalysisOptions) -infer methodensures</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
-        Condition="'$(CodeContractsInferObjectInvariants)' == 'true'">$(CodeContractCodeAnalysisOptions) -infer objectinvariants</CodeContractCodeAnalysisOptions>
-      <CodeContractCodeAnalysisOptions
-        Condition="'$(CodeContractsDisjunctiveRequires)' == 'true'">$(CodeContractCodeAnalysisOptions) -premode combined</CodeContractCodeAnalysisOptions>      
+        Condition="'$(CodeContractsInferObjectInvariants)' == 'true'">$(CodeContractCodeAnalysisOptions) -infer objectinvariants</CodeContractCodeAnalysisOptions>     
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsCacheAnalysisResults)' == 'true'">$(CodeContractCodeAnalysisOptions) -cache</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
@@ -193,7 +191,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <_CodeContractsCCCheckArguments>-nobox -nologo -nopex -remote -warninglevel $(CodeContractsAnalysisWarning) $(CodeContractCodeAnalysisOptions) "-resolvedPaths:@(ReferencePath)" "-libPaths:@(CodeContractsBuildLibPaths) " "-libPaths:$(CodeContractsLibPaths)" "-libPaths:$(CodeContractsReferenceAssemblyLibPath)" "$(DeclarativeAssemblyPath)"</_CodeContractsCCCheckArguments>
+      <_CodeContractsCCCheckArguments>-nobox -nologo -nopex -remote -premode combined -framework:$(TargetFrameworkVersion) -warninglevel $(CodeContractsAnalysisWarning) $(CodeContractCodeAnalysisOptions) "-resolvedPaths:@(ReferencePath)" "-libPaths:@(CodeContractsBuildLibPaths) " "-libPaths:$(CodeContractsLibPaths)" "-libPaths:$(CodeContractsReferenceAssemblyLibPath)" "$(DeclarativeAssemblyPath)"</_CodeContractsCCCheckArguments>
     </PropertyGroup>
 
     <ItemGroup>

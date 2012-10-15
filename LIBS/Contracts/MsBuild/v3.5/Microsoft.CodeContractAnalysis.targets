@@ -92,6 +92,21 @@
     </Otherwise>
   </Choose>
 
+
+  <!-- Get Bounds obligations -->
+  <Choose>
+    <When Condition="'$(CodeContractsBoundsObligations)'!='true'">
+      <PropertyGroup>
+        <CodeContractsBounds>noObl</CodeContractsBounds>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(CodeContractsBoundsObligations)'=='true'">
+      <PropertyGroup>
+        <CodeContractsBounds></CodeContractsBounds>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
   <Target
     Name="CodeContractsRunCodeAnalysisInternal"
     DependsOnTargets="CodeContractsComputeReferencedLibPaths;EnsureContractReferenceAssemblyOfDependeeProjects"
@@ -112,11 +127,7 @@
         Condition="'$(CodeContractsNonNullObligations)' != 'true'">$(CodeContractCodeAnalysisOptions) -nonnull:noObl</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsNonNullObligations)' == 'true'">$(CodeContractCodeAnalysisOptions) -nonnull</CodeContractCodeAnalysisOptions>
-      <CodeContractCodeAnalysisOptions
-        Condition="'$(CodeContractsBoundsObligations)' != 'true'">$(CodeContractCodeAnalysisOptions) -bounds:noObl</CodeContractCodeAnalysisOptions>
-      <CodeContractCodeAnalysisOptions
-        Condition="'$(CodeContractsBoundsObligations)' == 'true'">$(CodeContractCodeAnalysisOptions) -bounds</CodeContractCodeAnalysisOptions>
-      <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions) -bounds:type=subpolyhedra,reduction=simplex,diseq=false</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions) -bounds:$(CodeContractsBounds) -arrays -wp=true -bounds:type=subpolyhedra,reduction=simplex,diseq=false </CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsPointerObligations)' == 'true'">$(CodeContractCodeAnalysisOptions) -buffers:type=subpolyhedra,fastcheck=false</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions) -arrays -adaptive</CodeContractCodeAnalysisOptions>
@@ -125,7 +136,21 @@
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsEnumObligations)' == 'true'">$(CodeContractCodeAnalysisOptions) -enum</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
-        Condition="'$(CodeContractsRedundantAssumptions)' == 'true'">$(CodeContractCodeAnalysisOptions) -check assumptions</CodeContractCodeAnalysisOptions>
+        Condition="'$(CodeContractsRedundantAssumptions)' == 'true'">$(CodeContractCodeAnalysisOptions) -check assumptions</CodeContractCodeAnalysisOptions>        
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsSuggestAssumptions)' == 'true'">$(CodeContractCodeAnalysisOptions) -suggest assumes</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsSuggestRequires)' == 'true'">$(CodeContractCodeAnalysisOptions) -suggest requires</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsSuggestEnsures)' == 'true'">$(CodeContractCodeAnalysisOptions) -suggest methodensures -suggest propertyensures</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsSuggestObjectInvariants)' == 'true'">$(CodeContractCodeAnalysisOptions) -suggest objectinvariants</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsInferRequires)' == 'true'">$(CodeContractCodeAnalysisOptions) -infer requires</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsInferEnsures)' == 'true'">$(CodeContractCodeAnalysisOptions) -infer methodensures</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsInferObjectInvariants)' == 'true'">$(CodeContractCodeAnalysisOptions) -infer objectinvariants</CodeContractCodeAnalysisOptions>     
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsCacheAnalysisResults)' == 'true'">$(CodeContractCodeAnalysisOptions) -cache</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
@@ -134,6 +159,12 @@
         Condition="'$(CodeContractsCacheVersion)' != ''">$(CodeContractCodeAnalysisOptions) -cacheVersion "$(CodeContractsCacheVersion)"</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsCacheMaxSize)' != ''">$(CodeContractCodeAnalysisOptions) -cacheMaxSize "$(CodeContractsCacheMaxSize)"</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsTargetMember)' != ''">$(CodeContractCodeAnalysisOptions) -memberNameSelect:$(CodeContractsTargetMember)</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsTargetType)' != ''">$(CodeContractCodeAnalysisOptions) -typeNameSelect:$(CodeContractsTargetType)</CodeContractCodeAnalysisOptions>
+      <CodeContractCodeAnalysisOptions
+        Condition="'$(CodeContractsTargetNamespace)' != ''">$(CodeContractCodeAnalysisOptions) -namespaceSelect:$(CodeContractsTargetNamespace)</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions
         Condition="'$(CodeContractsUseBaseLine)' == 'true' and '$(CodeContractsBaseLineFile)' != ''">$(CodeContractCodeAnalysisOptions) -baseline "$(CodeContractsBaseLineFile)"</CodeContractCodeAnalysisOptions>
       <CodeContractCodeAnalysisOptions>$(CodeContractCodeAnalysisOptions) $(CodeContractsExtraAnalysisOptions)</CodeContractCodeAnalysisOptions>
@@ -144,7 +175,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <_CodeContractsCCCheckArguments>-nobox -nologo -nopex -remote -warninglevel $(CodeContractsAnalysisWarning) $(CodeContractCodeAnalysisOptions) "-resolvedPaths:@(ReferencePath)" "-libPaths:@(CodeContractsBuildLibPaths) " "-libPaths:$(CodeContractsLibPaths)" "-libPaths:$(CodeContractsReferenceAssemblyLibPath)" "$(DeclarativeAssemblyPath)"</_CodeContractsCCCheckArguments>
+      <_CodeContractsCCCheckArguments>-nobox -nologo -nopex -remote -premode combined -framework:$(TargetFrameworkVersion) -warninglevel $(CodeContractsAnalysisWarning) $(CodeContractCodeAnalysisOptions) "-resolvedPaths:@(ReferencePath)" "-libPaths:@(CodeContractsBuildLibPaths) " "-libPaths:$(CodeContractsLibPaths)" "-libPaths:$(CodeContractsReferenceAssemblyLibPath)" "$(DeclarativeAssemblyPath)"</_CodeContractsCCCheckArguments>
     </PropertyGroup>
 
     <ItemGroup>

@@ -50,6 +50,11 @@
             <CodeContractsReferenceAssemblyLibPath>$(CodeContractsInstallDir)Contracts\.NETFramework\v4.0</CodeContractsReferenceAssemblyLibPath>
           </PropertyGroup>
         </When>
+        <When Condition="'$(TargetFrameworkVersion)' == 'v4.5'">
+          <PropertyGroup>
+            <CodeContractsReferenceAssemblyLibPath>$(CodeContractsInstallDir)Contracts\.NETFramework\v4.0</CodeContractsReferenceAssemblyLibPath>
+          </PropertyGroup>
+        </When>
         <Otherwise>
           <PropertyGroup>
             <CodeContractsReferenceAssemblyLibPath>$(CodeContractsInstallDir)Contracts\v3.5</CodeContractsReferenceAssemblyLibPath>
@@ -144,11 +149,10 @@
       C# and VB specific extra defined constants and rewrite post
       build step
 
-      Must run prior to other PrepareForRunDependsOn steps
-      (Silverlight XAP).
+      Must run prior to other CreateManifests steps in order to properly capture signature in manifest.
     ======================================================================-->
     
-    <PrepareForRunDependsOn>CodeContractInstrument; $(PrepareForRunDependsOn)</PrepareForRunDependsOn>
+    <CreateSatelliteAssembliesDependsOn>CodeContractInstrument; $(CreateSatelliteAssembliesDependsOn)</CreateSatelliteAssembliesDependsOn>
   </PropertyGroup>
 
   <!--=====================================================================
@@ -169,6 +173,9 @@
     <CodeContractsRewriteLibPaths
        Condition="'$(CodeContractsLibPaths)' != ''">$(CodeContractsRewriteLibPaths);$(CodeContractsLibPaths)</CodeContractsRewriteLibPaths>
     <CodeContractsRewriteLibPaths>$(CodeContractsRewriteLibPaths);$(CodeContractsReferenceAssemblyLibPath)</CodeContractsRewriteLibPaths>
+    <CodeContractRewriteOptions
+       Condition="'$(TargetFrameworkVersion)' != ''"
+       >$(CodeContractRewriteOptions) "/framework:$(TargetFrameworkVersion)"</CodeContractRewriteOptions>
     <CodeContractRewriteOptions
        Condition="'$(CodeContractsPlatformPath)' != ''"
        >$(CodeContractRewriteOptions) "/targetplatform:$(CodeContractsPlatformPath)"</CodeContractRewriteOptions>
@@ -269,7 +276,7 @@
          PropertyName="CodeContractsSdkPath" />
     </GetFrameworkSdkPath>
     <PropertyGroup>
-      <CodeContractsSnExe>"$(CodeContractsSdkPath)Bin\sn.exe"</CodeContractsSnExe>
+      <CodeContractsSnExe>"$(CodeContractsSdkPath)Bin\NETFX 4.0 Tools\sn.exe"</CodeContractsSnExe>
     </PropertyGroup>
     <Exec
        Condition="'$(KeyOriginatorFile)' != ''"   

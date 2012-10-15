@@ -138,6 +138,9 @@
        Condition="'$(CodeContractsLibPaths)' != ''">$(CodeContractsRewriteLibPaths);$(CodeContractsLibPaths)</CodeContractsRewriteLibPaths>
     <CodeContractsRewriteLibPaths>$(CodeContractsRewriteLibPaths);$(CodeContractsReferenceAssemblyLibPath)</CodeContractsRewriteLibPaths>
     <CodeContractRewriteOptions
+       Condition="'$(TargetFrameworkVersion)' != ''"
+       >$(CodeContractRewriteOptions) "/framework:$(TargetFrameworkVersion)"</CodeContractRewriteOptions>
+    <CodeContractRewriteOptions
        Condition="'$(CodeContractsPlatformPath)' != ''"
        >$(CodeContractRewriteOptions) "/targetplatform:$(CodeContractsPlatformPath)"</CodeContractRewriteOptions>
     <CodeContractRewriteOptions
