@@ -19,9 +19,9 @@ namespace Sando.UI.UnitTests.InterleavingExperiment
 		[Test]
 		public void ElementNameSearchesInTop3()
 		{
-			string keywords = "class document";
+			string keywords = "interleaving integration";
 			var expectedLowestRank = 3;
-			Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ClassDocument");
+			Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "InterleavingIntegrationTests");
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
