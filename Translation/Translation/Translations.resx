@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CollapseResultsLabel" xml:space="preserve">
+    <value>Collapse</value>
+  </data>
   <data name="ComboBoxItemCurrentDocument" xml:space="preserve">
     <value>Current document</value>
   </data>
@@ -134,6 +137,9 @@
   </data>
   <data name="Exception_Indexer_LuceneIndexIsCorrupt" xml:space="preserve">
     <value>Lucene index directory is corrupted</value>
+  </data>
+  <data name="ExpandResultsLabel" xml:space="preserve">
+    <value>Expand</value>
   </data>
   <data name="SearchLabel" xml:space="preserve">
     <value>Search</value>

@@ -54,7 +54,7 @@
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- details -->
-        <Expander Grid.Row="2" Grid.ColumnSpan="2" >
+        <Expander Grid.Row="2" Grid.Column="0" >
             <Expander.HeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -126,7 +126,10 @@
             </StackPanel>
         </Expander>
 
-        <!--Bottom Part: Result-->
+			<Button Grid.Row="2" Grid.Column="2" Visibility="Hidden" Margin="0,5,5,0" Content="{Binding Path=ExpandCollapseResultsLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="expandButton" Click="ExpandCollapseAllResults"
+											KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
+
+			<!--Bottom Part: Result-->
         <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
