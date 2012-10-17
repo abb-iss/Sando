@@ -60,7 +60,7 @@ namespace Sando.UI.InterleavingExperiment
 				}
 				else
 				{
-					LogCount -= 10; //try again after 10 more entries
+					LogCount -= 2; //try again after 10 more entries
 				}
             }
 
@@ -98,7 +98,7 @@ namespace Sando.UI.InterleavingExperiment
 			LogFile = Dir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
 		}
 
-		private const int LOG_ENTRIES_PER_FILE = 15;
+		private const int LOG_ENTRIES_PER_FILE = 5;
 		private const string FLT_A_NAME = "Sando";
         private const string FLT_B_NAME = "Lex";
 		private string LogFile;
