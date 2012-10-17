@@ -141,10 +141,19 @@ namespace Sando.Indexer.Searching.Criteria
 			foreach(string searchTerm in SearchTerms)
 			{
 				//stringBuilder.Append("(");
-                string searchTermEscaped = EscapeSpecialCharacters(searchTerm);
+			    bool notCondition = false;
+			    string searchTermEscaped = searchTerm;
+                if(searchTermEscaped.StartsWith("-"))
+                {
+                    notCondition = true;
+                    searchTermEscaped = searchTerm.Substring(1);
+                }
+                searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
 				int usageTypesLeft = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
 				{
+                    if(notCondition) 
+                        stringBuilder.Append(" NOT ");
                     SingleUsageTypeCriteriaToString(stringBuilder, usageType, searchTermEscaped);
 					if(usageTypesLeft > 1)
 					{

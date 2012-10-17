@@ -173,6 +173,22 @@ namespace Sando.Core.UnitTests
         }
 
         [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoOperatortUsedWithQuotes()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("word -\"words inside\"");
+            Assert.AreEqual(2, parts.Count);
+            Assert.AreEqual("-\"words inside\"*word", String.Join("*", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoOperatortUsedWithoutQuotes()
+        {
+            List<string> parts = WordSplitter.ExtractSearchTerms("word -about");
+            Assert.AreEqual(2, parts.Count);
+            Assert.AreEqual("word*-about", String.Join("*", parts));
+        }
+
+        [Test]
         public void ExtractSearchTerms_ReturnsEmptyListWhenSearchTermIsEmptyString()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms(String.Empty);

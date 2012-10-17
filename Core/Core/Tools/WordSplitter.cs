@@ -32,17 +32,15 @@ namespace Sando.Core.Tools
                     matches.Add(currentMatch);
             }
             searchTerms = Regex.Replace(searchTerms, pattern, " ");
-            searchTerms = Regex.Replace(searchTerms, @"([A-Z][a-z]+)", " $1");
-            searchTerms = Regex.Replace(searchTerms, @"([A-Z]+|[0-9]+)", " $1");
+            searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z][a-z]+)", " $1$2");
+            searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");
 
             searchTerms = searchTerms.Replace("\"", " ");
             matches.AddRange(searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             for(int i = 0; i < matches.Count; ++i)
             {
                 string lower = matches[i].Trim().ToLower();
-                while (lower.Contains("  "))
-                    lower = lower.Replace("  ", " ");
-                matches[i] = lower;
+                matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
             }
             return matches.Distinct().ToList();
         }
@@ -58,7 +56,7 @@ namespace Sando.Core.Tools
             return Regex.IsMatch(searchTerms, pattern);
         }
 
-        private static string pattern = "[^a-zA-Z0-9\\s\\*]";
-        private static string quotesPattern = "\"[^\"]+\"";
+        private static string pattern = "[^a-zA-Z0-9\\s\\*\\-]";
+        private static string quotesPattern = "-{0,1}\"[^\"]+\"";
     }
 }
