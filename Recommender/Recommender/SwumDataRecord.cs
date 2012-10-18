@@ -11,11 +11,11 @@ namespace Sando.Recommender {
     public class SwumDataRecord {
         public MethodDeclarationNode SwumNode;
         public string Action;
+        public PhraseNode ParsedAction;
         public string Theme;
-        //public NodeLocation ThemeLocation;
+        public PhraseNode ParsedTheme;
         public string IndirectObject;
-        //public NodeLocation IndirectObjectLocation;
-        //public string Preposition;
+        public PhraseNode ParsedIndirectObject;
 
         /// <summary>
         /// Creates a new empty SwumDataRecord.
@@ -23,11 +23,11 @@ namespace Sando.Recommender {
         public SwumDataRecord() {
             SwumNode = null;
             Action = string.Empty;
+            ParsedAction = null;
             Theme = string.Empty;
-            //ThemeLocation = NodeLocation.None;
+            ParsedTheme = null;
             IndirectObject = string.Empty;
-            //IndirectObjectLocation = NodeLocation.None;
-            //Preposition = string.Empty;
+            ParsedIndirectObject = null;
         }
 
         /// <summary>
@@ -36,12 +36,9 @@ namespace Sando.Recommender {
         public override string ToString() {
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("SwumNode:{0}{1}{0}", Environment.NewLine, SwumNode.ToString());
-            sb.AppendFormat("Action: {0}{1}", Action, Environment.NewLine);
-            sb.AppendFormat("Theme: {0}{1}", Theme, Environment.NewLine);
-            //sb.AppendFormat("ThemeLocation: {0}{1}", ThemeLocation, Environment.NewLine);
-            sb.AppendFormat("IndirectObject: {0}{1}", IndirectObject, Environment.NewLine);
-            //sb.AppendFormat("IndirectObjectLocation: {0}{1}", IndirectObjectLocation, Environment.NewLine);
-            //sb.AppendFormat("Preposition: {0}{1}", Preposition, Environment.NewLine);
+            sb.AppendFormat("Action: {0}{1}", ParsedAction, Environment.NewLine);
+            sb.AppendFormat("Theme: {0}{1}", ParsedTheme, Environment.NewLine);
+            sb.AppendFormat("IndirectObject: {0}{1}", ParsedIndirectObject, Environment.NewLine);
             return sb.ToString();
         }
     }

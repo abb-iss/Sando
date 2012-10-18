@@ -1101,6 +1101,11 @@
             Returns a string representation of the node without any SWUM markup.
             </summary>
         </member>
+        <member name="M:ABB.Swum.Nodes.Node.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name.
+            </summary>
+        </member>
         <member name="P:ABB.Swum.Nodes.Node.Location">
             <summary>
             The location within the program.
@@ -1124,6 +1129,11 @@
             Returns a string representation of the node without any SWUM markup.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ArgumentNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name.
+            </summary>
         </member>
         <member name="P:ABB.Swum.Nodes.ArgumentNode.Argument">
             <summary>
@@ -1166,6 +1176,11 @@
         <member name="M:ABB.Swum.Nodes.EquivalenceNode.ToPlainString">
             <summary>
             Returns a string representation of the node without any SWUM markup.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.EquivalenceNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the parsed name of the first node in EquivalentNodes. If this does not exist, the method returns an empty PhraseNode.
             </summary>
         </member>
         <member name="P:ABB.Swum.Nodes.EquivalenceNode.EquivalentNodes">
@@ -1236,6 +1251,11 @@
             Returns a string representation of the node without any SWUM markup.
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name.
+            </summary>
         </member>
         <member name="P:ABB.Swum.Nodes.ProgramElementNode.Name">
             <summary>
@@ -1501,6 +1521,11 @@
             Return a string representation of the PhraseNode without any added SWUM markup.
             </summary>
         </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name, i.e. returns itself.
+            </summary>
+        </member>
         <member name="M:ABB.Swum.Nodes.PhraseNode.SetLocation(ABB.Swum.Location)">
             <summary>
             Sets the program location of the node.
@@ -1754,6 +1779,11 @@
         <member name="M:ABB.Swum.Nodes.WordNode.ToPlainString">
             <summary>
             Returns the text of the word, with no added markup. 
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing this WordNode.
             </summary>
         </member>
         <member name="M:ABB.Swum.Nodes.WordNode.GetNewWord">

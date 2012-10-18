@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
@@ -176,57 +177,6 @@ namespace Sando.Recommender {
             }
         }
 
-        ///// <summary>
-        ///// Constructs SWUMs for each of the methods called in <paramref name="srcFile"/> and adds them to the cache.
-        ///// </summary>
-        ///// <param name="srcFile">The srcML file containing the method calls.</param>
-        ///// <param name="srcDb">A SrcMLDataContext database constructed on <paramref name="srcFile"/>.</param>
-        ///// <exception cref="System.ArgumentNullException"><paramref name="srcFile"/> is null.</exception>
-        ///// <exception cref="System.ArgumentNullException"><paramref name="srcDb"/> is null.</exception>
-        //protected void AddSwumForMethodCalls(SrcMLFile srcFile, SrcMLDataContext srcDb) {
-        //    if(srcFile == null) { throw new ArgumentNullException("srcFile"); }
-        //    if(srcDb == null) { throw new ArgumentNullException("srcDb"); }
-            
-        //    //iterate over each method call in the SrcML file
-        //    foreach(XElement file in srcFile.FileUnits) {
-        //        foreach(XElement methodCall in file.Descendants(SRC.Call)) {
-        //            MethodDefinition methodDef = srcDb.GetDefinitionForMethodCall(methodCall);
-        //            //Add SWUM for the method
-        //            if(methodDef != null) {
-        //                //found a definition for the method call
-        //                //check if already in cache, and construct SWUM if necessary
-        //                string signature = GetMethodSignature(methodDef.Xml);
-        //                if(!signaturesToSwum.ContainsKey(signature)) {
-        //                    //method not yet in cache, constuct SWUM
-        //                    var mdn = ConstructSwumFromMethodElement(methodDef.Xml, methodDef.MethodClassName);
-        //                    SwumDataRecord swumData = ProcessSwumNode(mdn);
-        //                    signaturesToSwum[signature] = swumData;
-        //                    xelementsToSwum[methodCall] = swumData;
-        //                } else {
-        //                    //method already in cache, point to existing SWUM
-        //                    xelementsToSwum[methodCall] = signaturesToSwum[signature];
-        //                }
-
-        //            } else {
-        //                //no definition for method
-        //                MethodContext mc = ContextBuilder.BuildMethodContextFromCall(methodCall, srcDb);
-        //                string methodName = SrcMLHelper.GetNameForMethod(methodCall).Value;
-        //                string sig = GetMethodSignatureFromCall(methodName, mc);
-        //                //create SWUM for method, if necessary
-        //                if(!signaturesToSwum.ContainsKey(sig)) {
-        //                    MethodDeclarationNode mdn = new MethodDeclarationNode(methodName, mc);
-        //                    builder.ApplyRules(mdn);
-        //                    SwumDataRecord swumData = ProcessSwumNode(mdn);
-        //                    signaturesToSwum[sig] = swumData;
-        //                    xelementsToSwum[methodCall] = swumData;
-        //                } else {
-        //                    //method already in cache, point to existing SWUM
-        //                    xelementsToSwum[methodCall] = signaturesToSwum[sig];
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
 
         /// <summary>
         /// Constructs SWUM on the given srcML method element. 
@@ -323,66 +273,42 @@ namespace Sando.Recommender {
         protected SwumDataRecord ProcessSwumNode(MethodDeclarationNode swumNode) {
             var record = new SwumDataRecord();
             record.SwumNode = swumNode;
+            //set Action
             if(swumNode.Action != null) {
                 record.Action = swumNode.Action.ToPlainString();
-            } else {
-                record.Action = string.Empty;
+                record.ParsedAction = swumNode.Action.GetParse();
             }
             //TODO: action is not lowercased. Should it be?
 
-            //get preposition associated with action (if there is one)
-            //record.Preposition = PrepositionManager.GetInstance().GetPreposition(record.Action);
-
-            //Set Theme
-            if(swumNode.Theme == null) {
-                record.Theme = string.Empty;
-            } else if(swumNode.Theme is EquivalenceNode) {
-                record.Theme = ((EquivalenceNode)(swumNode.Theme)).EquivalentNodes[0].ToPlainString().ToLower();
-            } else {
-                record.Theme = swumNode.Theme.ToPlainString().ToLower();
+            //set Theme
+            if(swumNode.Theme != null) {
+                if(swumNode.Theme is EquivalenceNode && ((EquivalenceNode)swumNode.Theme).EquivalentNodes.Any()) {
+                    var firstNode = ((EquivalenceNode)swumNode.Theme).EquivalentNodes[0];
+                    record.Theme = firstNode.ToPlainString().ToLower();
+                    record.ParsedTheme = firstNode.GetParse();
+                } else {
+                    record.Theme = swumNode.Theme.ToPlainString().ToLower();
+                    record.ParsedTheme = swumNode.Theme.GetParse();
+                }
             }
 
-            //clean and process IO
+            //set Indirect Object
             if(string.Compare(record.Action, "set", StringComparison.InvariantCultureIgnoreCase) == 0) {
-                //special handling for setter methods
+                //special handling for setter methods?
                 //TODO: should this set the IO to the declaring class? will that work correctly for sando?
-
-                //if(record.ThemeLocation == NodeLocation.GivenParameter) {
-                //    Console.WriteLine("Bug? Found setter with theme given:");
-                //    Console.WriteLine(record.SwumNode);
-                //} else {
-                //    record.IndirectObject = NodeLocation.Class.ToString();
-                //    record.IndirectObjectLocation = NodeLocation.GivenParameter;
-                //}
+                
             } else {
-                if(swumNode.SecondaryArguments != null && swumNode.SecondaryArguments.Count > 0) {
+                if(swumNode.SecondaryArguments != null && swumNode.SecondaryArguments.Any()) {
                     var IONode = swumNode.SecondaryArguments.First();
-                    //set IO
-                    if(IONode.Argument is EquivalenceNode) {
-                        record.IndirectObject = ((EquivalenceNode)(IONode.Argument)).EquivalentNodes[0].ToPlainString().ToLower();
+                    if(IONode.Argument is EquivalenceNode && ((EquivalenceNode)IONode.Argument).EquivalentNodes.Any()) {
+                        var firstNode = ((EquivalenceNode)IONode.Argument).EquivalentNodes[0];
+                        record.IndirectObject = firstNode.ToPlainString().ToLower();
+                        record.ParsedIndirectObject = firstNode.GetParse();
                     } else {
                         record.IndirectObject = IONode.Argument.ToPlainString().ToLower();
+                        record.ParsedIndirectObject = IONode.Argument.GetParse();
                     }
-                    ////Set IO location
-                    //var swumIOLocation = IONode.Argument.Location;
-                    //switch(swumIOLocation) {
-                    //    case Location.Name:
-                    //        record.IndirectObjectLocation = NodeLocation.PlainMethodName;
-                    //        break;
-                    //    case Location.Formal:
-                    //        record.IndirectObjectLocation = NodeLocation.GivenParameter;
-                    //        break;
-                    //    default:
-                    //        record.IndirectObjectLocation = NodeLocation.None;
-                    //        break;
-                    //}
-                    ////set IO preposition
-                    //record.Preposition = IONode.Preposition.ToPlainString();
                 } 
-                //else if(!string.IsNullOrEmpty(record.Preposition) && record.ThemeLocation != NodeLocation.Class) {
-                //    record.IndirectObject = NodeLocation.Class.ToString();
-                //    record.IndirectObjectLocation = NodeLocation.Class;
-                //}
             }
 
             return record;
