@@ -34,7 +34,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="30"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" MinHeight="20"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
@@ -131,7 +130,7 @@
 											KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
 
 			<!--Bottom Part: Result-->
-        <DockPanel Grid.Row="4" Grid.ColumnSpan="2" 
+        <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
