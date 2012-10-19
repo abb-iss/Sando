@@ -31,5 +31,7 @@
   </References>
   <Content>
     <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
+    <Assembly AssemblyName="UI.v10">|UI.v10|</Assembly>
+    <Assembly AssemblyName="UI.v11">|UI.v11|</Assembly>
   </Content>
 </Vsix>

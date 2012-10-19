@@ -30,6 +30,8 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
+using System.Reflection;
+using System.ComponentModel.Composition.Hosting;
 
 namespace Sando.UI
 {
@@ -73,6 +75,7 @@ namespace Sando.UI
         private ViewManager _viewManager;
 		private SolutionReloadEventListener listener;
 		private IVsUIShellDocumentWindowMgr winmgr;
+        private Assembly assembly;
 
         private static UIPackage MyPackage
 		{
@@ -138,6 +141,7 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
                 SetUpLogger();
+                SetUpAssembly();
                 _viewManager = new ViewManager(this);
                 AddCommand();                
                 RegisterExtensionPoints();
@@ -147,6 +151,19 @@ namespace Sando.UI
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
+        }
+
+        private void SetUpAssembly()
+        {
+            FileInfo assemblyFilename;
+            if (IsVisualStudio2010)
+                assemblyFilename = new FileInfo(Path.Combine(pluginDirectory, "UI.v10.dll"));
+            else
+                assemblyFilename = new FileInfo(Path.Combine(pluginDirectory, "UI.v11.dll"));
+            assembly = Assembly.LoadFrom(assemblyFilename.FullName);
+
+            var catalog = new AssemblyCatalog(assembly);
+            var bootstrapContainer = new CompositionContainer(catalog);
         }
 
         private void SetUpLifeCycleEvents()
@@ -450,9 +467,6 @@ namespace Sando.UI
             }
         }
 
-    
-
-
         public string PluginDirectory()
         {
             return pluginDirectory;
@@ -467,5 +481,30 @@ namespace Sando.UI
         {
             _viewManager.EnsureViewExists();
         }
+
+        #region VisualStudio Version Detection
+
+        private const int MaxVsVersion = 11;
+
+        protected bool IsVisualStudio2010
+        {
+            get { return GetMajorVsVersion() == 10; }
+        }
+
+        private int GetMajorVsVersion()
+        {
+            DTE dte = (DTE)this.GetService(typeof(DTE));
+            string vsVersion = dte.Version;
+            Version version;
+            if (Version.TryParse(vsVersion, out version))
+            {
+                return version.Major;
+            }
+            return MaxVsVersion;
+        }
+
+
+
+        #endregion
     }
 }
