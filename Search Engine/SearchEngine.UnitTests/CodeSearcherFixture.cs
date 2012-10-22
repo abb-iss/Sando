@@ -42,22 +42,6 @@ namespace Sando.SearchEngine.UnitTests
             Assert.True(result.Count > 0);                                 
         }
 
-		[Test]
-		public void TestSearchWithCache()
-		{			
-			var cs = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(solutionKey));
-			List<CodeSearchResult> result = cs.Search("SimpleName");
-			var sameResult = cs.Search("SimpleName");
-			Assert.IsTrue(result==sameResult);
-			var different = cs.Search("Simple Name 3");
-			Assert.IsTrue(result != different);
-			var alsoDifferent = cs.Search("Simple Name 4");
-			Assert.IsTrue(alsoDifferent != different);
-			var original = cs.Search("Simple Name");
-			Assert.IsTrue(result != original);
-
-		}
-
 		[TestFixtureSetUp]
     	public void CreateIndexer()
 		{

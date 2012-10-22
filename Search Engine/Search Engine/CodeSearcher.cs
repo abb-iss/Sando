@@ -27,10 +27,6 @@ namespace Sando.SearchEngine
 		{
 			get; set; 
 		}
-		private LRUCache<SearchCriteria, List<CodeSearchResult>> lruCache
-		{
-			get; set;
-		}
     	#endregion
 
         #region Constructor
@@ -41,9 +37,6 @@ namespace Sando.SearchEngine
 		public CodeSearcher(IIndexerSearcher searcher)
         {
             this.searcher = searcher;
-			int capacity = 50; //TODO: max capacity of the cache, need to determine its value
-			                   //from configuration or default value (50)
-			lruCache = new LRUCache<SearchCriteria, List<CodeSearchResult>>(capacity);
         }
         #endregion       
         #region Public Methods
@@ -66,33 +59,23 @@ namespace Sando.SearchEngine
 
         private List<CodeSearchResult> ExecuteSearch(SearchCriteria searchCrit,bool indexingChanged, bool ignoreAnalyzer =false)
         {
-            List<CodeSearchResult> res = lruCache.Get(searchCrit);
-            if (res != null && !indexingChanged)
-            {
-                //cache hits and index not changed
-                return GetResultOrEmpty(res,  "");
+        	List<CodeSearchResult> res;
+			//no cache hits, new search and update the cache
+            if (ignoreAnalyzer)
+			{
+				res = UnanalyzedQuerySearch(searchCrit);
             }
             else
-            {
-                //no cache hits, new search and update the cache
-                if (ignoreAnalyzer)
-                {
-                    res = UnanalyzedQuerySearch(searchCrit);
-                }
-                else
-                {                    
-                    res = NormalSearch(searchCrit);
-                }
-                //add into cache even the res contains no contents
-                lruCache.Put(searchCrit, res);
-                return GetResultOrEmpty(res,  "");
+            {                    
+				res = NormalSearch(searchCrit);
             }
+            return GetResultOrEmpty(res,  "");
         }
 
         private List<CodeSearchResult> NormalSearch(SearchCriteria searchCrit)
         {
-            List<CodeSearchResult> res;
-            res =
+            
+            List<CodeSearchResult> res =
                 this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2))
                     .ToList();
             return res;
@@ -100,12 +83,11 @@ namespace Sando.SearchEngine
 
         private List<CodeSearchResult> UnanalyzedQuerySearch(SearchCriteria searchCrit)
         {
-            List<CodeSearchResult> res;
             //don't mess with the query terms when creating query
             //the analyzer will stem stuff and remove '\', etc.  Sometimes you don't want that,
             //like when matching a filepath
-            res =
-                this.searcher.SearchNoAnalyzer(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2))
+			List<CodeSearchResult> res =
+				this.searcher.SearchNoAnalyzer(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2))
                     .ToList();
             return res;
         }
@@ -117,22 +99,9 @@ namespace Sando.SearchEngine
 		/// <returns>List of Search Result</returns>
 		public virtual List<CodeSearchResult> Search(SearchCriteria searchCriteria, String solutionName="")
 		{
-			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
-			List<CodeSearchResult> res = lruCache.Get(searchCriteria);
-			if(res != null && !indexingChanged)
-			{
-				//cache hits and index not changed
-                return GetResultOrEmpty(res,  solutionName);
-			}
-			else
-			{
-				//no cache hits, new search and update the cache
-				res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
-				//add into cache even the res contains no contents
-				lruCache.Put(searchCriteria, res);
-                return GetResultOrEmpty(res,solutionName);
-			}
+			List<CodeSearchResult> res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+            return GetResultOrEmpty(res,solutionName);
 		}
 
         private string GetSearchTerms(SearchCriteria searchCriteria)

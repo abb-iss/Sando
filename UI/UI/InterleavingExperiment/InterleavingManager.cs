@@ -60,6 +60,7 @@ namespace Sando.UI.InterleavingExperiment
 				}
 				else
 				{
+					FileLogger.DefaultLogger.Debug("Uploading the S3 was not successful for unknown reasons. Retry in 2 searches.");
 					LogCount -= 2; //try again after 10 more entries
 				}
             }

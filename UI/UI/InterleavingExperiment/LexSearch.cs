@@ -40,7 +40,9 @@ namespace Sando.UI.InterleavingExperiment
 
         private static List<CodeSearchResult> ParseFindInFilesText(string text)
         {
-            var relevantMethods = new List<CodeSearchResult>();
+        	const int maxSearches = 100;
+        	int searchCount = 0;
+			var relevantMethods = new List<CodeSearchResult>();
             var searcher = SearchManager.GetCurrentSearcher();            
             if(searcher!=null)
             {
@@ -49,6 +51,7 @@ namespace Sando.UI.InterleavingExperiment
                 var resultLines = lines.Skip(1).Take(lines.Length - 2);
                 foreach (var line in resultLines)
                 {
+					if(searchCount > maxSearches) break;
                     var searchCriteria = GetCriteria(line);
                     if (searchCriteria != null)
                     {
@@ -60,6 +63,7 @@ namespace Sando.UI.InterleavingExperiment
                                 relevantMethods.Add(closest);
                         }
                     }
+                	searchCount++;
                 }
             }
             return relevantMethods.Distinct().ToList();

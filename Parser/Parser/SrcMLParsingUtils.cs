@@ -111,6 +111,7 @@ namespace Sando.Parser
 				//comment name doesn't contain non-word characters and is compact-er than its body
                 var commentName = "";
                 commentName = GetCommentSummary(GetCommentText(oneGroup,true));
+				if(commentName == "") continue;
 
                 //comments above method or class
                 var lastComment = oneGroup.Last() as XElement;
