@@ -96,7 +96,10 @@ namespace Sando.UI.InterleavingExperiment
 
 		private void InitializeNewLogFileName(string Dir)
 		{
-			LogFile = Dir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
+			String machine = Environment.MachineName;
+			machine = machine.Trim(' ').Replace(' ', '_');
+			machine = machine.Substring(0, 9);
+			LogFile = Dir + "\\PI-" + machine + "-" + Guid.NewGuid() + ".log";
 		}
 
 		private const int LOG_ENTRIES_PER_FILE = 5;

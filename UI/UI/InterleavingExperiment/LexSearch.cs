@@ -51,14 +51,14 @@ namespace Sando.UI.InterleavingExperiment
                 var resultLines = lines.Skip(1).Take(lines.Length - 2);
                 foreach (var line in resultLines)
                 {
-					if(searchCount > maxSearches) break;
                     var searchCriteria = GetCriteria(line);
                     if (searchCriteria != null)
                     {
                         var results = searcher.UnalteredSearch(searchCriteria.Item1);
                         if (results != null && results.Count > 0)
                         {
-                            var closest = FindSandoMatch(results, searchCriteria);
+							if(searchCount > maxSearches) break;
+							var closest = FindSandoMatch(results, searchCriteria);
                             if (closest != null)
                                 relevantMethods.Add(closest);
                         }

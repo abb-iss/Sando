@@ -14,6 +14,7 @@ namespace Sando.Core.Extensions.Logging
 
 		public static bool WriteLogFile(string filePath)
 		{
+			FileLogger.DefaultLogger.Debug("S3LogWriter - beginning to put file=" + filePath);
 			try
 			{
 				if(ReadS3Credentials() == false)
