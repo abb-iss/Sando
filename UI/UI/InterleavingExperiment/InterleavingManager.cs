@@ -96,9 +96,9 @@ namespace Sando.UI.InterleavingExperiment
 
 		private void InitializeNewLogFileName(string Dir)
 		{
-			String machine = Environment.MachineName;
-			machine = machine.Trim(' ').Replace(' ', '_');
-			machine = machine.Substring(0, 9);
+			string machine = Environment.MachineName;
+			machine = machine.Replace(' ', '_');
+			machine = machine.Substring(0, (machine.Length < 10) ? machine.Length : 9);
 			LogFile = Dir + "\\PI-" + machine + "-" + Guid.NewGuid() + ".log";
 		}
 
