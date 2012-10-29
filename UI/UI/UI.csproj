@@ -169,6 +169,7 @@
     <Compile Include="InterleavingExperiment\FeatureLocationTechnique.cs" />
     <Compile Include="InterleavingExperiment\InterleavingExperimentManager.cs" />
     <Compile Include="InterleavingExperiment\Logging\S3LogWriter.cs" />
+    <Compile Include="InterleavingExperiment\NoWeightsFLT.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />

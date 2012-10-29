@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Sando.Core;
-using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
-using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
@@ -18,16 +16,20 @@ namespace Sando.IntegrationTests.Search
 	[TestFixture]
 	public class InterleavingSearchTest
 	{
-	    [Test]
-        public void TestPairedIndexing()
-        {
-
-        }
-
         [Test]
         public void TestInterleavedResults()
         {
-
+            string keywords = "test interleaved results";
+            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+            FeatureLocationTechnique fltA = InterleavingExperimentManager.Instance.fltA;
+            NoWeightsFLT fltB = InterleavingExperimentManager.Instance.fltB as NoWeightsFLT;
+            if (fltA != null && fltB != null)
+            {
+                Assert.IsTrue(fltA.Results.Count > 10);
+                Assert.IsTrue(fltB.Results.Count > 10);
+                Assert.AreSame(BalancedInterleaving.Interleave(fltA.Results, fltB.Results), codeSearchResults);
+            }
         }
 
         [Test]

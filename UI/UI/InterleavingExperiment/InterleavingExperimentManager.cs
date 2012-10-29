@@ -8,6 +8,7 @@ using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.UI.InterleavingExperiment.Logging;
 using System.Diagnostics.Contracts;
+using System.IO;
 
 
 namespace Sando.UI.InterleavingExperiment
@@ -72,17 +73,38 @@ namespace Sando.UI.InterleavingExperiment
 				System.IO.File.Delete(LogFile);
 				InitializeNewLogFileName(PluginDirectory);
 				LogCount = 0;
+                WriteAllIncompleteLogs();
 			}
 			else
 			{
-				//try again after 10 more log entries
-				LogEntriesPerFile += 10; 
+				//try again after 5 more log entries
+				LogEntriesPerFile += 5; 
 			}
 		}
 
+         
+        private void WriteAllIncompleteLogs()
+        {
+            string[] files = Directory.GetFiles(PluginDirectory);
+            foreach (var file in files)
+            {
+                string fullPath = Path.GetFullPath(file);
+                string fileName = Path.GetFileName(fullPath);
+
+                if (fileName.StartsWith("PI-") && fileName.EndsWith(".log"))
+                {
+                    bool success = S3LogWriter.WriteLogFile(fullPath);
+                    if (success == true)
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+            }
+        }
+
 		private void InitializeNewLogFileName(string logDir)
 		{
-			LogFile = logDir + "\\PairedInterleaving-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
+			LogFile = logDir + "\\PI-" + Environment.MachineName + "-" + Guid.NewGuid() + ".log";
 		}
 
 
@@ -93,10 +115,12 @@ namespace Sando.UI.InterleavingExperiment
             PluginDirectory = pluginDir;
 
             fltA = new FeatureLocationTechnique("Sando");
-            fltA = new FeatureLocationTechnique("Samurai");
+            fltB = new NoWeightsFLT("SandoNoWeights");
 
 			ExtensionPointsRepository.InitializeInterleavingExperiment();
-            //ExtensionPointsRepository.GetInstance(ExperimentFlow.B).RegisterSplitterImplementation(?);
+
+            //flow B will use no weights
+            ExtensionPointsRepository.GetInstance(ExperimentFlow.B).RegisterQueryWeightsSupplierImplementation(fltB as IQueryWeightsSupplier);
 
             IsInitialized = true;
         }
@@ -126,13 +150,11 @@ namespace Sando.UI.InterleavingExperiment
 		private string LogFile;
 		private int LogEntriesPerFile = 15;
 		private int LogCount = 0;
+        private bool SearchRecievedClick = false;
 
         public bool IsInitialized { get; private set; }
-
-        private FeatureLocationTechnique fltA;
-        private FeatureLocationTechnique fltB;
-		private bool SearchRecievedClick = false;
-
+        public FeatureLocationTechnique fltA { get; private set; }
+        public FeatureLocationTechnique fltB { get; private set; }
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }
 	}
