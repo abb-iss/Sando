@@ -1521,6 +1521,13 @@
             Return a string representation of the PhraseNode without any added SWUM markup.
             </summary>
         </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.Parse(System.String)">
+            <summary>
+            Creates a PhraseNode by parsing the given string representation.
+            </summary>
+            <param name="source">The string to parse the PhraseNode from.</param>
+            <returns>A new PhraseNode.</returns>
+        </member>
         <member name="M:ABB.Swum.Nodes.PhraseNode.GetParse">
             <summary>
             Returns a PhraseNode containing the node's parsed name, i.e. returns itself.
@@ -1780,6 +1787,13 @@
             <summary>
             Returns the text of the word, with no added markup. 
             </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.Parse(System.String)">
+            <summary>
+            Creates a WordNode by parsing the given string representation.
+            </summary>
+            <param name="source">The string to parse the WordNode from.</param>
+            <returns>A new WordNode.</returns>
         </member>
         <member name="M:ABB.Swum.Nodes.WordNode.GetParse">
             <summary>

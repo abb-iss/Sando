@@ -10,6 +10,7 @@ using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
 
+
 namespace Sando.Recommender {
     /// <summary>
     /// Builds SWUM for the methods and method calls in a srcML file.
@@ -30,6 +31,9 @@ namespace Sando.Recommender {
             builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
             signaturesToSwum = new Dictionary<string, SwumDataRecord>();
             xelementsToSwum = new Dictionary<XElement, SwumDataRecord>();
+
+            //TODO: read SWUM cache file from Sando data directory
+            
         }
 
         /// <summary>
@@ -103,8 +107,37 @@ namespace Sando.Recommender {
         /// <param name="output">A TextWriter to print the SWUM cache to.</param>
         public void PrintSwumCache(TextWriter output) {
             foreach(var kvp in signaturesToSwum) {
-                output.WriteLine("Signature: {0}", kvp.Key);
-                output.WriteLine(kvp.Value.ToString());
+                output.WriteLine("{0}|{1}", kvp.Key, kvp.Value.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Initializes the cache of SWUM data from a file. Any existing SWUM data will be cleared before reading the file.
+        /// </summary>
+        /// <param name="path">The path to the SWUM cache file.</param>
+        public void ReadSwumCache(string path) {
+            using(var cacheFile = new StreamReader(path)) {
+                //clear any existing SWUMs
+                signaturesToSwum.Clear();
+                xelementsToSwum.Clear();
+                
+                //read each SWUM entry from the cache file
+                string entry;
+                while((entry = cacheFile.ReadLine()) != null) {
+                    //the expected format is <signature>|<SwumDataRecord.ToString()>
+                    string[] fields = entry.Split(new[] {'|'}, 2);
+                    if(fields.Length != 2) {
+                        Debug.WriteLine("Too few fields in SWUM cache entry: {0}", entry);
+                        continue;
+                    }
+                    try {
+                        string sig = fields[0].Trim();
+                        string data = fields[1].Trim();
+                        signaturesToSwum[sig] = SwumDataRecord.Parse(data);
+                    } catch(FormatException fe) {
+                        Debug.WriteLine("Improperly formatted SwumDataRecord in Swum cache entry: {0}", entry);
+                    }
+                }
             }
         }
 
