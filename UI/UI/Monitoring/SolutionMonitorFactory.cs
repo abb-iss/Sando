@@ -3,8 +3,8 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
 using Sando.Core;
+using Sando.Core.Extensions.Logging;
 using Sando.Indexer;
 
 namespace Sando.UI.Monitoring
@@ -16,9 +16,8 @@ namespace Sando.UI.Monitoring
 	    public static string LuceneDirectory { get; set; }
 
 
-		public static SolutionMonitor CreateMonitor(bool isIndexRecreationRequired)
+		public static SolutionMonitor CreateMonitor(bool isIndexRecreationRequired, Solution openSolution)
 		{
-			var openSolution = UIPackage.GetOpenSolution();
 			return CreateMonitor(openSolution, isIndexRecreationRequired);
 		}
 
@@ -27,7 +26,7 @@ namespace Sando.UI.Monitoring
 			Contract.Requires(openSolution != null, "A solution must be open");
 
 			//TODO if solution is reopen - the guid should be read from file - future change
-			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
+			SolutionKey solutionKey = new SolutionKey(Guid.NewGuid(), Path.GetFileName(openSolution.FullName), GetLuceneDirectoryForSolution(openSolution));
 			var currentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Snowball);
 			if(isIndexRecreationRequired)
 			{
