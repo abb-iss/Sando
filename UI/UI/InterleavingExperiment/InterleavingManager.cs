@@ -6,6 +6,7 @@ using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using System.ComponentModel;
 using System.Threading;
+using System.IO;
 
 namespace Sando.UI.InterleavingExperiment
 {
@@ -55,6 +56,7 @@ namespace Sando.UI.InterleavingExperiment
 				if(success == true)
 				{
 					System.IO.File.Delete(LogFile);
+                    WriteIncompleteLogs();
 					InitializeNewLogFileName(PluginDirectory);
 					LogCount = 0;
 				}
@@ -70,6 +72,25 @@ namespace Sando.UI.InterleavingExperiment
 			
             return query;
 		}
+
+        private void WriteIncompleteLogs()
+        {
+            string[] files = Directory.GetFiles(PluginDirectory);
+            foreach (var file in files)
+            {
+                string fullPath = Path.GetFullPath(file);
+                string fileName = Path.GetFileName(fullPath);
+
+                if (fileName.StartsWith("PI-") && fileName.EndsWith("log"))
+                {
+                    bool success = S3LogWriter.WriteLogFile(fullPath);
+                    if (success == true)
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+            }
+        }
 
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
