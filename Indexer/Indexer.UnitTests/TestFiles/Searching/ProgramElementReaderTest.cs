@@ -40,7 +40,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			CommentElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as CommentElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
-			Assert.True(element.Body == returnedElement.Body, "AccessLevel is different!");
+            Assert.True("not stored in index" == returnedElement.Body, "AccessLevel is different!");
 			Assert.True(element.DefinitionLineNumber == returnedElement.DefinitionLineNumber, "DefinitionLineNumber is different!");
 			Assert.True(StandardizeFilePath(element.FullFilePath) == returnedElement.FullFilePath, "FullFilePath is different!");
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
@@ -57,7 +57,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			DocCommentElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as DocCommentElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
-			Assert.True(element.Body == returnedElement.Body, "Body is different!");
+            Assert.True("not stored in index" == returnedElement.Body, "Body is different!");
 			Assert.True(element.DefinitionLineNumber == returnedElement.DefinitionLineNumber, "DefinitionLineNumber is different!");
 			Assert.True(element.DocumentedElementId == returnedElement.DocumentedElementId, "DocumentedElementId is different!");
 			Assert.True(StandardizeFilePath(element.FullFilePath) == returnedElement.FullFilePath, "FullFilePath is different!");
@@ -116,7 +116,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");
 			Assert.True(element.Arguments == returnedElement.Arguments, "Arguments is different!");
-			Assert.True(element.Body == returnedElement.Body, "Body is different!");
+            Assert.True("not stored in index" == returnedElement.Body, "Body is different!");
 			Assert.True(element.ClassId == returnedElement.ClassId, "ClassId is different!");
 			Assert.True(element.ClassName == returnedElement.ClassName.ToSandoDisplayable(), "ClassName is different!");
 			Assert.True(element.DefinitionLineNumber == returnedElement.DefinitionLineNumber, "DefinitionLineNumber is different!");
@@ -137,7 +137,7 @@ namespace Sando.Indexer.UnitTests.Searching
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");
-			Assert.True(element.Body == returnedElement.Body, "Body is different!");
+            Assert.True("not stored in index" == returnedElement.Body, "Body is different!");
 			Assert.True(element.ClassId == returnedElement.ClassId, "ClassId is different!");
 			Assert.True(element.ClassName == returnedElement.ClassName, "ClassName is different!");
 			Assert.True(element.DefinitionLineNumber == returnedElement.DefinitionLineNumber, "DefinitionLineNumber is different!");

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using NHunspell;
 using Sando.ExtensionContracts.QueryContracts;
 
@@ -17,8 +14,8 @@ namespace Sando.ExperimentalExtensions.SpellChecking
         {
             LanguageConfig enConfig = new LanguageConfig();
             enConfig.LanguageCode = "en";
-            enConfig.HunspellAffFile = @"C:\Users\USDASHE1\Documents\VsProjects\Sando-clone\LIBS\Spelling\en_us.aff";
-            enConfig.HunspellDictFile = @"C:\Users\USDASHE1\Documents\VsProjects\Sando-clone\LIBS\Spelling\en_us.dic";            
+            enConfig.HunspellAffFile = @"..\..\LIBS\Spelling\en_us.aff";
+            enConfig.HunspellDictFile = @"..\..\LIBS\Spelling\en_us.dic";    
             engine = new SpellEngine();
             engine.AddLanguage(enConfig);
             

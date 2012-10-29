@@ -5,6 +5,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
@@ -12,8 +13,7 @@ using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.CommandBars;
-using log4net;
-using Microsoft.VisualStudio.ExtensionManager;
+using log4net; 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
@@ -152,7 +152,7 @@ namespace Sando.UI
 
         private void SetUpLifeCycleEvents()
         {
-            var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+            var dte = GetDte();
             _dteEvents = dte.Events.DTEEvents;
             _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
             _dteEvents.OnStartupComplete += StartupCompleted;
@@ -180,7 +180,7 @@ namespace Sando.UI
             }
             RegisterSolutionEvents();
             Solution openSolution = GetOpenSolution();
-            if(openSolution!=null && !"".Equals(openSolution.FullName)&& _currentMonitor==null)
+            if(openSolution!=null && String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor==null)
             {
                 SolutionHasBeenOpened();
             }
@@ -188,7 +188,7 @@ namespace Sando.UI
 
         private void RegisterSolutionEvents()
         {
-            var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+        	var dte = GetDte();
             if (dte != null)
             {
                 _solutionEvents = dte.Events.SolutionEvents;                
@@ -219,9 +219,10 @@ namespace Sando.UI
 
         private void SetUpLogger()
         {
-            IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
-            var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
-            pluginDirectory = directoryProvider.GetExtensionDirectory();
+            //IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
+            //var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
+            //pluginDirectory = directoryProvider.GetExtensionDirectory();
+        	pluginDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
             logger = FileLogger.CreateCustomLogger(logFilePath);
             FileLogger.DefaultLogger.Info("pluginDir: "+pluginDirectory);
@@ -318,9 +319,9 @@ namespace Sando.UI
 			}
 		}
 
-        public static Solution GetOpenSolution()
+        public Solution GetOpenSolution()
         {
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+        	var dte = GetDte();
             if (dte != null)
             {
                 var openSolution = dte.Solution;
@@ -356,7 +357,7 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
                 bool isIndexRecreationRequired =
                     IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
-                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired, GetOpenSolution());
                 _currentMonitor.StartMonitoring();
                 _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
             }
@@ -392,27 +393,27 @@ namespace Sando.UI
 		}
 
 
-        private class ExtensionDirectoryProvider
-        {
-            //TODO - there must be a better way to do this?
+		//private class ExtensionDirectoryProvider
+		//{
+		//    //TODO - there must be a better way to do this?
 
-            private IVsExtensionManager _myMan;
+		//    private IVsExtensionManager _myMan;
 
-            public ExtensionDirectoryProvider(IVsExtensionManager vsExtensionManager)
-            {
-                _myMan = vsExtensionManager;
-            }
+		//    public ExtensionDirectoryProvider(IVsExtensionManager vsExtensionManager)
+		//    {
+		//        _myMan = vsExtensionManager;
+		//    }
 
-            private IInstalledExtension GetExtension(string identifier)
-            {
-                return _myMan.GetInstalledExtension(identifier);
-            }
+		//    private IInstalledExtension GetExtension(string identifier)
+		//    {
+		//        return _myMan.GetInstalledExtension(identifier);
+		//    }
 
-            internal string GetExtensionDirectory()
-            {                
-                return GetExtension("7e03caf3-06ed-4ff5-962a-effa1fb2f383").InstallPath;
-            }
-        }
+		//    internal string GetExtensionDirectory()
+		//    {                
+		//        return GetExtension("7e03caf3-06ed-4ff5-962a-effa1fb2f383").InstallPath;
+		//    }
+		//}
 
 
     	#endregion

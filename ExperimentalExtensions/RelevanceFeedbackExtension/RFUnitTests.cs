@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -29,10 +30,10 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			rfEntry.AddRelevance(c);
 			Assert.AreEqual(rfEntry.IsComplete(), true);
 
-			string serialization = "#query 1" + Environment.NewLine +
-								   "2 qid:1 1:0.41 2:0.58" + Environment.NewLine +  //"c" - since it was clicked
-								   "1 qid:1 1:0.41 2:0.58" + Environment.NewLine +  //"a" 
-								   "1 qid:1 1:0.41 2:0" + Environment.NewLine;      //"b"
+			string serialization = String.Format("#query 1{0}2 qid:1 1:0{1}41 2:0{1}58{0}" +  //"c" - since it was clicked
+                                   "1 qid:1 1:0{1}41 2:0{1}58{0}" +  //"a" 
+                                   "1 qid:1 1:0{1}41 2:0{0}", //"b"
+                                   Environment.NewLine, Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 			Assert.AreEqual(rfEntry.SerializeInClickedOrder(), serialization);
 		}
 

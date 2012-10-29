@@ -19,12 +19,12 @@ namespace Sando.Indexer.Documents
 		protected override void AddDocumentFields()
 		{
 			var textLineElement = (TextLineElement) programElement;
-			document.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.YES, Field.Index.ANALYZED));
+			document.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.NO, Field.Index.ANALYZED));
 		}
 
 		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
-			string body = document.GetField(SandoField.Body.ToString()).StringValue();
+            string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue();
 			return new TextLineElement(name, definitionLineNumber, fullFilePath, snippet, body);
 		}
 	}

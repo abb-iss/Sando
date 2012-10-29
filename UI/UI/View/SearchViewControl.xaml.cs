@@ -95,6 +95,14 @@ namespace Sando.UI.View
             }
         }
 
+        public string ExpandCollapseResultsLabel
+        {
+            get
+            {
+                return Translator.GetTranslation(allExpanded ? TranslationCode.CollapseResultsLabel : TranslationCode.ExpandResultsLabel);
+            }
+        }
+
         public string ComboBoxItemCurrentDocument
         {
             get
@@ -328,6 +336,10 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 SearchResults.Add(codeSearchResult);
             }
+            if(SearchResults.Count > 0)
+                expandButton.Visibility = Visibility.Visible;
+            else
+                expandButton.Visibility = Visibility.Hidden;
         }
 
         public void UpdateMessage(string message)
@@ -375,6 +387,27 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                 }
             }
         }
+
+        private void ExpandCollapseAllResults(object sender, EventArgs e)
+        {
+            var resultList = FindName("searchResultListbox") as ListView;
+            if(resultList == null)
+                return;
+
+            for(int i=0; i<resultList.Items.Count; ++i)
+            {
+                var currentItem = resultList.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
+                if(currentItem != null) 
+                    currentItem.Height = allExpanded ? 24 : 89;
+            }
+            allExpanded = !allExpanded;
+            expandButton.Content =
+                Translator.GetTranslation(allExpanded
+                                              ? TranslationCode.CollapseResultsLabel
+                                              : TranslationCode.ExpandResultsLabel);
+        }
+
+        private bool allExpanded;
 
         private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";

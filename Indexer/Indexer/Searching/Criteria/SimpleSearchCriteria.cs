@@ -141,10 +141,19 @@ namespace Sando.Indexer.Searching.Criteria
 			foreach(string searchTerm in SearchTerms)
 			{
 				//stringBuilder.Append("(");
-                string searchTermEscaped = EscapeSpecialCharacters(searchTerm);
+			    bool notCondition = false;
+			    string searchTermEscaped = searchTerm;
+                if(searchTermEscaped.StartsWith("-"))
+                {
+                    notCondition = true;
+                    searchTermEscaped = searchTerm.Substring(1);
+                }
+                searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
 				int usageTypesLeft = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
 				{
+                    if(notCondition) 
+                        stringBuilder.Append(" NOT ");
                     SingleUsageTypeCriteriaToString(stringBuilder, usageType, searchTermEscaped);
 					if(usageTypesLeft > 1)
 					{
@@ -165,7 +174,7 @@ namespace Sando.Indexer.Searching.Criteria
         private string EscapeSpecialCharacters(string searchTerm)
         {
             StringBuilder escapedSearchTermBuilder = new StringBuilder(searchTerm);
-            escapedSearchTermBuilder.Replace("\\", "\\\\");
+            //escapedSearchTermBuilder.Replace("\\", "\\\\");
             escapedSearchTermBuilder.Replace("+", "\\+");
             escapedSearchTermBuilder.Replace("-", "\\-");
             escapedSearchTermBuilder.Replace("&&", "\\&\\&");
@@ -178,7 +187,7 @@ namespace Sando.Indexer.Searching.Criteria
             escapedSearchTermBuilder.Replace("[", "\\[");
             escapedSearchTermBuilder.Replace("]", "\\]");
             escapedSearchTermBuilder.Replace("^", "\\^");
-            escapedSearchTermBuilder.Replace("\"", "\\\"");
+            //escapedSearchTermBuilder.Replace("\"", "\\\"");
             escapedSearchTermBuilder.Replace("~", "\\~");
             escapedSearchTermBuilder.Replace(":", "\\:");
             return escapedSearchTermBuilder.ToString();
@@ -186,10 +195,6 @@ namespace Sando.Indexer.Searching.Criteria
 
 		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
 		{
-			if(searchTerm.IndexOf(" ") > 0)
-			{
-				searchTerm = "\"" + searchTerm + "\"";
-			}
 			switch(usageType)
 			{
 				case UsageType.Bodies:

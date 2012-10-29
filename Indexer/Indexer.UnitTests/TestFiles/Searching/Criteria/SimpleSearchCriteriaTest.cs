@@ -447,11 +447,11 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		},
 														SearchTerms = new SortedSet<string>()
 																		{
-																			"+ - && || ! ( ) { } [ ] ^ \" ~ : \\"
+																			"\"+ - && || ! ( ) { } [ ] ^ ~ : \""
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-            Assert.AreEqual("(Body:\"\\+ \\- \\&\\& \\|\\| \\! \\( \\) \\{ \\} \\[ \\] \\^ \\\" \\~ \\: \\\\\")", queryString, "Created query string is invalid!");
+            Assert.AreEqual("(Body:\"\\+ \\- \\&\\& \\|\\| \\! \\( \\) \\{ \\} \\[ \\] \\^ \\~ \\: \")", queryString, "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
