@@ -127,7 +127,7 @@ namespace Sando.Core.Extensions
 			ExtensionManagerSetB.queryRewriter = ExtensionManagerSetA.queryRewriter;
 			ExtensionManagerSetB.queryWeightsSupplier = ExtensionManagerSetA.queryWeightsSupplier;
 			ExtensionManagerSetB.resultsReorderer = ExtensionManagerSetA.resultsReorderer;
-			ExtensionManagerSetB.wordSplitter = ExtensionManagerSetB.wordSplitter;
+			ExtensionManagerSetB.wordSplitter = ExtensionManagerSetA.wordSplitter;
 
 			IsInterleavingExperimentOn = true;
 		}
