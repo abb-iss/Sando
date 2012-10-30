@@ -269,6 +269,9 @@
          PropertyName="CodeContractsSdkPath" />
     </GetFrameworkSdkPath>
     <PropertyGroup>
+      <CodeContractsSnExe>"$(CodeContractsSdkPath)Bin\NETFX 4.0 Tools\sn.exe"</CodeContractsSnExe>
+    </PropertyGroup>
+    <PropertyGroup Condition="!Exists('$(CodeContractsSdkPath)Bin\NETFX 4.0 Tools\')">
       <CodeContractsSnExe>"$(CodeContractsSdkPath)Bin\sn.exe"</CodeContractsSnExe>
     </PropertyGroup>
     <Exec
