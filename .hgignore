@@ -21,3 +21,5 @@ Sando/Sando.crunchsolution.cache
 *.ncrunchsolution
 **.crunchsolution.cache
 **.DotSettings.user
+Sando/.klocwork/**
+Recommender/Recommender/Recommender.csproj.user
