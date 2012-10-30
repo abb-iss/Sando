@@ -172,17 +172,23 @@ namespace Sando.UI
         
         private void StartupCompleted()
         {
-            if (_viewManager.ShouldShow())
-            {
-                _viewManager.ShowSando();
-                _viewManager.ShowToolbar();
-            }
-            RegisterSolutionEvents();
-            Solution openSolution = GetOpenSolution();
-            if(openSolution!=null && String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor==null)
-            {
-                SolutionHasBeenOpened();
-            }
+        	if (_viewManager.ShouldShow())
+        	{
+        		_viewManager.ShowSando();
+        		_viewManager.ShowToolbar();
+        	}
+
+        	if (GetDte().Version.StartsWith("10"))
+        	{
+				//only need to do this in VS2010, and it breaks things in VS2012
+        		Solution openSolution = GetOpenSolution();
+        		if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+        		{
+        			SolutionHasBeenOpened();
+        		}
+        	}
+
+        	RegisterSolutionEvents();
         }  
 
         private void RegisterSolutionEvents()
