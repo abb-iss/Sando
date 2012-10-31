@@ -8,6 +8,7 @@ using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
+using Sando.UI.View;
 using UnitTestHelpers;
 using Sando.UI.InterleavingExperiment;
 
@@ -20,15 +21,18 @@ namespace Sando.IntegrationTests.Search
         public void TestInterleavedResults()
         {
             string keywords = "test interleaved results";
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
-            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-            FeatureLocationTechnique fltA = InterleavingExperimentManager.Instance.fltA;
+        	var resultListener = new InterleavingSearchTest_ResultListener();
+        	var searchManager = new SearchManager(resultListener);
+			searchManager.Search(keywords, indexPath, key);
+			FeatureLocationTechnique fltA = InterleavingExperimentManager.Instance.fltA;
             NoWeightsFLT fltB = InterleavingExperimentManager.Instance.fltB as NoWeightsFLT;
             if (fltA != null && fltB != null)
             {
-                Assert.IsTrue(fltA.Results.Count > 10);
-                Assert.IsTrue(fltB.Results.Count > 10);
-                Assert.AreSame(BalancedInterleaving.Interleave(fltA.Results, fltB.Results), codeSearchResults);
+				Assert.IsNotNull(fltA.Results);
+				Assert.IsNotNull(fltB.Results);
+				Assert.IsTrue(fltA.Results.Count > 5);
+                Assert.IsTrue(fltB.Results.Count > 5);
+                Assert.AreSame(BalancedInterleaving.Interleave(fltA.Results, fltB.Results), resultListener.Results);
             }
         }
 
@@ -91,6 +95,5 @@ namespace Sando.IntegrationTests.Search
 		private string indexPath;
 		private static SolutionMonitor monitor;
 		private static SolutionKey key;
-		private static List<string> sandoDirsToAvoid;
 	}
 }

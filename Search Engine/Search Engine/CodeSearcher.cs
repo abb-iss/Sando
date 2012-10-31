@@ -55,7 +55,7 @@ namespace Sando.SearchEngine
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
             List<CodeSearchResult> res = this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
-            return GetResultOrEmpty(res,searchString,"");
+            return GetResultOrEmpty(res,searchString);
 		}
 
 		/// <summary>
@@ -63,12 +63,12 @@ namespace Sando.SearchEngine
 		/// </summary>
 		/// <param name="searchCriteria">The search criteria.</param>
 		/// <returns>List of Search Result</returns>
-		public virtual List<CodeSearchResult> Search(SearchCriteria searchCriteria, String solutionName="")
+		public virtual List<CodeSearchResult> Search(SearchCriteria searchCriteria)
 		{
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
 			List<CodeSearchResult> res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
-			return GetResultOrEmpty(res,GetSearchTerms(searchCriteria),solutionName);
+			return GetResultOrEmpty(res,GetSearchTerms(searchCriteria));
 		}
 
         private string GetSearchTerms(SearchCriteria searchCriteria)
@@ -83,7 +83,7 @@ namespace Sando.SearchEngine
             }
         }
 
-        private List<CodeSearchResult> GetResultOrEmpty(List<CodeSearchResult> res, string searchTerm, string solutionName)
+        private List<CodeSearchResult> GetResultOrEmpty(List<CodeSearchResult> res, string searchTerm)
         {
             if(res!=null && res.Count>0)
             {

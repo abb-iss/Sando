@@ -52,6 +52,7 @@
     <Compile Include="Search\InterleavingSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Search\InterleavingSearchTest_ResultListener.cs" />
     <Compile Include="Search\SelfSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
