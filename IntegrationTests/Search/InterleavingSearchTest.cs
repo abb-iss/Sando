@@ -30,8 +30,8 @@ namespace Sando.IntegrationTests.Search
             {
 				Assert.IsNotNull(fltA.Results);
 				Assert.IsNotNull(fltB.Results);
-				Assert.IsTrue(fltA.Results.Count > 5);
-                Assert.IsTrue(fltB.Results.Count > 5);
+				Assert.IsTrue(fltA.Results.Count > 10);
+                Assert.IsTrue(fltB.Results.Count > 10);
                 Assert.AreSame(BalancedInterleaving.Interleave(fltA.Results, fltB.Results), resultListener.Results);
             }
         }
