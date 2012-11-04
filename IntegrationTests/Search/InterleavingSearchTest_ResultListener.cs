@@ -11,14 +11,14 @@ namespace Sando.IntegrationTests.Search
 	{
 		public void Update(IQueryable<CodeSearchResult> results)
 		{
-			Results = results;
+			Results = results.ToList();
 		}
 
 		public void UpdateMessage(string message)
 		{
 		}
 
-		public IQueryable<CodeSearchResult> Results { get; private set; }
+		public List<CodeSearchResult> Results { get; private set; }
 
 	}
 }
