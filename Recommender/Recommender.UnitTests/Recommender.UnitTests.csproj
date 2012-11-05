@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
+    </Reference>
     <Reference Include="ABB.Swum, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\LIBS\SWUM\ABB.Swum.dll</HintPath>
     </Reference>
@@ -49,12 +52,18 @@
     <Compile Include="CamelIdSplitterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SwumDataRecordTests.cs" />
+    <Compile Include="SwumManagerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Recommender\Recommender.csproj">
       <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>
       <Name>Recommender</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\json_reader.cpp.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

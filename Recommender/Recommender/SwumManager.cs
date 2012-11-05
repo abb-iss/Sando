@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
@@ -56,8 +57,15 @@ namespace Sando.Recommender {
             set { builder = value; }
         }
 
+        /// <summary>
+        /// The path to the cache file on disk.
+        /// </summary>
+        public string CachePath { get; private set; }
 
-
+        /// <summary>
+        /// Generates SWUMs for the method definitions within the given source file.
+        /// </summary>
+        /// <param name="sourcePath">The path to the source file.</param>
         public void AddSourceFile(string sourcePath) {
             var srcmlConverter = new Src2SrcMLRunner(".");
             var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(sourcePath, Path.GetTempFileName());
@@ -69,6 +77,10 @@ namespace Sando.Recommender {
 
         }
 
+        /// <summary>
+        /// Generates SWUMs for the method definitions within the given SrcML file
+        /// </summary>
+        /// <param name="srcmlFile">A SrcML file.</param>
         public void AddSrcMLFile(SrcMLFile srcmlFile) {
             AddSwumForMethodDefinitions(srcmlFile);
         }
@@ -82,23 +94,38 @@ namespace Sando.Recommender {
         }
 
         /// <summary>
-        /// Constructs SWUM for the methods and method calls in <paramref name="srcFile"/> and caches them internally.
-        /// This method will delete any previously constructed SWUMs.
+        /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
         /// </summary>
-        /// <param name="srcFile">The srcML file containing the methods and method calls to build SWUM on.</param>
-        public void Initialize(SrcMLFile srcFile) {
-            signaturesToSwum.Clear();
-            xelementsToSwum.Clear();
-            AddSwumForMethodDefinitions(srcFile);
-            //AddSwumForMethodCalls(srcFile, srcDb);
+        /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
+        public void Initialize(string cacheDirectory) {
+            CachePath = Path.Combine(cacheDirectory, "swum-cache.txt");
 
+            if(!File.Exists(CachePath)) {
+                Debug.WriteLine("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
+                return;
+            }
+            Clear();
+            ReadSwumCache(CachePath);
         }
 
         /// <summary>
-        /// Prints the SWUM cache to Console.Out.
+        /// Prints the SWUM cache to the file specified in CachePath.
         /// </summary>
         public void PrintSwumCache() {
-            PrintSwumCache(Console.Out);
+            PrintSwumCache(CachePath);
+        }
+
+        /// <summary>
+        /// Prints the SWUM cache to the specified file.
+        /// </summary>
+        /// <param name="path">The path to print the SWUM cache to.</param>
+        public void PrintSwumCache(string path) {
+            if(string.IsNullOrWhiteSpace(path)) {
+                throw new ArgumentException("Path is empty or null.", "path");
+            }
+            using(StreamWriter sw = new StreamWriter(path)) {
+                PrintSwumCache(sw);
+            }
         }
 
         /// <summary>
@@ -106,6 +133,9 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="output">A TextWriter to print the SWUM cache to.</param>
         public void PrintSwumCache(TextWriter output) {
+            if(output == null) {
+                throw new ArgumentNullException("output");
+            }
             foreach(var kvp in signaturesToSwum) {
                 output.WriteLine("{0}|{1}", kvp.Key, kvp.Value.ToString());
             }
@@ -258,9 +288,10 @@ namespace Sando.Recommender {
                     sig.Append(((XElement)n).Value);
                 } else if(n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace) {
                     sig.Append(((XText)n).Value);
-                }
+                } 
             }
-            return sig.ToString().TrimEnd();
+            //condense consecutive whitespace into a single space
+            return Regex.Replace(sig.ToString().Trim(), @"\s+", " ");
         }
 
         /// <summary>
