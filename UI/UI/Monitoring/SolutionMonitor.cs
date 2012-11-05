@@ -106,6 +106,7 @@ namespace Sando.UI.Monitoring
 	    {
 	        _currentIndexer.CommitChanges();
 	        _indexUpdateManager.SaveFileStates();
+	        Recommender.SwumManager.Instance.PrintSwumCache();
 	    }
 
 
