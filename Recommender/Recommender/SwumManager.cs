@@ -281,16 +281,27 @@ namespace Sando.Recommender {
         /// <param name="methodElement">The srcML method element to extract the signature from.</param>
         /// <returns>The method signature</returns>
         protected string GetMethodSignature(XElement methodElement) {
-            var blockElement = methodElement.Element(SRC.Block);
-            StringBuilder sig = new StringBuilder();
-            foreach(var n in blockElement.NodesBeforeSelf()) {
+            if(methodElement == null) {
+                throw new ArgumentNullException("methodElement");
+            }
+            if(!(new[] { SRC.Function, SRC.Constructor, SRC.Destructor }).Contains(methodElement.Name)) {
+                throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
+            }
+            
+            var sig = new StringBuilder();
+            var paramListElement = methodElement.Element(SRC.ParameterList);
+            //add all the text and whitespace prior to the parameter list
+            foreach(var n in paramListElement.NodesBeforeSelf()) {
                 if(n.NodeType == XmlNodeType.Element) {
                     sig.Append(((XElement)n).Value);
                 } else if(n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace) {
                     sig.Append(((XText)n).Value);
                 } 
             }
-            //condense consecutive whitespace into a single space
+            //add the parameter list
+            sig.Append(paramListElement.Value);
+
+            //convert whitespace chars to spaces and condense any consecutive whitespaces.
             return Regex.Replace(sig.ToString().Trim(), @"\s+", " ");
         }
 
