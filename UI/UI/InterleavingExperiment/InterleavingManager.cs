@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -17,10 +18,14 @@ namespace Sando.UI.InterleavingExperiment
 			LogCount = 0;
 			ClickIdx = new List<int>();
 			SearchRecievedClick = false;
-			semaphore = new AutoResetEvent(false);
+
 			S3LogWriter.S3CredentialDirectory = pluginDir;
 			InitializeNewLogFileName(pluginDir);
 			PluginDirectory = pluginDir;
+
+			SecondaryResults = new List<CodeSearchResult>();
+			SandoResults = new List<CodeSearchResult>();
+			InterleavedResults = new List<CodeSearchResult>();
 		}
 
 		public string RewriteQuery(string query)
@@ -36,7 +41,8 @@ namespace Sando.UI.InterleavingExperiment
                                                          ClickIdx, out scoreA, out scoreB);
 
                     string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " +
-                                   FLT_B_NAME + "=" + scoreB + Environment.NewLine;
+                                   FLT_B_NAME + "=" + scoreB + " ; query='" + lastQuery 
+								   + "'" + Environment.NewLine;
                     WriteLogEntry(entry);
                 }
 				catch(Exception e)
@@ -46,31 +52,41 @@ namespace Sando.UI.InterleavingExperiment
                 }
             }
 
+			lastQuery = query;
+
             //capture the query and reissue it to the secondary FLT getting the secondary results
+			SecondaryResults.Clear();
             SecondaryResults = LexSearch.GetResults(query);
 
 			//write log to S3
-            if (LogCount >= LOG_ENTRIES_PER_FILE)
-            {
-            	bool success = S3LogWriter.WriteLogFile(LogFile);
-				if(success == true)
-				{
-					System.IO.File.Delete(LogFile);
-                    WriteIncompleteLogs();
-					InitializeNewLogFileName(PluginDirectory);
-					LogCount = 0;
-				}
-				else
-				{
-					FileLogger.DefaultLogger.Debug("Uploading the S3 was not successful for unknown reasons. Retry in 2 searches.");
-					LogCount -= 2; //try again after 10 more entries
-				}
-            }
+			var s3UploadWorker = new BackgroundWorker();
+			s3UploadWorker.DoWork += new DoWorkEventHandler(s3UploadWorker_DoWork);
+			s3UploadWorker.RunWorkerAsync();
 
 			ClickIdx.Clear();
 			SearchRecievedClick = false;
 			
             return query;
+		}
+
+
+		void s3UploadWorker_DoWork(object sender, DoWorkEventArgs e)
+		{
+			WriteLogToS3();
+		}
+
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		private void WriteLogToS3()
+		{
+			if(LogCount < LOG_ENTRIES_PER_FILE) return;
+			var success = S3LogWriter.WriteLogFile(LogFile);
+			if(success == true)
+			{
+				System.IO.File.Delete(LogFile);
+				InitializeNewLogFileName(PluginDirectory);
+				LogCount = 0;
+				WriteIncompleteLogs();
+			}
 		}
 
         private void WriteIncompleteLogs()
@@ -94,7 +110,6 @@ namespace Sando.UI.InterleavingExperiment
 
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
-            //semaphore.WaitOne();
             SandoResults = searchResults.ToList();
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 
@@ -123,16 +138,16 @@ namespace Sando.UI.InterleavingExperiment
 			LogFile = Dir + "\\PI-" + machine + "-" + Guid.NewGuid() + ".log";
 		}
 
-		private const int LOG_ENTRIES_PER_FILE = 5;
+		private const int LOG_ENTRIES_PER_FILE = 3;
 		private const string FLT_A_NAME = "Sando";
         private const string FLT_B_NAME = "Lex";
 		private string LogFile;
 		private string PluginDirectory;
 
+		private string lastQuery = "?";
         private List<CodeSearchResult> SecondaryResults;
         private List<CodeSearchResult> SandoResults;
         private bool SearchRecievedClick;
-        private static AutoResetEvent semaphore;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }

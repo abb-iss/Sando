@@ -19,7 +19,7 @@ namespace Sando.UI.InterleavingExperiment
 			{
 				if(Ka < Kb || (Ka == Kb && AFirst == true))
 				{
-					if(!I.Contains(A[Ka]))
+					if (!I.Contains(A[Ka]))
 					{
 						I.Add(A[Ka]);
 					}
@@ -27,7 +27,7 @@ namespace Sando.UI.InterleavingExperiment
 				}
 				else
 				{
-					if(!I.Contains(B[Kb]))
+					if (!I.Contains(B[Kb]))
 					{
 						I.Add(B[Kb]);
 					}
@@ -35,7 +35,18 @@ namespace Sando.UI.InterleavingExperiment
 				}
 			}
 
-			return I;
+
+			//kosta's mod: add the leftovers in
+			if (Ka < A.Count)
+			{
+				I.AddRange(A.GetRange(Ka, A.Count - Ka));
+			}
+			if (Kb < B.Count)
+			{
+				I.AddRange(B.GetRange(Kb, B.Count - Kb));				
+			}
+
+			return I.Distinct().ToList();
 		}
 
 
