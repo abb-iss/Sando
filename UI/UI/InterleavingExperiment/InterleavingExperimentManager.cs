@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts;
@@ -20,7 +22,8 @@ namespace Sando.UI.InterleavingExperiment
             Contract.Requires(IsInitialized == true, "Interleaving experiment was started but was not initialized");
 
             WriteExpRoundToFile();
-            WriteLogToS3();
+			var s3UploadWorker = new BackgroundWorker();
+			s3UploadWorker.DoWork += new DoWorkEventHandler(s3UploadWorker_DoWork);
 
             ClickIdx.Clear();
             SearchRecievedClick = false;
@@ -64,6 +67,12 @@ namespace Sando.UI.InterleavingExperiment
 			}
 		}
 
+		void s3UploadWorker_DoWork(object sender, DoWorkEventArgs e)
+		{
+			WriteLogToS3();
+		}
+
+		[MethodImpl(MethodImplOptions.Synchronized)] 
 		private void WriteLogToS3()
 		{
 			if (LogCount < LogEntriesPerFile) return;
