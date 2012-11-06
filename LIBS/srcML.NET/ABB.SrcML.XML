@@ -1397,6 +1397,18 @@
             <param name="outputFileName">Name of the output file.</param>
             <param name="unitIndex">Index of the unit.</param>
         </member>
+        <member name="T:ABB.SrcML.SrcMLElement">
+            <summary>
+            Contains static utility methods that act upon srcML XElements.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLElement.GetMethodSignature(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the method signature from the method definition srcML element.
+            </summary>
+            <param name="methodElement">The srcML method element to extract the signature from.</param>
+            <returns>The method signature</returns>
+        </member>
         <member name="T:ABB.SrcML.SrcMLException">
             <summary>
             The base SrcML Exception

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
@@ -225,7 +224,7 @@ namespace Sando.Recommender {
                 foreach(XElement func in functions) {
                     //construct SWUM on the function (if necessary)
                     MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
-                    string sig = GetMethodSignature(func);
+                    string sig = SrcMLElement.GetMethodSignature(func);
                     if(signaturesToSwum.ContainsKey(sig)) {
                         Console.WriteLine("Found duplicate method signatures!");
                         Console.WriteLine("First: {0}", signaturesToSwum[sig]);
@@ -272,37 +271,6 @@ namespace Sando.Recommender {
             MethodDeclarationNode mdn = new MethodDeclarationNode(funcName, mc);
             builder.ApplyRules(mdn);
             return mdn;
-        }
-
-
-        /// <summary>
-        /// Gets the method signature from the method definition srcML element.
-        /// </summary>
-        /// <param name="methodElement">The srcML method element to extract the signature from.</param>
-        /// <returns>The method signature</returns>
-        protected string GetMethodSignature(XElement methodElement) {
-            if(methodElement == null) {
-                throw new ArgumentNullException("methodElement");
-            }
-            if(!(new[] { SRC.Function, SRC.Constructor, SRC.Destructor }).Contains(methodElement.Name)) {
-                throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
-            }
-            
-            var sig = new StringBuilder();
-            var paramListElement = methodElement.Element(SRC.ParameterList);
-            //add all the text and whitespace prior to the parameter list
-            foreach(var n in paramListElement.NodesBeforeSelf()) {
-                if(n.NodeType == XmlNodeType.Element) {
-                    sig.Append(((XElement)n).Value);
-                } else if(n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace) {
-                    sig.Append(((XText)n).Value);
-                } 
-            }
-            //add the parameter list
-            sig.Append(paramListElement.Value);
-
-            //convert whitespace chars to spaces and condense any consecutive whitespaces.
-            return Regex.Replace(sig.ToString().Trim(), @"\s+", " ");
         }
 
         /// <summary>
