@@ -62,6 +62,7 @@ namespace Sando.UI.Monitoring
 						{
 							_currentIndexer.DeleteDocuments(path);
 							Update(indexFileState, path, physicalFileState);
+						    SwumManager.Instance.UpdateSourceFile(path); //for the query recommender
 							break;
 						}
 						;

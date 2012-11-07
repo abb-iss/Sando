@@ -21,7 +21,7 @@ namespace Sando.Recommender {
         private readonly XName[] functionTypes = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
         private SwumBuilder builder;
         private Dictionary<string, SwumDataRecord> signaturesToSwum;
-        private Dictionary<XElement, SwumDataRecord> xelementsToSwum;
+        //private Dictionary<XElement, SwumDataRecord> xelementsToSwum;
 
         
         /// <summary>
@@ -30,7 +30,7 @@ namespace Sando.Recommender {
         private SwumManager() {
             builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
             signaturesToSwum = new Dictionary<string, SwumDataRecord>();
-            xelementsToSwum = new Dictionary<XElement, SwumDataRecord>();
+            //xelementsToSwum = new Dictionary<XElement, SwumDataRecord>();
 
             //TODO: read SWUM cache file from Sando data directory
             
@@ -61,13 +61,30 @@ namespace Sando.Recommender {
         /// </summary>
         public string CachePath { get; private set; }
 
+
+        /// <summary>
+        /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
+        /// </summary>
+        /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
+        public void Initialize(string cacheDirectory) {
+            CachePath = Path.Combine(cacheDirectory, "swum-cache.txt");
+
+            if(!File.Exists(CachePath)) {
+                Debug.WriteLine("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
+                return;
+            }
+            Clear();
+            ReadSwumCache(CachePath);
+        }
+
         /// <summary>
         /// Generates SWUMs for the method definitions within the given source file.
         /// </summary>
         /// <param name="sourcePath">The path to the source file.</param>
         public void AddSourceFile(string sourcePath) {
+            string fullPath = Path.GetFullPath(sourcePath);
             var srcmlConverter = new Src2SrcMLRunner(".");
-            var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(sourcePath, Path.GetTempFileName());
+            var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(fullPath, Path.GetTempFileName());
             try {
                 AddSrcMLFile(tempSrcMLFile);
             } finally {
@@ -85,26 +102,44 @@ namespace Sando.Recommender {
         }
 
         /// <summary>
+        /// Regenerates SWUMs for the methods in the given source file. Any previously-generated SWUMs for the file will first be removed.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file to update.</param>
+        public void UpdateSourceFile(string sourcePath) {
+            RemoveSourceFile(sourcePath);
+            AddSourceFile(sourcePath);
+        }
+
+        /// <summary>
+        /// Removes any SWUMs that were generated from the given source file.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file to remove.</param>
+        public void RemoveSourceFile(string sourcePath) {
+            var fullPath = Path.GetFullPath(sourcePath);
+            var sigsToRemove = new HashSet<string>();
+            foreach(var sig in signaturesToSwum.Keys) {
+                var sdr = signaturesToSwum[sig];
+                if(sdr.FileNames.Contains(fullPath)) {
+                    sdr.FileNames.Remove(fullPath);
+                    if(!sdr.FileNames.Any()) {
+                        sigsToRemove.Add(sig);
+                    }
+                }
+            }
+
+            //remove signatures that no longer have any file names
+            //(This is separate from the above loop because you can't delete keys while you're enumerating them.)
+            foreach(var sig in sigsToRemove) {
+                signaturesToSwum.Remove(sig);
+            }
+        }
+
+        /// <summary>
         /// Clears any constructed SWUMs.
         /// </summary>
         public void Clear() {
             signaturesToSwum.Clear();
-            xelementsToSwum.Clear();
-        }
-
-        /// <summary>
-        /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
-        /// </summary>
-        /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
-        public void Initialize(string cacheDirectory) {
-            CachePath = Path.Combine(cacheDirectory, "swum-cache.txt");
-
-            if(!File.Exists(CachePath)) {
-                Debug.WriteLine("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
-                return;
-            }
-            Clear();
-            ReadSwumCache(CachePath);
+            //xelementsToSwum.Clear();
         }
 
         /// <summary>
@@ -148,7 +183,7 @@ namespace Sando.Recommender {
             using(var cacheFile = new StreamReader(path)) {
                 //clear any existing SWUMs
                 signaturesToSwum.Clear();
-                xelementsToSwum.Clear();
+                //xelementsToSwum.Clear();
                 
                 //read each SWUM entry from the cache file
                 string entry;
@@ -170,20 +205,20 @@ namespace Sando.Recommender {
             }
         }
 
-        /// <summary>
-        /// Returns the SWUM data for the given method element. 
-        /// </summary>
-        /// <param name="methodElement">The XElement of the method to get SWUM data about. This element can be a Function, Constructor, Destructor or Call.</param>
-        /// <returns>A SwumDataRecord containing the SWUM data about the given method, or null if no data is found.</returns>
-        public SwumDataRecord GetSwumForElement(XElement methodElement) {
-            if(methodElement == null) { throw new ArgumentNullException("methodElement"); }
-            var methodNames = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
-            if(!methodNames.Contains(methodElement.Name) && methodElement.Name != SRC.Call) {
-                throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
-            }
+        ///// <summary>
+        ///// Returns the SWUM data for the given method element. 
+        ///// </summary>
+        ///// <param name="methodElement">The XElement of the method to get SWUM data about. This element can be a Function, Constructor, Destructor or Call.</param>
+        ///// <returns>A SwumDataRecord containing the SWUM data about the given method, or null if no data is found.</returns>
+        //public SwumDataRecord GetSwumForElement(XElement methodElement) {
+        //    if(methodElement == null) { throw new ArgumentNullException("methodElement"); }
+        //    var methodNames = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
+        //    if(!methodNames.Contains(methodElement.Name) && methodElement.Name != SRC.Call) {
+        //        throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
+        //    }
 
-            return xelementsToSwum.ContainsKey(methodElement) ? xelementsToSwum[methodElement] : null;
-        }
+        //    return xelementsToSwum.ContainsKey(methodElement) ? xelementsToSwum[methodElement] : null;
+        //}
 
         /// <summary>
         /// Returns the SWUM data for the given method signature.
@@ -218,6 +253,8 @@ namespace Sando.Recommender {
 
             //iterate over each method definition in the SrcML file
             foreach(XElement file in srcFile.FileUnits) {
+                var fileAttribute = file.Attribute("filename");
+                string filePath = fileAttribute != null ? fileAttribute.Value : srcFile.FileName;
                 var functions = from func in file.Descendants()
                                 where functionTypes.Contains(func.Name)
                                 select func;
@@ -226,19 +263,22 @@ namespace Sando.Recommender {
                     MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
                     string sig = SrcMLElement.GetMethodSignature(func);
                     if(signaturesToSwum.ContainsKey(sig)) {
-                        Console.WriteLine("Found duplicate method signatures!");
-                        Console.WriteLine("First: {0}", signaturesToSwum[sig]);
-                        Console.WriteLine("Second: {0}", mdn);
-                        xelementsToSwum[func] = signaturesToSwum[sig];
+                        Debug.WriteLine("Found duplicate method signatures!");
+                        Debug.WriteLine("Signature: {0}", sig);
+                        Debug.WriteLine("Existing file(s): {0}", string.Join(";", signaturesToSwum[sig].FileNames));
+                        Debug.WriteLine("Duplicate file: {0}", srcFile.FileName);
+                        //update the SwumDataRecord with the filename of the duplicate method
+                        signaturesToSwum[sig].FileNames.Add(filePath);
+                        //xelementsToSwum[func] = signaturesToSwum[sig];
                     } else {
                         var swumData = ProcessSwumNode(mdn);
+                        swumData.FileNames.Add(filePath);
                         signaturesToSwum[sig] = swumData;
-                        xelementsToSwum[func] = swumData;
+                        //xelementsToSwum[func] = swumData;
                     }
                 }
             }
         }
-
 
         /// <summary>
         /// Constructs SWUM on the given srcML method element. 

@@ -28,6 +28,30 @@ namespace Sando.Recommender.UnitTests {
             Assert.IsTrue(SwumDataRecordsAreEqual(sdr, actual));
         }
 
+        [Test]
+        public void TestRoundTrip_FileNames() {
+            var a1 = new WordNode("DB", PartOfSpeechTag.Preamble);
+            var a2 = new WordNode("Get", PartOfSpeechTag.Verb);
+            var t1 = new WordNode("Hydro", PartOfSpeechTag.NounModifier);
+            var t2 = new WordNode("Fixed", PartOfSpeechTag.NounModifier);
+            var t3 = new WordNode("Schedule", PartOfSpeechTag.Noun);
+            var f1 = @"C:\foo\bar.cpp";
+            var f2 = @"C:\foo\baz\xyzzy.h";
+            var f3 = "test.cpp";
+
+            var sdr = new SwumDataRecord();
+            sdr.ParsedAction = new PhraseNode(new[] { a1, a2 }, Location.None, false);
+            sdr.Action = sdr.ParsedAction.ToPlainString();
+            sdr.ParsedTheme = new PhraseNode(new[] { t1, t2, t3 }, Location.None, false);
+            sdr.Theme = sdr.ParsedTheme.ToPlainString();
+            sdr.FileNames.Add(f1);
+            sdr.FileNames.Add(f2);
+            sdr.FileNames.Add(f3);
+
+            var actual = SwumDataRecord.Parse(sdr.ToString());
+            Assert.IsTrue(SwumDataRecordsAreEqual(sdr, actual));
+        }
+
 
         public bool WordNodesAreEqual(WordNode wn1, WordNode wn2) {
             if(wn1 == wn2) {
@@ -71,12 +95,20 @@ namespace Sando.Recommender.UnitTests {
                 return false;
             }
 
-            return PhraseNodesAreEqual(sdr1.ParsedAction, sdr2.ParsedAction)
-                   && PhraseNodesAreEqual(sdr1.ParsedTheme, sdr2.ParsedTheme)
-                   && PhraseNodesAreEqual(sdr1.ParsedIndirectObject, sdr2.ParsedIndirectObject)
-                   && sdr1.Action == sdr2.Action
-                   && sdr1.Theme == sdr2.Theme
-                   && sdr1.IndirectObject == sdr2.IndirectObject;
+            bool areEqual = PhraseNodesAreEqual(sdr1.ParsedAction, sdr2.ParsedAction)
+                            && PhraseNodesAreEqual(sdr1.ParsedTheme, sdr2.ParsedTheme)
+                            && PhraseNodesAreEqual(sdr1.ParsedIndirectObject, sdr2.ParsedIndirectObject)
+                            && sdr1.Action == sdr2.Action
+                            && sdr1.Theme == sdr2.Theme
+                            && sdr1.IndirectObject == sdr2.IndirectObject
+                            && sdr1.FileNames.Count == sdr2.FileNames.Count;
+            if(areEqual) {
+                //both FileNames are the same size
+                foreach(var file in sdr1.FileNames) {
+                    areEqual = areEqual && sdr2.FileNames.Contains(file);
+                }
+            }
+            return areEqual;
         }
     }
 }

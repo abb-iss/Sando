@@ -9,13 +9,14 @@ namespace Sando.Recommender {
     /// Contains various data determined by constructing SWUM on a method.
     /// </summary>
     public class SwumDataRecord {
-        public MethodDeclarationNode SwumNode;
-        public string Action;
-        public PhraseNode ParsedAction;
-        public string Theme;
-        public PhraseNode ParsedTheme;
-        public string IndirectObject;
-        public PhraseNode ParsedIndirectObject;
+        public MethodDeclarationNode SwumNode { get; set; }
+        public string Action { get; set; }
+        public PhraseNode ParsedAction { get; set; }
+        public string Theme { get; set; }
+        public PhraseNode ParsedTheme { get; set; }
+        public string IndirectObject { get; set; }
+        public PhraseNode ParsedIndirectObject { get; set; }
+        public ISet<string> FileNames { get; private set; }
 
         /// <summary>
         /// Creates a new empty SwumDataRecord.
@@ -28,20 +29,14 @@ namespace Sando.Recommender {
             ParsedTheme = null;
             IndirectObject = string.Empty;
             ParsedIndirectObject = null;
+            FileNames = new HashSet<string>();
         }
 
         /// <summary>
         /// Returns a string representation of the object.
         /// </summary>
         public override string ToString() {
-            //StringBuilder sb = new StringBuilder();
-            //sb.AppendFormat("SwumNode:{0}{1}{0}", Environment.NewLine, SwumNode.ToString());
-            //sb.AppendFormat("Action: {0}{1}", ParsedAction, Environment.NewLine);
-            //sb.AppendFormat("Theme: {0}{1}", ParsedTheme, Environment.NewLine);
-            //sb.AppendFormat("IndirectObject: {0}{1}", ParsedIndirectObject, Environment.NewLine);
-            //return sb.ToString();
-
-            return string.Format("{0}|{1}|{2}", ParsedAction, ParsedTheme, ParsedIndirectObject);
+            return string.Format("{0}|{1}|{2}|{3}", ParsedAction, ParsedTheme, ParsedIndirectObject, string.Join(";", FileNames));
         }
 
         /// <summary>
@@ -55,8 +50,8 @@ namespace Sando.Recommender {
             }
 
             string[] fields = source.Split('|');
-            if(fields.Length != 3) {
-                throw new FormatException(string.Format("Wrong number of |-separated fields. Expected 3, saw {0}", fields.Length));
+            if(fields.Length != 4) {
+                throw new FormatException(string.Format("Wrong number of |-separated fields. Expected 4, saw {0}", fields.Length));
             }
             var sdr = new SwumDataRecord();
             if(!string.IsNullOrWhiteSpace(fields[0])) {
@@ -70,6 +65,11 @@ namespace Sando.Recommender {
             if(!string.IsNullOrWhiteSpace(fields[2])) {
                 sdr.ParsedIndirectObject = PhraseNode.Parse(fields[2].Trim());
                 sdr.IndirectObject = sdr.ParsedIndirectObject.ToPlainString();
+            }
+            if(!string.IsNullOrWhiteSpace(fields[3])) {
+                foreach(var file in fields[3].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+                    sdr.FileNames.Add(file);
+                }
             }
             return sdr;
         }
