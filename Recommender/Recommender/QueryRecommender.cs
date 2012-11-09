@@ -23,7 +23,7 @@ namespace Sando.Recommender {
             //TODO: split query into words, search each one?
 
             //WeightByFrequency(query);
-            WeightByField(query);
+            WeightBySameField(query);
 
             //return the recommendations sorted by score in descending order
             return recommendations.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
@@ -116,7 +116,7 @@ namespace Sando.Recommender {
         /// query word are weighted higher.
         /// </summary>
         /// <param name="query">The query string to create recommended completions for.</param>
-        private void WeightByField(string query) {
+        private void WeightBySameField(string query) {
             const int NormalWeight = 1;
             const int QueryInFieldWeight = 5;
             
@@ -203,6 +203,10 @@ namespace Sando.Recommender {
                     }
                 }
             }
+        }
+
+        private void WeightByPartOfSpeech(string query) {
+            
         }
     }
 }

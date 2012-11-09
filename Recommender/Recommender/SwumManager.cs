@@ -70,7 +70,7 @@ namespace Sando.Recommender {
             CachePath = Path.Combine(cacheDirectory, "swum-cache.txt");
 
             if(!File.Exists(CachePath)) {
-                Debug.WriteLine("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
+                Debug.WriteLine(string.Format("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath));
                 return;
             }
             Clear();
@@ -191,7 +191,7 @@ namespace Sando.Recommender {
                     //the expected format is <signature>|<SwumDataRecord.ToString()>
                     string[] fields = entry.Split(new[] {'|'}, 2);
                     if(fields.Length != 2) {
-                        Debug.WriteLine("Too few fields in SWUM cache entry: {0}", entry);
+                        Debug.WriteLine(string.Format("Too few fields in SWUM cache entry: {0}", entry));
                         continue;
                     }
                     try {
@@ -199,7 +199,8 @@ namespace Sando.Recommender {
                         string data = fields[1].Trim();
                         signaturesToSwum[sig] = SwumDataRecord.Parse(data);
                     } catch(FormatException fe) {
-                        Debug.WriteLine("Improperly formatted SwumDataRecord in Swum cache entry: {0}", entry);
+                        Debug.WriteLine(string.Format("Improperly formatted SwumDataRecord in Swum cache entry: {0}", entry));
+                        Debug.WriteLine(fe.Message);
                     }
                 }
             }
@@ -263,10 +264,10 @@ namespace Sando.Recommender {
                     MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
                     string sig = SrcMLElement.GetMethodSignature(func);
                     if(signaturesToSwum.ContainsKey(sig)) {
-                        Debug.WriteLine("Found duplicate method signatures!");
-                        Debug.WriteLine("Signature: {0}", sig);
-                        Debug.WriteLine("Existing file(s): {0}", string.Join(";", signaturesToSwum[sig].FileNames));
-                        Debug.WriteLine("Duplicate file: {0}", srcFile.FileName);
+                        //Debug.WriteLine("Found duplicate method signatures!");
+                        //Debug.WriteLine(string.Format("Signature: {0}", sig));
+                        //Debug.WriteLine(string.Format("Existing file(s): {0}", string.Join(";", signaturesToSwum[sig].FileNames)));
+                        //Debug.WriteLine(string.Format("Duplicate file: {0}", filePath));
                         //update the SwumDataRecord with the filename of the duplicate method
                         signaturesToSwum[sig].FileNames.Add(filePath);
                         //xelementsToSwum[func] = signaturesToSwum[sig];
