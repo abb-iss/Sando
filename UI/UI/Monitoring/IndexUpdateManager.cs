@@ -52,13 +52,15 @@ namespace Sando.UI.Monitoring
 				{
 					case IndexOperation.Add:
 						{
-                            _currentIndexer.DeleteDocuments(path); //just to be safe!
+							Debug.WriteLine("IndexOperation.Add");
+							_currentIndexer.DeleteDocuments(path); //just to be safe!
 							Update(indexFileState, path, physicalFileState);
 							break;
 						}
 						;
 					case IndexOperation.Update:
 						{
+							Debug.WriteLine("IndexOperation.Update");
 							_currentIndexer.DeleteDocuments(path);
 							Update(indexFileState, path, physicalFileState);
 							break;
@@ -66,6 +68,7 @@ namespace Sando.UI.Monitoring
 						;
 					case IndexOperation.DoNothing:
 						{
+							Debug.WriteLine("IndexOperation.DoNothing");
 							break;
 						}
 				}

@@ -217,6 +217,8 @@ namespace Sando.UI
             if (extensionPointsConfiguration != null)
             {                                
                 ExtensionPointsConfigurationFileReader.WriteConfiguration(GetExtensionPointsConfigurationFilePath(GetExtensionPointsConfigurationDirectory()), extensionPointsConfiguration);
+                //After writing the extension points configuration file, the index state file on disk is out of date; so it needs to be rewritten
+                IndexStateManager.SaveCurrentIndexState(GetExtensionPointsConfigurationDirectory());
             }
             //TODO - kill file processing threads
         }
