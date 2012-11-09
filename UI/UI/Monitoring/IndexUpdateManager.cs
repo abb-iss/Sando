@@ -10,6 +10,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
+using Sando.Recommender;
 
 namespace Sando.UI.Monitoring
 {
@@ -42,8 +43,6 @@ namespace Sando.UI.Monitoring
 		{
 			try
 			{
-				
-
 				IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
 				PhysicalFileState physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);
 				IndexOperation requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(physicalFileState, indexFileState);
@@ -55,6 +54,8 @@ namespace Sando.UI.Monitoring
 							Debug.WriteLine("IndexOperation.Add");
 							_currentIndexer.DeleteDocuments(path); //just to be safe!
 							Update(indexFileState, path, physicalFileState);
+                            //compute SWUM on the file, for the query recommender
+                            SwumManager.Instance.AddSourceFile(path);
 							break;
 						}
 						;
@@ -63,6 +64,7 @@ namespace Sando.UI.Monitoring
 							Debug.WriteLine("IndexOperation.Update");
 							_currentIndexer.DeleteDocuments(path);
 							Update(indexFileState, path, physicalFileState);
+						    SwumManager.Instance.UpdateSourceFile(path); //for the query recommender
 							break;
 						}
 						;
