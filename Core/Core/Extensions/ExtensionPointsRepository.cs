@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -14,6 +15,7 @@ namespace Sando.Core.Extensions
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fileExtension), "ExtensionPointsManager:GetParserImplementation - fileExtension cannot be null or an empty string!");
 
+		    fileExtension = fileExtension.ToLowerInvariant();
 			if(parsers.ContainsKey(fileExtension))
 				return parsers[fileExtension];
 			else
@@ -27,7 +29,7 @@ namespace Sando.Core.Extensions
 			Contract.Requires(supportedFileExtensions.FindAll(sfe => String.IsNullOrWhiteSpace(sfe)).Count == 0, "ExtensionPointsManager:RegisterParserImplementation - supportedFileExtensions cannot contain empty items!");
 			Contract.Requires(parserImplementation != null, "ExtensionPointsManager:RegisterParserImplementation - parserImplementation cannot be null!");
 			
-			foreach(string supportedFileExtension in supportedFileExtensions)
+			foreach(string supportedFileExtension in supportedFileExtensions.Select(e => e.ToLowerInvariant()))
 				parsers[supportedFileExtension] = parserImplementation;
 		}
 
@@ -92,11 +94,11 @@ namespace Sando.Core.Extensions
 		{
 			get
 			{
-                if (extensionManager == null)
+                if(extensionPointsRepository == null)
                 {
-                    extensionManager = new ExtensionPointsRepository();
+                    extensionPointsRepository = new ExtensionPointsRepository();
                 }
-			    return extensionManager;
+                return extensionPointsRepository;
 			}
 		}
 
@@ -105,7 +107,7 @@ namespace Sando.Core.Extensions
 			parsers = new Dictionary<string, IParser>();
 		}
 
-		private static ExtensionPointsRepository extensionManager;
+        private static ExtensionPointsRepository extensionPointsRepository;
 
 		private Dictionary<string, IParser> parsers;
 		private IWordSplitter wordSplitter;
