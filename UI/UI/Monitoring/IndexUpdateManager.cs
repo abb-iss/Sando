@@ -38,6 +38,13 @@ namespace Sando.UI.Monitoring
 			_indexFilesStatesManager.SaveIndexFilesStates();			
 		}
 
+        // Code changed by JZ on 10/30: To complete the Delete case
+        public List<string> GetAllIndexedFileNames()
+        {
+            return _indexFilesStatesManager.GetAllIndexedFileNames();
+        }
+        // End of code changes
+
 		public void UpdateFile(String path)
 		{
 			try
@@ -64,7 +71,15 @@ namespace Sando.UI.Monitoring
 							break;
 						}
 						;
-					case IndexOperation.DoNothing:
+                    // Code changed by JZ on 10/29: Added the Delete case
+                    case IndexOperation.Delete:
+                        {
+                            _currentIndexer.DeleteDocuments(path);
+                            break;
+                        }
+                        ;
+                    // End of code changes
+                    case IndexOperation.DoNothing:
 						{
 							break;
 						}

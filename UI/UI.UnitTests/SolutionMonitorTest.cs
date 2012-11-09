@@ -13,7 +13,7 @@ using UnitTestHelpers;
 
 namespace Sando.UI.UnitTests
 {
-    [TestFixture]
+    [TestFixture]   // [TestClass]
     public class SolutionMonitorTest
     {
         private static SolutionMonitor monitor;
@@ -23,20 +23,20 @@ namespace Sando.UI.UnitTests
 
 
 
-        [TearDown]
+        [TearDown]  // [TestCleanup] (TearDown for Unit Test)
 		public void TearDown()
         {
             monitor.StopMonitoring(true);
 			Directory.Delete(_luceneTempIndexesDirectory + "/basic/", true);
         }
 
-		[TestFixtureSetUp]
+        [TestFixtureSetUp]  // [ClassInitialize] (Setup for Class)
 		public void SetUp()
 		{
 			TestUtils.InitializeDefaultExtensionPoints();
 		}
 
-        [SetUp]
+        [SetUp] // [TestInitialize] (Setup for Unit Test)
         public void Setup()
         {
 			Directory.CreateDirectory(_luceneTempIndexesDirectory + "/basic/");
@@ -53,13 +53,13 @@ namespace Sando.UI.UnitTests
             monitor.UpdateAfterAdditions();
         }
 
-        [Test]
+        [Test]  // [TestMethod]
         public void SolutionMonitor_BasicSetupTest()
         {
      
         }
 
-		[Test]
+        [Test]  // [TestMethod]
 		public void SolutionMonitor_SearchTwoWords()
 		{
 		    var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
@@ -77,7 +77,7 @@ namespace Sando.UI.UnitTests
 		    Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
 		}
 
-		//[Test]
+        //[Test]  // [TestMethod]
 		//public void SolutionMonitor_SearchResultsContainsConstructor()
 		//{
 		//    var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
@@ -95,7 +95,7 @@ namespace Sando.UI.UnitTests
 		//    Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
 		//}
 
-        [Test]
+        [Test]  // [TestMethod]
         public void SolutionMonitor_SearchForExtension()
         {
             var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));

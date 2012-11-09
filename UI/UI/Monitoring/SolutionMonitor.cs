@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections;
+// Code changed by JZ on 10/29: Added the Delete case
+using System.Collections.Generic;
+// End of code changes
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -54,8 +57,8 @@ namespace Sando.UI.Monitoring
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 		{
 			ProjectItem projectItem = e.Argument as ProjectItem;
-			ProcessItem(projectItem,null);			
-            UpdateAfterAdditions();
+			ProcessItem(projectItem,null);
+            UpdateAfterAdditions();            
 		}
 
         private void _runStartupInBackground_DoWork(object sender, DoWorkEventArgs anEvent)
@@ -90,6 +93,18 @@ namespace Sando.UI.Monitoring
                         }                     
                     }
                 }
+
+                // Code changed by JZ on 10/30: To complete the Delete case
+                List<string> allIndexedFileNames = _indexUpdateManager.GetAllIndexedFileNames();
+                foreach (string filename in allIndexedFileNames)
+                {
+                    if (!File.Exists(filename))
+                    {
+                        Console.WriteLine("Delete index for: " + filename);
+                        _indexUpdateManager.UpdateFile(filename);
+                    }
+                }
+                // End of code changes
             } 
             catch(Exception e)
             {

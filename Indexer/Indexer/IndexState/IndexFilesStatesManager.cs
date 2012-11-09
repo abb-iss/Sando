@@ -97,6 +97,24 @@ namespace Sando.Indexer.IndexState
 			return indexFilesStates.ContainsKey(fullFilePath) ? indexFilesStates[fullFilePath] : null;
 		}
 
+        // Code changed by JZ on 10/30: To complete the Delete case
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public List<string> GetAllIndexedFileNames()
+        {
+            List<string> allIndexedFileNames = new List<string>();
+
+            if (indexFilesStates == null)
+                ReadIndexFilesStates();
+
+            foreach (KeyValuePair<string, IndexFileState> kvp in indexFilesStates)
+            {
+                allIndexedFileNames.Add(kvp.Key);
+            }
+
+            return allIndexedFileNames;
+        }
+        // End of code changes
+
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void UpdateIndexFileState(string fullFilePath, IndexFileState indexFileState)
 		{
