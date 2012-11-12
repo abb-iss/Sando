@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using ABB.Swum;
+using ABB.Swum.Nodes;
 
 namespace Sando.Recommender {
     public class QueryRecommender {
-        public QueryRecommender() {
-            recommendations = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-        }
-
         /// <summary>
         /// Maps query recommendation strings to an accumulated score for that recommendation
         /// </summary>
         private Dictionary<string, int> recommendations; 
+        
+        
+        public QueryRecommender() {
+            recommendations = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+        }
+
 
         public string[] GenerateRecommendations(string query) {
             if(string.IsNullOrEmpty(query)) {
@@ -23,7 +28,8 @@ namespace Sando.Recommender {
             //TODO: split query into words, search each one?
 
             //WeightByFrequency(query);
-            WeightBySameField(query);
+            //WeightBySameField(query);
+            WeightBySameField_WordsInOrder(query);
 
             //return the recommendations sorted by score in descending order
             return recommendations.OrderByDescending(kvp => kvp.Value).Select(kvp => kvp.Key).ToArray();
@@ -205,8 +211,136 @@ namespace Sando.Recommender {
             }
         }
 
+        /// <summary>
+        /// Generates query recommendations. Words that appear in the same field (action/theme/indirect object) as the
+        /// query word are weighted higher.
+        /// The words in the generated recommendations are sorted in the same order as they appear in the method signature.
+        /// </summary>
+        /// <param name="query">The query string to create recommended completions for.</param>
+        private void WeightBySameField_WordsInOrder(string query) {
+            const int NormalWeight = 1;
+            const int QueryInFieldWeight = 5;
+
+            //search through all the SWUM data
+            Dictionary<string, SwumDataRecord> swumData = SwumManager.Instance.GetSwumData();
+            foreach(var swumRecord in swumData.Values) {
+                var actionWords = new string[] { };
+                var themeWords = new string[] { };
+                var indirectWords = new string[] { };
+                bool queryInAction = false, queryInTheme = false, queryInIndirect = false;
+                int queryActionIndex = -1, queryThemeIndex = -1, queryIndirectIndex = -1;
+                if(!string.IsNullOrWhiteSpace(swumRecord.Action)) {
+                    actionWords = swumRecord.Action.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    queryActionIndex = Array.FindIndex(actionWords, s => string.Compare(s, query, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    if(queryActionIndex > -1) { queryInAction = true; }
+                }
+                if(!string.IsNullOrWhiteSpace(swumRecord.Theme)) {
+                    themeWords = swumRecord.Theme.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    queryThemeIndex = Array.FindIndex(themeWords, s => string.Compare(s, query, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    if(queryThemeIndex > -1) { queryInTheme = true; }
+                }
+                if(!string.IsNullOrWhiteSpace(swumRecord.IndirectObject)) {
+                    indirectWords = swumRecord.IndirectObject.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    queryIndirectIndex = Array.FindIndex(indirectWords, s => string.Compare(s, query, StringComparison.InvariantCultureIgnoreCase) == 0);
+                    if(queryIndirectIndex > -1) { queryInIndirect = true; }
+                }
+
+                if(queryInAction || queryInTheme || queryInIndirect) {
+                    //add words from action
+                    for(int i = 0; i < actionWords.Length; i++) {
+                        if(queryInAction) {
+                            if(i < queryActionIndex) {
+                                AddRecommendation(string.Format("{0} {1}", actionWords[i], query), QueryInFieldWeight);
+                            } else if(queryActionIndex < i) {
+                                AddRecommendation(string.Format("{0} {1}", query, actionWords[i]), QueryInFieldWeight);
+                            }
+                        } else {
+                            //the action words do not contain the query word
+                            AddRecommendation(string.Format("{0} {1}", actionWords[i], query), NormalWeight);
+                        }
+                    }
+                    if(queryInAction && actionWords.Count() > 2) {
+                        AddRecommendation(swumRecord.Action, QueryInFieldWeight);
+                    } else if(!queryInAction && actionWords.Count() > 1) {
+                        AddRecommendation(string.Format("{0} {1}", swumRecord.Action, query), NormalWeight);
+                    }
+
+                    //add words from theme
+                    for(int i = 0; i < themeWords.Length; i++) {
+                        if(queryInTheme) {
+                            if(i < queryThemeIndex) {
+                                AddRecommendation(string.Format("{0} {1}", themeWords[i], query), QueryInFieldWeight);
+                            } else if(queryThemeIndex < i) {
+                                AddRecommendation(string.Format("{0} {1}", query, themeWords[i]), QueryInFieldWeight);
+                            }
+                        } else {
+                            //the theme words do not contain the query word
+                            if(queryInAction) {
+                                AddRecommendation(string.Format("{0} {1}", query, themeWords[i]), NormalWeight);
+                            }
+                            if(queryInIndirect) {
+                                AddRecommendation(string.Format("{0} {1}", themeWords[i], query), NormalWeight);
+                            }
+                        }
+                    }
+                    if(queryInTheme && themeWords.Count() > 2) {
+                        AddRecommendation(swumRecord.Theme, QueryInFieldWeight);
+                    } else if(!queryInTheme && themeWords.Count() > 1) {
+                        if(queryInAction) {
+                            AddRecommendation(string.Format("{0} {1}", query, swumRecord.Theme), NormalWeight);
+                        }
+                        if(queryInIndirect) {
+                            AddRecommendation(string.Format("{0} {1}", swumRecord.Theme, query), NormalWeight);
+                        }
+                    }
+
+                    //add words from indirect object
+                    for(int i = 0; i < indirectWords.Length; i++) {
+                        if(queryInIndirect) {
+                            if(i < queryIndirectIndex) {
+                                AddRecommendation(string.Format("{0} {1}", indirectWords[i], query), QueryInFieldWeight);
+                            } else if(queryIndirectIndex < i) {
+                                AddRecommendation(string.Format("{0} {1}", query, indirectWords[i]), QueryInFieldWeight);
+                            }
+                        } else {
+                            //the indirect object words do not contain the query word
+                            AddRecommendation(string.Format("{0} {1}", query, indirectWords[i]), NormalWeight);
+                        }
+                    }
+                    if(queryInIndirect && indirectWords.Count() > 2) {
+                        AddRecommendation(swumRecord.IndirectObject, QueryInFieldWeight);
+                    } else if(!queryInIndirect && indirectWords.Count() > 1) {
+                        AddRecommendation(string.Format("{0} {1}", query, swumRecord.IndirectObject), NormalWeight);
+                    }
+                }
+            }
+        }
+
+
         private void WeightByPartOfSpeech(string query) {
+            const int NormalWeight = 1;
+            const int PrimaryPosWeight = 5;
+            const int PreambleWeight = 0;
+            var primaryPos = new[] {PartOfSpeechTag.Noun, PartOfSpeechTag.NounPlural, PartOfSpeechTag.PastParticiple, PartOfSpeechTag.Verb, PartOfSpeechTag.Verb3PS, PartOfSpeechTag.VerbIng};
+
             
+        }
+
+        /// <summary>
+        /// Returns the index of <paramref name="word"/> within <paramref name="phraseNode"/>, or -1 if it's not found.
+        /// </summary>
+        private int FindWordInPhraseNode(PhraseNode phraseNode, string word) {
+            if(phraseNode == null) { throw new ArgumentNullException("phraseNode"); }
+            if(word == null) { throw new ArgumentNullException("word"); }
+            
+            int index = -1;
+            for(int i = 0; i < phraseNode.Size(); i++) {
+                if(string.Compare(phraseNode[i].Text, word, StringComparison.InvariantCultureIgnoreCase) == 0) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
         }
     }
 }
