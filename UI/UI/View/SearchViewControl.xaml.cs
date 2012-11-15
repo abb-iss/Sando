@@ -8,8 +8,10 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Sando.Core.Extensions.Logging;
 using Sando.Core.Extensions;
@@ -97,7 +99,7 @@ namespace Sando.UI.View
         {
             get
             {
-                return Translator.GetTranslation(allExpanded ? TranslationCode.CollapseResultsLabel : TranslationCode.ExpandResultsLabel);
+                return Translator.GetTranslation(TranslationCode.ExpandResultsLabel);
             }
         }
 
@@ -158,7 +160,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             InitProgramElements();
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;
 
-            SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+            SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";            
         }
 
         private void InitProgramElements()
@@ -325,6 +327,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 Dispatcher.Invoke(
                 (Action)(() => UpdateResults(results)));
+                
             }     	    
         }
 
@@ -335,10 +338,6 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 SearchResults.Add(codeSearchResult);
             }
-            if(SearchResults.Count > 0)
-                expandButton.Visibility = Visibility.Visible;
-            else
-                expandButton.Visibility = Visibility.Hidden;
         }
 
         public void UpdateMessage(string message)
@@ -361,14 +360,15 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
         #endregion
 
-        private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+ 
+
+        private void UpdateExpansionState(ListView view)
         {
-            var view = sender as ListView;                        
-            if(view!=null)
+            if (view != null)
             {
                 int index = view.SelectedIndex;
                 int currentIndex = 0;
-                foreach(var item in view.Items)
+                foreach (var item in view.Items)
                 {
                     var currentItem = view.ItemContainerGenerator.ContainerFromIndex(currentIndex) as ListViewItem;
                     if (currentItem != null)
@@ -379,7 +379,10 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                         }
                         else
                         {
-                            currentItem.Height = 24;
+                            if (ShouldExpand())
+                                currentItem.Height = 89;
+                            else
+                                currentItem.Height = 24;
                         }
                     }
                     currentIndex++;
@@ -387,29 +390,28 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-        private void ExpandCollapseAllResults(object sender, EventArgs e)
+        private bool ShouldExpand()
         {
-            var resultList = FindName("searchResultListbox") as ListView;
-            if(resultList == null)
-                return;
-
-            for(int i=0; i<resultList.Items.Count; ++i)
-            {
-                var currentItem = resultList.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
-                if(currentItem != null) 
-                    currentItem.Height = allExpanded ? 24 : 89;
-            }
-            allExpanded = !allExpanded;
-            expandButton.Content =
-                Translator.GetTranslation(allExpanded
-                                              ? TranslationCode.CollapseResultsLabel
-                                              : TranslationCode.ExpandResultsLabel);
+            if (expandButton == null)
+                return false;
+            var check = expandButton.IsChecked;
+            if (check != null)
+                return check==true;
+            return false;            
         }
-
-        private bool allExpanded;
 
         private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";
+
+        private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateExpansionState(searchResultListbox);
+        }
+
+        private void Toggled(object sender, RoutedEventArgs e)
+        {
+            UpdateExpansionState(searchResultListbox);
+        }
     }
 
     public  class AccessWrapper
