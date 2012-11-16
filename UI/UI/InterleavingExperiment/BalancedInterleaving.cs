@@ -15,11 +15,11 @@ namespace Sando.UI.InterleavingExperiment
 			Random random = new Random();
 			bool AFirst = (random.NextDouble() >= 0.5);
 
-			while(Ka < A.Count && Kb < B.Count)
+			while (Ka < A.Count && Kb < B.Count)
 			{
-				if(Ka < Kb || (Ka == Kb && AFirst == true))
+				if (Ka < Kb || (Ka == Kb && AFirst == true))
 				{
-					if(!I.Contains(A[Ka]))
+					if (!I.Contains(A[Ka]))
 					{
 						I.Add(A[Ka]);
 					}
@@ -27,7 +27,7 @@ namespace Sando.UI.InterleavingExperiment
 				}
 				else
 				{
-					if(!I.Contains(B[Kb]))
+					if (!I.Contains(B[Kb]))
 					{
 						I.Add(B[Kb]);
 					}
@@ -35,9 +35,18 @@ namespace Sando.UI.InterleavingExperiment
 				}
 			}
 
-			return I;
-		}
+			//kosta's mod: add the leftovers in
+			if (Ka < A.Count)
+			{
+				I.AddRange(A.GetRange(Ka, A.Count - Ka));
+			}
+			if (Kb < B.Count)
+			{
+				I.AddRange(B.GetRange(Kb, B.Count - Kb));
+			}
 
+			return I.Distinct().ToList();
+		}
 
 		public static void DetermineWinner(List<CodeSearchResult> A, List<CodeSearchResult> B, List<CodeSearchResult> I,
 											List<int> C, out int scoreA, out int scoreB)
