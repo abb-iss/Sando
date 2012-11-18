@@ -156,7 +156,7 @@ namespace Sando.IntegrationTests.Search
                 Assert.Fail("Failed to find relevant search result for search: " + keywords);
             }
 
-            var rank = codeSearchResults.IndexOf(methodSearchResult);
+            var rank = codeSearchResults.IndexOf(methodSearchResult) + 1;
             Assert.IsTrue(rank <= expectedLowestRank,
                           "Searching for " + keywords + " doesn't return a result in the top " + expectedLowestRank + "; rank=" +
                           rank);

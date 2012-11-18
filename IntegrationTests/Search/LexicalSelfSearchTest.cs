@@ -38,31 +38,45 @@ namespace Sando.IntegrationTests.Search
         [Test]
         public void ExactLexMatchSearch3()
         {
-            string keywords = "lexicalself";
+            string keywords = "LexicalSelf";
             var expectedLowestRank = 1;
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "LexicalSelfSearchTest");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
-        private void EyeIsBullsAThis() { }
-        private void ThisIsBullsEyeA() { }
-        private void ThisIsABullsEye() { }
-/*
+        private void EyeIsBullsThis() { }
+        private void ThisIsBullsEye() { }
+        private void ThisIsBulls() { }
+      
         [Test]
-        public void PreferenceToLexicalOrderTest()
+        public void PreferenceForWordOrderTest()
         {
-            string keywords = "ThisIsABullsEye";
+            string keywords = "ThisIsBullsEye";
             var expectedLowestRank = 1;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsABullsEye");
-            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
-            expectedLowestRank = 2;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsBullsEyeA");
-            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
-            expectedLowestRank = 3;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "EyeIsBullsAThis");
-            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsBullsEye");
+            List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            Assert.IsTrue(results.Count >= 3);
+            Assert.IsTrue(results[0].Score > results[1].Score);
+            Assert.IsTrue(results[1].ProgramElementType == ProgramElementType.Method && (results[1].Name == "ThisIsBulls"));
+            Assert.IsTrue(results[1].Score > results[2].Score);
+            Assert.IsTrue(results[2].ProgramElementType == ProgramElementType.Method && (results[2].Name == "EyeIsBullsThis"));
         }
-*/
+
+        private void PumpkinSpiceLatte() { }
+        private void Pumpkin() { }
+        private void LattePumpkinSpice() { }
+
+        [Test]
+        public void PreferenceForShortestMatch()
+        {
+            string keywords = "Pumpkin";
+            var expectedLowestRank = 1;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "Pumpkin");
+            List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            Assert.IsTrue(results.Count >= 3);
+            Assert.IsTrue(results[0].Score > results[1].Score);
+            Assert.IsTrue(results[0].Score > results[2].Score);
+        }
 
 		[TestFixtureSetUp]
 		public void SetUp()
@@ -117,7 +131,7 @@ namespace Sando.IntegrationTests.Search
 			Directory.Delete(indexPath, true);
 		}
 
-        private static void EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
+        private static List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
             var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
@@ -127,10 +141,12 @@ namespace Sando.IntegrationTests.Search
                 Assert.Fail("Failed to find relevant search result for search: " + keywords);
             }
 
-            var rank = codeSearchResults.IndexOf(methodSearchResult);
+            var rank = codeSearchResults.IndexOf(methodSearchResult) + 1;
             Assert.IsTrue(rank <= expectedLowestRank,
                           "Searching for " + keywords + " doesn't return a result in the top " + expectedLowestRank + "; rank=" +
                           rank);
+
+            return codeSearchResults;
         }
 
 		private string indexPath;
