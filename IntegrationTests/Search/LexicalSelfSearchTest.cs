@@ -44,6 +44,25 @@ namespace Sando.IntegrationTests.Search
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
+        private void EyeIsBullsAThis() { }
+        private void ThisIsBullsEyeA() { }
+        private void ThisIsABullsEye() { }
+
+        [Test]
+        public void PreferenceToLexicalOrderTest()
+        {
+            string keywords = "ThisIsABullsEye";
+            var expectedLowestRank = 1;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsABullsEye");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            var expectedLowestRank = 2;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsBullsEyeA");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            var expectedLowestRank = 3;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "EyeIsBullsAThis");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
+
 
 		[TestFixtureSetUp]
 		public void SetUp()
