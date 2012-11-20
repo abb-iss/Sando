@@ -96,6 +96,15 @@ namespace Sando.IntegrationTests.Search
 			CodeSearchResult classResult = results.Find(predicate);
 			Assert.IsTrue((classResult.Element as ClassElement).Body.Contains("sweet"));
 		}
+
+        [Test]
+        public void IncompleteTermTest()
+        {
+            string keywords = "caram";
+            var expectedLowestRank = 1;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "CaramelMacchiato");
+            List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
 */
 
 		[TestFixtureSetUp]
