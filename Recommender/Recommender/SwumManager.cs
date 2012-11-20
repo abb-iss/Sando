@@ -21,7 +21,6 @@ namespace Sando.Recommender {
         private readonly XName[] functionTypes = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
         private SwumBuilder builder;
         private Dictionary<string, SwumDataRecord> signaturesToSwum;
-        //private Dictionary<XElement, SwumDataRecord> xelementsToSwum;
 
         
         /// <summary>
@@ -30,10 +29,7 @@ namespace Sando.Recommender {
         private SwumManager() {
             builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
             signaturesToSwum = new Dictionary<string, SwumDataRecord>();
-            //xelementsToSwum = new Dictionary<XElement, SwumDataRecord>();
-
-            //TODO: read SWUM cache file from Sando data directory
-            
+            CacheLoaded = false;
         }
 
         /// <summary>
@@ -61,6 +57,10 @@ namespace Sando.Recommender {
         /// </summary>
         public string CachePath { get; private set; }
 
+        /// <summary>
+        /// Indicates whether a cache file has been successfully loaded.
+        /// </summary>
+        public bool CacheLoaded { get; private set; }
 
         /// <summary>
         /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
@@ -75,6 +75,7 @@ namespace Sando.Recommender {
             }
             Clear();
             ReadSwumCache(CachePath);
+            CacheLoaded = true;
         }
 
         /// <summary>
@@ -183,7 +184,6 @@ namespace Sando.Recommender {
             using(var cacheFile = new StreamReader(path)) {
                 //clear any existing SWUMs
                 signaturesToSwum.Clear();
-                //xelementsToSwum.Clear();
                 
                 //read each SWUM entry from the cache file
                 string entry;
@@ -206,20 +206,6 @@ namespace Sando.Recommender {
             }
         }
 
-        ///// <summary>
-        ///// Returns the SWUM data for the given method element. 
-        ///// </summary>
-        ///// <param name="methodElement">The XElement of the method to get SWUM data about. This element can be a Function, Constructor, Destructor or Call.</param>
-        ///// <returns>A SwumDataRecord containing the SWUM data about the given method, or null if no data is found.</returns>
-        //public SwumDataRecord GetSwumForElement(XElement methodElement) {
-        //    if(methodElement == null) { throw new ArgumentNullException("methodElement"); }
-        //    var methodNames = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
-        //    if(!methodNames.Contains(methodElement.Name) && methodElement.Name != SRC.Call) {
-        //        throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
-        //    }
-
-        //    return xelementsToSwum.ContainsKey(methodElement) ? xelementsToSwum[methodElement] : null;
-        //}
 
         /// <summary>
         /// Returns the SWUM data for the given method signature.
