@@ -154,6 +154,24 @@ namespace Sando.UI.View
 			searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
 			searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
 			List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
+
+			string[] splitTerms = searchString.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach(string term in splitTerms)
+			{
+				if(term.Any(Char.IsLower) && term.Any(Char.IsUpper) || term.Any(Char.IsLetter) && term.Any(Char.IsDigit))
+				{
+					searchTerms.Add(term);
+					//add this because we know this will be a lexical type search
+					searchTerms.Add(term + "*");
+				}
+			}
+
+			//if there is only one term we add a star to it to add partial matches
+			if(searchTerms.Count == 1)
+			{
+				searchTerms.Add(searchTerms[0] + "*");
+			}
+
 			criteria.SearchTerms = new SortedSet<string>(searchTerms);
 			return criteria;
 		}

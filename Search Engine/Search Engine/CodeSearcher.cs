@@ -142,6 +142,25 @@ namespace Sando.SearchEngine
 				searchCriteria = new SimpleSearchCriteria();
 			var criteria = searchCriteria;
 			criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
+
+			string[] splitTerms = searchString.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach(string term in splitTerms)
+			{
+				if(term.Any(Char.IsLower) && term.Any(Char.IsUpper) || term.Any(Char.IsLetter) && term.Any(Char.IsDigit))
+				{
+					criteria.SearchTerms.Add(term);
+					//add this because we know this will be a lexical type search
+					criteria.SearchTerms.Add(term + "*");
+				}
+			}
+
+			//if there is only one term we add another one with a star to it to add partial matches
+			if(criteria.SearchTerms.Count == 1)
+			{
+				string termStar = criteria.SearchTerms.ElementAt(0) + "*";
+				criteria.SearchTerms.Add(termStar);
+			}
+
 			return criteria;
 		}
 		#endregion
