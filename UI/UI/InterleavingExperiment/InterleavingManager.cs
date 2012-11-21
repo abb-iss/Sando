@@ -8,6 +8,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using System.ComponentModel;
 using System.Threading;
 using System.IO;
+using Sando.SearchEngine;
 
 namespace Sando.UI.InterleavingExperiment
 {
@@ -18,6 +19,7 @@ namespace Sando.UI.InterleavingExperiment
 			LogCount = 0;
 			ClickIdx = new List<int>();
 			SearchRecievedClick = false;
+			boostClassesMethodsReorderer = new BoostClassesMethodsReorderer();
 
 			S3LogWriter.S3CredentialDirectory = pluginDir;
 			InitializeNewLogFileName(pluginDir);
@@ -110,6 +112,7 @@ namespace Sando.UI.InterleavingExperiment
 
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
+			searchResults = boostClassesMethodsReorderer.ReorderSearchResults(searchResults);
             SandoResults = searchResults.ToList();
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 
@@ -148,6 +151,7 @@ namespace Sando.UI.InterleavingExperiment
         private List<CodeSearchResult> SecondaryResults;
         private List<CodeSearchResult> SandoResults;
         private bool SearchRecievedClick;
+		private BoostClassesMethodsReorderer boostClassesMethodsReorderer;
 
         public List<CodeSearchResult> InterleavedResults { get; private set; }
         public List<int> ClickIdx { get; private set; }

@@ -15,7 +15,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
        /// <value>
        /// The search score.
        /// </value>
-       public double Score { get; private set; }
+       public double Score { get; set; }
 
        /// <summary>
        /// Gets or sets the element.

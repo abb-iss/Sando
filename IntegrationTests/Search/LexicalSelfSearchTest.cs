@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -164,6 +165,10 @@ namespace Sando.IntegrationTests.Search
         {
             var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+
+			BoostClassesMethodsReorderer boostClassesMethodsReorderer = new BoostClassesMethodsReorderer();
+        	codeSearchResults = boostClassesMethodsReorderer.ReorderSearchResults(codeSearchResults.AsQueryable()).ToList();
+
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult == null)
             {
