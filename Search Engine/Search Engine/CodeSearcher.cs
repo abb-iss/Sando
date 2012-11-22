@@ -150,16 +150,16 @@ namespace Sando.SearchEngine
 				{
 					criteria.SearchTerms.Add(term);
 					//add this because we know this will be a lexical type search
-					criteria.SearchTerms.Add(term + "*");
+					//criteria.SearchTerms.Add(term + "*");
 				}
 			}
 
 			//if there is only one term we add another one with a star to it to add partial matches
-			if(criteria.SearchTerms.Count == 1)
-			{
-				string termStar = criteria.SearchTerms.ElementAt(0) + "*";
-				criteria.SearchTerms.Add(termStar);
-			}
+			//if(criteria.SearchTerms.Count == 1)
+			//{
+			//	string termStar = criteria.SearchTerms.ElementAt(0) + "*";
+			//	criteria.SearchTerms.Add(termStar);
+			//}
 
 			return criteria;
 		}

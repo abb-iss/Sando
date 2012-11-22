@@ -12,11 +12,11 @@ namespace Sando.SearchEngine
 			{
 				if(result.Element is ClassElement)
 				{
-					result.Score = result.Score * 1.2;
+					result.Score = result.Score * 3;
 				}
 				if(result.Element is MethodElement)
 				{
-					result.Score = result.Score * 1.1;
+					result.Score = result.Score * 2;
 				}
 			}
 	

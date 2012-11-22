@@ -162,15 +162,15 @@ namespace Sando.UI.View
 				{
 					searchTerms.Add(term);
 					//add this because we know this will be a lexical type search
-					searchTerms.Add(term + "*");
+					//searchTerms.Add(term + "*");
 				}
 			}
 
 			//if there is only one term we add a star to it to add partial matches
-			if(searchTerms.Count == 1)
-			{
-				searchTerms.Add(searchTerms[0] + "*");
-			}
+			//if(searchTerms.Count == 1)
+			//{
+			//	searchTerms.Add(searchTerms[0] + "*");
+			//}
 
 			criteria.SearchTerms = new SortedSet<string>(searchTerms);
 			return criteria;

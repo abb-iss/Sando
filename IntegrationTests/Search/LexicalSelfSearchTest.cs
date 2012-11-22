@@ -107,6 +107,17 @@ namespace Sando.IntegrationTests.Search
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
+        private void m1() { string turkey, stuffing, cranberry, sweetPotatoes; }
+        private void m2() { string turkeyStuffing; }
+
+        [Test]
+        public void PreferenceForUnsplitTermsTest()
+        {
+            string keywords = "turkey";
+            var expectedLowestRank = 1;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "m1");
+            List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
 
 		[TestFixtureSetUp]
 		public void SetUp()
