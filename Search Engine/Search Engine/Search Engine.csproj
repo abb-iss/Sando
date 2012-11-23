@@ -61,7 +61,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoostClassesMethodsReorderer.cs" />
     <Compile Include="CodeSearcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SortByScoreResultsReorderer.cs" />

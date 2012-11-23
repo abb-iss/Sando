@@ -196,6 +196,11 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(SandoField.Body.ToString() + ":");
 					stringBuilder.Append(searchTerm);
 					AppendBoostFactor(stringBuilder, SandoField.Body.ToString());
+                    break;
+                case UsageType.UnsplitTerms:
+                    stringBuilder.Append(SandoField.UnsplitIdentifiers.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.UnsplitIdentifiers.ToString());
 					break;
 				case UsageType.Definitions:
 					stringBuilder.Append(SandoField.Name.ToString() + ":");

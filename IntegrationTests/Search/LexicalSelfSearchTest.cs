@@ -81,7 +81,7 @@ namespace Sando.IntegrationTests.Search
             Assert.IsTrue(results[0].Score > results[2].Score);
         }
 
-
+/*
 		private class CaramelMacchiato 
 		{ 
 			//caramel is sweet
@@ -106,7 +106,7 @@ namespace Sando.IntegrationTests.Search
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "CaramelMacchiato");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
-
+*/
         private void m1() { string turkey, stuffing, cranberry, sweetPotatoes; }
         private void m2() { string turkeyStuffing; }
 
@@ -176,10 +176,6 @@ namespace Sando.IntegrationTests.Search
         {
             var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-
-			BoostClassesMethodsReorderer boostClassesMethodsReorderer = new BoostClassesMethodsReorderer();
-        	codeSearchResults = boostClassesMethodsReorderer.ReorderSearchResults(codeSearchResults.AsQueryable()).ToList();
-
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult == null)
             {

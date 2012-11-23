@@ -15,6 +15,7 @@ namespace Sando.Indexer.Searching
 		MethodArguments,
 		MethodReturnTypes,
 		NamespaceNames,
-		PropertyOrFieldTypes
+		PropertyOrFieldTypes,
+        UnsplitTerms
 	}
 }

@@ -28,6 +28,7 @@ namespace Sando.Indexer.Documents
 		ReturnType,
 		Snippet,
 		Modifiers,
-		Values
+		Values,
+        UnsplitIdentifiers
 	}
 }

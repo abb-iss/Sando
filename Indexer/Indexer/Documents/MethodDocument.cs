@@ -1,6 +1,8 @@
 ﻿using System;
 using Lucene.Net.Documents;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sando.Indexer.Documents
 {
@@ -27,7 +29,17 @@ namespace Sando.Indexer.Documents
 			document.Add(new Field(SandoField.ReturnType.ToString(), methodElement.ReturnType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.Modifiers.ToString(), methodElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.IsConstructor.ToString(), methodElement.IsConstructor.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            document.Add(new Field(SandoField.UnsplitIdentifiers.ToString(), CreateUnsplitTermsField(methodElement), Field.Store.NO, Field.Index.NOT_ANALYZED));
 		}
+
+        private static string CreateUnsplitTermsField(MethodElement methodElement)
+        {
+            List<string> idList = new List<string>();
+            string identifierWords = methodElement.Name + " " + methodElement.Body + " " + methodElement.Arguments + " " + methodElement.ReturnType;
+            string[] idWords = identifierWords.ToLower().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            idList.AddRange(idWords);
+            return string.Join(" ", idList.Distinct().ToArray());
+        }
 
 		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
