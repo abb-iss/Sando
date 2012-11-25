@@ -14,6 +14,8 @@ namespace Sando.UI.InterleavingExperiment
 {
     public static class LexSearch
     {
+        public static int NumRawResults;
+
         private static DTE2 _dte = null;
         private static readonly AutoResetEvent _auto = new AutoResetEvent(false);
         private static string _selectionText = String.Empty;
@@ -49,6 +51,7 @@ namespace Sando.UI.InterleavingExperiment
                 _selectionText = text;                
                 var lines = text.Split('\n');
                 var resultLines = lines.Skip(1).Take(lines.Length - 2);
+                NumRawResults = resultLines.Count;
                 foreach (var line in resultLines)
                 {
                     var searchCriteria = GetCriteria(line);

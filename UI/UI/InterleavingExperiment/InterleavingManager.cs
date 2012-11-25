@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.IO;
 using Sando.SearchEngine;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.UI.InterleavingExperiment
 {
@@ -41,9 +42,11 @@ namespace Sando.UI.InterleavingExperiment
                     BalancedInterleaving.DetermineWinner(SandoResults, SecondaryResults, InterleavedResults,
                                                          ClickIdx, out scoreA, out scoreB);
 
-                    string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " +
-                                   FLT_B_NAME + "=" + scoreB + " ; query='" + lastQuery 
-								   + "'" + Environment.NewLine;
+                    string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " + FLT_B_NAME + "=" + scoreB + " ; "
+                                   + "query='" + lastQuery + "' ; "
+                                   + SandoResults.Count + ", " + SecondaryResults.Count + "(" + NumRawSecondaryResults + ") ; "
+                                   + ExactTermMatchInClickedElement
+                                   + Environment.NewLine;
                     WriteLogEntry(entry);
                 }
 				catch(Exception e)
@@ -58,6 +61,7 @@ namespace Sando.UI.InterleavingExperiment
             //capture the query and reissue it to the secondary FLT getting the secondary results
 			SecondaryResults.Clear();
             SecondaryResults = LexSearch.GetResults(query);
+            NumRawSecondaryResults = LexSearch.NumRawResults;
 
 			//write log to S3
 			var s3UploadWorker = new BackgroundWorker();
@@ -66,6 +70,7 @@ namespace Sando.UI.InterleavingExperiment
 
 			ClickIdx.Clear();
 			SearchRecievedClick = false;
+            ExactTermMatchInClickedElement = false;
 			
             return query;
 		}
@@ -138,6 +143,12 @@ namespace Sando.UI.InterleavingExperiment
             {
                 ClickIdx.Add(InterleavedResults.IndexOf(clickedElement));
                 SearchRecievedClick = true;
+
+                string spacedLastQuery = " " + lastQuery.Trim() + " ";
+                ProgramElement pElem = clickedElement.Element;
+                ExactTermMatchInClickedElement = (pElem.Name.Contains(spacedLastQuery));
+                if (pElem is MethodElement) 
+                    ExactTermMatchInClickedElement |= (pElem as MethodElement).Body.Contains(spacedLastQuery);
             }
 		}
 
@@ -151,7 +162,7 @@ namespace Sando.UI.InterleavingExperiment
 			string machine = Environment.MachineName;
 			machine = machine.Replace(' ', '_');
 			machine = machine.Substring(0, (machine.Length < 10) ? machine.Length : 9);
-			LogFile = Dir + "\\PI-" + machine + "-" + Guid.NewGuid() + ".log";
+			LogFile = Dir + "\\PI2-" + machine + "-" + Guid.NewGuid() + ".log";
 		}
 
 		private const int LOG_ENTRIES_PER_FILE = 3;
@@ -159,6 +170,8 @@ namespace Sando.UI.InterleavingExperiment
         private const string FLT_B_NAME = "Lex";
 		private string LogFile;
 		private string PluginDirectory;
+        private int NumRawSecondaryResults = 0;
+        private bool ExactTermMatchInClickedElement;
 
 		private string lastQuery = "?";
         private List<CodeSearchResult> SecondaryResults;
