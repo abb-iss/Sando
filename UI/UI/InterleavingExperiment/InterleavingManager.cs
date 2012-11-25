@@ -112,8 +112,23 @@ namespace Sando.UI.InterleavingExperiment
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
             SandoResults = searchResults.ToList();
+
+            TagResultsForDebugging(SandoResults, SecondaryResults);
+
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 
+        }
+
+        private void TagResultsForDebugging(List<CodeSearchResult> SandoResults, List<CodeSearchResult> SecondaryResults)
+        {
+            foreach (CodeSearchResult sResult in SandoResults)
+            {
+                sResult.Element.Name = "S: " + sResult.Element.Name;
+            }
+            foreach (CodeSearchResult lResult in SecondaryResults)
+            {
+                lResult.Element.Name = "L: " + lResult.Element.Name;
+            }
         }
 
 		//called from UI.FileOpener

@@ -64,7 +64,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
                 if (_name == UndefinedName) return "";
                 return _name;
             }
-            private set { _name = value; }
+            set { _name = value; }
         }
 
         public virtual Guid Id { get; private set; }
