@@ -51,6 +51,9 @@ namespace Sando.Indexer.Searching
 
 			var searchResults = new List<Tuple<ProgramElement, float>>();
 
+            //var explain = documentIndexer.IndexSearcher.Explain(query, hits[0].doc);
+            //var explain2 = documentIndexer.IndexSearcher.Explain(query, hits[1].doc);
+
 			for(int i = 0; i < hits.Length; i++)
 			{
 				var hitDocument = documentIndexer.IndexSearcher.Doc(hits[i].doc);

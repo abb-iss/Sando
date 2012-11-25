@@ -29,7 +29,7 @@ namespace Sando.Indexer.Documents
 			document.Add(new Field(SandoField.ReturnType.ToString(), methodElement.ReturnType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.Modifiers.ToString(), methodElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
 			document.Add(new Field(SandoField.IsConstructor.ToString(), methodElement.IsConstructor.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-            document.Add(new Field(SandoField.UnsplitIdentifiers.ToString(), CreateUnsplitTermsField(methodElement), Field.Store.NO, Field.Index.NOT_ANALYZED));
+            document.Add(new Field(SandoField.UnsplitIdentifiers.ToString(), CreateUnsplitTermsField(methodElement), Field.Store.NO, Field.Index.ANALYZED));
 		}
 
         private static string CreateUnsplitTermsField(MethodElement methodElement)
