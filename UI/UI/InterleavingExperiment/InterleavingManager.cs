@@ -145,10 +145,13 @@ namespace Sando.UI.InterleavingExperiment
                 SearchRecievedClick = true;
 
                 string spacedLastQuery = " " + lastQuery.Trim() + " ";
-                ProgramElement pElem = clickedElement.Element;
-                ExactTermMatchInClickedElement = (pElem.Name.Contains(spacedLastQuery));
-                if (pElem is MethodElement) 
-                    ExactTermMatchInClickedElement |= (pElem as MethodElement).Body.Contains(spacedLastQuery);
+                string spacedName = " " + clickedElement.Element.Name + " ";
+                ExactTermMatchInClickedElement = (spacedName.Contains(spacedLastQuery));
+                if (clickedElement.Element is MethodElement)
+                {
+                    string spacedBody = " " + (clickedElement.Element as MethodElement).Body + " ";
+                    ExactTermMatchInClickedElement |= spacedBody.Contains(spacedLastQuery);
+                }
             }
 		}
 
