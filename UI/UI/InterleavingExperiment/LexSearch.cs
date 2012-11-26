@@ -51,7 +51,7 @@ namespace Sando.UI.InterleavingExperiment
                 _selectionText = text;                
                 var lines = text.Split('\n');
                 var resultLines = lines.Skip(1).Take(lines.Length - 2);
-                NumRawResults = resultLines.Count;
+                NumRawResults = resultLines.Count();
                 foreach (var line in resultLines)
                 {
                     var searchCriteria = GetCriteria(line);
