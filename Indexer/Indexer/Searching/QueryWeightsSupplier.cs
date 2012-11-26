@@ -18,7 +18,7 @@ namespace Sando.Indexer.Searching
 				currentWeigths[name] = 1;
 			}
 			currentWeigths[SandoField.Name.ToString()] = 4;
-            currentWeigths[SandoField.UnsplitIdentifiers.ToString()] = 6;
+            currentWeigths[SandoField.UnsplitIdentifiers.ToString()] = 3;
 
             return currentWeigths;
 		}

@@ -45,7 +45,8 @@ namespace Sando.UI.InterleavingExperiment
                     string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " + FLT_B_NAME + "=" + scoreB + " ; "
                                    + "query='" + lastQuery + "' ; "
                                    + SandoResults.Count + ", " + SecondaryResults.Count + "(" + NumRawSecondaryResults + ") ; "
-                                   + ExactTermMatchInClickedElement
+                                   + "exactmatchinclick=" + ExactTermMatchInClickedElement + " ; "
+								   + "clicked=" + ClickedElementTypes 
                                    + Environment.NewLine;
                     WriteLogEntry(entry);
                 }
@@ -118,7 +119,7 @@ namespace Sando.UI.InterleavingExperiment
 		{
             SandoResults = searchResults.ToList();
 
-            TagResultsForDebugging(SandoResults, SecondaryResults);
+            //TagResultsForDebugging(SandoResults, SecondaryResults);
 
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 
@@ -144,7 +145,8 @@ namespace Sando.UI.InterleavingExperiment
                 ClickIdx.Add(InterleavedResults.IndexOf(clickedElement));
                 SearchRecievedClick = true;
 
-                string spacedLastQuery = " " + lastQuery.Trim() + " ";
+				//record whether clicked element has a perfect lexical match for the query
+				string spacedLastQuery = " " + lastQuery.Trim() + " ";
                 string spacedName = " " + clickedElement.Element.Name + " ";
                 ExactTermMatchInClickedElement = (spacedName.Contains(spacedLastQuery));
                 if (clickedElement.Element is MethodElement)
@@ -152,6 +154,28 @@ namespace Sando.UI.InterleavingExperiment
                     string spacedBody = " " + (clickedElement.Element as MethodElement).Body + " ";
                     ExactTermMatchInClickedElement |= spacedBody.Contains(spacedLastQuery);
                 }
+
+				//record the clicked element type
+				if(clickedElement.Element is MethodElement)
+				{
+					ClickedElementTypes += "M";
+				}
+				else if(clickedElement.Element is ClassElement)
+				{
+					ClickedElementTypes += "C";
+				}
+				else if(clickedElement.Element is FieldElement || clickedElement.Element is PropertyElement)
+				{
+					ClickedElementTypes += "F";
+				}
+				else if(clickedElement.Element is CommentElement || clickedElement.Element is DocCommentElement)
+				{
+					ClickedElementTypes += "Co";
+				}
+				else
+				{
+					ClickedElementTypes += "O";
+				}
             }
 		}
 
@@ -175,6 +199,7 @@ namespace Sando.UI.InterleavingExperiment
 		private string PluginDirectory;
         private int NumRawSecondaryResults = 0;
         private bool ExactTermMatchInClickedElement;
+		private string ClickedElementTypes = "";
 
 		private string lastQuery = "?";
         private List<CodeSearchResult> SecondaryResults;
