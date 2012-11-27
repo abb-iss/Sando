@@ -45,7 +45,7 @@ namespace Sando.UI.InterleavingExperiment
                     string entry = LogCount + ": " + FLT_A_NAME + "=" + scoreA + ", " + FLT_B_NAME + "=" + scoreB + " ; "
                                    + "query='" + lastQuery + "' ; "
                                    + SandoResults.Count + ", " + SecondaryResults.Count + "(" + NumRawSecondaryResults + ") ; "
-                                   + "ptmatchclick" + PartialTermMatchInClicked + ", exmatchclick=" + ExactTermMatchInClicked + " ; "
+                                   + "ptmatchclick=" + PartialTermMatchInClicked + ", exmatchclick=" + ExactTermMatchInClicked + " ; "
 								   + "clicked=" + ClickedElementTypes 
                                    + Environment.NewLine;
                     WriteLogEntry(entry);
