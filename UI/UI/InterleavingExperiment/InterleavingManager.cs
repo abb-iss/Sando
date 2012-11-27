@@ -189,7 +189,7 @@ namespace Sando.UI.InterleavingExperiment
 			string machine = Environment.MachineName;
 			machine = machine.Replace(' ', '_');
 			machine = machine.Substring(0, (machine.Length < 10) ? machine.Length : 9);
-			LogFile = Dir + "\\PI2-" + machine + "-" + Guid.NewGuid() + ".log";
+			LogFile = Dir + "\\PI4-" + machine + "-" + Guid.NewGuid() + ".log";
 		}
 
 		private const int LOG_ENTRIES_PER_FILE = 3;
