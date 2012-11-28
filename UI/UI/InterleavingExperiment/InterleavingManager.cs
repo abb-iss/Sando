@@ -71,8 +71,8 @@ namespace Sando.UI.InterleavingExperiment
 
 			ClickIdx.Clear();
 			SearchRecievedClick = false;
-            ExactTermMatchInClicked = false;
-            PartialTermMatchInClicked = false;
+            ExactTermMatchInClicked = "";
+            PartialTermMatchInClicked = "";
             ClickedElementTypes = "";
 
             return query;
@@ -120,9 +120,7 @@ namespace Sando.UI.InterleavingExperiment
 		public IQueryable<CodeSearchResult> ReorderSearchResults(IQueryable<CodeSearchResult> searchResults)
 		{
             SandoResults = searchResults.ToList();
-
             //TagResultsForDebugging(SandoResults, SecondaryResults);
-
             InterleavedResults = BalancedInterleaving.Interleave(searchResults.ToList(), SecondaryResults);
             return InterleavedResults.AsQueryable(); 
         }
@@ -149,16 +147,16 @@ namespace Sando.UI.InterleavingExperiment
 
 				//record whether clicked element has a perfect lexical match for the query
                 string name = clickedElement.Element.Name.ToLower();
-                PartialTermMatchInClicked = (name.Contains(lastQuery));
+                PartialTermMatchInClicked += (name.Contains(lastQuery)) ?"N" :".";
 				string spacedLastQuery = " " + lastQuery.Trim().ToLower() + " ";
                 string spacedName = " " + name + " ";
-                ExactTermMatchInClicked = (spacedName.Contains(spacedLastQuery));
+                ExactTermMatchInClicked += (spacedName.Contains(spacedLastQuery)) ?"N" :".";
                 if (clickedElement.Element is MethodElement)
                 {
                     string body = (clickedElement.Element as MethodElement).Body.ToLower();
-                    PartialTermMatchInClicked |= (body.Contains(lastQuery));
+                    PartialTermMatchInClicked += (body.Contains(lastQuery)) ?"B" :":";
                     string spacedBody = " " + body + " ";
-                    ExactTermMatchInClicked |= spacedBody.Contains(spacedLastQuery);
+                    ExactTermMatchInClicked += (spacedBody.Contains(spacedLastQuery)) ?"B" : ".";
                 }
 
 				//record the clicked element type
@@ -204,8 +202,8 @@ namespace Sando.UI.InterleavingExperiment
 		private string LogFile;
 		private string PluginDirectory;
         private int NumRawSecondaryResults = 0;
-        private bool ExactTermMatchInClicked;
-        private bool PartialTermMatchInClicked;
+        private string ExactTermMatchInClicked;
+        private string PartialTermMatchInClicked;
 		private string ClickedElementTypes = "";
 
 		private string lastQuery = "?";

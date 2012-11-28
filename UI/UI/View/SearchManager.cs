@@ -54,6 +54,7 @@ namespace Sando.UI.View
 				var returnString = "";
 				if(!string.IsNullOrEmpty(searchString))
 				{
+					_myDaddy.Update(new List<CodeSearchResult>().AsQueryable());
 					var myPackage = UIPackage.GetInstance();
 					if(myPackage.GetCurrentDirectory() != null)
 					{
