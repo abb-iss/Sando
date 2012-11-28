@@ -26,7 +26,7 @@ namespace Sando.UI.InterleavingExperiment
         public static List<CodeSearchResult> GetResults(string query)
         {
             InitDte2();
-
+            _selectionText = String.Empty;
             _findEvents = _dte.Events.FindEvents;
             _findEvents.FindDone += LexSearch.OnFindDone;
             Find objFind = _dte.Find;
