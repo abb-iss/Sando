@@ -154,9 +154,14 @@ namespace Sando.UI.InterleavingExperiment
                 if (clickedElement.Element is MethodElement)
                 {
                     string body = (clickedElement.Element as MethodElement).Body.ToLower();
-                    PartialTermMatchInClicked += (body.Contains(lastQuery)) ?"B" :":";
+                    PartialTermMatchInClicked += (body.Contains(lastQuery)) ? "B" : ":";
                     string spacedBody = " " + body + " ";
-                    ExactTermMatchInClicked += (spacedBody.Contains(spacedLastQuery)) ?"B" : ".";
+                    ExactTermMatchInClicked += (spacedBody.Contains(spacedLastQuery)) ? "B" : ".";
+                }
+                else
+                {
+                    PartialTermMatchInClicked += ".";
+                    ExactTermMatchInClicked += ".";
                 }
 
 				//record the clicked element type
@@ -193,7 +198,7 @@ namespace Sando.UI.InterleavingExperiment
 			string machine = Environment.MachineName;
 			machine = machine.Replace(' ', '_');
 			machine = machine.Substring(0, (machine.Length < 10) ? machine.Length : 9);
-			LogFile = Dir + "\\PI4-" + machine + "-" + Guid.NewGuid() + ".log";
+			LogFile = Dir + "\\PI4a-" + machine + "-" + Guid.NewGuid() + ".log";
 		}
 
 		private const int LOG_ENTRIES_PER_FILE = 3;
