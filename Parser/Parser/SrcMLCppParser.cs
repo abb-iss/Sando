@@ -5,12 +5,17 @@ using System.Xml.Linq;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using ABB.SrcML;
+//using ABB.SrcML.SrcMLSolutionMonitor;
 
 namespace Sando.Parser
 {
 	public class SrcMLCppParser:   IParser
 	{
 		private readonly SrcMLGenerator Generator;
+
+        private readonly Src2SrcMLRunner srcMLGenerator; // Added by JZ on 12/3/2012
+        private readonly string SRCMLPATH = @"C:\Users\USJIZHE\Documents\GitHub\SrcML.NET\External\bin\srcml"; // Added by JZ on 12/3/2012
 
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
@@ -38,6 +43,9 @@ namespace Sando.Parser
                     FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
                 }
             }
+
+            //Added by JZ on 12/3/2012
+            srcMLGenerator = new Src2SrcMLRunner(SRCMLPATH);
 		}
 
         public void SetSrcMLPath(string getSrcMlDirectory)
@@ -48,7 +56,9 @@ namespace Sando.Parser
 		public List<ProgramElement> Parse(string fileName)
 		{
 			var programElements = new List<ProgramElement>();
-			string srcml = Generator.GenerateSrcML(fileName);
+			///////string srcml = Generator.GenerateSrcML(fileName);
+            string srcml = srcMLGenerator.GenerateSrcMLAndStringFromFile(fileName, fileName + ".xml");    // Added by JZ on 12/3/2012
+            Console.WriteLine("new srcml string: [" + srcml + "]");
 
 			if(srcml != String.Empty)
 			{
