@@ -21,6 +21,10 @@ namespace Sando.Parser.UnitTests
 			CurrentDirectory = Environment.CurrentDirectory;
 		}
 
+        /// <summary>
+        /// Changed by JZ on 12/3/2012
+        /// Adapt to changes in SrcMLCppParser.cs
+        /// </summary>
 		[Test]
 		public void ParseCPPSourceTest()
 		{
@@ -33,9 +37,24 @@ namespace Sando.Parser.UnitTests
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Count, 6);
             ///////CheckParseOfEventFile(parser, sourceFile, elements);
-
 		}
 
+        /* // old implementation
+        [Test]
+        public void ParseCPPSourceTest()
+        {
+            bool seenGetTimeMethod = false;
+            int numMethods = 0;
+            ///////string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
+            string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.cpp";
+            var parser = new SrcMLCppParser();
+            var elements = parser.Parse(sourceFile);
+            Assert.IsNotNull(elements);
+            Assert.AreEqual(elements.Count, 6);
+            ///////CheckParseOfEventFile(parser, sourceFile, elements);
+
+        }
+        */
 
 		[Test]
 		public void ParseCPPHeaderTest()

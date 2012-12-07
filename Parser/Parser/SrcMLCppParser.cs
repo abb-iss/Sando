@@ -53,16 +53,23 @@ namespace Sando.Parser
             Generator.SetSrcMLLocation(getSrcMlDirectory);
         }
 
+        /// <summary>
+        /// Changed by JZ on 12/4/2012
+        /// Replace Generator.GenerateSrcML() with srcMLGenerator.GenerateSrcMLAndXElementFromFile()
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
 		public List<ProgramElement> Parse(string fileName)
 		{
 			var programElements = new List<ProgramElement>();
-			///////string srcml = Generator.GenerateSrcML(fileName);
-            string srcml = srcMLGenerator.GenerateSrcMLAndStringFromFile(fileName, fileName + ".xml");    // Added by JZ on 12/3/2012
-            Console.WriteLine("new srcml string: [" + srcml + "]");
+			//string srcml = Generator.GenerateSrcML(fileName);
+            //string srcml = srcMLGenerator.GenerateSrcMLAndStringFromFile(fileName, fileName + ".xml");
+            //Console.WriteLine("new srcml string: [" + srcml + "]");
+            XElement sourceElements = srcMLGenerator.GenerateSrcMLAndXElementFromFile(fileName, fileName + ".xml");
 
-			if(srcml != String.Empty)
-			{
-				XElement sourceElements = XElement.Parse(srcml,LoadOptions.PreserveWhitespace);
+			//if(srcml != String.Empty)
+			//{
+				//XElement sourceElements = XElement.Parse(srcml,LoadOptions.PreserveWhitespace);
 
 				//classes and structs have to parsed first
 				ParseClasses(programElements, sourceElements, fileName);
@@ -75,12 +82,39 @@ namespace Sando.Parser
 				ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
 				ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
 				SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
-			}
+			//}
 
 			return programElements;
 		}
 
-		private void ParseCppFunctionPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)
+        /* // old implementation
+        public List<ProgramElement> Parse(string fileName)
+        {
+            var programElements = new List<ProgramElement>();
+            string srcml = Generator.GenerateSrcML(fileName);
+
+            if (srcml != String.Empty)
+            {
+                XElement sourceElements = XElement.Parse(srcml, LoadOptions.PreserveWhitespace);
+
+                //classes and structs have to parsed first
+                ParseClasses(programElements, sourceElements, fileName);
+                ParseStructs(programElements, sourceElements, fileName);
+
+                SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
+                ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
+                ParseConstructors(programElements, sourceElements, fileName);
+                ParseFunctions(programElements, sourceElements, fileName);
+                ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
+                ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
+                SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
+            }
+
+            return programElements;
+        }
+        */
+        
+        private void ParseCppFunctionPrototypes(List<ProgramElement> programElements, XElement sourceElements, string fileName)
 		{
 			IEnumerable<XElement> functions =
 				from el in sourceElements.Descendants(SourceNamespace + "function_decl")
