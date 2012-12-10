@@ -982,7 +982,7 @@
         </member>
         <member name="T:ABB.Swum.MethodContext">
             <summary>
-            Encapsulates the program context relevent to a method declaration.
+            Encapsulates the program context relevant to a method declaration.
             </summary>
         </member>
         <member name="M:ABB.Swum.MethodContext.#ctor">

@@ -77,8 +77,9 @@
     <Reference Include="ABB.SrcML.Data">
       <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.Data.dll</HintPath>
     </Reference>
-    <Reference Include="ABB.Swum">
-      <HintPath>..\..\LIBS\SWUM\ABB.Swum.dll</HintPath>
+    <Reference Include="ABB.Swum, Version=0.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\Swum.NET\ABB.Swum.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -96,9 +97,9 @@
     <Compile Include="SwumManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\LIBS\SWUM\ABB.Swum.dll.config">
+    <None Include="..\..\LIBS\Swum.NET\ABB.Swum.dll.config">
       <Link>ABB.Swum.dll.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="sandoKey.snk" />
   </ItemGroup>

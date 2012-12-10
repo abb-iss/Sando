@@ -35,8 +35,8 @@
       <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="ABB.Swum, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\LIBS\SWUM\ABB.Swum.dll</HintPath>
+    <Reference Include="ABB.Swum, Version=0.1.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\LIBS\Swum.NET\ABB.Swum.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\..\LIBS\nunit.framework.dll</HintPath>
