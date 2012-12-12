@@ -23,3 +23,4 @@ Sando/Sando.crunchsolution.cache
 **.DotSettings.user
 Sando/.klocwork/**
 Recommender/Recommender/Recommender.csproj.user
+Recommender/Recommender.UnitTests/Recommender.UnitTests.csproj.user

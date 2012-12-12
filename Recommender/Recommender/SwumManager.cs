@@ -16,6 +16,9 @@ namespace Sando.Recommender {
     /// Builds SWUM for the methods and method calls in a srcML file.
     /// </summary>
     public class SwumManager {
+        private const string SrcmlBinDir = ".";
+        private const string SrcmlCSharpBinDir = "srcML-Win-cSharp";
+        
         private static SwumManager instance;
 
         private readonly XName[] functionTypes = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
@@ -84,7 +87,21 @@ namespace Sando.Recommender {
         /// <param name="sourcePath">The path to the source file.</param>
         public void AddSourceFile(string sourcePath) {
             string fullPath = Path.GetFullPath(sourcePath);
-            var srcmlConverter = new Src2SrcMLRunner(".");
+            string fileExt = Path.GetExtension(fullPath);
+            if(fileExt != null && fileExt[0] == '.') {
+                fileExt = fileExt.Substring(1);
+            }
+
+            Src2SrcMLRunner srcmlConverter;
+            if(string.Compare(fileExt, "cs", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                srcmlConverter = new Src2SrcMLRunner(SrcmlCSharpBinDir);
+            } else {
+                srcmlConverter = new Src2SrcMLRunner(SrcmlBinDir);
+                if(!srcmlConverter.ExtensionMapping.Keys.Contains(fileExt)) {
+                    //if this is an unsupported file type, return and do nothing
+                    return;
+                }
+            }
             var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(fullPath, Path.GetTempFileName());
             try {
                 AddSrcMLFile(tempSrcMLFile);
