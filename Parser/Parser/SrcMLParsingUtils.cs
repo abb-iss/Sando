@@ -338,22 +338,28 @@ namespace Sando.Parser
         {
             try
             {
-                string snip = "";
-                string[] lines = retrieveSnippet.Split('\n');
-                if (lines.Length > 0)
+                var snip = new StringBuilder();
+                var lines = retrieveSnippet.Replace("\t", "   ").Split('\n').ToList();
+                var prefixToRemove = String.Empty;
+                char[] trimChars = { '\n', '\r' };
+                if(lines.Count > 1 && numLines > 2)
                 {
-                    int count = 0;
-                    foreach (var line in lines)
+                    var secondLine = lines[1].Trim(trimChars);
+                    var match = Regex.Match(secondLine, "(\\s+)");
+                    if(match.Success)
+                        prefixToRemove = match.Groups[0].Value;
+                }
+                if (lines.Count > 0)
+                {
+                    for(int i=0; i<lines.Count && i<numLines; ++i)
                     {
-                        if (count >= numLines)
-                            break;
-                        char[] trim = {'\n', '\r'};
-                        var myLine = line.TrimEnd(trim);
-                        myLine.TrimStart(trim);
-                        snip += myLine + Environment.NewLine;
+                        var line = lines[i].Trim(trimChars);
+                        if(line.StartsWith(prefixToRemove))
+                            line = line.Substring(prefixToRemove.Length);
+                        snip.AppendLine(line);
                     }
                 }
-                return snip;
+                return snip.ToString();
             }
             catch (Exception e)
             {

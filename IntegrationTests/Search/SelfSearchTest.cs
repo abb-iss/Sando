@@ -41,7 +41,7 @@ namespace Sando.IntegrationTests.Search
         public void TestSolutionMonitor()
         {
             string keywords = "solution monitor";
-            var expectedLowestRank = 3;
+            var expectedLowestRank = 4;
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SolutionMonitor");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
@@ -82,11 +82,11 @@ namespace Sando.IntegrationTests.Search
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ExtractWords");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "translation get";
-            expectedLowestRank = 2;
+            expectedLowestRank = 3;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetTranslation");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "register extension points";
-            expectedLowestRank = 7;
+            expectedLowestRank = 8;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "RegisterExtensionPoints");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
         }
@@ -156,7 +156,7 @@ namespace Sando.IntegrationTests.Search
                 Assert.Fail("Failed to find relevant search result for search: " + keywords);
             }
 
-            var rank = codeSearchResults.IndexOf(methodSearchResult);
+            var rank = codeSearchResults.IndexOf(methodSearchResult) + 1;
             Assert.IsTrue(rank <= expectedLowestRank,
                           "Searching for " + keywords + " doesn't return a result in the top " + expectedLowestRank + "; rank=" +
                           rank);
