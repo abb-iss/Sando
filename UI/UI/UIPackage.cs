@@ -363,7 +363,7 @@ namespace Sando.UI
                     IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired, GetOpenSolution());
                 //SwumManager needs to be initialized after the current solution key is set, but before monitoring/indexing begins
-                Recommender.SwumManager.Instance.Initialize(this.GetCurrentSolutionKey().GetIndexPath());
+                Recommender.SwumManager.Instance.Initialize(this.GetCurrentSolutionKey().GetIndexPath(), !isIndexRecreationRequired);
                 _currentMonitor.StartMonitoring();
                 _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
             }

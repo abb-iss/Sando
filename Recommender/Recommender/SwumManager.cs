@@ -18,6 +18,8 @@ namespace Sando.Recommender {
     public class SwumManager {
         private const string SrcmlBinDir = ".";
         private const string SrcmlCSharpBinDir = "srcML-Win-cSharp";
+
+        private const string DefaultCacheFile = "swum-cache.txt";
         
         private static SwumManager instance;
 
@@ -70,15 +72,25 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
         public void Initialize(string cacheDirectory) {
-            CachePath = Path.Combine(cacheDirectory, "swum-cache.txt");
+            Initialize(cacheDirectory, true);
+        }
 
-            if(!File.Exists(CachePath)) {
-                Debug.WriteLine(string.Format("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath));
-                return;
-            }
+        /// <summary>
+        /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
+        /// </summary>
+        /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
+        /// <param name="useCache">True to use the existing cache file, if any. False to not load any cache file.</param>
+        public void Initialize(string cacheDirectory, bool useCache) {
             Clear();
-            ReadSwumCache(CachePath);
-            CacheLoaded = true;
+            if(useCache) {
+                CachePath = Path.Combine(cacheDirectory, DefaultCacheFile);
+                if(!File.Exists(CachePath)) {
+                    Debug.WriteLine(string.Format("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath));
+                    return;
+                }
+                ReadSwumCache(CachePath);
+                CacheLoaded = true;
+            }
         }
 
         /// <summary>
@@ -88,6 +100,20 @@ namespace Sando.Recommender {
         public void AddSourceFile(string sourcePath) {
             string fullPath = Path.GetFullPath(sourcePath);
             string fileExt = Path.GetExtension(fullPath);
+            if(fileExt != null) {
+                //remove the dot from the extension
+                //if there's more than one dot, get only the part after the final dot
+                int dotIndex = fileExt.LastIndexOf('.');
+                if(dotIndex >= 0) {
+                    if(dotIndex < fileExt.Length - 1) {
+                        fileExt = fileExt.Substring(dotIndex + 1);
+                    } else {
+                        //fileExt ends with "."
+                        fileExt = string.Empty;
+                    }
+                }
+            }
+
             if(fileExt != null && fileExt[0] == '.') {
                 fileExt = fileExt.Substring(1);
             }
@@ -97,6 +123,7 @@ namespace Sando.Recommender {
                 srcmlConverter = new Src2SrcMLRunner(SrcmlCSharpBinDir);
             } else {
                 srcmlConverter = new Src2SrcMLRunner(SrcmlBinDir);
+                srcmlConverter.ExtensionMapping.WillReturnDefaultValues = true;
                 if(!srcmlConverter.ExtensionMapping.Keys.Contains(fileExt)) {
                     //if this is an unsupported file type, return and do nothing
                     return;
@@ -164,7 +191,7 @@ namespace Sando.Recommender {
         /// Prints the SWUM cache to the file specified in CachePath.
         /// </summary>
         public void PrintSwumCache() {
-            PrintSwumCache(CachePath);
+            PrintSwumCache(string.IsNullOrWhiteSpace(CachePath) ? DefaultCacheFile : CachePath);
         }
 
         /// <summary>
