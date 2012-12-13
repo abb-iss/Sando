@@ -89,8 +89,9 @@ namespace Sando.Recommender {
         public void Initialize(string pluginDirectory, string cacheDirectory, bool useCache) {
             Clear();
             PluginDirectory = pluginDirectory;
+            CachePath = Path.Combine(cacheDirectory, DefaultCacheFile);
+
             if(useCache) {
-                CachePath = Path.Combine(cacheDirectory, DefaultCacheFile);
                 if(!File.Exists(CachePath)) {
                     Debug.WriteLine(string.Format("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath));
                     return;
