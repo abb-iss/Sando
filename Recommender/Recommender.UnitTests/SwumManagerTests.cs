@@ -42,6 +42,18 @@ namespace Sando.Recommender.UnitTests {
         }
 
         [Test]
+        public void TestAddSourceFile_DoubleExtension() {
+            Assert.IsFalse(manager.GetSwumData().Any());
+            manager.AddSourceFile(@"TestFiles\small_json.reader.cpp");
+            Assert.AreEqual(5, manager.GetSwumData().Keys.Count);
+            Assert.IsNotNull(manager.GetSwumForSignature("static bool containsNewLine( Reader::Location begin, Reader::Location end )"));
+            Assert.IsNotNull(manager.GetSwumForSignature("static std::string codePointToUTF8(unsigned int cp)"));
+            Assert.IsNotNull(manager.GetSwumForSignature("Reader::Reader()"));
+            Assert.IsNotNull(manager.GetSwumForSignature("bool Reader::parse( const std::string &document, Value &root, bool collectComments )"));
+            Assert.IsNotNull(manager.GetSwumForSignature("bool Reader::parse( std::istream& sin, Value &root, bool collectComments )"));
+        }
+
+        [Test]
         public void TestRemoveSourceFile() {
             manager.AddSourceFile(@"TestFiles\small_json_reader.cpp");
             manager.AddSourceFile(@"TestFiles\function_def.cpp");

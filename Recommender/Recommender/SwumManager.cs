@@ -16,22 +16,21 @@ namespace Sando.Recommender {
     /// Builds SWUM for the methods and method calls in a srcML file.
     /// </summary>
     public class SwumManager {
-        private const string SrcmlBinDir = ".";
-        private const string SrcmlCSharpBinDir = "srcML-Win-cSharp";
-
-        private const string DefaultCacheFile = "swum-cache.txt";
-        
         private static SwumManager instance;
+        
+        private const string SrcmlBinDir = "LIBS"; //relative to the PluginDirectory
+        private const string SrcmlCSharpBinDir = @"LIBS\srcML-Win-cSharp"; //relative to the PluginDirectory
+        private const string DefaultCacheFile = "swum-cache.txt";
 
         private readonly XName[] functionTypes = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
         private SwumBuilder builder;
         private Dictionary<string, SwumDataRecord> signaturesToSwum;
 
-        
         /// <summary>
         /// Private constructor for a new SwumManager.
         /// </summary>
         private SwumManager() {
+            PluginDirectory = ".";
             builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
             signaturesToSwum = new Dictionary<string, SwumDataRecord>();
             CacheLoaded = false;
@@ -58,6 +57,11 @@ namespace Sando.Recommender {
         }
 
         /// <summary>
+        /// The directory containing the Sando plugin files.
+        /// </summary>
+        public string PluginDirectory { get; set; }
+
+        /// <summary>
         /// The path to the cache file on disk.
         /// </summary>
         public string CachePath { get; private set; }
@@ -70,18 +74,21 @@ namespace Sando.Recommender {
         /// <summary>
         /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
         /// </summary>
+        /// <param name="pluginDirectory">The directory containing the Sando plugin files.</param>
         /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
-        public void Initialize(string cacheDirectory) {
-            Initialize(cacheDirectory, true);
+        public void Initialize(string pluginDirectory, string cacheDirectory) {
+            Initialize(pluginDirectory, cacheDirectory, true);
         }
 
         /// <summary>
         /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
         /// </summary>
+        /// <param name="pluginDirectory">The directory containing the Sando plugin files.</param>
         /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
         /// <param name="useCache">True to use the existing cache file, if any. False to not load any cache file.</param>
-        public void Initialize(string cacheDirectory, bool useCache) {
+        public void Initialize(string pluginDirectory, string cacheDirectory, bool useCache) {
             Clear();
+            PluginDirectory = pluginDirectory;
             if(useCache) {
                 CachePath = Path.Combine(cacheDirectory, DefaultCacheFile);
                 if(!File.Exists(CachePath)) {
@@ -102,27 +109,18 @@ namespace Sando.Recommender {
             string fileExt = Path.GetExtension(fullPath);
             if(fileExt != null) {
                 //remove the dot from the extension
-                //if there's more than one dot, get only the part after the final dot
-                int dotIndex = fileExt.LastIndexOf('.');
-                if(dotIndex >= 0) {
-                    if(dotIndex < fileExt.Length - 1) {
-                        fileExt = fileExt.Substring(dotIndex + 1);
-                    } else {
-                        //fileExt ends with "."
-                        fileExt = string.Empty;
-                    }
+                if(fileExt.Length > 1 && fileExt[0] == '.') {
+                    fileExt = fileExt.Substring(1);
+                } else if(fileExt.Length == 1 && fileExt[0] == '.') {
+                    fileExt = string.Empty;
                 }
-            }
-
-            if(fileExt != null && fileExt[0] == '.') {
-                fileExt = fileExt.Substring(1);
             }
 
             Src2SrcMLRunner srcmlConverter;
             if(string.Compare(fileExt, "cs", StringComparison.InvariantCultureIgnoreCase) == 0) {
-                srcmlConverter = new Src2SrcMLRunner(SrcmlCSharpBinDir);
+                srcmlConverter = new Src2SrcMLRunner(Path.Combine(PluginDirectory, SrcmlCSharpBinDir));
             } else {
-                srcmlConverter = new Src2SrcMLRunner(SrcmlBinDir);
+                srcmlConverter = new Src2SrcMLRunner(Path.Combine(PluginDirectory, SrcmlBinDir));
                 srcmlConverter.ExtensionMapping.WillReturnDefaultValues = true;
                 if(!srcmlConverter.ExtensionMapping.Keys.Contains(fileExt)) {
                     //if this is an unsupported file type, return and do nothing
@@ -184,7 +182,6 @@ namespace Sando.Recommender {
         /// </summary>
         public void Clear() {
             signaturesToSwum.Clear();
-            //xelementsToSwum.Clear();
         }
 
         /// <summary>
