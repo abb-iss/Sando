@@ -33,6 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
+      <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+    </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -88,6 +95,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="SolutionMonitorIntegrationTest.cs" />
+    <Compile Include="TestFiles\SolutionMonitorTestFiles\Class1.cs" />
+    <Compile Include="TestFiles\SolutionMonitorTestFiles\Class2.cs" />
+    <Compile Include="TestFiles\SolutionMonitorTestFiles\Class3.cs" />
     <Shadow Include="Test References\UI.UnitTests.accessor" />
     <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

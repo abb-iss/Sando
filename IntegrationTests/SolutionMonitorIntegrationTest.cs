@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 //using System.ComponentModel.Composition;
@@ -31,6 +32,7 @@ using Sando.UI.Monitoring;
 using UnitTestHelpers;
 /******* from SolutionMonitorTest *******/
 
+//using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 /* //// in SequenceDiagramTesting.IfElseBlocksBuilderTest but useless here
 using ABB.DetailedGenerator;
@@ -70,6 +72,7 @@ namespace Sando.IntegrationTests
         /******* from SolutionMonitorTest *******/
 
 
+
         [ClassInitialize]
         public static void TestInitialize(TestContext testContext)
         {
@@ -85,6 +88,50 @@ namespace Sando.IntegrationTests
             ////{
             ////    graphs[i] = new SequenceGraph();
             ////}
+
+
+            // SrcML.NET's Solution Monitor
+            ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor sm = ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(true);
+            sm.StartMonitoring();
+            //sm.GetListOfAllMonitoredFiles();
+
+            //Is there a GetMonitoredFiles API?
+            string newFile = "C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\foo.cs";
+            string aFile = "C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1.cs";
+            string aFile2 = "C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1111111.cs";
+
+            // TODO: try using ProjectItem to add a file
+            /*
+            var allProjects = ModelSolution.Projects;
+            var enumerator = allProjects.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var project = (Project)enumerator.Current;
+                if (project != null && project.ProjectItems != null)
+                {
+                    ProcessItems(project.ProjectItems.GetEnumerator());
+                }
+            }
+            */
+
+            //Add, catch nothing
+            //File.WriteAllText(newFile, String.Format(@"int foo() {{{0}printf(""hello world!"");{0}}}", Environment.NewLine));
+            //sm.StartMonitoringAFile(newFile);
+            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles2.txt");
+            //Change1, catch Time (2)
+            //File.WriteAllText("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class2.cs", String.Format(@"int foo() {{{0}printf(""hello world!"");{0}}}", Environment.NewLine));
+            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles3.txt");
+            //Change2, catch Time (2)
+            //File.WriteAllText("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1.cs", String.Format(@"int foo222() {{{0}printf(""hello world! foo222"");{0}}}", Environment.NewLine));
+            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles4.txt");
+            //Rename, catch Del (8)
+            //File.Move(aFile, aFile2);
+            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles5.txt");
+            //Delete, catch Del (8)
+            File.Delete("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1.cs");
+            sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles6.txt");
+
+            sm.StopMonitoring();
         }
 
         public static void OpenTestModelingProject(TestContext testContext)
@@ -161,7 +208,6 @@ namespace Sando.IntegrationTests
         [TestMethod]  // [Test]
         public void SolutionMonitor_BasicSetupTest()
         {
-
         }
 
         [HostType("VS IDE")]
@@ -358,5 +404,67 @@ namespace Sando.IntegrationTests
             }
         }
         */
+
+        private static void ProcessItems(IEnumerator items)
+        {
+            while (items.MoveNext())
+            {
+                var item = (ProjectItem)items.Current;
+                ProcessItem(item);
+            }
+        }
+        private static void ProcessItem(ProjectItem item)
+        {
+            ProcessSingleFile(item);
+            ProcessChildren(item);
+        }
+        private static void ProcessSingleFile(ProjectItem item)
+        {
+            string path = "";
+            if (item != null && item.Name != null)
+            {
+                try
+                {
+                    path = item.FileNames[0];
+                }
+                catch (Exception e)
+                {
+                    path = item.FileNames[1];
+                }
+
+                //string fileExtension = Path.GetExtension(path);
+                //if (fileExtension != null && !fileExtension.Equals(String.Empty))
+                //{
+                    // Do here
+                //}
+            }
+        }
+        private static void ProcessChildren(ProjectItem item)
+        {
+            string path = "";
+            if (item != null && item.ProjectItems != null)
+            {
+                try
+                {
+                    path = item.FileNames[0];
+                }
+                catch (Exception e)
+                {
+                    path = item.FileNames[1];
+                }
+                StreamWriter sw = new StreamWriter("D:\\Data\\ChangedFiles.txt", true, System.Text.Encoding.ASCII);
+                string folder = Path.GetDirectoryName(path);
+                sw.WriteLine("now: [" + folder + "]");
+                if ("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles".Equals(folder))
+                {
+                    sw.WriteLine("Add the file under : [" + folder + "]");
+                    item.ProjectItems.AddFromFile("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\foo.cs");
+                }
+                sw.Close();
+
+                ProcessItems(item.ProjectItems.GetEnumerator());
+            }
+        }
+
     }
 }
