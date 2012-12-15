@@ -24,3 +24,6 @@ Sando/Sando.crunchsolution.cache
 Sando/.klocwork/**
 Recommender/Recommender/Recommender.csproj.user
 Recommender/Recommender.UnitTests/Recommender.UnitTests.csproj.user
+Sando/_UpgradeReport_Files/*
+Sando/Backup/*
+Sando/UpgradeLog.*
