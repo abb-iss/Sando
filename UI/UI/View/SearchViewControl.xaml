@@ -27,6 +27,38 @@
        
         <local:MyFontConverter x:Key="FontConverter" />
         <local:MyStrokeConverter x:Key="StrokeConverter" />
+        <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
+        <ControlTemplate x:Key="toggleButtonTemplate" TargetType="ToggleButton">
+            <Grid
+            Width="15"
+            Height="13"
+            Background="Transparent">
+                <Path x:Name="ExpandPath"
+              HorizontalAlignment="Left" 
+              VerticalAlignment="Center"                
+              Margin="1,1,1,1"
+              Fill="{StaticResource GlyphBrush}"
+              Data="M 4 0 L 4 4 L 0 4 L 0 6 L 4 6 L 4 10 L 6 10 L 6 6 L 10 6 L 10 4 L 6 4 L 6 0 Z">                  
+                </Path>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" 
+                 Value="True">
+                    <Setter Property="Fill"
+                  TargetName="ExpandPath"
+                  Value="CadetBlue"/>
+                </Trigger>
+                <Trigger Property="IsChecked" 
+                 Value="True">
+                    <Setter Property="Data"
+                  TargetName="ExpandPath"
+                  Value="M 0 3 L 8 3 L 8 5 L 0 5 Z"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="toggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Template" Value="{StaticResource toggleButtonTemplate}" />
+        </Style>
     </UserControl.Resources>
 
 
@@ -54,11 +86,14 @@
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- details -->
-        <Expander Grid.Row="2" Grid.Column="0" >
+        <Expander Grid.Row="2" Grid.Column="0" Name="LayoutRoot"
+            >
             <Expander.HeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Advanced Options" />
+                        
+
                     </StackPanel>
                 </DataTemplate>
             </Expander.HeaderTemplate>
@@ -126,8 +161,11 @@
             </StackPanel>
         </Expander>
 
-			<Button Grid.Row="2" Grid.Column="2" Visibility="Hidden" Margin="0,5,5,0" Content="{Binding Path=ExpandCollapseResultsLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="expandButton" Click="ExpandCollapseAllResults"
-											KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
+        <ToggleButton Grid.Row="2" Grid.Column="1" ToolTip="Expand/Collapse"   Margin="1,1,1,1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="25"   Name="expandButton"
+											KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60" Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled">
+
+        </ToggleButton>
+
 
 			<!--Bottom Part: Result-->
         <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
@@ -139,9 +177,16 @@
                        SelectionChanged="searchResultListbox_SelectionChanged"
                        >
 
-                <ListView.ItemContainerStyle>
+                <ListView.ItemContainerStyle>                    
                     <Style TargetType="ListViewItem">
-
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
+                                <Setter Property="Height" Value="24"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
+                                <Setter Property="Height" Value="89"/>
+                            </DataTrigger>
+                        </Style.Triggers>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>
