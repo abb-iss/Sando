@@ -417,6 +417,16 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
         private void recommendationWorker_DoWork(object sender, DoWorkEventArgs e) {
             string queryString = (string)e.Argument;
+        
+            var result = recommender.GenerateRecommendations(queryString);
+            //var recList = new List<string>(result) {"asyncronously!"};
+            if(Thread.CurrentThread == this.Dispatcher.Thread) {
+                UpdateRecommendations(result);
+            } else {
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result)));
+            }
+        }
+
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateExpansionState(searchResultListbox);
@@ -425,14 +435,6 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         private void Toggled(object sender, RoutedEventArgs e)
         {
             UpdateExpansionState(searchResultListbox);
-        }
-            var result = recommender.GenerateRecommendations(queryString);
-            //var recList = new List<string>(result) {"asyncronously!"};
-            if(Thread.CurrentThread == this.Dispatcher.Thread) {
-                UpdateRecommendations(result);
-            } else {
-                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result)));
-            }
         }
 
         private void UpdateRecommendations(IEnumerable recommendations ) {
