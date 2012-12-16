@@ -43,10 +43,10 @@ namespace Sando.Parser
 				string className = classElement != null ? classElement.Name : String.Empty;
 
 				//parse access level and type
-				XElement accessElement = field.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-				AccessLevel accessLevel = accessElement != null ? StrToAccessLevel(accessElement.Value) : AccessLevel.Internal;
+			    var typeElement = field.Element(SourceNamespace + "type");
+			    AccessLevel accessLevel = RetrieveAccessLevel(typeElement);
 
-				IEnumerable<XElement> types = field.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+				IEnumerable<XElement> types = typeElement.Elements(SourceNamespace + "name");
 				string fieldType = String.Empty;
 				foreach(XElement type in types)
 				{
@@ -374,16 +374,19 @@ namespace Sando.Parser
 
 		}
 
-	    public static AccessLevel StrToAccessLevel(string level)
-		{
-            try
+	    public static AccessLevel RetrieveAccessLevel(XElement parent, AccessLevel defautlAccessLevel = AccessLevel.Internal)
+	    {
+	        if (parent == null)
+	            return defautlAccessLevel;
+
+	        var specifierElements = parent.Elements(SourceNamespace + "specifier");
+            foreach (var element in specifierElements)
             {
-                return (AccessLevel) Enum.Parse(typeof (AccessLevel), level, true);
-            }catch(Exception e)
-            {
-                FileLogger.DefaultLogger.Error("Problem parsing access level.  Input was: "+level);
-                return AccessLevel.Internal;
+                AccessLevel accessLevel;
+                if (Enum.TryParse(element.Value, true, out accessLevel))
+                    return accessLevel;
             }
+            return defautlAccessLevel;
 		}
 	}
 }

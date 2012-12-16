@@ -96,10 +96,10 @@ namespace Sando.Parser
 				string className = classElement != null ? classElement.Name : String.Empty;
 
 				//parse access level and type
-				XElement accessElement = prop.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-				AccessLevel accessLevel = accessElement != null ? SrcMLParsingUtils.StrToAccessLevel(accessElement.Value) : AccessLevel.Internal;
+			    var typeElement = prop.Element(SourceNamespace + "type");
+			    AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(typeElement);
 
-				IEnumerable<XElement> types = prop.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+				IEnumerable<XElement> types = typeElement.Elements(SourceNamespace + "name");
 
 				//oops, namespaces have the same structure in srcml so need this check
 				if(types.Count() == 0 || types.First().Value == "namespace") continue;
@@ -151,12 +151,7 @@ namespace Sando.Parser
             int definitionLineNumber;
             SrcMLParsingUtils.ParseNameAndLineNumber(strct, out name, out definitionLineNumber);
 
-            AccessLevel accessLevel = AccessLevel.Public; //default
-			XElement accessElement = strct.Element(SourceNamespace + "specifier");
-			if(accessElement != null)
-			{
-				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
-			}
+            AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(strct);
 
             var anc = strct.Ancestors();
             var x = anc;
@@ -189,12 +184,7 @@ namespace Sando.Parser
 			int definitionLineNumber;
 			SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
 
-			AccessLevel accessLevel = AccessLevel.Public; //default
-			XElement accessElement = cls.Element(SourceNamespace + "specifier");
-			if(accessElement != null)
-			{
-				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
-			}
+            AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(cls);
 
 			//parse namespace
 			IEnumerable<XElement> ownerNamespaces =
@@ -270,15 +260,11 @@ namespace Sando.Parser
 
 			SrcMLParsingUtils.ParseNameAndLineNumber(method, out name, out definitionLineNumber);
 
-			AccessLevel accessLevel = AccessLevel.Protected; //default
+			AccessLevel accessLevel;
 			XElement type = method.Element(SourceNamespace + "type");
 			if(type != null)
 			{
-				XElement access = type.Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-				}
+                accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(type);
 
 				XElement typeName = type.Element(SourceNamespace + "name");
                 if (typeName != null)
@@ -291,11 +277,7 @@ namespace Sando.Parser
 			}
 			else
 			{
-				XElement access = method.Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-				}
+                accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(method);
 			}
 
             if(String.IsNullOrEmpty(returnType))
@@ -372,12 +354,7 @@ namespace Sando.Parser
 
 			foreach(XElement enm in enums)
 			{
-				AccessLevel accessLevel = AccessLevel.Public; //default
-				XElement access = enm.Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-				}
+                AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(enm);
 
 				string name;
 				int definitionLineNumber;

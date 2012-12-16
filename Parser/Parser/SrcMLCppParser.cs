@@ -176,12 +176,7 @@ namespace Sando.Parser
 			int definitionLineNumber;
 			SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
 
-            AccessLevel accessLevel = AccessLevel.Public; 
-			XElement accessElement = cls.Element(SourceNamespace + "specifier");
-			if(accessElement != null)
-			{
-				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
-			}
+            AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(cls, AccessLevel.Public);
 
 			//parse namespace
 			IEnumerable<XElement> ownerNamespaces =

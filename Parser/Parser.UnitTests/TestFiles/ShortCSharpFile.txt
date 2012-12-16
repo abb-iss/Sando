@@ -11,12 +11,12 @@ namespace Sando.Parser
 		CSharp
 	};
 
-    public class SrcMLGenerator
+    public partial class SrcMLGenerator
     {
 		
     	private const string Src2SrcmlExe = "\\src2srcml.exe";
     	private String SrcMLFolderPath;
-    	private LanguageEnum Language;
+    	readonly LanguageEnum Language;
 
 		public SrcMLGenerator()
 		{
@@ -31,7 +31,7 @@ namespace Sando.Parser
 				Language = LanguageEnum.Java;
 		}
 
-		public void SetSrcMLLocation(String location)
+		static public void SetSrcMLLocation(String location)
 		{
 			SrcMLFolderPath = location;
 
