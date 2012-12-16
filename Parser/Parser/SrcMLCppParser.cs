@@ -215,15 +215,16 @@ namespace Sando.Parser
 			string fullFilePath = System.IO.Path.GetFullPath(fileName);
             string snippet = SrcMLParsingUtils.RetrieveSnippet(cls, SnippetSize);
 
+            string body = cls.Value;
             if(parseStruct)
             {
-                return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, String.Empty);
+                return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body, extendedClasses, String.Empty);
             }
             else
             {
                 string implementedInterfaces = String.Empty;
                 return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName,
-                    extendedClasses, implementedInterfaces, String.Empty, cls.Value);
+                    extendedClasses, implementedInterfaces, String.Empty, body);
             }
 		}
 

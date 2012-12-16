@@ -214,7 +214,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.Name, "LanguageEnum");
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 7);
 					Assert.AreEqual(enumElem.Namespace, "Sando.Parser");
-					Assert.AreEqual(enumElem.Values, "Java C CSharp");
+					Assert.AreEqual(enumElem.Body, "Java C CSharp");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
 					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt"));
 					hasEnum = true;

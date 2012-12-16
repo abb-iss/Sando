@@ -82,7 +82,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.Namespace == returnedElement.Namespace, "Namespace is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
 			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
-			Assert.True(element.Values == returnedElement.Values, "Values is different");
+            Assert.True("not stored in index" == returnedElement.Body, "Body is different");
 		}
 
 		[Test]

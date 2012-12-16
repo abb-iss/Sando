@@ -63,7 +63,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.Name, "EventType");
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 6);
 					Assert.AreEqual(enumElem.Namespace, String.Empty);
-					Assert.AreEqual(enumElem.Values, "SENSED_DATA_READY SENDING_DONE RECEIVING_DONE");
+					Assert.AreEqual(enumElem.Body, "SENSED_DATA_READY SENDING_DONE RECEIVING_DONE");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
 					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt"));
 					hasEnum = true;
@@ -95,7 +95,7 @@ namespace Sando.Parser.UnitTests
 					EnumElement enumElem = (EnumElement)pe;
 					Assert.AreEqual(enumElem.Name, "");
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 30);
-					Assert.AreEqual(enumElem.Values, "IDD IDD_PLAYMP3_DIALOG");
+					Assert.AreEqual(enumElem.Body, "IDD IDD_PLAYMP3_DIALOG");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
 					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\PlayMp3Dlg.h.txt"));
 					hasEnum = true;

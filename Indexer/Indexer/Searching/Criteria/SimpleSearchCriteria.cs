@@ -207,11 +207,6 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(searchTerm);
 					AppendBoostFactor(stringBuilder, SandoField.Name.ToString());
 					break;
-				case UsageType.EnumValues:
-					stringBuilder.Append(SandoField.Values.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.Values.ToString());
-					break;
 				case UsageType.ExtendedClasses:
 					stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
 					stringBuilder.Append(searchTerm);

@@ -50,10 +50,10 @@ namespace Sando.UnitTestHelpers
 			string name = "UsageType",
 			string namespaceName = "Sando.Indexer.UnitTests",
 			string snippet = "public enum UsageType\n{Definition,\nCall,\nComment\n}",
-			string values = "Definition, Call, Comment"
+			string body = "Definition, Call, Comment"
 		)
 		{
-			return new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values);
+			return new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body);
 		}
 
 		public static FieldElement GetSampleFieldElement(
@@ -109,6 +109,7 @@ namespace Sando.UnitTestHelpers
             AccessLevel accessLevel = AccessLevel.Public,
             int definitionLineNumber = 11,
             string extendedClasses = "SimpleClassBase",
+            string body = "",
             string fullFilePath = "C:/Projects/SampleClass.cs",
             string implementedInterfaces = "IDisposable",
             string name = "SimpleClassName",
@@ -117,7 +118,7 @@ namespace Sando.UnitTestHelpers
             string modifiers = ""
         )
         {
-            return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, modifiers);
+            return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body, extendedClasses, modifiers);
         }
 	}
 }

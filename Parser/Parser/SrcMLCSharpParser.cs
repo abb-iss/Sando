@@ -175,7 +175,8 @@ namespace Sando.Parser
             string fullFilePath = System.IO.Path.GetFullPath(fileName);
             string snippet = SrcMLParsingUtils.RetrieveSnippet(strct, SnippetSize);
 
-            return new StructElement(name, definitionLineNumber, fileName, snippet, accessLevel, namespaceName, extendedStructs, String.Empty);
+            string body = strct.Value;
+            return new StructElement(name, definitionLineNumber, fileName, snippet, accessLevel, namespaceName, body, extendedStructs, String.Empty);
         }
 
 		private ClassElement ParseClass(XElement cls, string fileName)
