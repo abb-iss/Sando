@@ -27,3 +27,4 @@ Recommender/Recommender.UnitTests/Recommender.UnitTests.csproj.user
 Sando/_UpgradeReport_Files/*
 Sando/Backup/*
 Sando/UpgradeLog.*
+Sando/TestResults/*
