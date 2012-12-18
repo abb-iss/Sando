@@ -44,7 +44,6 @@ namespace Sando.IntegrationTests.Search
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
-/*
         private void EyeIsBullsThis() { }
         private void ThisIsBullsEye() { }
         private void ThisIsBulls() { }
@@ -56,14 +55,8 @@ namespace Sando.IntegrationTests.Search
             var expectedLowestRank = 1;
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsBullsEye");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
-            Assert.IsTrue(results.Count >= 3);
-            Assert.IsTrue(results[0].Score > results[1].Score);
-            Assert.IsTrue(results[1].ProgramElementType == ProgramElementType.Method && (results[1].Name == "ThisIsBulls"));
-            Assert.IsTrue(results[1].Score > results[2].Score);
-            Assert.IsTrue(results[2].ProgramElementType == ProgramElementType.Method && (results[2].Name == "EyeIsBullsThis"));
         }
 
-*/
         private void PumpkinSpiceLatte() { }
         private void Pumpkin() { }
         private void LattePumpkinSpice() { }
