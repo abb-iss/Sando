@@ -22,6 +22,7 @@ namespace Sando.Core.Tools
         {
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
 
+			//1.handle quotes
             MatchCollection matchCollection = Regex.Matches(searchTerms, quotesPattern);
             List<string> matches = new List<string>();
             foreach (Match match in matchCollection)
@@ -31,6 +32,18 @@ namespace Sando.Core.Tools
                 if (!String.IsNullOrWhiteSpace(currentMatch))
                     matches.Add(currentMatch);
             }
+
+			//2.add unsplit terms
+			string[] splitTerms = searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach(string term in splitTerms)
+			{
+				if(term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c)))
+				{
+					matches.Add(term);
+				}
+			}
+
+			//3.do rest...
             searchTerms = Regex.Replace(searchTerms, pattern, " ");
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z][a-z]+)", " $1$2");
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");

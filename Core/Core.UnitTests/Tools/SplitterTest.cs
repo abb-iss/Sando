@@ -120,40 +120,40 @@ namespace Sando.Core.UnitTests
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUpperCasesUsed1()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("fileOpenNow");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("file open now", String.Join(" ", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("fileopennow file open now", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUpperCasesUsed2()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("FileOpenNow");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("file open now", String.Join(" ", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("fileopennow file open now", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUpperCasesUsed3()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("FileTXTOpenNow");
-            Assert.AreEqual(4, parts.Count);
-            Assert.AreEqual("file txt open now", String.Join(" ", parts));
+            Assert.AreEqual(5, parts.Count);
+            Assert.AreEqual("filetxtopennow file txt open now", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNumbersUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file324");
-            Assert.AreEqual(2, parts.Count);
-            Assert.AreEqual("file 324", String.Join(" ", parts));
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual("file324 file 324", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNumbersUsed2()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("Mp3Player");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("mp 3 player", String.Join(" ", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("mp3player mp 3 player", String.Join(" ", parts));
         }
 
         [Test]
