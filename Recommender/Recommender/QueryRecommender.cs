@@ -21,7 +21,7 @@ namespace Sando.Recommender {
 
         public string[] GenerateRecommendations(string query) {
             if(string.IsNullOrEmpty(query)) {
-                return null;
+                return new string[0];
             }
             recommendations.Clear();
 

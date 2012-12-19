@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -419,11 +420,10 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             string queryString = (string)e.Argument;
         
             var result = recommender.GenerateRecommendations(queryString);
-            //var recList = new List<string>(result) {"asyncronously!"};
             if(Thread.CurrentThread == this.Dispatcher.Thread) {
-                UpdateRecommendations(result);
+                UpdateRecommendations(result, queryString);
             } else {
-                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result)));
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result, queryString)));
             }
         }
 
@@ -437,9 +437,13 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             UpdateExpansionState(searchResultListbox);
         }
 
-        private void UpdateRecommendations(IEnumerable recommendations ) {
-            searchBox.ItemsSource = recommendations;
-            searchBox.PopulateComplete();
+        private void UpdateRecommendations(IEnumerable<string> recommendations, string query) {
+            if(query == searchBox.Text) {
+                searchBox.ItemsSource = recommendations;
+                searchBox.PopulateComplete();
+            } else {
+                Debug.WriteLine("Query \"{0}\" doesn't match current text \"{1}\"; no update.", query, searchBox.Text);
+            }
         }
     }
     
