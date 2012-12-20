@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.Uml.Interactions;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 /******* from SolutionMonitorTest *******/
-////using NUnit.Framework; // instead, using Microsoft.VisualStudio.TestTools.UnitTesting
+////using NUnit.Framework; // instead, using Microsoft.VisualStudio.TestTools.UnitTesting for VS IDE tests
 using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -53,12 +53,25 @@ namespace Sando.IntegrationTests
     [TestClass]
     public class SolutionMonitorIntegrationTest : IInvoker  // Why does it need IInvoker?
     {
-        // Location of a VS Solution that defines an initial state for your tests
+        /// <summary>
+        /// Location of a VS Solution that defines an initial state for your tests.
+        /// </summary>
         private const string testSolutionFilePath = @"C:\Users\USJIZHE\Documents\Sando\Sando\Sando.sln";
-        // Make EnvDTE.Solution available to test methods
+
+        /// <summary>
+        /// Make EnvDTE.Solution available to test methods.
+        /// </summary>
         private static Solution ModelSolution;
-        // Microsoft.VisualStudio.ComponentModelHost.IComponentModel
+
+        /// <summary>
+        /// From Microsoft.VisualStudio.ComponentModelHost.IComponentModel
+        /// </summary>
         private static IComponentModel context;
+
+        /// <summary>
+        /// SrcML.NET's solution monitor.
+        /// </summary>
+        private static ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor sm;
 
         ////private static SearchRunner searchRunner;   // ABB.SolutionIndexer.Engines.SearchRunner
         ////private static UMLModelManager Manager;     // DetailedSequenceDiagramGenerator.UMLModelManager [No any reference]
@@ -66,12 +79,10 @@ namespace Sando.IntegrationTests
         ////private static ObservableCollection<SequenceGraph> graphs;  // SequenceDiagramWidgets.Graph.SequenceGraph
 
         /******* from SolutionMonitorTest *******/
-        private static SolutionMonitor monitor;
-        private static SolutionKey key;
-        private const string _luceneTempIndexesDirectory = "C:/Windows/Temp";
+        ////private static SolutionMonitor monitor;     // Sando's SolutionMonitor
+        ////private static SolutionKey key;             // Sando's SolutionKey
+        ////private const string _luceneTempIndexesDirectory = "C:/Windows/Temp";
         /******* from SolutionMonitorTest *******/
-
-
 
         [ClassInitialize]
         public static void TestInitialize(TestContext testContext)
@@ -82,58 +93,26 @@ namespace Sando.IntegrationTests
 
             OpenTestModelingProject(testContext);
 
+            // Initialize SrcML.NET's Solution Monitor
+            // TODO: Is there a GetTrackedProjectItems() API? Or do we need it?
+            sm = ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(true);
+            // Start monitoring
+            sm.StartMonitoring();
+
+
+
             ////InitializeGenerator();
             ////graphs = new ObservableCollection<SequenceGraph>();
             ////for (int i = 0; i < 6; i++)
             ////{
             ////    graphs[i] = new SequenceGraph();
             ////}
-
-
-            // SrcML.NET's Solution Monitor
-            ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor sm = ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(true);
-            sm.StartMonitoring();
-            //sm.GetListOfAllMonitoredFiles();
-
-            //Is there a GetMonitoredFiles API?
-            string newFile = "C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\foo.cs";
-            string aFile = "C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1.cs";
-            string aFile2 = "C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1111111.cs";
-
-            // TODO: try using ProjectItem to add a file
-            /*
-            var allProjects = ModelSolution.Projects;
-            var enumerator = allProjects.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var project = (Project)enumerator.Current;
-                if (project != null && project.ProjectItems != null)
-                {
-                    ProcessItems(project.ProjectItems.GetEnumerator());
-                }
-            }
-            */
-
-            //Add, catch nothing
-            //File.WriteAllText(newFile, String.Format(@"int foo() {{{0}printf(""hello world!"");{0}}}", Environment.NewLine));
-            //sm.StartMonitoringAFile(newFile);
-            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles2.txt");
-            //Change1, catch Time (2)
-            //File.WriteAllText("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class2.cs", String.Format(@"int foo() {{{0}printf(""hello world!"");{0}}}", Environment.NewLine));
-            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles3.txt");
-            //Change2, catch Time (2)
-            //File.WriteAllText("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1.cs", String.Format(@"int foo222() {{{0}printf(""hello world! foo222"");{0}}}", Environment.NewLine));
-            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles4.txt");
-            //Rename, catch Del (8)
-            //File.Move(aFile, aFile2);
-            //sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles5.txt");
-            //Delete, catch Del (8)
-            File.Delete("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\Class1.cs");
-            sm.PrintAllMonitoredFiles("D:\\Data\\MonitoredFiles6.txt");
-
-            sm.StopMonitoring();
         }
 
+        /// <summary>
+        /// Open test modeling project.
+        /// </summary>
+        /// <param name="testContext"></param>
         public static void OpenTestModelingProject(TestContext testContext)
         {
             // Get the components service
@@ -175,14 +154,13 @@ namespace Sando.IntegrationTests
             ////}
         }
 
-
-
         [TestInitialize]
         public void Init()
         {
             ////searchRunner.setInvoker(MockProgress.getProgress(this));
 
             /******* from SolutionMonitorTest *******/
+            /*
             Directory.CreateDirectory(_luceneTempIndexesDirectory + "/basic/");
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory + "/basic/");
             //key = new SolutionKey(Guid.NewGuid(), ".\\TestFiles\\FourCSFiles", _luceneTempIndexesDirectory + "/basic/");
@@ -198,18 +176,34 @@ namespace Sando.IntegrationTests
                 //monitor.ProcessFileForTesting(fullPath);
             }
             //monitor.UpdateAfterAdditions();
+            */
             /******* from SolutionMonitorTest *******/
         }
 
-
-
-        /******* from SolutionMonitorTest *******/
         [HostType("VS IDE")]
         [TestMethod]  // [Test]
-        public void SolutionMonitor_BasicSetupTest()
+        public void SolutionMonitor_AddProjectItemsTest()
         {
+            AddProjectItems();
         }
 
+        [HostType("VS IDE")]
+        [TestMethod]  // [Test]
+        public void SolutionMonitor_SaveProjectItemsTest()
+        {
+            SaveProjectItems("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class111.cs");
+            sm.saveRDTFile("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class111.cs");
+        }
+
+        [HostType("VS IDE")]
+        [TestMethod]  // [Test]
+        public void SolutionMonitor_DeleteProjectItemsTest()
+        {
+            DeleteProjectItems("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class111.cs");
+        }
+
+        /******* from SolutionMonitorTest *******/
+        /*
         [HostType("VS IDE")]
         [TestMethod]  // [Test]
         public void SolutionMonitor_SearchTwoWords()
@@ -228,7 +222,9 @@ namespace Sando.IntegrationTests
             }
             Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
         }
+        */
 
+        /*
         [HostType("VS IDE")]
         [TestMethod]  // [Test]
         public void SolutionMonitor_SearchForExtension()
@@ -247,6 +243,7 @@ namespace Sando.IntegrationTests
             }
             Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
         }
+        */
         /******* from SolutionMonitorTest *******/
 
 
@@ -350,27 +347,19 @@ namespace Sando.IntegrationTests
         [TestCleanup]  // [TearDown] (TearDown for Unit Test)
         public void TearDown()
         {
-            monitor.StopMonitoring(true);
+            //monitor.StopMonitoring(true);
             //Directory.Delete(_luceneTempIndexesDirectory + "/basic/", true);  // not delete this folder in order to see inside the box
         }
         /******* from SolutionMonitorTest *******/
-
-
-
+        
         [ClassCleanup]
         public static void TestCleanup()
         {
+            // Stop monitoring
+            sm.StopMonitoring();
             ////searchRunner.Dispose();
         }
-
-
-
-
-
-
-
-
-
+        
         // FROM MSDN: http://msdn.microsoft.com/en-us/library/gg985355.aspx#UiThread
         // If your tests, or the methods under test, make changes to the model store, 
         // then you must execute them in the user interface thread. If you do not do this, 
@@ -380,10 +369,7 @@ namespace Sando.IntegrationTests
         {
             UIThreadInvoker.Invoke(globalSystemWindowsFormsMethodInvoker);
         }
-
-
-
-
+        
 
 
         //// ABB.SolutionIndexer.Core.IDirectoryProvider [No any reference]
@@ -405,66 +391,96 @@ namespace Sando.IntegrationTests
         }
         */
 
-        private static void ProcessItems(IEnumerator items)
-        {
-            while (items.MoveNext())
-            {
-                var item = (ProjectItem)items.Current;
-                ProcessItem(item);
-            }
-        }
-        private static void ProcessItem(ProjectItem item)
-        {
-            ProcessSingleFile(item);
-            ProcessChildren(item);
-        }
-        private static void ProcessSingleFile(ProjectItem item)
-        {
-            string path = "";
-            if (item != null && item.Name != null)
-            {
-                try
-                {
-                    path = item.FileNames[0];
-                }
-                catch (Exception e)
-                {
-                    path = item.FileNames[1];
-                }
 
-                //string fileExtension = Path.GetExtension(path);
-                //if (fileExtension != null && !fileExtension.Equals(String.Empty))
-                //{
-                    // Do here
-                //}
-            }
-        }
-        private static void ProcessChildren(ProjectItem item)
+        /// <summary>
+        /// For debugging.
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="str"></param>
+        private static void WriteLog(string logFile, string str)
         {
-            string path = "";
-            if (item != null && item.ProjectItems != null)
-            {
-                try
-                {
-                    path = item.FileNames[0];
-                }
-                catch (Exception e)
-                {
-                    path = item.FileNames[1];
-                }
-                StreamWriter sw = new StreamWriter("D:\\Data\\ChangedFiles.txt", true, System.Text.Encoding.ASCII);
-                string folder = Path.GetDirectoryName(path);
-                sw.WriteLine("now: [" + folder + "]");
-                if ("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles".Equals(folder))
-                {
-                    sw.WriteLine("Add the file under : [" + folder + "]");
-                    item.ProjectItems.AddFromFile("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\SolutionMonitorTestFiles\\foo.cs");
-                }
-                sw.Close();
+            StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
+            sw.WriteLine(str);
+            sw.Close();
+        }
 
-                ProcessItems(item.ProjectItems.GetEnumerator());
+        /// <summary>
+        /// Add project items in VS environment for testing.
+        /// </summary>
+        public static void AddProjectItems()
+        {
+            var allProjects = ModelSolution.Projects;
+            var enumerator = allProjects.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                var project = (Project)enumerator.Current;
+                if (project != null && project.ProjectItems != null)
+                {
+                    //writeLog("D:\\Data\\log.txt", "Project: [" + project.FullName + "]");
+                    if ("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\IntegrationTests.csproj".Equals(project.FullName))
+                    {
+                        var items = project.ProjectItems.GetEnumerator();
+                        while (items.MoveNext())
+                        {
+                            var item = (ProjectItem)items.Current;
+                            if ("TestFiles".Equals(item.Name))
+                            {
+                                WriteLog("D:\\Data\\log.txt", "ProjectItem to be added under folder: [" + item.Name + "]");
+                                item.ProjectItems.AddFromFileCopy("D:\\Data\\Class111.cs");
+                                //item.ProjectItems.AddFromFileCopy("D:\\Data\\Class222.cs");
+                                //item.ProjectItems.AddFromFileCopy("D:\\Data\\Class333.cs");
+                            }
+                        }
+                    }
+                }
             }
         }
+
+        /// <summary>
+        /// Save project items in VS environment for testing.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void SaveProjectItems(string fileName)
+        {
+            var projectItem = ModelSolution.FindProjectItem(fileName);
+            if (projectItem != null)
+            {
+                WriteLog("D:\\Data\\log.txt", "ProjectItem to be saved: [" + projectItem.Name + "]");
+                projectItem.Open();
+                projectItem.Save();
+            }
+        }
+
+        /// <summary>
+        /// "Save As" project items in VS environment for testing.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void SaveAsProjectItems(string fileName)
+        {
+            var projectItem = ModelSolution.FindProjectItem(fileName);
+            if (projectItem != null)
+            {
+                WriteLog("D:\\Data\\log.txt", "ProjectItem to be saveas-ed: [" + projectItem.Name + "]");
+                projectItem.Open();
+                projectItem.SaveAs("Class111111.cs");   // Note: Class111.cs is Remove()-ed instead of Delete()-ed
+            }
+        }
+
+        /// <summary>
+        /// Delete project items in VS environment for testing.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void DeleteProjectItems(string fileName)
+        {
+            var projectItem = ModelSolution.FindProjectItem(fileName);
+            if (projectItem != null)
+            {
+                WriteLog("D:\\Data\\log.txt", "ProjectItem to be permanantly deleted: [" + projectItem.Name + "]");
+                projectItem.Delete();   // File being deleted from the file system
+                //projectItem.Remove();   // File not being deleted from the file system, just removed from VS Solution Explorer
+            }
+        }
+
 
     }
 }

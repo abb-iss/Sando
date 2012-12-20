@@ -95,9 +95,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="SolutionMonitorIntegrationTest.cs" />
-    <Compile Include="TestFiles\SolutionMonitorTestFiles\Class1.cs" />
-    <Compile Include="TestFiles\SolutionMonitorTestFiles\Class2.cs" />
-    <Compile Include="TestFiles\SolutionMonitorTestFiles\Class3.cs" />
+    <Compile Include="TestFiles\Class111.cs" />
     <Shadow Include="Test References\UI.UnitTests.accessor" />
     <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -151,6 +149,9 @@
       <Project>{A4567112-2AAE-4C67-9EC6-4625924EA118}</Project>
       <Name>UnitTestHelpers</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TestFiles\SolutionMonitorTestFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
