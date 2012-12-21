@@ -54,6 +54,16 @@ namespace Sando.Recommender.UnitTests {
         }
 
         [Test]
+        public void TestAddSourceFile_CSharp_Property() {
+            Assert.IsFalse(manager.GetSwumData().Any());
+            manager.AddSourceFile(@"TestFiles\CSharp_with_property.cs");
+            Assert.AreEqual(3, manager.GetSwumData().Keys.Count);
+            Assert.IsNotNull(manager.GetSwumForSignature("public TestClass()"));
+            Assert.IsNotNull(manager.GetSwumForSignature("public void DoStuff(string theStuff, int count)"));
+            Assert.IsNotNull(manager.GetSwumForSignature("private int PrivateStuff(int count)"));
+        }
+
+        [Test]
         public void TestRemoveSourceFile() {
             manager.AddSourceFile(@"TestFiles\small_json_reader.cpp");
             manager.AddSourceFile(@"TestFiles\function_def.cpp");

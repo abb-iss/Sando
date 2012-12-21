@@ -285,25 +285,19 @@ namespace Sando.Recommender {
                 var fileAttribute = file.Attribute("filename");
                 string filePath = fileAttribute != null ? fileAttribute.Value : srcFile.FileName;
                 var functions = from func in file.Descendants()
-                                where functionTypes.Contains(func.Name)
+                                where functionTypes.Contains(func.Name) && !func.Ancestors(SRC.Declaration).Any()
                                 select func;
                 foreach(XElement func in functions) {
                     //construct SWUM on the function (if necessary)
-                    MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
                     string sig = SrcMLElement.GetMethodSignature(func);
                     if(signaturesToSwum.ContainsKey(sig)) {
-                        //Debug.WriteLine("Found duplicate method signatures!");
-                        //Debug.WriteLine(string.Format("Signature: {0}", sig));
-                        //Debug.WriteLine(string.Format("Existing file(s): {0}", string.Join(";", signaturesToSwum[sig].FileNames)));
-                        //Debug.WriteLine(string.Format("Duplicate file: {0}", filePath));
                         //update the SwumDataRecord with the filename of the duplicate method
                         signaturesToSwum[sig].FileNames.Add(filePath);
-                        //xelementsToSwum[func] = signaturesToSwum[sig];
                     } else {
+                        MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
                         var swumData = ProcessSwumNode(mdn);
                         swumData.FileNames.Add(filePath);
                         signaturesToSwum[sig] = swumData;
-                        //xelementsToSwum[func] = swumData;
                     }
                 }
             }
