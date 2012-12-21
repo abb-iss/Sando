@@ -23,6 +23,7 @@ using Sando.Indexer;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
 using Sando.Recommender;
+using FocusTestVC;
 
 namespace Sando.UI.View
 {
@@ -166,7 +167,36 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";            
 
-            recommender = new QueryRecommender();
+            recommender = new QueryRecommender();   
+        }
+
+        private void searchBox_Loaded_1(object sender, RoutedEventArgs e)
+        {
+            if (this.searchBox != null)
+            {
+                var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
+                TextBoxFocusHelper.RegisterFocus(textBox);
+            }
+        }
+
+        public T FindVisualChildByName<T>(DependencyObject parent, string name) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                string controlName = child.GetValue(Control.NameProperty) as string;
+                if (controlName == name)
+                {
+                    return child as T;
+                }
+                else
+                {
+                    T result = FindVisualChildByName<T>(child, name);
+                    if (result != null)
+                        return result;
+                }
+            }
+            return null;
         }
 
         private void InitProgramElements()
@@ -445,6 +475,8 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                 Debug.WriteLine("Query \"{0}\" doesn't match current text \"{1}\"; no update.", query, searchBox.Text);
             }
         }
+
+   
     }
     
     public  class AccessWrapper

@@ -399,28 +399,6 @@ namespace Sando.UI
 		}
 
 
-		//private class ExtensionDirectoryProvider
-		//{
-		//    //TODO - there must be a better way to do this?
-
-		//    private IVsExtensionManager _myMan;
-
-		//    public ExtensionDirectoryProvider(IVsExtensionManager vsExtensionManager)
-		//    {
-		//        _myMan = vsExtensionManager;
-		//    }
-
-		//    private IInstalledExtension GetExtension(string identifier)
-		//    {
-		//        return _myMan.GetInstalledExtension(identifier);
-		//    }
-
-		//    internal string GetExtensionDirectory()
-		//    {                
-		//        return GetExtension("7e03caf3-06ed-4ff5-962a-effa1fb2f383").InstallPath;
-		//    }
-		//}
-
 
     	#endregion
 
