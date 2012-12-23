@@ -476,7 +476,14 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-   
+
+
+        public void FocusOnText()
+        {
+            var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
+            if (textBox != null)
+                textBox.Focus();
+        }
     }
     
     public  class AccessWrapper

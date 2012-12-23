@@ -73,6 +73,7 @@ namespace Sando.UI
         private ViewManager _viewManager;
 		private SolutionReloadEventListener listener;
 		private IVsUIShellDocumentWindowMgr winmgr;
+        private WindowEvents _windowEvents;
 
         private static UIPackage MyPackage
 		{
@@ -155,6 +156,27 @@ namespace Sando.UI
             _dteEvents = dte.Events.DTEEvents;
             _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
             _dteEvents.OnStartupComplete += StartupCompleted;
+            _windowEvents = dte.Events.WindowEvents;
+            _windowEvents.WindowActivated += SandoWindowActivated;
+            
+        }
+
+        private void SandoWindowActivated(Window GotFocus, Window LostFocus)
+        {
+            if(GotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
+            {
+                var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+                if ((null == window) || (null == window.Frame))
+                {
+                    throw new NotSupportedException(Resources.CanNotCreateWindow);
+                }
+                var stw = window as SearchToolWindow;
+                if (stw != null)
+                {
+                    stw.GetSearchViewControl().FocusOnText();
+                }                
+            }
+            
         }
 
         private void AddCommand()

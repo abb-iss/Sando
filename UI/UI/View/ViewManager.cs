@@ -69,7 +69,7 @@ namespace Sando.UI.View
         {
             var windowFrame = GetWindowFrame();
             // Dock Sando to the bottom of Visual Studio.
-            windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);
+            windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);            
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
             try
             {
