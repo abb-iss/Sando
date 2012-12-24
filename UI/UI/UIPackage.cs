@@ -163,18 +163,25 @@ namespace Sando.UI
 
         private void SandoWindowActivated(Window GotFocus, Window LostFocus)
         {
-            if(GotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
+            try
             {
-                var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
-                if ((null == window) || (null == window.Frame))
+                if (GotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
                 {
-                    throw new NotSupportedException(Resources.CanNotCreateWindow);
+                    var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+                    if ((null == window) || (null == window.Frame))
+                    {
+                        throw new NotSupportedException(Resources.CanNotCreateWindow);
+                    }
+                    var stw = window as SearchToolWindow;
+                    if (stw != null)
+                    {
+                        stw.GetSearchViewControl().FocusOnText();
+                    }
                 }
-                var stw = window as SearchToolWindow;
-                if (stw != null)
-                {
-                    stw.GetSearchViewControl().FocusOnText();
-                }                
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(e);
             }
             
         }

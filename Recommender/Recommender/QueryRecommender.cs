@@ -326,7 +326,7 @@ namespace Sando.Recommender {
             const int NormalWeight = 1;
             
             //search through all the SWUM data
-            Dictionary<string, SwumDataRecord> swumData = SwumManager.Instance.GetSwumData();
+            Dictionary<string, SwumDataRecord> swumData = SwumManager.Instance.GetSwumData();            
             foreach(var swumRecord in swumData.Values) {
                 var actionWords = new Collection<WordNode>();
                 var themeWords = new Collection<WordNode>();

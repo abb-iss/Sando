@@ -267,8 +267,17 @@ namespace Sando.Recommender {
         /// <summary>
         /// Returns a dictionary mapping method signatures to their SWUM data.
         /// </summary>
-        public Dictionary<string,SwumDataRecord> GetSwumData() {
-            return signaturesToSwum;
+        public Dictionary<string,SwumDataRecord> GetSwumData(){
+            //XXX!   
+            //TODO - you can't return this directly! Have to be defensive!              
+            //Please make sure this is OK!
+            var currentSwum = new Dictionary<string, SwumDataRecord>();
+            var keys = signaturesToSwum.Keys.ToList();
+            foreach (var key in keys)
+            {
+                currentSwum[key] = signaturesToSwum[key];
+            }
+            return currentSwum;
         } 
 
         #region Protected methods
