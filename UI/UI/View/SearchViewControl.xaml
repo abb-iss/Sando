@@ -76,11 +76,11 @@
 
         <!-- Top Part: Query -->
         <controls:AutoCompleteBox Loaded="searchBox_Loaded_1"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
-                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
-                                  KeyboardNavigation.TabNavigation="Once" MinimumPopulateDelay="100" MinimumPrefixLength="0"   />
+                                  TabIndex="1" KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="1" KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
+                                  KeyboardNavigation.TabNavigation="Once" MinimumPopulateDelay="100" MinimumPrefixLength="0" GotFocus="searchBox_GotFocus_1"/>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
-                        KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="100" />
+                        KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="100" TabIndex="100"/>
 
         <!-- info string -->
         <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
@@ -102,13 +102,17 @@
             <StackPanel>
                 <!--Access Level-->
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="225*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Margin="5,0,5,5" Text="Access level:" Grid.Row="0"/>
+                    <TextBlock Margin="5,0,5,5" Text="Access level:" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <ComboBox Name="searchAccessLevel" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
-                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" KeyboardNavigation.TabIndex="20" ItemsSource="{Binding AccessLevels}">
+                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" KeyboardNavigation.TabIndex="20" ItemsSource="{Binding AccessLevels}" Grid.ColumnSpan="2">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -163,7 +167,7 @@
         </Expander>
 
         <ToggleButton Grid.Row="2" Grid.Column="1" ToolTip="Expand/Collapse"   Margin="1,1,1,1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="25"   Name="expandButton"
-											KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60" Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled">
+											KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled">
 
         </ToggleButton>
 
@@ -174,8 +178,9 @@
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
-                       KeyboardNavigation.IsTabStop="False" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
+                       KeyboardNavigation.IsTabStop="True" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
                        SelectionChanged="searchResultListbox_SelectionChanged"
+                       KeyboardNavigation.TabIndex="300" TabIndex="300"
                        >
 
                 <ListView.ItemContainerStyle>                    

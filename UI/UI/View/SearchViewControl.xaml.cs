@@ -484,6 +484,11 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             if (textBox != null)
                 textBox.Focus();
         }
+
+        private void searchBox_GotFocus_1(object sender, RoutedEventArgs e)
+        {
+            FocusOnText();
+        }
     }
     
     public  class AccessWrapper
