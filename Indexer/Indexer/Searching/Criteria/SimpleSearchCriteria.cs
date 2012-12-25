@@ -146,22 +146,21 @@ namespace Sando.Indexer.Searching.Criteria
                 if(searchTermEscaped.StartsWith("-"))
                 {
                     notCondition = true;
-                    searchTermEscaped = searchTerm.Substring(1);
+                    searchTermEscaped = searchTerm.Substring(1);                    
                 }
                 searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
 				int usageTypesLeft = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
 				{
-                    if(notCondition) 
+                    if(notCondition)
                         stringBuilder.Append(" NOT ");
                     SingleUsageTypeCriteriaToString(stringBuilder, usageType, searchTermEscaped);
-					if(usageTypesLeft > 1)
-					{
-						stringBuilder.Append(" OR ");
+					if(usageTypesLeft > 1 && !notCondition)
+					{                     
+					    stringBuilder.Append(" OR ");
 					}
 					--usageTypesLeft;
 				}
-				//stringBuilder.Append(")"); 
 				if(searchTermsLeft > 1)
 				{
 					stringBuilder.Append(" OR ");

@@ -38,6 +38,22 @@ namespace Sando.IntegrationTests.Search
         }
 
         [Test]
+        public void TestNoteSandoSearch()
+        {
+            string keywords = "-test sando search";
+            var expectedLowestRank = 10;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SelfSearchTest");
+            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+            var methodSearchResult = codeSearchResults.Find(predicate);
+            if (methodSearchResult != null)
+            {
+                Assert.Fail("Should not find anything that matches for this test: " + keywords);
+            }
+        }
+
+
+        [Test]
         public void TestSolutionMonitor()
         {
             string keywords = "solution monitor";
