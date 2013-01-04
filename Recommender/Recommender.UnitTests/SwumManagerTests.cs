@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 using Sando.Recommender;
 using ABB.SrcML;
@@ -86,6 +87,26 @@ namespace Sando.Recommender.UnitTests {
             Assert.IsNotNull(manager.GetSwumForSignature("char* UpdatedMyFunction(int foo)"));
 
             File.Delete(@"TestFiles\SwumUpdateTest.cpp");
+        }
+
+        [Test]
+        public void TestConcurrentReadWrite() {
+            manager.AddSourceFile(@"TestFiles\json_reader.cpp");
+            Thread addThread = new Thread(AddSourceFiles);
+            addThread.Start();
+            foreach(var sig in manager.GetSwumData()) {
+                Console.WriteLine("From file {0}, found sig: {1}", sig.Value.FileNames.FirstOrDefault(), sig.Key);
+            }
+            addThread.Join(5000);
+        }
+
+        private void AddSourceFiles() {
+            Console.WriteLine("Thread 2: adding file: " + @"TestFiles\small_json_reader.cpp.xml");
+            manager.AddSrcMLFile(new SrcMLFile(@"TestFiles\small_json_reader.cpp.xml"));
+            Console.WriteLine("Thread 2: adding file: " + @"TestFiles\function_def.cpp.xml");
+            manager.AddSrcMLFile(new SrcMLFile(@"TestFiles\function_def.cpp.xml"));
+            Console.WriteLine("Thread 2: adding file: " + @"TestFiles\function_def2.cpp");
+            manager.AddSourceFile(@"TestFiles\function_def2.cpp");
         }
     }
 }

@@ -161,20 +161,22 @@ namespace Sando.Recommender {
         public void RemoveSourceFile(string sourcePath) {
             var fullPath = Path.GetFullPath(sourcePath);
             var sigsToRemove = new HashSet<string>();
-            foreach(var sig in signaturesToSwum.Keys) {
-                var sdr = signaturesToSwum[sig];
-                if(sdr.FileNames.Contains(fullPath)) {
-                    sdr.FileNames.Remove(fullPath);
-                    if(!sdr.FileNames.Any()) {
-                        sigsToRemove.Add(sig);
+            lock(signaturesToSwum) {
+                foreach(var sig in signaturesToSwum.Keys) {
+                    var sdr = signaturesToSwum[sig];
+                    if(sdr.FileNames.Contains(fullPath)) {
+                        sdr.FileNames.Remove(fullPath);
+                        if(!sdr.FileNames.Any()) {
+                            sigsToRemove.Add(sig);
+                        }
                     }
                 }
-            }
 
-            //remove signatures that no longer have any file names
-            //(This is separate from the above loop because you can't delete keys while you're enumerating them.)
-            foreach(var sig in sigsToRemove) {
-                signaturesToSwum.Remove(sig);
+                //remove signatures that no longer have any file names
+                //(This is separate from the above loop because you can't delete keys while you're enumerating them.)
+                foreach(var sig in sigsToRemove) {
+                    signaturesToSwum.Remove(sig);
+                }
             }
         }
 
@@ -182,7 +184,9 @@ namespace Sando.Recommender {
         /// Clears any constructed SWUMs.
         /// </summary>
         public void Clear() {
-            signaturesToSwum.Clear();
+            lock(signaturesToSwum) {
+                signaturesToSwum.Clear();
+            }
         }
 
         /// <summary>
@@ -213,8 +217,10 @@ namespace Sando.Recommender {
             if(output == null) {
                 throw new ArgumentNullException("output");
             }
-            foreach(var kvp in signaturesToSwum) {
-                output.WriteLine("{0}|{1}", kvp.Key, kvp.Value.ToString());
+            lock(signaturesToSwum) {
+                foreach(var kvp in signaturesToSwum) {
+                    output.WriteLine("{0}|{1}", kvp.Key, kvp.Value.ToString());
+                }
             }
         }
 
@@ -224,25 +230,27 @@ namespace Sando.Recommender {
         /// <param name="path">The path to the SWUM cache file.</param>
         public void ReadSwumCache(string path) {
             using(var cacheFile = new StreamReader(path)) {
-                //clear any existing SWUMs
-                signaturesToSwum.Clear();
-                
-                //read each SWUM entry from the cache file
-                string entry;
-                while((entry = cacheFile.ReadLine()) != null) {
-                    //the expected format is <signature>|<SwumDataRecord.ToString()>
-                    string[] fields = entry.Split(new[] {'|'}, 2);
-                    if(fields.Length != 2) {
-                        Debug.WriteLine(string.Format("Too few fields in SWUM cache entry: {0}", entry));
-                        continue;
-                    }
-                    try {
-                        string sig = fields[0].Trim();
-                        string data = fields[1].Trim();
-                        signaturesToSwum[sig] = SwumDataRecord.Parse(data);
-                    } catch(FormatException fe) {
-                        Debug.WriteLine(string.Format("Improperly formatted SwumDataRecord in Swum cache entry: {0}", entry));
-                        Debug.WriteLine(fe.Message);
+                lock(signaturesToSwum) {
+                    //clear any existing SWUMs
+                    signaturesToSwum.Clear();
+
+                    //read each SWUM entry from the cache file
+                    string entry;
+                    while((entry = cacheFile.ReadLine()) != null) {
+                        //the expected format is <signature>|<SwumDataRecord.ToString()>
+                        string[] fields = entry.Split(new[] {'|'}, 2);
+                        if(fields.Length != 2) {
+                            Debug.WriteLine(string.Format("Too few fields in SWUM cache entry: {0}", entry));
+                            continue;
+                        }
+                        try {
+                            string sig = fields[0].Trim();
+                            string data = fields[1].Trim();
+                            signaturesToSwum[sig] = SwumDataRecord.Parse(data);
+                        } catch(FormatException fe) {
+                            Debug.WriteLine(string.Format("Improperly formatted SwumDataRecord in Swum cache entry: {0}", entry));
+                            Debug.WriteLine(fe.Message);
+                        }
                     }
                 }
             }
@@ -257,25 +265,24 @@ namespace Sando.Recommender {
         public SwumDataRecord GetSwumForSignature(string methodSignature) {
             if(methodSignature == null) { throw new ArgumentNullException("methodSignature"); }
 
-            if(signaturesToSwum.ContainsKey(methodSignature)) {
-                return signaturesToSwum[methodSignature];
-            } else {
-                return null;
+            SwumDataRecord result = null;
+            lock(signaturesToSwum) {
+                if(signaturesToSwum.ContainsKey(methodSignature)) {
+                    result = signaturesToSwum[methodSignature];
+                } 
             }
+            return result;
         }
 
         /// <summary>
         /// Returns a dictionary mapping method signatures to their SWUM data.
         /// </summary>
-        public Dictionary<string,SwumDataRecord> GetSwumData(){
-            //XXX!   
-            //TODO - you can't return this directly! Have to be defensive!              
-            //Please make sure this is OK!
+        public Dictionary<string,SwumDataRecord> GetSwumData() {
             var currentSwum = new Dictionary<string, SwumDataRecord>();
-            var keys = signaturesToSwum.Keys.ToList();
-            foreach (var key in keys)
-            {
-                currentSwum[key] = signaturesToSwum[key];
+            lock(signaturesToSwum) {
+                foreach(var entry in signaturesToSwum) {
+                    currentSwum[entry.Key] = entry.Value;
+                }
             }
             return currentSwum;
         } 
@@ -299,14 +306,16 @@ namespace Sando.Recommender {
                 foreach(XElement func in functions) {
                     //construct SWUM on the function (if necessary)
                     string sig = SrcMLElement.GetMethodSignature(func);
-                    if(signaturesToSwum.ContainsKey(sig)) {
-                        //update the SwumDataRecord with the filename of the duplicate method
-                        signaturesToSwum[sig].FileNames.Add(filePath);
-                    } else {
-                        MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
-                        var swumData = ProcessSwumNode(mdn);
-                        swumData.FileNames.Add(filePath);
-                        signaturesToSwum[sig] = swumData;
+                    lock(signaturesToSwum) {
+                        if(signaturesToSwum.ContainsKey(sig)) {
+                            //update the SwumDataRecord with the filename of the duplicate method
+                            signaturesToSwum[sig].FileNames.Add(filePath);
+                        } else {
+                            MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
+                            var swumData = ProcessSwumNode(mdn);
+                            swumData.FileNames.Add(filePath);
+                            signaturesToSwum[sig] = swumData;
+                        }
                     }
                 }
             }
