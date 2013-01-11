@@ -56,6 +56,7 @@ namespace Sando.Parser
         /// <summary>
         /// Changed by JZ on 12/4/2012
         /// Replace Generator.GenerateSrcML() with srcMLGenerator.GenerateSrcMLAndXElementFromFile()
+        /// TODO: srcML file name
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns></returns>

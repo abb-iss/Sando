@@ -28,6 +28,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
+using Sando.UI;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
 /******* from SolutionMonitorTest *******/
@@ -72,6 +73,7 @@ namespace Sando.IntegrationTests
         /// SrcML.NET's solution monitor.
         /// </summary>
         private static ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor sm;
+        private static ABB.SrcML.VisualStudio.SolutionMonitor.FileSystemSrcMLFolder srcMLFolder;
 
         ////private static SearchRunner searchRunner;   // ABB.SolutionIndexer.Engines.SearchRunner
         ////private static UMLModelManager Manager;     // DetailedSequenceDiagramGenerator.UMLModelManager [No any reference]
@@ -98,6 +100,10 @@ namespace Sando.IntegrationTests
             sm = ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(true);
             // Start monitoring
             sm.StartMonitoring();
+
+            WriteLog("D:\\Data\\log.txt", "@@@@@@@ To new FileSystemSrcMLFolder()");
+            srcMLFolder = new ABB.SrcML.VisualStudio.SolutionMonitor.FileSystemSrcMLFolder("D:\\Data\\SandoSrcMLArchive");
+
 
 
 
@@ -182,6 +188,14 @@ namespace Sando.IntegrationTests
 
         [HostType("VS IDE")]
         [TestMethod]  // [Test]
+        public void SolutionMonitor_EmptyTest()
+        {
+            // To test startup features of SrcML.NET
+            System.Threading.Thread.Sleep(5000);
+        }
+
+        [HostType("VS IDE")]
+        [TestMethod]  // [Test]
         public void SolutionMonitor_AddProjectItemsTest()
         {
             AddProjectItems();
@@ -191,15 +205,15 @@ namespace Sando.IntegrationTests
         [TestMethod]  // [Test]
         public void SolutionMonitor_SaveProjectItemsTest()
         {
-            SaveProjectItems("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class111.cs");
-            sm.saveRDTFile("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class111.cs");
+            SaveProjectItems("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class222.c");
+            sm.saveRDTFile("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class222.c");
         }
 
         [HostType("VS IDE")]
         [TestMethod]  // [Test]
         public void SolutionMonitor_DeleteProjectItemsTest()
         {
-            DeleteProjectItems("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class111.cs");
+            DeleteProjectItems("C:\\Users\\USJIZHE\\Documents\\Sando\\IntegrationTests\\TestFiles\\Class222.c");
         }
 
         /******* from SolutionMonitorTest *******/
@@ -357,6 +371,7 @@ namespace Sando.IntegrationTests
         {
             // Stop monitoring
             sm.StopMonitoring();
+            srcMLFolder.StopWatching();
             ////searchRunner.Dispose();
         }
         
@@ -426,7 +441,8 @@ namespace Sando.IntegrationTests
                             if ("TestFiles".Equals(item.Name))
                             {
                                 WriteLog("D:\\Data\\log.txt", "ProjectItem to be added under folder: [" + item.Name + "]");
-                                item.ProjectItems.AddFromFileCopy("D:\\Data\\Class111.cs");
+                                item.ProjectItems.AddFromFileCopy("D:\\Data\\Class111.c");
+                                //item.ProjectItems.AddFromFileCopy("D:\\Data\\Class111.cs");
                                 //item.ProjectItems.AddFromFileCopy("D:\\Data\\Class222.cs");
                                 //item.ProjectItems.AddFromFileCopy("D:\\Data\\Class333.cs");
                             }
@@ -462,7 +478,7 @@ namespace Sando.IntegrationTests
             {
                 WriteLog("D:\\Data\\log.txt", "ProjectItem to be saveas-ed: [" + projectItem.Name + "]");
                 projectItem.Open();
-                projectItem.SaveAs("Class111111.cs");   // Note: Class111.cs is Remove()-ed instead of Delete()-ed
+                projectItem.SaveAs("Class111111.c");   // Note: Class111.cs is Remove()-ed instead of Delete()-ed
             }
         }
 
@@ -472,6 +488,7 @@ namespace Sando.IntegrationTests
         /// <param name="fileName"></param>
         public static void DeleteProjectItems(string fileName)
         {
+            WriteLog("D:\\Data\\log.txt", "DeleteProjectItems(): [" + fileName + "]");
             var projectItem = ModelSolution.FindProjectItem(fileName);
             if (projectItem != null)
             {

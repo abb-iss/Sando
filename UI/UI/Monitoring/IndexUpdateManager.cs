@@ -13,7 +13,7 @@ using Sando.Indexer.IndexState;
 
 namespace Sando.UI.Monitoring
 {
-	public class IndexUpdateManager
+    public class IndexUpdateManager
 	{ 
 
 		private FileOperationResolver _fileOperationResolver;

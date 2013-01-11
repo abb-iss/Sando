@@ -31,6 +31,10 @@ using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 
+// Code changed by JZ on 1/10: solution monitor integration
+//using ABB.SrcML.VisualStudio.SolutionMonitor;
+// End of code changes
+
 namespace Sando.UI
 {
     /// <summary> 
@@ -131,6 +135,9 @@ namespace Sando.UI
         /// </summary>
         protected override void Initialize()
         {
+            // Code changed by JZ on 1/10: solution monitor integration
+            writeLog("D:\\Data\\log.txt", "UIPackage.cs: Initialize()");
+            // End of code changes
             try
             {
                 Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}",
@@ -352,6 +359,11 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
                 bool isIndexRecreationRequired =
                     IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+
+                // Code changed by JZ on 1/10: solution monitor integration
+                writeLog("D:\\Data\\log.txt", "UIPackage.cs: RespondToSolutionOpened(), before CreateMonitor()");
+                // End of code changes
+                
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
                 _currentMonitor.StartMonitoring();
                 _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
@@ -467,5 +479,20 @@ namespace Sando.UI
         {
             _viewManager.EnsureViewExists();
         }
+
+    
+    
+        /// <summary>
+        /// For debugging.
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="str"></param>
+        private void writeLog(string logFile, string str)
+        {
+            StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
+            sw.WriteLine(str);
+            sw.Close();
+        }
+
     }
 }

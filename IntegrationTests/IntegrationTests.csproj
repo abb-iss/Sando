@@ -37,6 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.dll</HintPath>
     </Reference>
+    <Reference Include="ABB.SrcML.SrcMLSolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.SrcMLSolutionMonitor.dll</HintPath>
+    </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
       <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>
@@ -95,7 +99,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="SolutionMonitorIntegrationTest.cs" />
-    <Compile Include="TestFiles\Class111.cs" />
     <Shadow Include="Test References\UI.UnitTests.accessor" />
     <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -152,6 +155,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TestFiles\SolutionMonitorTestFiles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\Class222.c" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
