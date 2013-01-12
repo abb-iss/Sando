@@ -176,8 +176,26 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
                 TextBoxFocusHelper.RegisterFocus(textBox);
+                textBox.KeyDown += new KeyEventHandler(HandleTextBoxKeyDown);
             }
         }
+
+        private void HandleTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                if (e.Key == Key.Tab && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
+                {
+                    this.searchResultListbox.Focus();
+                    e.Handled = true;
+                }
+            }
+        }
+
+
+
+       
+      
 
         public T FindVisualChildByName<T>(DependencyObject parent, string name) where T : DependencyObject
         {
@@ -485,10 +503,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                 textBox.Focus();
         }
 
-        private void searchBox_GotFocus_1(object sender, RoutedEventArgs e)
-        {
-            FocusOnText();
-        }
+
     }
     
     public  class AccessWrapper
