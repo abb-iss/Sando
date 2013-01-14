@@ -67,28 +67,13 @@ namespace Sando.UI.Monitoring
                 var enumerator = allProjects.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    var project = (Project)enumerator.Current;
-                    if (project != null)
+                    var project = enumerator.Current as Project;
+                    ProcessProject(project,worker);
+                    if (worker != null && worker.CancellationPending)
                     {
-                        if (project.ProjectItems != null)
-                        {
-                            try
-                            {
-                                ProcessItems(project.ProjectItems.GetEnumerator(), worker);
-                            }catch(Exception e)
-                            {
-                                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
-                            }
-                            finally
-                            {
-                                UpdateAfterAdditions();
-                            }
-                        }
-                        if (worker != null && worker.CancellationPending)
-                        {
-                            return;
-                        }                     
-                    }
+                        return;
+                    }                     
+                    
                 }
             } 
             catch(Exception e)
@@ -149,13 +134,42 @@ namespace Sando.UI.Monitoring
 		{
             try
             {
-                if(item!=null && item.ProjectItems!=null)
-                    ProcessItems(item.ProjectItems.GetEnumerator(),worker);
+                if (item != null && item.ProjectItems != null)
+                    ProcessItems(item.ProjectItems.GetEnumerator(), worker);
+                else
+                {
+                    var proj = item.SubProject as Project;
+                    ProcessProject(proj, worker);
+                }
+
             }catch(COMException dll)
             {
                 //ignore, can't parse these types of files
             }
 		}
+
+        private void ProcessProject(Project project, BackgroundWorker worker)
+        {
+            if (project != null)
+            {
+                if (project.ProjectItems != null)
+                {
+                    try
+                    {
+                        ProcessItems(project.ProjectItems.GetEnumerator(), worker);
+                    }
+                    catch (Exception e)
+                    {
+                        FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
+                    }
+                    finally
+                    {
+                        UpdateAfterAdditions();
+                    }
+                }
+            }
+        }
+
 
         private void ProcessSingleFile(ProjectItem item, BackgroundWorker worker)
 		{
@@ -177,7 +191,6 @@ namespace Sando.UI.Monitoring
 		                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
 		                {
 		                    Debug.WriteLine("Start: " + path);
-
 		                    ProcessFileForTesting(path);
 		                    Debug.WriteLine("End: " + path);
 		                }
