@@ -68,27 +68,11 @@ namespace Sando.UI.Monitoring
                 while (enumerator.MoveNext())
                 {
                     var project = (Project)enumerator.Current;
-                    if (project != null)
+                    ProcessProject(worker, project);
+                    if (worker != null && worker.CancellationPending)
                     {
-                        if (project.ProjectItems != null)
-                        {
-                            try
-                            {
-                                ProcessItems(project.ProjectItems.GetEnumerator(), worker);
-                            }catch(Exception e)
-                            {
-                                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
-                            }
-                            finally
-                            {
-                                UpdateAfterAdditions();
-                            }
-                        }
-                        if (worker != null && worker.CancellationPending)
-                        {
-                            return;
-                        }                     
-                    }
+                        return;
+                    }      
                 }
             } 
             catch(Exception e)
@@ -101,6 +85,28 @@ namespace Sando.UI.Monitoring
                 ShouldStop = false;                
             }            
 		}
+
+        private void ProcessProject(BackgroundWorker worker, Project project)
+        {
+            if (project != null)
+            {
+                if (project.ProjectItems != null)
+                {
+                    try
+                    {
+                        ProcessItems(project.ProjectItems.GetEnumerator(), worker);
+                    }
+                    catch (Exception e)
+                    {
+                        FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
+                    }
+                    finally
+                    {
+                        UpdateAfterAdditions();
+                    }
+                }
+            }
+        }
 
 	    public void UpdateAfterAdditions()
 	    {
@@ -150,6 +156,8 @@ namespace Sando.UI.Monitoring
             {
                 if(item!=null && item.ProjectItems!=null)
                     ProcessItems(item.ProjectItems.GetEnumerator(),worker);
+                else
+                    ProcessProject(worker, item.SubProject);
             }catch(COMException dll)
             {
                 //ignore, can't parse these types of files
