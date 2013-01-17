@@ -503,6 +503,10 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                 textBox.Focus();
         }
 
+        private void searchBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            
+        }
+
 
     }
     
