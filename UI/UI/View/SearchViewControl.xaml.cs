@@ -170,13 +170,19 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             recommender = new QueryRecommender();   
         }
 
-        private void searchBox_Loaded_1(object sender, RoutedEventArgs e)
-        {
-            if (this.searchBox != null)
-            {
-                var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
-                TextBoxFocusHelper.RegisterFocus(textBox);
-                textBox.KeyDown += new KeyEventHandler(HandleTextBoxKeyDown);
+        private void searchBox_Loaded(object sender, RoutedEventArgs e) {
+            if(this.searchBox != null) {
+                var textBox = searchBox.Template.FindName("Text", searchBox) as TextBox;
+                if(textBox != null) {
+                    TextBoxFocusHelper.RegisterFocus(textBox);
+                    textBox.KeyDown += new KeyEventHandler(HandleTextBoxKeyDown);
+                }
+
+                var listBox = searchBox.Template.FindName("Selector", searchBox) as ListBox;
+                if(listBox != null) {
+                    listBox.SelectionChanged += new SelectionChangedEventHandler(searchBoxListBox_SelectionChanged);
+                }
+
             }
         }
 
@@ -192,30 +198,6 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-
-
-       
-      
-
-        public T FindVisualChildByName<T>(DependencyObject parent, string name) where T : DependencyObject
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                string controlName = child.GetValue(Control.NameProperty) as string;
-                if (controlName == name)
-                {
-                    return child as T;
-                }
-                else
-                {
-                    T result = FindVisualChildByName<T>(child, name);
-                    if (result != null)
-                        return result;
-                }
-            }
-            return null;
-        }
 
         private void InitProgramElements()
         {
@@ -494,17 +476,18 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-
-
         public void FocusOnText()
         {
-            var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
+            var textBox = searchBox.Template.FindName("Text", searchBox) as TextBox;
             if (textBox != null)
                 textBox.Focus();
         }
 
-        private void searchBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            
+        private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var listBox = sender as ListBox;
+            if(listBox != null) {
+                listBox.ScrollIntoView(listBox.SelectedItem);
+            }
         }
 
 
