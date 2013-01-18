@@ -236,6 +236,11 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(searchTerm);
 					AppendBoostFactor(stringBuilder, SandoField.DataType.ToString());
 					break;
+				case UsageType.RawSourceCode:
+					stringBuilder.Append(SandoField.Source.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.Source.ToString());
+					break;
 				default:
 					throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
 			}

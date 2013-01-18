@@ -13,9 +13,6 @@ namespace Sando.Parser
 {
     public class XMLFileParser: IParser 
     {
-        private static readonly int SnippetSize = 5;
-		private static readonly int SnippetLinesAbove = 0;
-
         public List<ProgramElement> Parse(string filename)
         {
             var programElements = new List<ProgramElement>();
@@ -43,8 +40,8 @@ namespace Sando.Parser
 					var cleanedText = text.TrimStart(' ', '\n', '\r', '\t');
 					cleanedText = cleanedText.TrimEnd(' ', '\n', '\r', '\t');
 					var linenum = reader.LineNumber;
-					var snippet = SrcMLParsingUtils.RetrieveSnippet(cleanedText, SnippetSize);
-					var pe = new TextLineElement(cleanedText, linenum, filename, snippet, cleanedText);
+					var source = SrcMLParsingUtils.RetrieveSource(cleanedText);
+					var pe = new TextLineElement(cleanedText, linenum, filename, source, cleanedText);
 					programElements.Add(pe);
 				}
 			}

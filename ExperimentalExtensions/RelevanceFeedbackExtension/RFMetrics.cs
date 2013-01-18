@@ -83,7 +83,7 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 	{
 		public double runMetric(string query, CodeSearchResult result)
 		{
-			string elementName = result.Element.Snippet;
+			string elementName = result.Element.RawSource;
 			char[] delimiters = new char[] { '_', ' ' };
 			string[] elementNameParts = elementName.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 			string[] queryParts = query.ToLower().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);

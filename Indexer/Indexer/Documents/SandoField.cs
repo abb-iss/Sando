@@ -20,7 +20,7 @@
 		Namespace,
 		ProgramElementType,
 		ReturnType,
-		Snippet,
+		Source,
 		Modifiers
 	}
 }
