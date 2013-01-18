@@ -12,25 +12,41 @@ namespace Sando.UI.View
 			
 			private static DTE2 dte = null;
 
-    		public static void OpenItem(object sender)
+    		public static void OpenItem(object sender,string text)
     		{
     			var result = sender as ListBoxItem;
     			if(result != null)
     			{
 					var myResult = result.Content as CodeSearchResult;
-    				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
+    				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber, text);
     			}
     		}
 
-    		public static void OpenFile(string filePath, int lineNumber)
+    		public static void OpenFile(string filePath, int lineNumber, string text)
     		{
     			InitDte2();
     			dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
     			try
     			{
-    				var selection = (TextSelection) dte.ActiveDocument.Selection;
+    				var selection = (TextSelection) dte.ActiveDocument.Selection;       
+             
     				selection.GotoLine(lineNumber);
-    				selection.SelectLine();
+                    if(text.Contains("\"")){
+                        var chars = '"';
+                        text = text.TrimStart(chars);
+                        text = text.TrimEnd(chars);
+                        TextSelection objSel = (EnvDTE.TextSelection)(dte.ActiveDocument.Selection);
+
+                        EnvDTE.TextRanges textRanges = null;
+
+                        // Advance to the next Visual Basic function beginning or end by 
+                        // searching for  "Sub" with white space before and after it.
+                        objSel.FindPattern(text, 0, ref textRanges);
+                        {
+                            //  Select the entire line.
+                            objSel.SelectLine();
+                        }                    
+                    }
     			}
     			catch (Exception)
     			{

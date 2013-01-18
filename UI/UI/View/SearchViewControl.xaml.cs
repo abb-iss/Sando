@@ -309,7 +309,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         {
             try
             {
-                FileOpener.OpenItem(sender);
+                FileOpener.OpenItem(sender,searchBox.Text);
             }
             catch (ArgumentException aex)
             {
@@ -324,7 +324,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 try
                 {
-                    FileOpener.OpenItem(sender);
+                    FileOpener.OpenItem(sender,searchBox.Text);
                 }
                 catch(ArgumentException aex)
                 {
