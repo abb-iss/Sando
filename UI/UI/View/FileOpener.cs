@@ -28,31 +28,36 @@ namespace Sando.UI.View
     			dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
     			try
     			{
-    				var selection = (TextSelection) dte.ActiveDocument.Selection;       
-             
+    				var selection = (TextSelection) dte.ActiveDocument.Selection;                    
     				selection.GotoLine(lineNumber);
-                    if(text.Contains("\"")){
-                        var chars = '"';
-                        text = text.TrimStart(chars);
-                        text = text.TrimEnd(chars);
-                        TextSelection objSel = (EnvDTE.TextSelection)(dte.ActiveDocument.Selection);
-
-                        EnvDTE.TextRanges textRanges = null;
-
-                        // Advance to the next Visual Basic function beginning or end by 
-                        // searching for  "Sub" with white space before and after it.
-                        objSel.FindPattern(text, 0, ref textRanges);
-                        {
-                            //  Select the entire line.
-                            objSel.SelectLine();
-                        }                    
-                    }
+                    
+                    if (IsLiteralSearchString(text))                    
+                        text = FocusOnLiteralString(text);                    
     			}
     			catch (Exception)
     			{
     				//ignore, we don't want this feature ever causing a crash
     			}
-    		}    	
+    		}
+
+            private static bool IsLiteralSearchString(string text)
+            {
+                return text.Contains("\"");
+            }
+
+            private static string FocusOnLiteralString(string text) 
+            {
+                var chars = '"';
+                text = text.TrimStart(chars);
+                text = text.TrimEnd(chars);
+                TextSelection objSel = (EnvDTE.TextSelection)(dte.ActiveDocument.Selection);
+                EnvDTE.TextRanges textRanges = null;
+                objSel.FindPattern(text, 0, ref textRanges);
+                {
+                    objSel.SelectLine();
+                }
+                return text;
+            }    	
 
     		private static void InitDte2()
     		{
