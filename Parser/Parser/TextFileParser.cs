@@ -55,5 +55,31 @@ namespace Sando.Parser
             float sizeInMb = (new FileInfo(filename).Length/1024f)/1024f;
             return sizeInMb;
         }
+
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// New Parse method that takes two arguments, due to modification of IParser
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="sourceElements"></param>
+        /// <returns></returns>
+        public List<ProgramElement> Parse(string fileName, System.Xml.Linq.XElement sourceElements)
+        {
+            writeLog("D:\\Data\\log.txt", "TextFileParser.Parse(): " + fileName);
+            return Parse(fileName);
+        }
+
+        /// <summary>
+        /// For debugging.
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="str"></param>
+        private void writeLog(string logFile, string str)
+        {
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(logFile, true, System.Text.Encoding.ASCII);
+            sw.WriteLine(str);
+            sw.Close();
+        }
+        // End of code changes
     }
 }

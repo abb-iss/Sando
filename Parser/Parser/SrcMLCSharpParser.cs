@@ -11,8 +11,11 @@ namespace Sando.Parser
 {
 	public class SrcMLCSharpParser : IParser
 	{
-		private readonly SrcMLGenerator Generator;
-		private static readonly int SnippetSize = 5;
+        // Code added by JZ: solution monitor integration
+        // TODO: Do not need this srcML generator any more.
+        private readonly SrcMLGenerator Generator;
+		// End of code changes
+        private static readonly int SnippetSize = 5;
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
 
@@ -74,6 +77,33 @@ namespace Sando.Parser
 
 			return programElements;
 		}
+
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// New Parse method that takes both source file path and the XElement representation of the source file as input arguments.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="sourceElements"></param>
+        /// <returns></returns>
+        public List<ProgramElement> Parse(string fileName, XElement sourceElements)
+        {
+            writeLog("D:\\Data\\log.txt", "SrcMLCSharpParser.Parse(): " + fileName);
+            var programElements = new List<ProgramElement>();
+
+            //classes and structs have to be parsed first
+            ParseClasses(programElements, sourceElements, fileName);
+            ParseStructs(programElements, sourceElements, fileName);
+
+            ParseEnums(programElements, sourceElements, fileName, SnippetSize);
+            SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
+            ParseConstructors(programElements, sourceElements, fileName);
+            ParseMethods(programElements, sourceElements, fileName);
+            ParseProperties(programElements, sourceElements, fileName);
+            SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
+
+            return programElements;
+        }
+        // End of code changes
 
 		private void ParseProperties(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
@@ -423,7 +453,20 @@ namespace Sando.Parser
 			}
 		}
 
-	   
-	}
+
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// For debugging.
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="str"></param>
+        private void writeLog(string logFile, string str)
+        {
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(logFile, true, System.Text.Encoding.ASCII);
+            sw.WriteLine(str);
+            sw.Close();
+        }
+        // End of code changes
+    }
 
 }

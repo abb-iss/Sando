@@ -76,6 +76,10 @@
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.dll</HintPath>
+    </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
@@ -164,6 +168,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
   </ItemGroup>

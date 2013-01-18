@@ -32,13 +32,23 @@ namespace Sando.UI.Monitoring
 			_fileOperationResolver = new FileOperationResolver();
 		}
 
+        // Code added by JZ: solution monitor integration
+        /// <summary>
+        /// New constructor.
+        /// </summary>
+        /// <param name="currentIndexer"></param>
+        public IndexUpdateManager(DocumentIndexer currentIndexer)
+        {
+            _currentIndexer = currentIndexer;
+        }
+        // End of code changes
 
 		public void SaveFileStates()
 		{
 			_indexFilesStatesManager.SaveIndexFilesStates();			
 		}
 
-        // Code changed by JZ on 10/30: To complete the Delete case
+        // Code added by JZ on 10/30: To complete the Delete case (maybe obsolete)
         public List<string> GetAllIndexedFileNames()
         {
             return _indexFilesStatesManager.GetAllIndexedFileNames();
@@ -71,7 +81,7 @@ namespace Sando.UI.Monitoring
 							break;
 						}
 						;
-                    // Code changed by JZ on 10/29: Added the Delete case
+                    // Code changed by JZ on 10/29: Added the Delete case (maybe obsolete)
                     case IndexOperation.Delete:
                         {
                             _currentIndexer.DeleteDocuments(path);
@@ -142,6 +152,55 @@ namespace Sando.UI.Monitoring
 			_indexFilesStatesManager.UpdateIndexFileState(filePath, indexFileState);
 		}
 
+        // Code added by JZ: solution monitor integration
+        /// <summary>
+        /// New Update method that takes both source file path and the XElement representation of the source file as input arguments.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="xelement"></param>
+        public void Update(string filePath, System.Xml.Linq.XElement xelement)
+        {
+            FileInfo fileInfo = new FileInfo(filePath);
+            writeLog("D:\\Data\\log.txt", "IndexUpdateManager.Update(): " + filePath + " [" + fileInfo.Extension + "]");
+            var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath);
 
+            var unresolvedElements = parsed.FindAll(pe => pe is CppUnresolvedMethodElement);
+            if (unresolvedElements.Count > 0)
+            {
+                //first generate program elements for all the included headers
+                List<ProgramElement> headerElements = CppHeaderElementResolver.GenerateCppHeaderElements(filePath, unresolvedElements);
+
+                //then try to resolve
+                foreach (CppUnresolvedMethodElement unresolvedElement in unresolvedElements)
+                {
+                    SandoDocument document = CppHeaderElementResolver.GetDocumentForUnresolvedCppMethod(unresolvedElement, headerElements);
+                    if (document != null)
+                        _currentIndexer.AddDocument(document);
+                }
+            }
+
+            foreach (var programElement in parsed)
+            {
+                if (!(programElement is CppUnresolvedMethodElement))
+                {
+                    var document = DocumentFactory.Create(programElement);
+                    if (document != null)
+                        _currentIndexer.AddDocument(document);
+                }
+            }
+        }
+
+        /// <summary>
+        /// For debugging.
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="str"></param>
+        private static void writeLog(string logFile, string str)
+        {
+            StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
+            sw.WriteLine(str);
+            sw.Close();
+        }
+        // End of code changes
 	}
 }

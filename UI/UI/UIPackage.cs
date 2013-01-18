@@ -31,7 +31,7 @@ using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 
-// Code changed by JZ on 1/10: solution monitor integration
+// Code changed by JZ: solution monitor integration
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
 // End of code changes
 
@@ -66,9 +66,16 @@ namespace Sando.UI
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
     public sealed class UIPackage : Package, IToolWindowFinder
-    {        
+    {
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// Use SrcML.NET's SolutionMonitor, instead of Sando's SolutionMonitor
+        /// </summary>
+        private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
+        private ABB.SrcML.SrcMLArchive _srcMLArchive;
+        ////private SolutionMonitor _currentMonitor;
+        // End of code changes
 
-        private SolutionMonitor _currentMonitor;
     	private SolutionEvents _solutionEvents;
 		private ILog logger;
         private string pluginDirectory;        
@@ -135,9 +142,6 @@ namespace Sando.UI
         /// </summary>
         protected override void Initialize()
         {
-            // Code changed by JZ on 1/10: solution monitor integration
-            writeLog("D:\\Data\\log.txt", "UIPackage.cs: Initialize()");
-            // End of code changes
             try
             {
                 Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}",
@@ -194,7 +198,7 @@ namespace Sando.UI
 
         private void RegisterSolutionEvents()
         {
-            var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
             if (dte != null)
             {
                 _solutionEvents = dte.Events.SolutionEvents;                
@@ -305,15 +309,24 @@ namespace Sando.UI
 			{
                 try
                 {
-                    _currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    // Code changed by JZ: solution monitor integration
+                    // Don't know if the update listener is still useful. The following statement would cause an exception in ViewManager.cs (Line 42).
+                    //SolutionMonitorFactory.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    ////_currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    // End of code changes
                 }
                 finally
                 {
                     try
                     {
-                        _currentMonitor.Dispose();
-                        _currentMonitor = null;
-                    }catch(Exception e)
+                        // Code changed by JZ: solution monitor integration
+                        // Use SrcML.NET's StopMonitoring()
+                        _currentMonitor.StopMonitoring();
+                        ////_currentMonitor.Dispose();
+                        ////_currentMonitor = null;
+                        // End of code changes
+                    }
+                    catch (Exception e)
                     {
                         FileLogger.DefaultLogger.Error(e);
                     }
@@ -344,6 +357,9 @@ namespace Sando.UI
 		    bw.RunWorkerAsync();
 		}
 
+        // Code changed by JZ: solution monitor integration
+        // Use SrcML.NET's SolutionMonitor and Sando's SolutionMonitorFactory because Sando's SolutionMonitorFactory
+        // has too many indexer code which is specific with Sando.
         private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
         {
             try
@@ -360,13 +376,19 @@ namespace Sando.UI
                 bool isIndexRecreationRequired =
                     IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
 
-                // Code changed by JZ on 1/10: solution monitor integration
-                writeLog("D:\\Data\\log.txt", "UIPackage.cs: RespondToSolutionOpened(), before CreateMonitor()");
-                // End of code changes
-                
+                writeLog("D:\\Data\\log.txt", "=== UIPackage.cs: Using SrcML.NET's solution monitor ===");
+                //_currentMonitor = ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
-                _currentMonitor.StartMonitoring();
-                _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, "D:\\Data\\SrcML.NETDemo\\MySrcMLArchive");
+                _srcMLArchive.SrcMLDOTNETEventRaised += SolutionMonitorFactory.RespondToSrcMLDOTNETEvent;
+                _srcMLArchive.StartWatching();
+
+                //_currentMonitor.StartMonitoring();
+
+                SolutionMonitorFactory.AddUpdateListener(SearchViewControl.GetInstance());  // Don't know if it is still useful.
+                ////_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
             }
             catch (Exception e)
             {
@@ -374,6 +396,33 @@ namespace Sando.UI
             }    
         }
 
+        /* //// Original implementation
+        private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
+        {
+            try
+            {
+                SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
+                string extensionPointsConfigurationDirectory =
+                    GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
+                if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory) == false)
+                {
+                    extensionPointsConfigurationDirectory = pluginDirectory;
+                }
+
+                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
+                bool isIndexRecreationRequired =
+                    IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                _currentMonitor.StartMonitoring();
+                _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
+            }
+        }
+        */
+        // End of code changes
 
         public void AddNewParser(string qualifiedClassName, string dllName, List<string> supportedFileExtensions)
         {            
@@ -425,31 +474,38 @@ namespace Sando.UI
 
     	#endregion
 
-    	public string GetCurrentDirectory()
-    	{
-			if(_currentMonitor != null)
-				return _currentMonitor.GetCurrentDirectory();
-			else
-				return null;
-    	}
+        // Code changed by JZ: solution monitor integration
+        public string GetCurrentDirectory()
+        {
+            return SolutionMonitorFactory._currentPath;
+        }
 
+        public SolutionKey GetCurrentSolutionKey()
+        {
+            return SolutionMonitorFactory._solutionKey;
+        }
 
-		public SolutionKey GetCurrentSolutionKey()
-		{
-			if(_currentMonitor != null)
-				return _currentMonitor.GetSolutionKey();
-			else
-				return null;
-		}
+        public bool IsPerformingInitialIndexing()
+        {
+            return !SolutionMonitorFactory._initialIndexDone;
+        }
 
-    	#region Implementation of IIndexUpdateListener
+        /* //// original implementation
+        public string GetCurrentDirectory()
+        {
+            if (_currentMonitor != null)
+                return _currentMonitor.GetCurrentDirectory();
+            else
+                return null;
+        }
 
-    	public void NotifyAboutIndexUpdate()
-    	{
-    		throw new NotImplementedException();
-    	}
-
-    	#endregion
+        public SolutionKey GetCurrentSolutionKey()
+        {
+            if (_currentMonitor != null)
+                return _currentMonitor.GetSolutionKey();
+            else
+                return null;
+        }
 
         public bool IsPerformingInitialIndexing()
         {
@@ -461,9 +517,17 @@ namespace Sando.UI
                 return false;
             }
         }
+        */
+        // End of code changes
 
-    
+    	#region Implementation of IIndexUpdateListener
 
+    	public void NotifyAboutIndexUpdate()
+    	{
+    		throw new NotImplementedException();
+    	}
+
+    	#endregion
 
         public string PluginDirectory()
         {
@@ -480,8 +544,9 @@ namespace Sando.UI
             _viewManager.EnsureViewExists();
         }
 
-    
-    
+
+
+        // Code changed by JZ: solution monitor integration
         /// <summary>
         /// For debugging.
         /// </summary>
@@ -493,6 +558,7 @@ namespace Sando.UI
             sw.WriteLine(str);
             sw.Close();
         }
+        // End of code changes
 
     }
 }
