@@ -68,8 +68,33 @@ namespace Sando.SearchEngine
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
 			List<CodeSearchResult> res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+            if (NoResults(res))
+                res = AddStartToQueryAndRerun(searchCriteria, res);
 			return GetResultOrEmpty(res,GetSearchTerms(searchCriteria),solutionName);
 		}
+
+        private List<CodeSearchResult> AddStartToQueryAndRerun(SearchCriteria searchCriteria, List<CodeSearchResult> res)
+        {
+            var simple = searchCriteria as SimpleSearchCriteria;
+            if (simple != null)
+            {
+                var terms = simple.SearchTerms;
+                if (terms.Count == 1)
+                {
+                    var term = simple.SearchTerms.First();
+                    simple.SearchTerms.Clear();
+                    simple.SearchTerms.Add(term + "*");
+                    res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+                }
+                res = this.searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+            }
+            return res;
+        }
+
+        private static bool NoResults(List<CodeSearchResult> res)
+        {
+            return res == null || res.Count == 0;
+        }
 
         private string GetSearchTerms(SearchCriteria searchCriteria)
         {
