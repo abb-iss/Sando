@@ -491,7 +491,43 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         }
 
 
+              private void ToggleButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Toggled_Popup(object sender, RoutedEventArgs e)
+        {
+            if(!SelectionPopup.IsOpen)
+                SelectionPopup.IsOpen = true;
+        }
+
+
     }
+
+    public class BoolToOppositeBoolConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (targetType != typeof(bool))
+                throw new InvalidOperationException("The target must be a boolean");
+
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+    }
+
+
     
     public  class AccessWrapper
     {
@@ -593,6 +629,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             return new NotImplementedException();
         }
     }
+
 
     [ValueConversion(typeof(string), typeof(BitmapImage))]
     public class FileTypeToIcon : IValueConverter
