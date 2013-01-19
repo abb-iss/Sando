@@ -140,7 +140,56 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			{
 				Assert.Fail(ex.Message);
 			}
-		}
+        }
+
+        [Test]
+        public void SimpleSearchCriteria_ToQueryStringCreatesValidFileExtensionsQueryString_SingleCondition()
+        {
+            SearchCriteria simpleSearchCriteria = new SimpleSearchCriteria()
+                {
+                    SearchByFileExtension = true,
+                    FileExtensions = new SortedSet<string>
+                        {
+                            ".cs"
+                        }
+                };
+            var queryString = simpleSearchCriteria.ToQueryString();
+            Assert.AreEqual(queryString, "(" + SandoField.FileExtension.ToString() + ":\".cs\")", "Created query string is invalid!");
+            try
+            {
+                var query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.FileExtension.ToString(), new SimpleAnalyzer()).Parse(queryString);
+                Assert.NotNull(query, "Generated query object is null!");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [Test]
+        public void SimpleSearchCriteria_ToQueryStringCreatesFileExtensionsQueryString_MultipleConditions()
+        {
+            SearchCriteria simpleSearchCriteria = new SimpleSearchCriteria()
+                {
+                    SearchByFileExtension = true,
+                    FileExtensions = new SortedSet<string>()
+                        {
+                            ".cs",
+                            ".h"
+                        }
+                };
+            var queryString = simpleSearchCriteria.ToQueryString();
+            Assert.AreEqual(queryString, "(" + SandoField.FileExtension.ToString() + ":\".cs\" OR " + SandoField.FileExtension.ToString() + ":\".h\")", "Created query string is invalid!");
+            try
+            {
+                var query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.FullFilePath.ToString(), new SimpleAnalyzer()).Parse(queryString);
+                Assert.NotNull(query, "Generated query object is null!");
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
 
 		[Test]
 		public void SimpleSearchCriteria_ToQueryStringCreatesValidLocationsQueryString_SingleCondition()
@@ -393,6 +442,12 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																			AccessLevel.Public,
 																			AccessLevel.Protected
 																		},
+                                                        SearchByFileExtension = true,
+                                                        FileExtensions = new SortedSet<string>()
+																	{
+																		".cs",
+																		".h"
+																	},
 														SearchByLocation = true,
 														Locations = new SortedSet<string>()
 																	{
@@ -422,7 +477,8 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			string queryString = simpleSearchCriteria.ToQueryString();
 			Assert.AreEqual(queryString, "(" + SandoField.AccessLevel.ToString() + ":Protected OR " + SandoField.AccessLevel.ToString() + ":Public) AND " +
 										"(" + SandoField.ProgramElementType.ToString() + ":Class* OR " + SandoField.ProgramElementType.ToString() + ":DocComment* OR " + SandoField.ProgramElementType.ToString() + ":Enum* OR " + SandoField.ProgramElementType.ToString() + ":Property*) AND " +
-										"(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\") AND " +
+                                        "(" + SandoField.FileExtension.ToString() + ":\".cs\" OR " + SandoField.FileExtension.ToString() + ":\".h\") AND " +
+                                        "(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\") AND " +
 										"(" + SandoField.Name.ToString() + ":SimpleClass^4 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass OR " + SandoField.Namespace.ToString() + ":SimpleClass)", "Created query string is invalid!");
 			try
 			{

@@ -26,6 +26,7 @@ namespace Sando.Indexer.Documents
 				document.Add(new Field(SandoField.Name.ToString(), programElement.Name.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
 				document.Add(new Field(SandoField.ProgramElementType.ToString(), programElement.ProgramElementType.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 				document.Add(new Field(SandoField.FullFilePath.ToString(), StandardizeFilePath(programElement.FullFilePath), Field.Store.YES, Field.Index.NOT_ANALYZED));
+                document.Add(new Field(SandoField.FileExtension.ToString(), programElement.FileExtension, Field.Store.NO, Field.Index.ANALYZED));
 				document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), programElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
 				document.Add(new Field(SandoField.Source.ToString(), programElement.RawSource, Field.Store.YES, Field.Index.ANALYZED));
                 document.Add(new Field(ProgramElement.CustomTypeTag, programElement.GetType().AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
