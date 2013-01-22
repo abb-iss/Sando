@@ -321,7 +321,12 @@ namespace Sando.UI
                     {
                         // Code changed by JZ: solution monitor integration
                         // Use SrcML.NET's StopMonitoring()
-                        _currentMonitor.StopMonitoring();
+                        //_currentMonitor.StopMonitoring();
+                        if (_srcMLArchive != null)
+                        {
+                            _srcMLArchive.StopWatching();
+                            _srcMLArchive = null;
+                        }
                         ////_currentMonitor.Dispose();
                         ////_currentMonitor = null;
                         // End of code changes
