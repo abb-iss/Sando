@@ -12,8 +12,8 @@ namespace LocalSearch
 {   
     public class GraphBuilder
     {
-        private const String SrcmlLibSharp = @"C:\WORK-XIAO\sando\LIBS\srcML-Win-cSharp";
-        private const String SrcmlLib = @"C:\WORK-XIAO\sando\LIBS\srcML-Win";
+        private const String SrcmlLibSharp = @"..\..\..\..\LIBS\srcML-Win-cSharp";
+        private const String SrcmlLib = @"..\..\..\..\LIBS\srcML-Win";
         private SrcMLFile srcmlFile;
         private XElement[] FieldDecs;
         private XElement[] Methods;
@@ -138,7 +138,7 @@ namespace LocalSearch
         {
             XElement methodbody = method.Element(SRC.Block);
             var localdeclares =
-                methodbody.Elements(SRC.DeclarationStatement);
+                methodbody.Descendants(SRC.DeclarationStatement);
                
             List<XElement> localvars = new List<XElement>();
             
@@ -155,27 +155,32 @@ namespace LocalSearch
         /// Get all parameters for a given method XElement.
         /// </summary>
         /// <param name="srcPath">A given method in XElement format.</param>
-        //public XElement[] GetAllParametersinMethod(XElement method)
-        //{
+        public XElement[] GetAllParametersinMethod(XElement method)
+        {
+            XElement paralist = method.Element(SRC.ParameterList);
+            var parameters = paralist.Elements(SRC.Parameter);
 
-        //}
+            List<XElement> paras = new List<XElement>();
 
-        //public XElement[] GetAllNonLocalVarsinMethod(XElement method)
+            foreach (var parameter in parameters)
+            {
+                var paradec = parameter.Element(SRC.Declaration);
+                var para = paradec.Element(SRC.Name);
+                paras.Add(para);
+            }
+
+            return paras.ToArray();
+        }
+
+        //public XElement[] GetAllVarsUseinMethod(XElement method)
         //{
         //    XElement methodbody = method.Element(SRC.Block);
-        //    var localdeclares =
-        //        methodbody.Elements(SRC.DeclarationStatement).Elements(SRC.Declaration);
             
-        //    List<String> localvars = new List<String>();
-
-        //    foreach (var localdeclare in localdeclares)
-        //        localvars.Add(localdeclare.Element(SRC.Name).Value);
-
         //    var allvars1 = from variable in methodbody.Descendants()
-        //                  where variable.Name.Equals(SRC.Name)
-        //                  && !variable.Ancestors(SRC.Type).Any()
-        //                  && !variable.Parent.Name.Equals(SRC.Call)                             
-        //                  select variable;
+        //                   where variable.Name.Equals(SRC.Name)
+        //                   && !variable.Ancestors(SRC.Type).Any()
+        //                   && !variable.Parent.Name.Equals(SRC.Call)
+        //                   select variable;
 
         //    var allvars2 = from variable in methodbody.Descendants()
         //                   where variable.Parent.Name.Equals(SRC.Call)

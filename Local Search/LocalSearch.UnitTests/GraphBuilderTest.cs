@@ -13,22 +13,22 @@ namespace LocalSearch.UnitTests
     [TestFixture]
     public class GraphBuilderTest
     {
-        private static String srcPath = @"C:\temp\ConfigManip.cs";
-        private static String xmlPath = @"C:\temp\ConfigManip.XML";
+        private static String srcPath = @"..\..\TestFiles\ConfigManip.cs";
+        private static String xmlPath = @"..\..\TestFiles\ConfigManip.XML";
 
-        private static String singlemethodPath = @"C:\temp\TestMethod.cs";
-        
+        private static String singlemethodPath = @"..\..\TestFiles\TestMethod.cs";
+
         //[Test]
         //public void ConvertSrcToXMLTest()
         //{
         //    Src2SrcMLRunner srcmlConverter;
         //    String fileExt = Path.GetExtension(srcPath);
-        //    if(fileExt.Equals(".cs"))
+        //    if (fileExt.Equals(".cs"))
         //        srcmlConverter = new Src2SrcMLRunner(@"C:\WORK-XIAO\sando\LIBS\srcML-Win-cSharp");
         //    else
         //        srcmlConverter = new Src2SrcMLRunner(@"C:\WORK-XIAO\sando\LIBS\srcML-Win");
-            
-        //    var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, xmlPath);            
+
+        //    var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, xmlPath);
         //}
 
         [Test]
@@ -81,14 +81,42 @@ namespace LocalSearch.UnitTests
         [Test]
         public void GetAllLocalVarsinMethodTest()
         {
-            List<String> LocalVars = new List<String>() { "", "", "", "" }; 
+            List<String> LocalVars = new List<String>() 
+            { "pos", "configListFile", "line", "configuration" }; 
                 
             GraphBuilder gbuilder = new GraphBuilder(singlemethodPath);
             var methods = gbuilder.GetMethods();
-            foreach (var method in methods) //should be only one method
+            
+            var method = methods.First(); //should be only one method
+            var localvars = gbuilder.GetAllLocalVarsinMethod(method);
+            foreach (var localvar in localvars)
             {
-                var localvars = gbuilder.GetAllLocalVarsinMethod(method);
+                String varname = localvar.Value;
+                Assert.IsTrue(LocalVars.Contains(varname));
+                LocalVars.Remove(varname);
             }
+
+            Assert.IsEmpty(LocalVars);
+        }
+
+        [Test]
+        public void GetAllParametersinMethodTest()
+        {
+            List<String> Parameters = new List<String>() { "configListFileName"};
+
+            GraphBuilder gbuilder = new GraphBuilder(singlemethodPath);
+            var methods = gbuilder.GetMethods();
+
+            var method = methods.First(); //should be only one method
+            var parameters = gbuilder.GetAllParametersinMethod(method);
+            foreach (var parameter in parameters)
+            {
+                String paraname = parameter.Value;
+                Assert.IsTrue(Parameters.Contains(paraname));
+                Parameters.Remove(paraname);
+            }
+
+            Assert.IsEmpty(Parameters);
         }
     }
     
