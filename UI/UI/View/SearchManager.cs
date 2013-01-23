@@ -140,6 +140,8 @@ public  class SearchManager
                 searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
 			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
                 criteria.SearchTerms = new SortedSet<string>(searchTerms);
+                criteria.FileExtensions = WordSplitter.GetFileExtensions(searchString);
+                criteria.SearchByFileExtension = criteria.FileExtensions.Count()>0;
 				return criteria;
 			}
 			#endregion

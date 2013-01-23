@@ -242,6 +242,17 @@
                                 </TableRow>
                                 <TableRow>
                                     <TableCell>
+                                        <Paragraph FontFamily="Arial">Limit by file extension:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">image filetype:cs
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+
+                                <TableRow>
+                                    <TableCell>
                                         <Paragraph FontFamily="Arial">Add '*' to end of partial words:
                                         </Paragraph>
                                     </TableCell>
