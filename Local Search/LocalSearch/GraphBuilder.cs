@@ -89,7 +89,7 @@ namespace LocalSearch
         }
 
         /// <summary>
-        /// Get all functions (including constructor and destructor) in the source file.
+        /// Get all methods (including constructor and destructor) in the source file.
         /// </summary>
         /// <returns>An array of all the FULL methods/constructors/destructors in XElement.</returns>
         public XElement[] GetMethods()
@@ -113,9 +113,9 @@ namespace LocalSearch
         }
 
         /// <summary>
-        /// Get names of all functions (including constructor and destructor) in the source file.
+        /// Get names of all methods (including constructor and destructor) in the source file.
         /// </summary>
-        /// <returns>An array of all the function NAMES in XElement.</returns>
+        /// <returns>An array of all the method NAMES in XElement.</returns>
         public XElement[] GetMethodNames()
         {
             List<XElement> listAllMethodNames = new List<XElement>();
@@ -173,50 +173,14 @@ namespace LocalSearch
 
             return listParas.ToArray();
         }
-
-        //public XElement[] GetAllVarsUseinMethod(XElement method)
-        //{
-        //    XElement methodbody = method.Element(SRC.Block);
-            
-        //    var allvars1 = from variable in methodbody.Descendants()
-        //                   where variable.Name.Equals(SRC.Name)
-        //                   && !variable.Ancestors(SRC.Type).Any()
-        //                   && !variable.Parent.Name.Equals(SRC.Call)
-        //                   select variable;
-
-        //    var allvars2 = from variable in methodbody.Descendants()
-        //                   where variable.Parent.Name.Equals(SRC.Call)
-        //                   where variable.Name.Equals(SRC.Name)
-        //                   select variable;
-
-        //    XElement allvars3;
-
-        //    foreach (var x in allvars2)
-        //    {
-        //        if (x.Elements(SRC.Name).Count() >= 2)
-        //            allvars3 = x.Element(SRC.Name);
-        //    }
-
-        //    List<XElement> nonlocalvars = new List<XElement>();
-        //    foreach (var variable in allvars) //allvars = allvars1 + allvars3
-        //    {
-        //        if (!(localvars.Contains(variable.Value)))
-        //            nonlocalvars.Add(variable);
-        //    }
-
-        //    return nonlocalvars.ToArray();
-
-
-        //}
-
         
         /// <summary>
         /// Determine if a field is used in a given method.
         /// </summary>
         /// <param name="method">FULL method in XElement</param>
-        /// <param name="field">field NAME in String</param>
+        /// <param name="fieldname">field NAME in String</param>
         /// <returns>true if it is used.</returns>
-        public bool ifFieldUsedinMethod(XElement method, String field)
+        public bool ifFieldUsedinMethod(XElement method, String fieldname)
         {
             XElement methodbody = method.Element(SRC.Block);
             var allnames = methodbody.Descendants(SRC.Name);
@@ -236,19 +200,17 @@ namespace LocalSearch
             foreach (var para in paras)
                 listParas.Add(para.Value);
 
-            String filedname = field;
-
-            if (listNames.Contains(filedname) &&
-                !(listLocalVars.Contains(filedname)) &&
-                !(listParas.Contains(filedname)))
+            if (listNames.Contains(fieldname) &&
+                !(listLocalVars.Contains(fieldname)) &&
+                !(listParas.Contains(fieldname)))
                 return true;
             else
                 return false;
         }
 
-        public bool ifFieldUsedinMethod(XElement method, XElement field)
+        public bool ifFieldUsedinMethod(XElement method, XElement fieldname)
         {
-            return ifFieldUsedinMethod(method, field.Value);
+            return ifFieldUsedinMethod(method, fieldname.Value);
 
         }
 
@@ -274,16 +236,16 @@ namespace LocalSearch
         /// <summary>
         /// Get methods that uses a given field.
         /// </summary>
-        /// <param name="field">field name in String</param>
+        /// <param name="fieldname">field NAME in String</param>
         /// <returns>an array of method NAMES in XElement</returns>
-        public XElement[] GetMethodsUseField(String field)
+        public XElement[] GetMethodsUseField(String fieldname)
         {
             List<XElement> listMethods = new List<XElement>();
 
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
             {
-                if (ifFieldUsedinMethod(method, field))
+                if (ifFieldUsedinMethod(method, fieldname))
                 {
                     var methodname = method.Element(SRC.Name);
                     listMethods.Add(methodname);
@@ -292,6 +254,12 @@ namespace LocalSearch
 
             return listMethods.ToArray();
         }
+
+        public XElement[] GetMethodsUseField(XElement fieldname)
+        {
+            return GetMethodsUseField(fieldname.Value);
+        }
+
 
         public List<CodeSearchResult> GetRelatedMethods(CodeSearchResult codeSearchResult)
         {
