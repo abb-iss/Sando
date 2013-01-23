@@ -42,12 +42,12 @@ namespace LocalSearch
         }
 
         /// <summary>
-        /// Get all field declarations in the source file.
+        /// Get all field declaration statements in the source file.
         /// </summary>
-        /// <returns>An array (of "decl_stmt" XElement) that contains all the field declarations.</returns>
+        /// <returns>An array of all field declaration statements in XElement.</returns>
         public XElement[] GetFieldDecs()
         {
-            List<XElement> AllFields = new List<XElement>();
+            List<XElement> listAllFields = new List<XElement>();
             
             foreach (XElement file in srcmlFile.FileUnits)
             {
@@ -59,20 +59,20 @@ namespace LocalSearch
                                 select field;
                 
                 if (fields != null)
-                    AllFields.AddRange(fields);
+                    listAllFields.AddRange(fields);
             }
 
             //FieldDecs = AllFields.ToArray();
-            return AllFields.ToArray();
+            return listAllFields.ToArray();
         }
 
         /// <summary>
         /// Get all field names declared in the source file.
         /// </summary>
-        /// <returns>An array (of "name" XElement) that contains all the field names.</returns>
+        /// <returns>An array of all field NAMES in XElement.</returns>
         public XElement[] GetFieldNames()
         {   
-            List<XElement> AllFieldNames = new List<XElement>();
+            List<XElement> listAllFieldNames = new List<XElement>();
 
             var fields = GetFieldDecs();
 
@@ -80,19 +80,19 @@ namespace LocalSearch
             {
                 var fieldname = field.Element(SRC.Declaration).Element(SRC.Name);                
                 if (fieldname != null)
-                    AllFieldNames.Add(fieldname);
+                    listAllFieldNames.Add(fieldname);
             }
 
-            return AllFieldNames.ToArray();
+            return listAllFieldNames.ToArray();
         }
 
         /// <summary>
         /// Get all functions (including constructor and destructor) in the source file.
         /// </summary>
-        /// <returns>An array (of XElement) that contains all the methods/constructors/destructors.</returns>
+        /// <returns>An array of all the FULL methods/constructors/destructors in XElement.</returns>
         public XElement[] GetMethods()
         {
-            List<XElement> Allmethods = new List<XElement>();
+            List<XElement> listAllmethods = new List<XElement>();
 
             foreach (XElement file in srcmlFile.FileUnits)
             {
@@ -103,20 +103,20 @@ namespace LocalSearch
                              select method;
 
                 if (methods != null)
-                    Allmethods.AddRange(methods);
+                    listAllmethods.AddRange(methods);
             }
 
-            FieldDecs = Allmethods.ToArray();
-            return FieldDecs;
+            //Methods = listAllmethods.ToArray();
+            return listAllmethods.ToArray();
         }
 
         /// <summary>
         /// Get names of all functions (including constructor and destructor) in the source file.
         /// </summary>
-        /// <returns>An array (of "name" XElement) that contains names of all the functions.</returns>
+        /// <returns>An array of all the function NAMES in XElement.</returns>
         public XElement[] GetMethodNames()
         {
-            List<XElement> AllMethodNames = new List<XElement>();
+            List<XElement> listAllMethodNames = new List<XElement>();
 
             var methods = GetMethods();
 
@@ -124,52 +124,52 @@ namespace LocalSearch
             {
                 var methodname = method.Element(SRC.Name);
                 if (methodname != null)
-                    AllMethodNames.Add(methodname);
+                    listAllMethodNames.Add(methodname);
             }
 
-            return AllMethodNames.ToArray();
+            return listAllMethodNames.ToArray();
         }
 
         /// <summary>
         /// Get all local variables declared in a given method XElement.
         /// </summary>
-        /// <param name="srcPath">A given method in XElement format.</param>
+        /// <param name="method">A FULL method in XElement format.</param>
         public XElement[] GetAllLocalVarsinMethod(XElement method)
         {
             XElement methodbody = method.Element(SRC.Block);
             var localdeclares =
                 methodbody.Descendants(SRC.DeclarationStatement);
                
-            List<XElement> localvars = new List<XElement>();
+            List<XElement> listLocalVars = new List<XElement>();
             
             foreach (var localdeclare in localdeclares)
             {
                 XElement localvar = localdeclare.Element(SRC.Declaration).Element(SRC.Name);
-                localvars.Add(localvar);
+                listLocalVars.Add(localvar);
             }
             
-            return localvars.ToArray();
+            return listLocalVars.ToArray();
         }
 
         /// <summary>
         /// Get all parameters for a given method XElement.
         /// </summary>
-        /// <param name="srcPath">A given method in XElement format.</param>
+        /// <param name="method">A FULL method in XElement format.</param>
         public XElement[] GetAllParametersinMethod(XElement method)
         {
             XElement paralist = method.Element(SRC.ParameterList);
             var parameters = paralist.Elements(SRC.Parameter);
 
-            List<XElement> paras = new List<XElement>();
+            List<XElement> listParas = new List<XElement>();
 
             foreach (var parameter in parameters)
             {
                 var paradec = parameter.Element(SRC.Declaration);
                 var para = paradec.Element(SRC.Name);
-                paras.Add(para);
+                listParas.Add(para);
             }
 
-            return paras.ToArray();
+            return listParas.ToArray();
         }
 
         //public XElement[] GetAllVarsUseinMethod(XElement method)
@@ -207,20 +207,88 @@ namespace LocalSearch
 
         //}
 
+        
         /// <summary>
         /// Determine if a field is used in a given method.
         /// </summary>
-        /// <param name="srcPath">field and method</param>
+        /// <param name="method">FULL method in XElement</param>
+        /// <param name="field">field NAME in String</param>
         /// <returns>true if it is used.</returns>
-        //public bool ifFieldUsedinMethod(XElement method, XElement field)
-        //{
-        //    var nonlocalvars = GetAllNonLocalVarsinMethod(method);
-        //    List<String> list_nonlocalvars = new List<string>();
-        //    foreach (var nonlocalvar in nonlocalvars)
-        //        list_nonlocalvars.Add(nonlocalvar.Value);
+        public bool ifFieldUsedinMethod(XElement method, String field)
+        {
+            XElement methodbody = method.Element(SRC.Block);
+            var allnames = methodbody.Descendants(SRC.Name);
 
-        //    return (list_nonlocalvars.Contains(field.Value));
-        //}
+            var localvars = GetAllLocalVarsinMethod(method);
+            var paras = GetAllParametersinMethod(method);
 
+            List<String> listNames = new List<String>();
+            foreach (var name in allnames)
+                listNames.Add(name.Value);
+
+            List<String> listLocalVars = new List<string>();
+            foreach (var localvar in localvars)
+                listLocalVars.Add(localvar.Value);
+
+            List<String> listParas = new List<string>();
+            foreach (var para in paras)
+                listParas.Add(para.Value);
+
+            String filedname = field;
+
+            if (listNames.Contains(filedname) &&
+                !(listLocalVars.Contains(filedname)) &&
+                !(listParas.Contains(filedname)))
+                return true;
+            else
+                return false;
+        }
+
+        public bool ifFieldUsedinMethod(XElement method, XElement field)
+        {
+            return ifFieldUsedinMethod(method, field.Value);
+
+        }
+
+        /// <summary>
+        /// Get fields used in a given method.
+        /// </summary>
+        /// <param name="method">FULL method in XElement</param>
+        /// <returns>an array of field NAMES in XElement</returns>
+        public XElement[] GetFieldsUsedinMethod(XElement method)
+        {
+            List<XElement> listFieldsUsed = new List<XElement>();
+
+            XElement[] allfields = GetFieldNames();
+            foreach (var field in allfields)
+            {
+                if (ifFieldUsedinMethod(method, field))
+                    listFieldsUsed.Add(field);
+            }
+
+            return listFieldsUsed.ToArray();
+        }
+
+        /// <summary>
+        /// Get methods that uses a given field.
+        /// </summary>
+        /// <param name="field">field name in String</param>
+        /// <returns>an array of method NAMES in XElement</returns>
+        public XElement[] GetMethodsUseField(String field)
+        {
+            List<XElement> listMethods = new List<XElement>();
+
+            XElement[] allmethods = GetMethods();
+            foreach (var method in allmethods)
+            {
+                if (ifFieldUsedinMethod(method, field))
+                {
+                    var methodname = method.Element(SRC.Name);
+                    listMethods.Add(methodname);
+                }
+            }
+
+            return listMethods.ToArray();
+        }
     }
 }
