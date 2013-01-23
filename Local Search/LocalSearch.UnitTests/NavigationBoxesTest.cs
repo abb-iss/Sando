@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Threading;
 
 
+
 namespace LocalSearch.UnitTests
 {
     [TestFixture]
@@ -18,8 +19,8 @@ namespace LocalSearch.UnitTests
         [Test]
         [STAThread] 
         public void ShowUI()
-        {            
-            GraphBuilder gbuilder = new GraphBuilder(@"C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\Sando\Indexer\Indexer\DocumentIndexer.cs",@"..\..\..\..\LIBS\srcML-Win-cSharp");
+        {
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\ConfigManip.cs");
             var elements = gbuilder.GetFieldsAsFieldElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;
