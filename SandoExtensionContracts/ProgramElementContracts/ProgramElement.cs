@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Reflection;
 
 namespace Sando.ExtensionContracts.ProgramElementContracts
@@ -60,7 +61,12 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
                 return ProgramElementType.Custom;
             }
         }
-    
+
+        public string FileExtension
+        {
+            get { return Path.GetExtension(FullFilePath); }
+        }
+
 
         public List<PropertyInfo> GetCustomProperties()
         {

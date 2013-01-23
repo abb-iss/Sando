@@ -75,6 +75,38 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
+        [Test]
+        public void MethodSearchRespectsFileExtensionsCriteria()
+        {
+            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+            var keywords = "main";
+            var searchCriteria = new SimpleSearchCriteria()
+                {
+                    SearchTerms = new SortedSet<string>(keywords.Split(' ')),
+                    SearchByFileExtension = true,
+                    FileExtensions = new SortedSet<string> {".cpp"}
+                };
+            var codeSearchResults = codeSearcher.Search(searchCriteria);
+            Assert.AreEqual(1, codeSearchResults.Count, "Invalid results number");
+            var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "main");
+            if (methodSearchResult == null)
+            {
+                Assert.Fail("Failed to find relevant search result for search: " + keywords);
+            }
+            //var method = methodSearchResult.Element as MethodElement;
+            //Assert.AreEqual(method.AccessLevel, AccessLevel.Public, "Method access level differs!");
+            //Assert.AreEqual(method.Arguments, String.Empty, "Method arguments differs!");
+            //Assert.NotNull(method.Body, "Method body is null!");
+            //Assert.True(method.ClassId != null && method.ClassId != Guid.Empty, "Class id is invalid!");
+            //Assert.AreEqual(method.ClassName, "SimpleSearchCriteria", "Method class name differs!");
+            //Assert.AreEqual(method.DefinitionLineNumber, 31, "Method definition line number differs!");
+            //Assert.True(method.FullFilePath.EndsWith("\\TestFiles\\MethodElementTestFiles\\Searcher.cs"), "Method full file path is invalid!");
+            //Assert.AreEqual(method.Name, "ToQueryString", "Method name differs!");
+            //Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
+            //Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
+            //Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
+        }
+
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
