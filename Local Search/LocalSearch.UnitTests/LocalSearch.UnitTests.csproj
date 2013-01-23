@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9526630F-74C1-4FF0-880C-5A572F6A044F}</ProjectGuid>
+    <ProjectGuid>{160C62AE-B36B-4D51-84B4-51243BF43953}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LocalSearch.UnitTests</RootNamespace>
@@ -36,19 +36,29 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\LIBS\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphBuilderTest.cs" />
+    <Compile Include="NavigationBoxesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17aa2b71-c4f9-4397-9d05-6119763d07a5}</Project>
+      <Name>SandoExtensionContracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LocalSearch\LocalSearch.csproj">
       <Project>{6de1bf7e-f357-40f8-aedc-b52d19cbdb11}</Project>
       <Name>LocalSearch</Name>

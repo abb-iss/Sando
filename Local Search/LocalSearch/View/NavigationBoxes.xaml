@@ -4,8 +4,63 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="500" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#DDD" />
+        <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
+        <Style x:Key="{x:Type ListViewItem}"
+       TargetType="ListViewItem">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border 
+          Name="Border"
+          Padding="2"
+          SnapsToDevicePixels="true"
+          Background="Transparent">
+                            <Label Content="{Binding Path=Name}"></Label>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Border"
+                    Property="Background" Value="{StaticResource SelectedBackgroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" 
+                                    Value="{StaticResource DisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        </UserControl.Resources>
+    <StackPanel Orientation="Horizontal">
+        <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
+
+        </ListView>
+        <ListView Name="SecondProgramElementsList" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" MinWidth="143">
+        
+        </ListView>
+        <ListView MinWidth="143">
+
+        </ListView>
+        <ListView MinWidth="143">
+
+        </ListView>
+        <ListView MinWidth="143">
+
+        </ListView>
+        <ListView MinWidth="143">
+
+        </ListView>
+
+        <ListView MinWidth="142">
+
+        </ListView>
+
+
+    </StackPanel>
 </UserControl>

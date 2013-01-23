@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using ABB.SrcML;
 using System.Runtime.CompilerServices;
+using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace LocalSearch
 {   
     public class GraphBuilder
     {
-        private const String SrcmlLibSharp = @"C:\WORK-XIAO\sando\LIBS\srcML-Win-cSharp";
-        private const String SrcmlLib = @"C:\WORK-XIAO\sando\LIBS\srcML-Win";
+        private String SrcmlLibSharp = @"C:\WORK-XIAO\sando\LIBS\srcML-Win-cSharp";
+        private String SrcmlLib = @"C:\WORK-XIAO\sando\LIBS\srcML-Win";
         private SrcMLFile srcmlFile;
         private XElement[] FieldDecs;
         private XElement[] Methods;
@@ -22,8 +24,11 @@ namespace LocalSearch
         /// Constructing a new Graph Builder.
         /// </summary>
         /// <param name="srcPath">The full path to the given Source Code or XML file.</param>
-        public GraphBuilder(String srcPath)
+        public GraphBuilder(String srcPath, String srcMlPath = null)
         {
+            if (srcMlPath != null)
+                SrcmlLibSharp = srcMlPath;
+
             Src2SrcMLRunner srcmlConverter;
             String fileExt = Path.GetExtension(srcPath);
 
@@ -84,6 +89,31 @@ namespace LocalSearch
             }
 
             return AllFieldNames.ToArray();
+        }
+
+        public List<CodeSearchResult> GetFieldsAsFieldElements()
+        {
+            var elements = new List<CodeSearchResult>();
+
+            var fields = GetFieldDecs();
+
+            foreach (XElement field in fields)
+            {
+                var fieldname = field.Element(SRC.Declaration).Element(SRC.Name);
+                var definitionLineNumber = fieldname.GetSrcLineNumber();
+                var fullFilePath = srcmlFile.FileName;
+                var snippet = String.Empty;
+                var accessLevel = AccessLevel.Public;
+                var fieldType = String.Empty;
+                var classId = Guid.Empty;
+                var className = String.Empty;
+                var initialValue = String.Empty;
+                var element = new FieldElement(fieldname.Value, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
+                CodeSearchResult result = new CodeSearchResult(element,1.0);
+                elements.Add(result);
+            }
+
+            return elements;
         }
 
         /// <summary>
@@ -217,5 +247,44 @@ namespace LocalSearch
         //    return (list_nonlocalvars.Contains(field.Value));
         //}
 
+
+        public List<CodeSearchResult> GetRelatedMethods(CodeSearchResult codeSearchResult)
+        {
+            return this.GetMethodsAsMethodElements();
+        }
+
+        private List<CodeSearchResult> GetMethodsAsMethodElements()
+        {
+            var elements = new List<CodeSearchResult>();
+
+            var methods = GetMethodNames();
+
+            foreach (XElement method in methods)
+            {
+                var fieldname = "";
+                if (method.Element(SRC.Name) != null)
+                {
+                    fieldname = method.Element(SRC.Name).Value;
+                }else{
+                    fieldname = method.Value;
+                }
+                    var definitionLineNumber = method.GetSrcLineNumber();
+                    var fullFilePath = srcmlFile.FileName;
+                    var snippet = String.Empty;
+                    var accessLevel = AccessLevel.Public;
+                    var fieldType = String.Empty;
+                    var classId = Guid.Empty;
+                    var className = String.Empty;
+                    var initialValue = String.Empty;
+                    bool isconstructor = false;
+                    var args = String.Empty;
+                    var body = string.Empty;
+                    var element = new MethodElement(fieldname, definitionLineNumber, fullFilePath, snippet, accessLevel, args, fieldType, body, classId, className, String.Empty, isconstructor);
+                    CodeSearchResult result = new CodeSearchResult(element, 1.0);
+                    elements.Add(result);
+            }
+
+            return elements;
+        }
     }
 }
