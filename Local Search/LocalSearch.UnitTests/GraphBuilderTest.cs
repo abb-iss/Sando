@@ -191,7 +191,18 @@ namespace LocalSearch.UnitTests
 
             Assert.IsEmpty(listMethodsUse);
         }
-        
+
+        [Test]
+        public void GetFieldDeclFromNametest() 
+        {
+            GraphBuilder gbuilder = new GraphBuilder(xmlPath);
+            String fieldname = "fileImpacted";
+            XElement fielddecl = gbuilder.GetFieldDeclFromName(fieldname);
+
+            Assert.IsTrue(fieldname.Equals(fielddecl.Element(SRC.Name).Value));
+            String strDecl = "private List<string> fileImpacted = new List<string>()";
+            Assert.IsTrue(fielddecl.ToSource().Equals(strDecl));
+        }
 
 
     }

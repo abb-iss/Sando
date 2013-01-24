@@ -9,6 +9,7 @@ using ABB.SrcML;
 using System.Runtime.CompilerServices;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using System.Diagnostics.Contracts;
 
 namespace LocalSearch
 {   
@@ -44,10 +45,10 @@ namespace LocalSearch
         }
 
         /// <summary>
-        /// Get all field declaration statements in the source file.
+        /// Get all field "declaration statements" in the source file.
         /// </summary>
         /// <returns>An array of all field declaration statements in XElement.</returns>
-        public XElement[] GetFieldDecs()
+        public XElement[] GetFieldDeclStatements()
         {
             List<XElement> listAllFields = new List<XElement>();
             
@@ -76,7 +77,7 @@ namespace LocalSearch
         {   
             List<XElement> listAllFieldNames = new List<XElement>();
 
-            var fields = GetFieldDecs();
+            var fields = GetFieldDeclStatements();
 
             foreach (XElement field in fields)
             {
@@ -260,6 +261,208 @@ namespace LocalSearch
             return GetMethodsUseField(fieldname.Value);
         }
 
+        /// <summary>
+        /// Get full method XElement from a given method name.
+        /// </summary>
+        /// <param name="methodname">method NAME in String</param>
+        /// <returns>Full method in XElement</returns>
+        public XElement GetFullMethodFromName(String methodname)
+        {
+            var methods = GetMethods();
+
+            foreach (XElement method in methods)
+            {
+                if (methodname.Equals(method.Element(SRC.Name).Value))
+                    return method;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get field declaration XElement from a given field name.
+        /// </summary>
+        /// <param name="fieldname">field NAME in String</param>
+        /// <returns>field declaration in XElement</returns>
+        public XElement GetFieldDeclFromName(String fieldname)
+        {
+            var fields = GetFieldDeclStatements();
+            foreach (XElement field in fields)
+            {
+                if (fieldname.Equals(field.Element(SRC.Declaration).Element(SRC.Name).Value))
+                    return field.Element(SRC.Declaration);
+            }
+
+            return null;
+        }
+
+
+        public List<ProgramElementWithRelation> GetRelatedInfo(CodeSearchResult codeSearchResult)
+        {            
+            ProgramElementType elementtype = codeSearchResult.ProgramElementType;
+            if (elementtype.Equals(ProgramElementType.Field))
+                return GetFieldRelatedInfo(codeSearchResult);
+            else // if(elementtype.Equals(ProgramElementType.Method))
+                return GetMethodRelatedInfo(codeSearchResult);
+        }
+
+        public List<ProgramElementWithRelation> GetFieldRelatedInfo(CodeSearchResult codeSearchResult)
+        {
+            List<ProgramElementWithRelation> listFiledRelated 
+                = new List<ProgramElementWithRelation>();
+            String fieldname = codeSearchResult.Name;
+
+            //get methods that use this field
+            var methodnames = GetMethodsUseField(fieldname);
+            foreach (var methodname in methodnames)
+            {
+                //var methodaselement = GetMethodElementWRelationFromName(methodname);
+                var fullmethod = GetFullMethodFromName(methodname.Value);
+                Contract.Requires(!fullmethod.Equals(null), "Method " + methodname.Value + " does not belong to this local file.");
+                var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
+                methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+                listFiledRelated.Add(methodaselement);
+            }
+
+            //there may be other relations that will be considered in the future
+            // todo
+
+            return listFiledRelated;
+
+        }      
+
+        public List<ProgramElementWithRelation> GetMethodRelatedInfo(CodeSearchResult codeSearchResult)
+        {
+            List<ProgramElementWithRelation> listMethodRelated
+                = new List<ProgramElementWithRelation>();
+            String methodname = codeSearchResult.Name;
+            var method = GetFullMethodFromName(methodname);
+
+            Contract.Requires(!method.Equals(null), "Method "+ methodname + " does not belong to this local file.");
+
+            //get fields that are used by this method
+            var fieldnames = GetFieldsUsedinMethod(method);
+            foreach (var fieldname in fieldnames)
+            {
+                //var fieldaselement = GetFieldElementWRelationFromName(fieldname);
+                var fielddecl = GetFieldDeclFromName(fieldname.Value);
+                Contract.Requires(!fielddecl.Equals(null), "Field " + fieldname.Value + " does not belong to this local file.");
+                var fieldaselement = GetFieldElementWRelationFromDecl(fielddecl);
+                fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
+                listMethodRelated.Add(fieldaselement);
+            }
+
+            //get other method related info. 
+            //todo
+
+            return listMethodRelated;
+        }
+
+        private ProgramElementWithRelation GetFieldElementWRelationFromDecl(XElement fielddecl)
+        {
+            var definitionLineNumber = fielddecl.Element(SRC.Name).GetSrcLineNumber();
+            var fullFilePath = srcmlFile.FileName;
+            var snippet = fielddecl.ToSource();
+            var relation = ProgramElementRelation.Other; //by default
+
+            AccessLevel accessLevel = AccessLevel.Internal; //by default
+            var specifier = fielddecl.Element(SRC.Type).Element(SRC.Specifier);
+            if (!specifier.Equals(null)) //question: specifier.IsEmpty?
+                accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value,true); 
+            
+            var fieldType = fielddecl.Element(SRC.Type).Element(SRC.Name);
+            var classId = Guid.Empty;
+            var className = String.Empty;
+            var initialValue = String.Empty;
+
+            var element = new FieldElementWithRelation(fielddecl.Element(SRC.Name).Value, 
+                definitionLineNumber, fullFilePath, snippet, relation,
+                accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
+
+            return element;
+        }
+
+        private ProgramElementWithRelation GetMethodElementWRelationFromXElement(XElement fullmethod)
+        {
+            var definitionLineNumber = fullmethod.Element(SRC.Name).GetSrcLineNumber();
+            var fullFilePath = srcmlFile.FileName;
+            var snippet = fullmethod.Element(SRC.Block).ToSource(); //todo: only show related lines  
+            var relation = ProgramElementRelation.Other; //by default
+            
+            AccessLevel accessLevel = AccessLevel.Internal; //by default
+            var specifier = fullmethod.Element(SRC.Specifier); //for constructor
+            if (specifier.Equals(null))
+                specifier = fullmethod.Element(SRC.Type).Element(SRC.Specifier); //for other functions
+            if (!specifier.Equals(null)) 
+                accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value, true);
+            
+            var returnType = String.Empty;
+            bool isconstructor = true;
+            var type = fullmethod.Element(SRC.Type);
+            if (!type.Equals(null))
+            {
+                returnType = type.Element(SRC.Name).Value;
+                isconstructor = false;
+            }
+
+            var classId = Guid.Empty;
+            var className = String.Empty;
+            var args = fullmethod.Element(SRC.ParameterList).ToSource();
+            var body = fullmethod.Element(SRC.Block).ToSource();
+
+            var element = new MethodElementWithRelation(fullmethod.Element(SRC.Name).Value, 
+                definitionLineNumber, fullFilePath, snippet, relation,
+                accessLevel, args, returnType, body, classId, className, String.Empty, isconstructor);
+
+            return element;
+        }
+
+
+        #region maybe obsoleted
+        
+        private ProgramElementWithRelation GetFieldElementWRelationFromName(XElement fieldname)
+        {
+            var definitionLineNumber = fieldname.GetSrcLineNumber();
+            var fullFilePath = srcmlFile.FileName;
+            var snippet = String.Empty;
+            var relation = ProgramElementRelation.Other;
+            var accessLevel = AccessLevel.Public;
+            var fieldType = String.Empty;
+            var classId = Guid.Empty;
+            var className = String.Empty;
+            var initialValue = String.Empty;
+            var element = new FieldElementWithRelation(fieldname.Value, definitionLineNumber,
+                fullFilePath, snippet, relation,
+                accessLevel, fieldType, classId, className, String.Empty, initialValue);
+
+            return element;
+        }
+
+        private ProgramElementWithRelation GetMethodElementWRelationFromName(XElement methodname)
+        {
+            var definitionLineNumber = methodname.GetSrcLineNumber();
+            var fullFilePath = srcmlFile.FileName;
+            var snippet = String.Empty;
+            var relation = ProgramElementRelation.Other;
+            var accessLevel = AccessLevel.Public;
+            var fieldType = String.Empty;
+            var classId = Guid.Empty;
+            var className = String.Empty;
+            var initialValue = String.Empty;
+            bool isconstructor = false;
+            var args = String.Empty;
+            var body = string.Empty;
+            var element = new MethodElementWithRelation(methodname.Value, definitionLineNumber, 
+                fullFilePath, snippet, relation, 
+                accessLevel, args, fieldType, body, classId, className, String.Empty, isconstructor);
+
+            return element;
+        }
+        
+        #endregion 
+
+
+        #region Dave's zone
 
         public List<CodeSearchResult> GetRelatedMethods(CodeSearchResult codeSearchResult)
         {
@@ -270,7 +473,7 @@ namespace LocalSearch
         {
             var elements = new List<CodeSearchResult>();
 
-            var fields = GetFieldDecs();
+            var fields = GetFieldDeclStatements();
 
             foreach (XElement field in fields)
             {
@@ -327,5 +530,7 @@ namespace LocalSearch
 
             return elements;
         }
+
+        #endregion
     }
 }
