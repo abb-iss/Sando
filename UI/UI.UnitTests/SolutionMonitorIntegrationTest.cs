@@ -23,19 +23,7 @@ using UnitTestHelpers;
 /******* from SolutionMonitorTest *******/
 
 
-/* //// in SequenceDiagramTesting.IfElseBlocksBuilderTest but useless here
-using ABB.DetailedGenerator;
-using ABB.SolutionIndexer;
-using ABB.SolutionIndexer.Core;
-using ABB.SolutionIndexer.Engines;
-using ABB.SrcML;
-using Constants = BaseProgramModel.Constants;
-using DetailedSequenceDiagramGenerator;
-using ProgramModel;
-using RuProgressBar;
-using SequenceDiagramWidgets.Graph;
-using StandaloneSequenceSearchDialog.Engines;
-*/
+
 
 namespace Sando.UI.UnitTests
 {
