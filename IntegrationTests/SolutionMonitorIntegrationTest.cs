@@ -10,14 +10,9 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 
 using EnvDTE;
-////using EnvDTE80;
-////using Microsoft.VisualStudio.ArchitectureTools.Extensibility;   //just for test
-using Microsoft.VisualStudio.ArchitectureTools.Extensibility.Uml;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.Uml.Classes;
-using Microsoft.VisualStudio.Uml.Interactions;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 namespace Sando.IntegrationTests

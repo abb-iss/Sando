@@ -11,7 +11,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 /******* from SolutionMonitorTest *******/
-////using NUnit.Framework; // instead, using Microsoft.VisualStudio.TestTools.UnitTesting
 using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
