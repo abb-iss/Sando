@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 //using System.ComponentModel.Composition;
-using System.Linq;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml.Linq;
 
 using EnvDTE;
 ////using EnvDTE80;
-using Microsoft.VisualStudio.ArchitectureTools.Extensibility.Uml;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VisualStudio.Uml.Classes;
-using Microsoft.VisualStudio.Uml.Interactions;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 /******* from SolutionMonitorTest *******/
@@ -51,12 +43,8 @@ namespace Sando.UI.UnitTests
     ////public class SolutionMonitorIntegrationTest : IInvoker
     public class SolutionMonitorIntegrationTest
     {
-        ////private static SearchRunner searchRunner;   // ABB.SolutionIndexer.Engines.SearchRunner
-        ////private static UMLModelManager Manager;     // DetailedSequenceDiagramGenerator.UMLModelManager [No any reference]
-        private static Solution ModelSolution;          // EnvDTE.Solution
-        ////private static DetailedSDGenerator generator;   // ABB.DetailedGenerator.DetailedSDGenerator
-        private static Microsoft.VisualStudio.ComponentModelHost.IComponentModel context;
-        ////private static ObservableCollection<SequenceGraph> graphs;  // SequenceDiagramWidgets.Graph.SequenceGraph
+        private static Solution ModelSolution;          // EnvDTE.Solution        
+        private static Microsoft.VisualStudio.ComponentModelHost.IComponentModel context;        
 
 
         /******* from SolutionMonitorTest *******/
@@ -65,26 +53,12 @@ namespace Sando.UI.UnitTests
         private const string _luceneTempIndexesDirectory = "C:/Windows/Temp";
         /******* from SolutionMonitorTest *******/
 
-        /******* from SolutionMonitorTest *******/
-        /* Included in [ClassInitialize] TestInitialize()
-        [ClassInitialize]  // [TestFixtureSetUp] (Setup for Class)
-        public void SetUp()
-        {
-            TestUtils.InitializeDefaultExtensionPoints();
-        }
-        */
-        /******* from SolutionMonitorTest *******/
 
         [ClassInitialize]
         public static void TestInitialize(TestContext testContext)
         {
             OpenTestModelingProject(testContext);
-            ////InitializeGenerator();
-            ////graphs = new ObservableCollection<SequenceGraph>();
-            ////for (int i = 0; i < 6; i++)
-            ////{
-            ////    graphs[i] = new SequenceGraph();
-            ////}
+    
 
             /******* from SolutionMonitorTest *******/
             TestUtils.InitializeDefaultExtensionPoints();
@@ -103,57 +77,14 @@ namespace Sando.UI.UnitTests
             
 
 
-            //Manager = new UMLModelManager();
-            //context.DefaultCompositionService.SatisfyImportsOnce(Manager);            
-            //Manager.SetDTE(VsIdeTestHostContext.Dte);
-
-            //init indexer
-
-            //init searcher
-            ////searchRunner = new SearchRunner();
-            ////searchRunner.Initialize("", "", Constants.SrcmlPath, ".", null);            //TODO - fix this
-
-        }
-
-        //// DetailedSequenceDiagramGenerator.UMLModelManager
-        private static void InitializeGenerator()
-        {
-            ////if (generator == null)
-            ////{
-            ////    if (UMLModelManager.IsRunning())
-            ////    {
-            ////        generator = new DetailedSDGenerator();
-            ////        generator.Initialize(UMLModelManager.GetInstance());
-            ////    }
-            ////    else
-            ////    {
-            ////        generator = new DetailedSDGenerator();
-            ////        generator.Initialize(context, VsIdeTestHostContext.Dte);
-            ////    }
-            ////}
+   
         }
 
 
 
-        /******* from SolutionMonitorTest *******/
-        /* Included in [TestInitialize] Init()
-        [TestInitialize] // [SetUp] (Setup for Unit Test)
-        public void Setup()
-        {
-            Directory.CreateDirectory(_luceneTempIndexesDirectory + "/basic/");
-            TestUtils.ClearDirectory(_luceneTempIndexesDirectory + "/basic/");
-            key = new SolutionKey(Guid.NewGuid(), ".\\TestFiles\\FourCSFiles", _luceneTempIndexesDirectory + "/basic/");
-            var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-            monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
-            string[] files = Directory.GetFiles(".\\TestFiles\\FourCSFiles");
-            foreach (var file in files)
-            {
-                string fullPath = Path.GetFullPath(file);
-                monitor.ProcessFileForTesting(fullPath);
-            }
-            monitor.UpdateAfterAdditions();
-        }
-        */
+
+
+    
         /******* from SolutionMonitorTest *******/
                
         //// SequenceDiagramTesting.MockProgress
@@ -226,103 +157,7 @@ namespace Sando.UI.UnitTests
             }
             Assert.Fail("Failed to find relevant search result for search: " + ensureLoaded);
         }
-        /******* from SolutionMonitorTest *******/
-
-
-        /* from IfElseBlocksBuilderTest
-        [HostType("VS IDE")]
-        [TestMethod]
-        public void SimpleIfBlockTest()
-        {
-            searchRunner.RunTest(graphs, "line");
-            Assert.IsTrue(graphs[0].sEdges.Count > 0);
-
-            var interaction = generator.GenerateTest("line", graphs[0], MockProgress.getProgress(this), "");
-            Assert.IsTrue(interaction.Lifelines.Count() == 4);
-            Assert.IsTrue(interaction.Lifelines.First().GetAllOutgoingMessages().Count() == 1);
-            Assert.IsTrue(interaction.Lifelines.Last().GetAllOutgoingMessages().Count() == 1);
-            //Assert.IsTrue(interaction.Lifelines.First().GetCombinedFragments().Count() >= 3);
-            //var myIfBlock = interaction.Lifelines.Last().GetCombinedFragments().First();
-            //Assert.IsTrue(myIfBlock.CoveredLifelines.First().Name == "CellBuffer");
-            //Assert.IsTrue(myIfBlock.CoveredLifelines.Last().Name == "Generated");
-        }
-
-        [HostType("VS IDE")]
-        [TestMethod]
-        public void NoIfBlocksTest()
-        {
-            searchRunner.RunTest(graphs, "file");
-            Assert.IsTrue(graphs[0].sEdges.Count > 0);
-
-            var interaction = generator.GenerateTest("file", graphs[1], MockProgress.getProgress(this), "");
-            //Assert.IsTrue(interaction.Lifelines.Count() == 3);
-            //Assert.IsTrue(interaction.Lifelines.First().GetAllOutgoingMessages().Count() == 8);
-            //Assert.IsTrue(interaction.Lifelines.Last().GetAllOutgoingMessages().Count() == 3);
-            //Assert.IsTrue(interaction.Lifelines.First().GetCombinedFragments().Count() == 0);            
-            //Assert.IsTrue((interaction.Lifelines.First().Name == "NppParameters"));
-            //Assert.IsTrue((interaction.Lifelines.Last().Name == "TiXmlElement"));
-        }
-
-        [HostType("VS IDE")]
-        [TestMethod]
-        public void FileOpenScenarioTest()
-        {
-            var searchTerm = "file";
-            string[] methods = { "Notepad_plusfileNew", "Notepad_plusfileOpen", "FileManagerdeleteFile", "Notepad_plusfileSaveSession" };
-            CreateGraphsForSpecificMethods(searchTerm, methods);
-        }
-
-        [HostType("VS IDE")]
-        [TestMethod]
-        public void StartScenarioTest()
-        {
-            var searchTerm = "start contracted";
-            string[] methods = { "EditorToggleContraction", "EditorContractedFoldNext", "ContractionStateShowAll", "ContractionStateHiddenLines" };
-            CreateGraphsForSpecificMethods(searchTerm, methods);
-        }
-        
-        [HostType("VS IDE")]
-        [TestMethod]
-        public void StartRedoScenarioTest()
-        {
-            var searchTerm = "start redo";
-            string[] methods = { "CellBufferCanRedo", "CellBufferGetRedoStep" };
-            CreateGraphsForSpecificMethods(searchTerm, methods);
-        }
-
-        [HostType("VS IDE")]
-        [TestMethod]
-        public void LoadSessionTest()
-        {
-            var searchTerm = "load session";
-            string[] methods = {  "NppParametersloadSession", "NppParameterswriteSession", 
-                               "Notepad_plusfileLoadSession","Notepad_plusloadSession"
-                               };
-            CreateGraphsForSpecificMethods(searchTerm, methods);
-        }
-
-        //// ProgramModel.IMethod
-        private void CreateGraphsForSpecificMethods(string searchTerm, string[] methods)
-        {
-            var myResults = searchRunner.RunTest(graphs, searchTerm);
-            var theGraph = graphs[0];
-            List<IMethod> resultsIWant = new List<IMethod>();
-            foreach (var method in myResults)
-            {
-                var name = method.GetNamespace() + method.Name();
-                foreach (var methName in methods)
-                {
-                    if ((method.GetNamespace() + method.Name()).ToLower().Equals(methName.ToLower()))
-                    {
-                        resultsIWant.Add(method);
-                    }
-                }
-            }
-            Assert.IsTrue(resultsIWant.Count >= methods.Length);
-            var interaction = generator.GenerateTest(searchTerm, theGraph, MockProgress.getProgress(this), "");
-            //System.Threading.Thread.Sleep(20000);
-        }
-        */
+  
 
 
         /******* from SolutionMonitorTest *******/
