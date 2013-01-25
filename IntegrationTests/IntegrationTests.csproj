@@ -33,16 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML, Version=2.0.37.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.dll</HintPath>
-    </Reference>
-    <Reference Include="ABB.SrcML.SrcMLSolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.SrcMLSolutionMonitor.dll</HintPath>
+      <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
-      <HintPath>..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+      <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>

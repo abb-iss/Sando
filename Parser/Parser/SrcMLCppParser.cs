@@ -59,7 +59,7 @@ namespace Sando.Parser
         /// <returns></returns>
         public List<ProgramElement> Parse(string fileName, XElement sourceElements)
         {
-            writeLog("D:\\Data\\log.txt", "SrcMLCppParser.Parse(" + fileName + ", XElement)");
+            writeLog( "SrcMLCppParser.Parse(" + fileName + ", XElement)");
             var programElements = new List<ProgramElement>();
 
             //classes and structs have to parsed first
@@ -474,11 +474,9 @@ namespace Sando.Parser
         /// </summary>
         /// <param name="logFile"></param>
         /// <param name="str"></param>
-        private void writeLog(string logFile, string str)
+        private void writeLog(string str)
         {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
+            FileLogger.DefaultLogger.Info(str);
         }
         // End of code changes
     }

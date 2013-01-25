@@ -73,7 +73,7 @@
   <ItemGroup>
     <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.dll</HintPath>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

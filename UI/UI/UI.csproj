@@ -78,11 +78,11 @@
   <ItemGroup>
     <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.dll</HintPath>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\GitHub\SrcML.NET\Build\Debug\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK, Version=1.4.15.1, Culture=neutral, PublicKeyToken=cd2d24cd2bace800, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -153,10 +153,6 @@
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\VisualStudio\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="Parser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\Debug\Parser.dll</HintPath>
     </Reference>
     <Reference Include="SandoExtensionContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22c1f6d7660dc0a2, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -585,6 +581,10 @@
     <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Parser\Parser\Parser.csproj">
+      <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
+      <Name>Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>

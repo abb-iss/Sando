@@ -166,7 +166,7 @@ namespace Sando.UI.Monitoring
         public void Update(string filePath, XElement xElement)
         {
             FileInfo fileInfo = new FileInfo(filePath);
-            writeLog("D:\\Data\\log.txt", "IndexUpdateManager.Update(): " + filePath + " [" + fileInfo.Extension + "]");
+            writeLog( "IndexUpdateManager.Update(): " + filePath + " [" + fileInfo.Extension + "]");
             try
             {
                 var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath, xElement);
@@ -184,7 +184,7 @@ namespace Sando.UI.Monitoring
                         SandoDocument document = CppHeaderElementResolver.GetDocumentForUnresolvedCppMethod(unresolvedElement, headerElements);
                         if (document != null)
                         {
-                            writeLog("D:\\Data\\log.txt", "- DI.AddDocument()");
+                            writeLog( "- DI.AddDocument()");
                             _currentIndexer.AddDocument(document);
                         }
                     }
@@ -197,7 +197,7 @@ namespace Sando.UI.Monitoring
                         var document = DocumentFactory.Create(programElement);
                         if (document != null)
                         {
-                            writeLog("D:\\Data\\log.txt", "- DI.AddDocument()");
+                            writeLog( "- DI.AddDocument()");
                             _currentIndexer.AddDocument(document);
                         }
                     }
@@ -205,7 +205,7 @@ namespace Sando.UI.Monitoring
                 }
             catch (Exception e)
             {
-                writeLog("D:\\Data\\log.txt", "Exception in IndexUpdateManager.Update() " + e.Message + "\n" + e.StackTrace);
+                writeLog( "Exception in IndexUpdateManager.Update() " + e.Message + "\n" + e.StackTrace);
             }
         }
 
@@ -214,11 +214,9 @@ namespace Sando.UI.Monitoring
         /// </summary>
         /// <param name="logFile"></param>
         /// <param name="str"></param>
-        private static void writeLog(string logFile, string str)
+        private static void writeLog(string str)
         {
-            StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
+            FileLogger.DefaultLogger.Info(str);
         }
         // End of code changes
 	}

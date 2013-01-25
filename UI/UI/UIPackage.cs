@@ -396,7 +396,7 @@ namespace Sando.UI
 
                 // Create a new instance of SrcML.NET's SrcMLArchive
                 // TODO: Sando provides the path of srcML folder in some way
-                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, "D:\\Data\\SrcML.NETDemo\\MySrcMLArchive");
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()));
                 // Subscribe events from SrcML.NET's solution monitor
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
@@ -421,7 +421,7 @@ namespace Sando.UI
         /// <param name="eventArgs"></param>
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
-            writeLog("D:\\Data\\log.txt", "Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            writeLog("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             // Current design decision: 
             // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
             if (!_srcMLArchive.isValidFileExtension(eventArgs.SourceFilePath))
@@ -437,7 +437,7 @@ namespace Sando.UI
         /// <param name="eventArgs"></param>
         private void RespondToSourceFileChangedEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
-            writeLog("D:\\Data\\log.txt", "Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            writeLog( "Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             HandleSrcMLDOTNETEvents(eventArgs);
         }
 
@@ -658,11 +658,9 @@ namespace Sando.UI
         /// </summary>
         /// <param name="logFile"></param>
         /// <param name="str"></param>
-        private static void writeLog(string logFile, string str)
+        private static void writeLog(string str)
         {
-            StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
+            FileLogger.DefaultLogger.Info(str);
         }
         // End of code changes
 

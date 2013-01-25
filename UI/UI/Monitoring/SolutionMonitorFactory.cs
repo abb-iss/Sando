@@ -8,6 +8,7 @@ using Sando.Core;
 using Sando.Indexer;
 // Code changed by JZ: solution monitor integration
 using System.Xml.Linq;
+using Sando.Core.Extensions.Logging;
 // TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
 // End of code changes
@@ -19,6 +20,7 @@ namespace Sando.UI.Monitoring
         private static DocumentIndexer currentIndexer;
 
 		private const string Lucene = "\\lucene";
+        private const string srcML = "\\srcMlArchives";
 
 	    public static string LuceneDirectory { get; set; }
 
@@ -93,7 +95,7 @@ namespace Sando.UI.Monitoring
         /// <param name="sourceFilePath"></param>
         public static void DeleteIndex(string sourceFilePath)
         {
-            writeLog("D:\\Data\\log.txt", "- DI.DeleteDocuments()");
+            writeLog("- DI.DeleteDocuments()");
             currentIndexer.DeleteDocuments(sourceFilePath);
         }
 
@@ -103,7 +105,7 @@ namespace Sando.UI.Monitoring
         /// </summary>
         public static void CommitIndexChanges()
         {
-            writeLog("D:\\Data\\log.txt", "- DI.CommitChanges()");
+            writeLog("- DI.CommitChanges()");
             currentIndexer.CommitChanges();
         }
 
@@ -115,7 +117,7 @@ namespace Sando.UI.Monitoring
         /// </summary>
         public static void StartupCompleted()
         {
-            writeLog("D:\\Data\\log.txt", "Sando: StartupCompleted()");
+            writeLog("Sando: StartupCompleted()");
             _initialIndexDone = true;
             currentIndexer.CommitChanges();
         }
@@ -124,7 +126,7 @@ namespace Sando.UI.Monitoring
         /// TODO: This method might be refactored to another class.
         public static void MonitoringStopped()
         {
-            writeLog("D:\\Data\\log.txt", "Sando: MonitoringStopped()");
+            writeLog("Sando: MonitoringStopped()");
             if (currentIndexer != null)
             {
                 currentIndexer.CommitChanges();
@@ -189,11 +191,7 @@ namespace Sando.UI.Monitoring
         */
         // End of code changes
 
-        private static string CreateLuceneFolder()
-		{
-            Contract.Requires(LuceneDirectory != null, "Please set the LuceneDirectory before calling this method");
-			return CreateFolder(Lucene, LuceneDirectory);
-		}
+
 
 		private static string CreateFolder(string folderName, string parentDirectory)
 		{
@@ -218,11 +216,21 @@ namespace Sando.UI.Monitoring
 
 
 		private static string GetLuceneDirectoryForSolution(Solution openSolution)
-		{
-		    var luceneFolder = CreateLuceneFolder();
-            CreateFolder(GetName(openSolution), luceneFolder + "\\");
-			return luceneFolder + "\\" + GetName(openSolution);
+		{            
+            return CreateNamedFolder(openSolution, Lucene);
 		}
+
+        private static string CreateNamedFolder(Solution openSolution, string x)
+        {
+            var luceneFolder = CreateFolder(x, LuceneDirectory);
+            CreateFolder(GetName(openSolution), luceneFolder + "\\");
+            return luceneFolder + "\\" + GetName(openSolution);
+        }
+
+        public static string GetSrcMlArchiveFolder(Solution openSolution)
+        {
+            return CreateNamedFolder(openSolution, srcML);
+        }
 
 
 
@@ -234,12 +242,13 @@ namespace Sando.UI.Monitoring
         /// </summary>
         /// <param name="logFile"></param>
         /// <param name="str"></param>
-        private static void writeLog(string logFile, string str)
+        private static void writeLog( string str)
         {
-            StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
+            FileLogger.DefaultLogger.Info(str);
         }
         // End of code changes
+
+
+
     }
 }
