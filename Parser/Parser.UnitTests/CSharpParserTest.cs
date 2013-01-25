@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using UnitTestHelpers;
+using System.Linq;
 
 namespace Sando.Parser.UnitTests
 {
@@ -194,7 +195,7 @@ namespace Sando.Parser.UnitTests
 				if(programElement as ClassElement != null)
 					hasClass = true;
 
-				Assert.IsTrue(programElement.Snippet != null);
+				Assert.IsTrue(programElement.RawSource != null);
 			}
 			Assert.IsTrue(hasClass && hasMethod);
 		}
@@ -213,7 +214,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.Name, "LanguageEnum");
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 7);
 					Assert.AreEqual(enumElem.Namespace, "Sando.Parser");
-					Assert.AreEqual(enumElem.Values, "Java C CSharp");
+					Assert.AreEqual(enumElem.Body, "Java C CSharp");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
 					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt"));
 					hasEnum = true;
@@ -236,7 +237,7 @@ namespace Sando.Parser.UnitTests
                     Assert.AreEqual(structElem.Name, "SimpleStruct");
                     Assert.AreEqual(structElem.DefinitionLineNumber, 6);
                     Assert.AreEqual(structElem.Namespace, "SimpleNamespace");
-                    Assert.AreEqual(structElem.AccessLevel, AccessLevel.Public);
+                    Assert.AreEqual(structElem.AccessLevel, AccessLevel.Internal);
                     Assert.True(structElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Struct1.cs.txt"));
                     hasStruct = true;
                 }
@@ -397,6 +398,23 @@ namespace Sando.Parser.UnitTests
 			}
 			Assert.IsTrue(hasConstructor);
 		}
+
+
+        [Test]
+        public void GIVEN_file_with_readonly_and_static_elements_WHEN_parse_method_is_called_THEN_valid_access_levels_are_retrieved()
+        {
+            var parser = new SrcMLCSharpParser();
+            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+
+            var readonlyField = elements.OfType<FieldElement>().FirstOrDefault(f => f.Name == "Language");
+            Assert.IsNotNull(readonlyField);
+            Assert.AreEqual(readonlyField.AccessLevel, AccessLevel.Internal);
+
+            var staticMethod = elements.OfType<MethodElement>().FirstOrDefault(f => f.Name == "SetSrcMLLocation");
+            Assert.IsNotNull(staticMethod);
+            Assert.AreEqual(staticMethod.AccessLevel, AccessLevel.Public);
+        }
+
 
 		[TearDown]
 		public static void CleanUp()

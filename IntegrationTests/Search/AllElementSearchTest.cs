@@ -48,7 +48,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Name, "UsageTypeCriteriaToString", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
-			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 
 			methodSearchResult = codeSearchResults.Find(el =>
 															el.Element.ProgramElementType == ProgramElementType.Method &&
@@ -68,7 +68,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Name, "SingleUsageTypeCriteriaToString", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
-			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
 		[Test]
@@ -115,7 +115,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Name, "FetchOutputStream", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
-			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
 		[TestFixtureSetUp]

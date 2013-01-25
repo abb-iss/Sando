@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Sando.Core.Extensions.Logging;
 using Sando.Core.Extensions;
@@ -18,6 +22,8 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
+using Sando.Recommender;
+using FocusTestVC;
 
 namespace Sando.UI.View
 {
@@ -97,7 +103,7 @@ namespace Sando.UI.View
         {
             get
             {
-                return Translator.GetTranslation(allExpanded ? TranslationCode.CollapseResultsLabel : TranslationCode.ExpandResultsLabel);
+                return Translator.GetTranslation(TranslationCode.ExpandResultsLabel);
             }
         }
 
@@ -144,6 +150,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
         private SearchManager _searchManager;
 
+        private QueryRecommender recommender;
 
         public SearchViewControl()
         {
@@ -158,8 +165,39 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             InitProgramElements();
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += selectFirstResult;
 
-            SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+            SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";            
+
+            recommender = new QueryRecommender();   
         }
+
+        private void searchBox_Loaded(object sender, RoutedEventArgs e) {
+            if(this.searchBox != null) {
+                var textBox = searchBox.Template.FindName("Text", searchBox) as TextBox;
+                if(textBox != null) {
+                    TextBoxFocusHelper.RegisterFocus(textBox);
+                    textBox.KeyDown += new KeyEventHandler(HandleTextBoxKeyDown);
+                }
+
+                var listBox = searchBox.Template.FindName("Selector", searchBox) as ListBox;
+                if(listBox != null) {
+                    listBox.SelectionChanged += new SelectionChangedEventHandler(searchBoxListBox_SelectionChanged);
+                }
+
+            }
+        }
+
+        private void HandleTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Tab)
+            {
+                if (e.Key == Key.Tab && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
+                {
+                    this.searchResultListbox.Focus();
+                    e.Handled = true;
+                }
+            }
+        }
+
 
         private void InitProgramElements()
         {
@@ -199,9 +237,9 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             BeginSearch(searchBox.Text);
         }
 
-        private void OnKeyDownHandler(object sender, KeyEventArgs e) {
+        private void OnKeyUpHandler(object sender, KeyEventArgs e) {
             if(e.Key == Key.Return) {
-                var text = sender as TextBox;
+                var text = sender as AutoCompleteBox;
                 if(text != null) {
                     BeginSearch(text.Text);
                 }
@@ -271,7 +309,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         {
             try
             {
-                FileOpener.OpenItem(sender);
+                FileOpener.OpenItem(sender,searchBox.Text);
             }
             catch (ArgumentException aex)
             {
@@ -286,7 +324,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 try
                 {
-                    FileOpener.OpenItem(sender);
+                    FileOpener.OpenItem(sender,searchBox.Text);
                 }
                 catch(ArgumentException aex)
                 {
@@ -325,6 +363,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 Dispatcher.Invoke(
                 (Action)(() => UpdateResults(results)));
+                
             }     	    
         }
 
@@ -335,10 +374,6 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 SearchResults.Add(codeSearchResult);
             }
-            if(SearchResults.Count > 0)
-                expandButton.Visibility = Visibility.Visible;
-            else
-                expandButton.Visibility = Visibility.Hidden;
         }
 
         public void UpdateMessage(string message)
@@ -361,14 +396,15 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
         #endregion
 
-        private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+ 
+
+        private void UpdateExpansionState(ListView view)
         {
-            var view = sender as ListView;                        
-            if(view!=null)
+            if (view != null)
             {
                 int index = view.SelectedIndex;
                 int currentIndex = 0;
-                foreach(var item in view.Items)
+                foreach (var item in view.Items)
                 {
                     var currentItem = view.ItemContainerGenerator.ContainerFromIndex(currentIndex) as ListViewItem;
                     if (currentItem != null)
@@ -379,7 +415,10 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
                         }
                         else
                         {
-                            currentItem.Height = 24;
+                            if (ShouldExpand())
+                                currentItem.Height = 89;
+                            else
+                                currentItem.Height = 24;
                         }
                     }
                     currentIndex++;
@@ -387,31 +426,109 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-        private void ExpandCollapseAllResults(object sender, EventArgs e)
+        private bool ShouldExpand()
         {
-            var resultList = FindName("searchResultListbox") as ListView;
-            if(resultList == null)
-                return;
-
-            for(int i=0; i<resultList.Items.Count; ++i)
-            {
-                var currentItem = resultList.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
-                if(currentItem != null) 
-                    currentItem.Height = allExpanded ? 24 : 89;
-            }
-            allExpanded = !allExpanded;
-            expandButton.Content =
-                Translator.GetTranslation(allExpanded
-                                              ? TranslationCode.CollapseResultsLabel
-                                              : TranslationCode.ExpandResultsLabel);
+            if (expandButton == null)
+                return false;
+            var check = expandButton.IsChecked;
+            if (check != null)
+                return check==true;
+            return false;            
         }
-
-        private bool allExpanded;
 
         private static string fileNotFoundPopupMessage = "This file cannot be opened. It may have been deleted, moved, or renamed since your last search.";
         private static string fileNotFoundPopupTitle = "File opening error";
+
+        private void searchBox_Populating(object sender, PopulatingEventArgs e) {
+            var recommendationWorker = new BackgroundWorker();
+            recommendationWorker.DoWork += new DoWorkEventHandler(recommendationWorker_DoWork);
+            e.Cancel = true;
+            recommendationWorker.RunWorkerAsync(searchBox.Text);
+        }
+
+        private void recommendationWorker_DoWork(object sender, DoWorkEventArgs e) {
+            string queryString = (string)e.Argument;
+        
+            var result = recommender.GenerateRecommendations(queryString);
+            if(Thread.CurrentThread == this.Dispatcher.Thread) {
+                UpdateRecommendations(result, queryString);
+            } else {
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result, queryString)));
+            }
+        }
+
+        private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateExpansionState(searchResultListbox);
+        }
+
+        private void Toggled(object sender, RoutedEventArgs e)
+        {
+            UpdateExpansionState(searchResultListbox);
+        }
+
+        private void UpdateRecommendations(IEnumerable<string> recommendations, string query) {
+            if(query == searchBox.Text) {
+                searchBox.ItemsSource = recommendations;
+                searchBox.PopulateComplete();
+            } else {
+                Debug.WriteLine("Query \"{0}\" doesn't match current text \"{1}\"; no update.", query, searchBox.Text);
+            }
+        }
+
+        public void FocusOnText()
+        {
+            var textBox = searchBox.Template.FindName("Text", searchBox) as TextBox;
+            if (textBox != null)
+                textBox.Focus();
+        }
+
+        private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var listBox = sender as ListBox;
+            if(listBox != null) {
+                listBox.ScrollIntoView(listBox.SelectedItem);
+            }
+        }
+
+
+              private void ToggleButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Toggled_Popup(object sender, RoutedEventArgs e)
+        {
+            if(!SelectionPopup.IsOpen)
+                SelectionPopup.IsOpen = true;
+        }
+
+
     }
 
+    public class BoolToOppositeBoolConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (targetType != typeof(bool))
+                throw new InvalidOperationException("The target must be a boolean");
+
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+    }
+
+
+    
     public  class AccessWrapper
     {
         public AccessWrapper(bool b, AccessLevel access
@@ -438,6 +555,8 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         public bool Checked { get; set; }
         public ProgramElementType ProgramElement { get; set; }
     }
+
+
 
     #region ValueConverter of SearchResult's Icon
     [ValueConversion(typeof(string), typeof(BitmapImage))] 
@@ -510,6 +629,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             return new NotImplementedException();
         }
     }
+
 
     [ValueConversion(typeof(string), typeof(BitmapImage))]
     public class FileTypeToIcon : IValueConverter

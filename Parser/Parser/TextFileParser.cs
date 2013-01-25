@@ -9,9 +9,7 @@ namespace Sando.Parser
 {
     public class TextFileParser : IParser
     {
-        private static readonly int SnippetSize = 5;
         private static readonly int SnippetLinesAbove = 0;
-
         public List<ProgramElement> Parse(string filename)
         {
             if (File.Exists(filename) && GetSizeInMb(filename) > 15)

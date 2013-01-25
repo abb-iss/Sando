@@ -142,7 +142,7 @@ namespace Sando.Parser
                 string body = SrcMLParsingUtils.ParseBody(prop);
 
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
-                string snippet = SrcMLParsingUtils.RetrieveSnippet(prop, SnippetSize);
+                string source = SrcMLParsingUtils.RetrieveSource(prop);
 
                 programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, String.Empty));
             }
@@ -179,7 +179,7 @@ namespace Sando.Parser
             int definitionLineNumber;
             SrcMLParsingUtils.ParseNameAndLineNumber(strct, out name, out definitionLineNumber);
 
-            AccessLevel accessLevel = AccessLevel.Public; //default
+            AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(strct);
             XElement accessElement = strct.Element(SourceNamespace + "specifier");
             if (accessElement != null)
             {
@@ -206,9 +206,10 @@ namespace Sando.Parser
             string extendedStructs = String.Empty;
 
             string fullFilePath = System.IO.Path.GetFullPath(fileName);
-            string snippet = SrcMLParsingUtils.RetrieveSnippet(strct, SnippetSize);
+            string source = SrcMLParsingUtils.RetrieveSource(strct);
 
-            return new StructElement(name, definitionLineNumber, fileName, snippet, accessLevel, namespaceName, extendedStructs, String.Empty);
+            string body = strct.Value;
+            return new StructElement(name, definitionLineNumber, fileName, source, accessLevel, namespaceName, body, extendedStructs, String.Empty);
         }
 
         private ClassElement ParseClass(XElement cls, string fileName)
@@ -217,12 +218,7 @@ namespace Sando.Parser
             int definitionLineNumber;
             SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
 
-            AccessLevel accessLevel = AccessLevel.Public; //default
-            XElement accessElement = cls.Element(SourceNamespace + "specifier");
-            if (accessElement != null)
-            {
-                accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
-            }
+            AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(cls);
 
             //parse namespace
             IEnumerable<XElement> ownerNamespaces =
@@ -256,7 +252,7 @@ namespace Sando.Parser
             string implementedInterfaces = String.Empty;
 
             string fullFilePath = System.IO.Path.GetFullPath(fileName);
-            string snippet = SrcMLParsingUtils.RetrieveSnippet(cls, SnippetSize);
+            string source = SrcMLParsingUtils.RetrieveSource(cls);
 
             string body = cls.Value;
             return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty, body);
@@ -298,15 +294,11 @@ namespace Sando.Parser
 
             SrcMLParsingUtils.ParseNameAndLineNumber(method, out name, out definitionLineNumber);
 
-            AccessLevel accessLevel = AccessLevel.Protected; //default
+			AccessLevel accessLevel;
             XElement type = method.Element(SourceNamespace + "type");
             if (type != null)
             {
-                XElement access = type.Element(SourceNamespace + "specifier");
-                if (access != null)
-                {
-                    accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-                }
+                accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(type);
 
                 XElement typeName = type.Element(SourceNamespace + "name");
                 if (typeName != null)
@@ -320,11 +312,7 @@ namespace Sando.Parser
             }
             else
             {
-                XElement access = method.Element(SourceNamespace + "specifier");
-                if (access != null)
-                {
-                    accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-                }
+                accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(method);
             }
 
             if (String.IsNullOrEmpty(returnType))
@@ -388,9 +376,9 @@ namespace Sando.Parser
 
             string fullFilePath = System.IO.Path.GetFullPath(fileName);
 
-            string snippet = SrcMLParsingUtils.RetrieveSnippet(method, SnippetSize);
+            string source = SrcMLParsingUtils.RetrieveSource(method);
 
-            return Activator.CreateInstance(myType, name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body,
+            return Activator.CreateInstance(myType, name, definitionLineNumber, fullFilePath, source, accessLevel, arguments, returnType, body,
                                         classId, className, String.Empty, isConstructor) as MethodElement;
         }
 
@@ -403,12 +391,7 @@ namespace Sando.Parser
 
             foreach (XElement enm in enums)
             {
-                AccessLevel accessLevel = AccessLevel.Public; //default
-                XElement access = enm.Element(SourceNamespace + "specifier");
-                if (access != null)
-                {
-                    accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-                }
+                AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(enm);
 
                 string name;
                 int definitionLineNumber;
@@ -448,7 +431,7 @@ namespace Sando.Parser
                 }
 
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
-                string snippet = SrcMLParsingUtils.RetrieveSnippet(enm, snippetSize);
+                string source = SrcMLParsingUtils.RetrieveSource(enm);
 
                 programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
             }

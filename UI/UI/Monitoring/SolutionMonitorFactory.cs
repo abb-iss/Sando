@@ -3,8 +3,8 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
 using Sando.Core;
+using Sando.Core.Extensions.Logging;
 using Sando.Indexer;
 // Code changed by JZ: solution monitor integration
 using System.Xml.Linq;

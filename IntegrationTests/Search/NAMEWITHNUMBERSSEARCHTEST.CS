@@ -36,7 +36,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(classElement.Name, "Problem0010Resolver", "Class name differs!");
 			Assert.AreEqual(classElement.ProgramElementType, ProgramElementType.Class, "Program element type differs!");
 			Assert.AreEqual(classElement.ImplementedInterfaces, String.Empty, "Class implemented interfaces differs!");
-			Assert.False(String.IsNullOrWhiteSpace(classElement.Snippet), "Class snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(classElement.RawSource), "Class snippet is invalid!");
 
 			var constructorSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "Problem0010Resolver");
 			if(constructorSearchResult == null)
@@ -53,7 +53,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(constructorElement.ReturnType, String.Empty, "Constructor should have an empty return type!");
 			Assert.AreEqual(constructorElement.Modifiers, String.Empty, "Constructor modifiers differs!");
 			Assert.AreEqual(constructorElement.Arguments, "long max", "Constructor modifiers differs!");
-			Assert.False(String.IsNullOrWhiteSpace(constructorElement.Snippet), "Constructor snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(constructorElement.RawSource), "Constructor snippet is invalid!");
 		}
 
 		[TestFixtureSetUp]

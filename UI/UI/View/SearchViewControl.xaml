@@ -9,9 +9,30 @@
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Drawing="clr-namespace:System.Drawing;assembly=System.Drawing" d:DesignWidth="300" d:DesignHeight="400"
+             xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
              Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" IsTabStop="False">
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" KeyboardNavigation.IsTabStop="False" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit">
+
     <UserControl.Resources>
+        <view:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
+      
+        <Style x:Key="ToggleButtonStyleBorderless" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" 
+                                    Value="True">
+                                <Setter Property="Foreground"
+                                        Value="CadetBlue"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers >
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            
+        </Style>
         <view:ElementToIcon x:Key="ElementToIcon"/>
         <view:FileTypeToIcon x:Key="FileTypeToIcon"/>
         <view:NullableBoolToBool x:Key="NullableBoolToBool"/>
@@ -23,13 +44,47 @@
                 <x:Type TypeName="ExContract:ProgramElementType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-       
+
         <local:MyFontConverter x:Key="FontConverter" />
         <local:MyStrokeConverter x:Key="StrokeConverter" />
+        <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
+        <ControlTemplate x:Key="toggleButtonTemplate" TargetType="ToggleButton">
+            <Grid
+            Width="15"
+            Height="13"
+            Background="Transparent">
+                <Path x:Name="ExpandPath"
+              HorizontalAlignment="Left" 
+              VerticalAlignment="Center"                
+              Margin="1,1,1,1"
+              Fill="{StaticResource GlyphBrush}"
+              Data="M 4 0 L 4 4 L 0 4 L 0 6 L 4 6 L 4 10 L 6 10 L 6 6 L 10 6 L 10 4 L 6 4 L 6 0 Z">
+                </Path>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" 
+                 Value="True">
+                    <Setter Property="Fill"
+                  TargetName="ExpandPath"
+                  Value="CadetBlue"/>
+                </Trigger>
+                <Trigger Property="IsChecked" 
+                 Value="True">
+                    <Setter Property="Data"
+                  TargetName="ExpandPath"
+                  Value="M 0 3 L 8 3 L 8 5 L 0 5 Z"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="toggleButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Template" Value="{StaticResource toggleButtonTemplate}" />
+        </Style>
     </UserControl.Resources>
 
 
     <Grid>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="30"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
@@ -42,23 +97,26 @@
         </Grid.ColumnDefinitions>
 
         <!-- Top Part: Query -->
-
-        <TextBox Grid.Row="0" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Stretch" Height="25" Width="Auto" KeyDown="OnKeyDownHandler" BorderThickness="1" BorderBrush="DimGray"
-                                  KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="10" Name="searchBox"></TextBox>
+        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
+                                  KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
+                                  MinimumPrefixLength="0" MaxDropDownHeight="290"/>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
-                        KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
+                        />
 
         <!-- info string -->
         <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- details -->
-        <Expander Grid.Row="2" Grid.Column="0" >
+        <Expander Grid.Row="2" Grid.Column="0" Name="LayoutRoot"
+            >
             <Expander.HeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Advanced Options" />
+
+
                     </StackPanel>
                 </DataTemplate>
             </Expander.HeaderTemplate>
@@ -66,13 +124,17 @@
             <StackPanel>
                 <!--Access Level-->
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="8*"/>
+                        <ColumnDefinition Width="225*"/>
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Margin="5,0,5,5" Text="Access level:" Grid.Row="0"/>
+                    <TextBlock Margin="5,0,5,5" Text="Access level:" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <ComboBox Name="searchAccessLevel" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
-                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" KeyboardNavigation.TabIndex="20" ItemsSource="{Binding AccessLevels}">
+                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" ItemsSource="{Binding AccessLevels}" Grid.ColumnSpan="2">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -94,18 +156,18 @@
                     </Grid.RowDefinitions>
                     <TextBlock Margin="5,0,5,5" Text="Element type:" Grid.Row="0"/>
                     <ComboBox Name="searchElementType" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
-                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByProgramElementType,Path=IsChecked}" KeyboardNavigation.TabIndex="50" TabIndex="30" ItemsSource="{Binding ProgramElements}">
-                                <ComboBox.ItemTemplate>
+                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByProgramElementType,Path=IsChecked}"  ItemsSource="{Binding ProgramElements}">
+                        <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox Width="20" IsChecked="{Binding Path=Checked}"
                                                />
-                        <TextBlock 
+                                    <TextBlock 
                                        Width="100" Text="{Binding Path=ProgramElement}" />
-            </StackPanel>
-            </DataTemplate>
-            </ComboBox.ItemTemplate>
-            </ComboBox>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
 
 
@@ -119,29 +181,115 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <CheckBox Name="isExactMode" Content="Exact mode" IsChecked="{Binding Path=SearchCriteria.ExactMode, Mode=TwoWay}" Grid.Row="0" Grid.Column="0" Margin="4,4,4,4" TabIndex="41" />
-                    <CheckBox Name="isMatchCase" Content="Match Case" IsChecked="{Binding Path=SearchCriteria.MatchCase, Mode=TwoWay}" Grid.Column="2" Margin="4,4,109,4" TabIndex="43" />
+                    <!--<CheckBox Name="isExactMode" Content="Exact mode" IsChecked="{Binding Path=SearchCriteria.ExactMode, Mode=TwoWay}" Grid.Row="0" Grid.Column="0" Margin="4,4,4,4" KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="51" />
+                    <CheckBox Name="isMatchCase" Content="Match Case" IsChecked="{Binding Path=SearchCriteria.MatchCase, Mode=TwoWay}" Grid.Column="2" Margin="4,4,4,4" KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="53" />
+                    -->
                 </Grid>
 
             </StackPanel>
         </Expander>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,14,0,0" Grid.RowSpan="2">
+            
+            <Button Name="HelpButton"  ToolTip="Help" Margin="32,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
+            </Button>
+            
+            <ToggleButton  ToolTip="Expand/Collapse"   Margin="0,0,0,0" VerticalAlignment="Top" Height="25"   x:Name="expandButton"
+        		KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled"/>
+            
+            <Popup Name="SelectionPopup" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="350">
+                <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">
+                    <FlowDocument>
+                        <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>                     
+                        <Table>
+                            <Table.Columns>
+                                <TableColumn Width="1.85*" />
+                                <TableColumn Width="1.5*" />
+                            </Table.Columns>
+                            <TableRowGroup Paragraph.TextAlignment="left">
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Add                                            
+                                            <Italic>
+                                                <Bold>all</Bold>
+                                            </Italic> relevant terms:
+                                        </Paragraph>                                       
+                                    </TableCell>
+                                    <TableCell >                                        
+                                        <Paragraph FontFamily="Courier New">convert image
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Put exact phrases in quotes:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">"void StartMonitor("
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Put '-' before unwanted words:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">parse method -test
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Limit by file extension:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">image filetype:cs
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
 
-			<Button Grid.Row="2" Grid.Column="2" Visibility="Hidden" Margin="0,5,5,0" Content="{Binding Path=ExpandCollapseResultsLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="expandButton" Click="ExpandCollapseAllResults"
-											KeyboardNavigation.IsTabStop="True" KeyboardNavigation.TabIndex="60"/>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Add '*' to end of partial words:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">impl*
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                            </TableRowGroup>
+</Table>
 
-			<!--Bottom Part: Result-->
+                    </FlowDocument>
+                </RichTextBox>
+            </Popup>            
+        </StackPanel>
+
+        <!--Bottom Part: Result-->
         <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
-                       KeyboardNavigation.IsTabStop="False" VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch" TabIndex="70" IsTabStop="False"
+                        VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
                        SelectionChanged="searchResultListbox_SelectionChanged"
+                       
                        >
 
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
+                                <Setter Property="Height" Value="24"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
+                                <Setter Property="Height" Value="89"/>
+                            </DataTrigger>
+                        </Style.Triggers>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>

@@ -1,0 +1,3037 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ABB.Swum</name>
+    </assembly>
+    <members>
+        <member name="T:ABB.Swum.AbbreviationExpander">
+            <summary>
+            Expands abbreviations found within programs to their long forms.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.AbbreviationExpander.Expand(System.String,System.Xml.Linq.XElement,System.String,System.String)">
+            <summary>
+            Expands the given abbreviation (short form) to its long form. Potential long forms are found by searching the program texts relevent to the short form.
+            </summary>
+            <param name="shortForm">The abbreviation to expand.</param>
+            <param name="methodXml">An XElement corresponding to the srcML of the method where the shortForm is located.</param>
+            <param name="methodComment">The summary comments for the method where the short form is located.</param>
+            <param name="classComment">The summary comments for the class that the short form is located within.</param>
+            <returns>An array of the words making up the long form of the abbreviation.</returns>
+        </member>
+        <member name="T:ABB.Swum.BaseVerbRule">
+            <summary>
+            The rule to construct SWUM for methods whose names follow the base verb pattern.
+            Base Verb -> V (VP|VM)? (DT|NM)* N?
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.UnigramMethodRule">
+            <summary>
+            Base class for unigram-style SWUM rules for methods.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.UnigramRule">
+            <summary>
+            An abstract rule using unigram part-of-speech data and tagging.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.SwumRule">
+            <summary>
+            Defines the method for constructing the Software Word Use Model on a program element, provided it meets defined constraints.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SwumRule.InClass(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Determines whether the supplied ProgramElementNode matches the conditions of this rule.
+            </summary>
+            <param name="node">The ProgramElementNode to test.</param>
+            <returns>True if the node matches this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.SwumRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the Software Word Use Model on the given node, using this Rule.
+            </summary>
+            <param name="node">The node to construct the SWUM on.</param>
+        </member>
+        <member name="M:ABB.Swum.SwumRule.ToString">
+            <summary>
+            Returns a string representing the type of the rule.
+            </summary>
+            <returns>A string representing the type of the rule.</returns>
+        </member>
+        <member name="F:ABB.Swum.UnigramRule.PosData">
+            <summary>
+            The part-of-speech data to use.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.UnigramRule.PosTagger">
+            <summary>
+            The part-of-speech tagger to use.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.UnigramRule.Splitter">
+            <summary>
+            The identifier splitter to use.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramRule.#ctor">
+            <summary>
+            Creates a new UnigramRule using default values.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new UnigramRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.#ctor">
+            <summary>
+            Creates a new UnigramMethodRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new UnigramMethodRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new UnigramMethodRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new UnigramMethodRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.InClass(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Determines whether the given node satisfies this rule.
+            
+            ** Note that calling this method has the effect of stripping any preamble from the given node, and tagging any digits and prepositions. **
+            </summary>
+            <param name="node">The node to test.</param>
+            <returns>True if the node matches this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Performs further rule testing beyond the InClass method. 
+            InClass tests whether the node is a MethodDeclarationNode, parses the node name, strips the preamble, tags digits and prepositions, then calls this method.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node matches this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.InitializeMembers">
+            <summary>
+            Sets the member data sets to their default states.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.ParseBaseVerbName(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Assigns part-of-speech tags to the words in the given MethodDeclarationNode's name, assuming that it follows a base verb pattern.
+            This assumes that the node has already had its name split and preamble stripped.
+            </summary>
+            <param name="node">The MethodDeclarationNode to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.SetDefaultActionAndTheme(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Sets the Action and Theme properties of the given MethodDeclarationNode using the default algorithms.
+            This also sets the node's SecondaryArguments and UnknownArguments properties.
+            </summary>
+            <param name="node">The MethodDeclarationNode to set the Action and Theme on.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.CheckForIgnorableVerb(ABB.Swum.Nodes.PhraseNode,System.Int32)">
+            <summary>
+            Determines whether the specified word in the given phrase is an ignorable verb. If so, it tags it appropriately.
+            </summary>
+            <param name="parsedName">The PhraseNode containing the word to check.</param>
+            <param name="wordIndex">The index of the desired word within the PhraseNode.</param>
+            <returns>wordIndex+1 if the word was an ignorable verb; wordIndex if it was not.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.FindFirstPreposition(ABB.Swum.Nodes.PhraseNode,System.Int32)">
+            <summary>
+            Finds the index of the first preposition within the given PhraseNode, starting from the word indicated by startIndex.
+            </summary>
+            <param name="parsedName">The PhraseNode to search.</param>
+            <param name="startIndex">The index of the word to start searching for prepositions from.</param>
+            <returns>The index of the first preposition in the PhraseNode after startIndex, inclusively.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.GetVerbPhrase(ABB.Swum.Nodes.PhraseNode,ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Finds all the verbs in the given name and adds them to the given preamble.
+            </summary>
+            <param name="parsedName">The PhraseNode to gets the verbs from.</param>
+            <param name="preamble">The preamble PhraseNode to add the verbs to.</param>
+            <returns>The preamble PhraseNode with the verbs added.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.GetNounPhrase(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Returns a PhraseNode containing the noun phrase words from the given name.
+            All noun phrase words prior to the first preposition are included.
+            </summary>
+            <param name="parsedName">The PhraseNode to get the noun phrase from.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.GetNounPhrase(ABB.Swum.Nodes.PhraseNode,System.Int32)">
+            <summary>
+            Returns a PhraseNode containing the noun phrase words from the given name, starting from startIndex.
+            All noun phrase words prior to the first encountered preposition are included.
+            </summary>
+            <param name="parsedName">The PhraseNode to get the noun phrase from.</param>
+            <param name="startIndex">The index of the word to start from.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.SetPrepositionThemeAndArguments(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Sets the Theme, SecondaryArguments and UnknownArguments properties of the given MethodDeclarationNode.
+            </summary>
+            <param name="node">The node to set the properties for.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.CheckOverlap(ABB.Swum.Nodes.MethodDeclarationNode,System.Boolean,System.Boolean)">
+            <summary>
+            Checks for semantic overlaps between parts of the given method's name and its UnknownArguments.
+            If overlaps are found, appropriate EquivalenceNodes are created.
+            </summary>
+            <param name="mdn">The MethodDeclarationNode to check for overlaps.</param>
+            <param name="checkDO">Indicates whether the Direct Object was taken from the method name, and therefore the Theme must be checked for overlap with UnknownArguments.</param>
+            <param name="checkIO">Indicates whether the Indirect Object was taken from the method name, and therefore the SecondaryArguments must be checked for overlap with UnknownArguments.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.HasOverlap(ABB.Swum.Nodes.PhraseNode,System.String)">
+            <summary>
+            Determines whether the given PhraseNode overlaps with the given word.
+            The two overlap if the last word of the phrase is the same as the given word, 
+            or if the second-to-last word of the phrase is the same as the given word and the last word of the phrase is ignorable.
+            </summary>
+            <param name="name">The phrase to check for overlap.</param>
+            <param name="word">The word to check for overlap with.</param>
+            <returns>True if the phrase and word overlap, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.ParseReactiveName(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Assigns part-of-speech tags, and sets Action, Theme and Arguments for methods that have a reactive name.
+            </summary>
+            <param name="mdn">The MethodDeclarationNode to parse.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.SetDefaultUnknownArguments(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Sets the UnknownArguments list to its default state. This includes all the formal parameters, the declaring class, and the return type (if not primitive).
+            </summary>
+            <param name="mdn">The MethodDeclarationNode to set UnknownArguments on.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.IsChecker(System.String)">
+            <summary>
+            Determines whether the given word indicates a checker method.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word indicats a checker method, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.IsSpecialCase(System.String)">
+            <summary>
+            Determines whether the given word indicates a method that needs special handling.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word indicats a method that need special handling, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.IsEventHandler(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Determines whether the given phrase indicates an event handler method.
+            </summary>
+            <param name="parsedName">The PhraseNode to test.</param>
+            <returns>True if the phrase indicates an event handler method, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.IsEventHandler(System.Collections.Generic.IEnumerable{ABB.Swum.Nodes.VariableDeclarationNode})">
+            <summary>
+            Determines whether a method is an event handler based upon its formal parameters.
+            </summary>
+            <param name="formalParameters">The formal parameters to test.</param>
+            <returns>True if the parameters indicate an event handler method, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.IsNonBaseVerb(System.String)">
+            <summary>
+            Determines whether the given word is a non-base verb, i.e. present/past participle or past tense.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a non-base verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.UnigramMethodRule.StartsNounPhrase(System.String)">
+            <summary>
+            Determines whether the given word indicates the beginning of a noun phrase.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word indicates the beginning of a noun phrase, False otherwise.</returns>
+        </member>
+        <member name="P:ABB.Swum.UnigramMethodRule.SpecialWords">
+            <summary>
+            A list of words that indicate the method name needs special handling.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.UnigramMethodRule.BooleanArgumentVerbs">
+            <summary>
+            A list of verbs which indicate that the boolean arguments to a method should be included in the UnknownArguments list.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.UnigramMethodRule.NounPhraseIndicators">
+            <summary>
+            A list of word that indicate that beginning of a noun phrase.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.UnigramMethodRule.PositionalFrequencies">
+            <summary>
+            Positional frequency data.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.#ctor">
+            <summary>
+            Creates a new BaseVerbRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new BaseVerbRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new BaseVerbRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new BaseVerbRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="M:ABB.Swum.BaseVerbRule.DetermineMethodRole(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Sets the Role on the given MethodDeclarationNode based on its name.
+            </summary>
+            <param name="mdn">The node to set the role on.</param>
+        </member>
+        <member name="T:ABB.Swum.CheckerRule">
+            <summary>
+            The rule to construct the SWUM for checker methods.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.CheckerRule.#ctor">
+            <summary>
+            Creates a new CheckerRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.CheckerRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new CheckerRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.CheckerRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new CheckerRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.CheckerRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new CheckerRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.CheckerRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.CheckerRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.ConservativeIdSplitter">
+            <summary>
+            Splits an identifier on non-alphabetic characters and easy camelcase transitions (lowercase to uppercase).
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.IdSplitter">
+            <summary>
+            Splits an identifier into its constituent words.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.IdSplitter.Split(System.String)">
+            <summary>
+            Splits an identifier into its constituent words.
+            </summary>
+            <param name="identifier">The identifier to split.</param>
+            <returns>An array of the consituent words of the identifer.</returns>
+        </member>
+        <member name="M:ABB.Swum.ConservativeIdSplitter.Split(System.String)">
+            <summary>
+            Splits an identifier on non-alphabetic characters and easy camelcase transitions (lowercase to uppercase).
+            </summary>
+            <param name="identifier">The identifier to split</param>
+            <returns>An array of the words resulting from splitting the identifier.</returns>
+        </member>
+        <member name="M:ABB.Swum.ConservativeIdSplitter.SplitOnLowercaseToUppercase(System.String)">
+            <summary>
+            Splits a word where a lowercase letter is followed by an uppercase letter. The word is split at all locations where this occurs.
+            </summary>
+            <param name="word">The word to be split.</param>
+            <returns>An array of the subwords resulting from the splits.</returns>
+        </member>
+        <member name="T:ABB.Swum.ConstructorRule">
+            <summary>
+            The rule to construct the SWUM for constructor methods.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ConstructorRule.#ctor">
+            <summary>
+            Creates a new ConstructorRule using default values.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ConstructorRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new ConstructorRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.ConstructorRule.InClass(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Determines whether the supplied node meets the criteria for this rule.
+            </summary>
+            <param name="node">The node to test.</param>
+            <returns>True if the node meets this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.ConstructorRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the Software Word Use Model for the given node. 
+            This method assumes that the node has already been tested to satisfy this Rule, using the InClass method.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.ContextBuilder">
+            <summary>
+            Contains various helper functions to build context objects from SrcML.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.BuildFieldContext(System.Xml.Linq.XElement)">
+            <summary>
+            Builds a FieldContext object based on the given field element.
+            </summary>
+            <param name="declElement">An XElement representing the decl element of the field.</param>
+            <returns>A FieldContext object based on the given field.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentException">Thrown if the passed XElement does not represent a decl element.</exception>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.BuildMethodContext(System.Xml.Linq.XElement)">
+            <summary>
+            Builds a MethodContext object based on the given method element.
+            </summary>
+            <param name="methodTag">An XElement representing the method to build the context for. This can be either a function, constructor or destructor element.</param>
+            <returns>A MethodContext object based on the given method.</returns>
+            <exception cref="T:System.ArgumentException">The passed XElement does not represent a function, constructor, or destructor element.</exception>
+            <exception cref="T:System.ArgumentNullException">methodTag is null.</exception>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.BuildMethodContextFromCall(System.Xml.Linq.XElement,ABB.SrcML.Data.SrcMLDataContext)">
+            <summary>
+            Creates a MethodContext object based on the given srcML call element.
+            </summary>
+            <param name="callElement">The srcML Call element to create the context from.</param>
+            <param name="srcDb">A SrcMLDataContext database built on the srcML file that <paramref name="callElement"/> is part of.</param>
+            <returns>A MethodContext object based on <paramref name="callElement"/>.</returns>
+            <exception cref="T:System.ArgumentNullException"><paramref name="callElement"/> is null.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="callElement"/> is not a Call element.</exception>
+            <exception cref="T:System.ArgumentNullException"><paramref name="srcDb"/> is null.</exception>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.ConstructTypeName(System.Xml.Linq.XElement)">
+            <summary>
+            Extracts the type name from a type srcML element. A type element may contain several name and type modifier elements.
+            This function returns only the actual type name, ignoring any access modifiers, such as static, private or public.
+            Type modifiers such as '*' or '&amp;' are treated as part of the type name and concatenated with the name text.
+            </summary>
+            <param name="typeElement">A type srcML element.</param>
+            <returns>The type name.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentException">typeElement does not represent a type element.</exception>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.ConstructTypeName(System.Xml.Linq.XElement,System.Boolean@)">
+            <summary>
+            Extracts the type name from a type srcML element. A type element may contain several name and type modifier elements.
+            This function returns only the actual type name, ignoring any access modifiers, such as static, private or public.
+            Type modifiers such as '*' or '&amp;' are treated as part of the type name and concatenated with the name text.
+            </summary>
+            <param name="typeElement">A type srcML element.</param>
+            <param name="isPrimitive">An output parameter indicating whether the type is a primitive data type.</param>
+            <returns>The type name.</returns>
+            <exception cref="T:System.ArgumentNullException">typeElement is null.</exception>
+            <exception cref="T:System.ArgumentException">typeElement does not represent a type element.</exception>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.FindEnclosingClassElement(System.Xml.Linq.XElement)">
+            <summary>
+            Finds the nearest class or struct element that encloses the given element.
+            </summary>
+            <param name="startElement">The element from which to start looking for the enclosing class or struct.</param>
+            <returns>The nearest class or struct XElement that encloses the given element. 
+            If there is no enclosing class or struct element, this function returns null.</returns>
+        </member>
+        <member name="M:ABB.Swum.ContextBuilder.GetNameFromNameElement(System.Xml.Linq.XElement)">
+            <summary>
+            Given a name element, this function extracts the identifier name from it.
+            A name element may potentially contain several child name elements. For example, when a name has the form [ClassName]::[Identifier].
+            This function assumes that the last child name element is the desired name, and returns that.
+            If there are no child name elements, the text of the name element is returned.
+            </summary>
+            <param name="nameElement">The name element from which to extract the identifier name.</param>
+            <returns>The text of the identifier name contained within the given name element.</returns>
+            <exception cref="T:System.ArgumentNullException"></exception>
+            <exception cref="T:System.ArgumentException">Thrown if the passed XElement does not represent a name element.</exception>
+        </member>
+        <member name="T:ABB.Swum.DefaultBaseVerbRule">
+            <summary>
+            This rule assumes that it is the last rule being applied, and is therefore the default rule for methods.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.DefaultBaseVerbRule.#ctor">
+            <summary>
+            Creates a new DefaultBaseVerbRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.DefaultBaseVerbRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new DefaultBaseVerbRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.DefaultBaseVerbRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new DefaultBaseVerbRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.DefaultBaseVerbRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new DefaultBaseVerbRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.DefaultBaseVerbRule.InClass(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Determines whether the given node meets the conditions of this rule.
+            Since this is a default rule, it returns True for any MethodDeclarationNode.
+            </summary>
+            <param name="node">The node to test.</param>
+            <returns>True if the given node is a MethodDeclarationNode, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.DefaultBaseVerbRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.DestructorRule">
+            <summary>
+            The rule to construct the SWUM for destructor methods.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.DestructorRule.#ctor">
+            <summary>
+            Creates a new DestructorRule using default values.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.DestructorRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new DestructorRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.DestructorRule.InClass(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Determines whether the supplied node meets the criteria for this rule.
+            </summary>
+            <param name="node">The node to test.</param>
+            <returns>True if the node meets this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.DestructorRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the Software Word Use Model for the given node. 
+            This method assumes that the node has already been tested to satisfy this Rule, using the InClass method.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.EmptyNameRule">
+            <summary>
+            The rule to construct the SWUM for a method with an empty name. 
+            This is most likely to occur when the entire name is determined to be preamble, thus leaving no regular name.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.EmptyNameRule.#ctor">
+            <summary>
+            Creates a new EmptyNameRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.EmptyNameRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new EmptyNameRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.EmptyNameRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new EmptyNameRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.EmptyNameRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new EmptyNameRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.EmptyNameRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.EmptyNameRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.EventHandlerRule">
+            <summary>
+            The rule to construct the SWUM for event handler methods. Specifically, this if for methods whose parameters include event information.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.EventHandlerRule.#ctor">
+            <summary>
+            Creates a new EventHandlerRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.EventHandlerRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new EventHandlerRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.EventHandlerRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new EventHandlerRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.EventHandlerRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new EventHandlerRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.EventHandlerRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.EventHandlerRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.FieldContext">
+            <summary>
+            Encapsulates the program context relevent to a field.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.IdContext">
+            <summary>
+            Encapsulates additional program context relevent to an identifier.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.IdContext.#ctor(System.String,System.Boolean,System.String)">
+            <summary>
+            Creates a new IdContext.
+            </summary>
+            <param name="idType">The type of the identifier.</param>
+            <param name="idTypeIsPrimitive">Whether the type of the identifier is a primitive data type.</param>
+            <param name="declaringClass">The class that the identifier is part of.</param>
+        </member>
+        <member name="M:ABB.Swum.IdContext.#ctor">
+            <summary>
+            Creates a new IdContext.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.IdContext.IdType">
+            <summary>
+            The type of the identifier (integer, boolean, etc.)
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.IdContext.IdTypeIsPrimitive">
+            <summary>
+            Indicates whether the ID Type is a primitive type.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.IdContext.DeclaringClass">
+            <summary>
+            The class that the identifier is part of, if any.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.FieldContext.#ctor(System.String,System.Boolean,System.String)">
+            <summary>
+            Creates a new FieldContext.
+            </summary>
+            <param name="idType">The type of the field.</param>
+            <param name="idTypeIsPrimitive">Whether the type of the field is a primitive data type.</param>
+            <param name="declaringClass">The class that the field is part of.</param>
+        </member>
+        <member name="M:ABB.Swum.FieldContext.#ctor">
+            <summary>
+            Creates a new empty FieldContext.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.FieldRule">
+            <summary>
+            The SWUM creation rule for fields in classes.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.FieldRule.#ctor">
+            <summary>
+            Creates a new FieldRule using the defaults.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.FieldRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new FieldRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.FieldRule.InClass(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Determines whether the supplied ProgramElementNode matches the conditions of this rule.
+            </summary>
+            <param name="node">The ProgramElementNode to test.</param>
+            <returns>True if the node matches this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.FieldRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the Software Word Use Model on the given node, using this Rule.
+            </summary>
+            <param name="node">The node to construct the SWUM on.</param>
+        </member>
+        <member name="T:ABB.Swum.FileStemmer">
+            <summary>
+            Determines the stem for a given word by reading from a file containing precomputed word/stem pairs
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Stemmer">
+            <summary>
+            Determines the stem of a given word.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Stemmer.Stem(System.String)">
+            <summary>
+            Returns the stem of the given word.
+            </summary>
+            <param name="word">The word to stem.</param>
+            <returns>The stem of the given word.</returns>
+        </member>
+        <member name="F:ABB.Swum.FileStemmer.Stems">
+            <summary>
+            A Dictionary mapping words to their stems. This is populated from the file supplied to the constructor.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.FileStemmer.#ctor(System.String)">
+            <summary>
+            Creates a new FileStemmer using the file specified.
+            </summary>
+            <param name="stemFilePath">The path to the file containing the word/stem pairs to use.</param>
+        </member>
+        <member name="M:ABB.Swum.FileStemmer.Stem(System.String)">
+            <summary>
+            Returns the stem for the given word.
+            </summary>
+            <param name="word">The word to stem.</param>
+            <returns>The stem of the given word.</returns>
+        </member>
+        <member name="T:ABB.Swum.FormalParameterRecord">
+            <summary>
+            Encapsulates the data about a formal parameter to a function.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.FormalParameterRecord.#ctor(System.String,System.Boolean,System.String)">
+            <summary>
+            Creates a new FormalParameterRecord.
+            </summary>
+            <param name="parameterType">The type of the parameter, e.g. int, bool, etc.</param>
+            <param name="isPrimitiveType">Whether the type of the parameter is a primitive data type.</param>
+            <param name="name">The name of the parameter.</param>
+        </member>
+        <member name="M:ABB.Swum.FormalParameterRecord.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.Swum.FormalParameterRecord.GetHashCode">
+            <summary>
+            Returns the hash code for this object.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.FormalParameterRecord.Equals(ABB.Swum.FormalParameterRecord)">
+            <summary>
+            
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ABB.Swum.FormalParameterRecord.ParameterType">
+            <summary>
+            The type of the parameter, e.g. int, bool, etc.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.FormalParameterRecord.IsPrimitiveType">
+            <summary>
+            Whether the type of the parameter is a primitive data type.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.FormalParameterRecord.Name">
+            <summary>
+            The name of the parameter.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.LeadingPrepositionRule">
+            <summary>
+            The rule to construct the SWUM for methods whose names begin with a preposition.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.LeadingPrepositionRule.#ctor">
+            <summary>
+            Creates a new LeadingPrepositionRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.LeadingPrepositionRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new LeadingPrepositionRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.LeadingPrepositionRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new LeadingPrepositionRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.LeadingPrepositionRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new LeadingPrepositionRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.LeadingPrepositionRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.LeadingPrepositionRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.Location">
+            <summary>
+            Represents a location within a program. This is used in conjunction with Node objects.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.Location.None">
+            <summary>
+            No location.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.Location.Name">
+            <summary>
+            A program identifier.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.Location.Formal">
+            <summary>
+            A formal parameter to a method/function.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.Location.OnClass">
+            <summary>
+            A member of a class.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.Location.Return">
+            <summary>
+            A return type.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.MethodContext">
+            <summary>
+            Encapsulates the program context relevant to a method declaration.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.MethodContext.#ctor">
+            <summary>
+            Creates a new MethodContext with default values.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.MethodContext.#ctor(System.String)">
+            <summary>
+            Creates a new MethodContext, with the given return type.
+            </summary>
+            <param name="idType">The return type of the method.</param>
+        </member>
+        <member name="M:ABB.Swum.MethodContext.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new MethodContext.
+            </summary>
+            <param name="idType">The return type of the method.</param>
+            <param name="idTypeIsPrimitive">Whether the return type is a primitive data type.</param>
+        </member>
+        <member name="M:ABB.Swum.MethodContext.#ctor(System.String,System.Boolean,System.String,System.Collections.Generic.IEnumerable{ABB.Swum.FormalParameterRecord},System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new MethodContext.
+            </summary>
+            <param name="idType">The return type of the method.</param>
+            <param name="idTypeIsPrimitive">Whether the return type is a primitive data type.</param>
+            <param name="declaringClass">The class that this method is a part of, String.Empty if not part of a class.</param>
+            <param name="formalParameters">A list of the formal parameters, including both type and name.</param>
+            <param name="isStatic">Whether this method is static or not.</param>
+            <param name="isConstructor">Whether this method is a constructor or not.</param>
+            <param name="isDestructor">Whether this method is a destructor or not.</param>
+        </member>
+        <member name="P:ABB.Swum.MethodContext.IsConstructor">
+            <summary>
+            Indicates whether this method is a constructor.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.MethodContext.IsDestructor">
+            <summary>
+            Indicates whether this method is a destructor.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.MethodContext.IsStatic">
+            <summary>
+            Indicates whether this method is static, i.e. the signature includes the static keyword.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.MethodContext.FormalParameters">
+            <summary>
+            The text of the formal method parameters included in the method declaration. 
+            Each parameter is a separate entry in the List, and each entry includes both the parameter type and parameter name.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.MethodRole">
+            <summary>
+            Indicates the semantic role of a method within a program.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Unknown">
+            <summary>
+            Unknown method role.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Function">
+            <summary>
+            A general method that doesn't serve a more specific role.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Getter">
+            <summary>
+            A method that gets an object property.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Checker">
+            <summary>
+            A method that check whether an object meets some criteria.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Action">
+            <summary>
+            A method that performs some action.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Setter">
+            <summary>
+            A method that sets an object property.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Callback">
+            <summary>
+            A callback method.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.EventHandler">
+            <summary>
+            A method that responds to some event.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.MethodRole.Visitor">
+            <summary>
+            A visitor method.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.ArgumentNode">
+            <summary>
+            Represents a node that is passed as an argument to a method.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.Node">
+            <summary>
+            An abstract node within the SWUM model
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.Node.ToPlainString">
+            <summary>
+            Returns a string representation of the node without any SWUM markup.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.Node.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.Node.Location">
+            <summary>
+            The location within the program.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ArgumentNode.#ctor(ABB.Swum.Nodes.Node,ABB.Swum.Nodes.WordNode)">
+            <summary>
+            Creates a new ArgumentNode.
+            </summary>
+            <param name="argument">The node being passed as an argument.</param>
+            <param name="preposition">A prepostion describing the argument's relationship to its method.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ArgumentNode.ToString">
+            <summary>
+            Converts the ArgumentNode to a string representation, containing the preposition and a string representation of the argument.
+            </summary>
+            <returns>A string representation of the ArgumentNode.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ArgumentNode.ToPlainString">
+            <summary>
+            Returns a string representation of the node without any SWUM markup.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ArgumentNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ArgumentNode.Argument">
+            <summary>
+            The node being passed as an argument;
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ArgumentNode.Preposition">
+            <summary>
+            A prepostion describing the argument's relationship to its method.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ArgumentNode.Location">
+            <summary>
+            The program location of the argument.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.EquivalenceNode">
+            <summary>
+            A node representing a set of equivalent nodes.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.EquivalenceNode.#ctor(ABB.Swum.Nodes.Node)">
+            <summary>
+            Creates a new EquivalenceNode.
+            </summary>
+            <param name="n">The initial node to add to the list of equivalent nodes.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.EquivalenceNode.AddEquivalentNode(ABB.Swum.Nodes.Node)">
+            <summary>
+            Adds a node to the list of equivalent nodes.
+            </summary>
+            <param name="n">The node to add.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.EquivalenceNode.ToString">
+            <summary>
+            Converts the EquivalenceNode to a string representation, comprising "EQUIV" and a string representation of the equivalent nodes.
+            </summary>
+            <returns>A string representation of the EquivalenceNode.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.EquivalenceNode.ToPlainString">
+            <summary>
+            Returns a string representation of the node without any SWUM markup.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.EquivalenceNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the parsed name of the first node in EquivalentNodes. If this does not exist, the method returns an empty PhraseNode.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.EquivalenceNode.EquivalentNodes">
+            <summary>
+            A list of the equivalent nodes.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.EquivalenceNode.Location">
+            <summary>
+            The program location of the first equivalent node.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.FieldDeclarationNode">
+            <summary>
+            Represents a field declaration in the program.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.ProgramElementNode">
+            <summary>
+            Represents an abstract program element.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.#ctor">
+            <summary>
+            Creates a new ProgramElementNode in its default state.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.#ctor(System.String)">
+            <summary>
+            Creates a new ProgramElementNode and sets Name to the supplied value.
+            </summary>
+            <param name="name">The name of the program element.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.#ctor(System.String,ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Creates a new ProgramElementNode and sets Name and ParsedName to the supplied values.
+            </summary>
+            <param name="name">The name of the program element.</param>
+            <param name="parsedName">A PhraseNode constructed from the program element's name.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.#ctor(System.String,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new ProgramElementNode and sets Name to the supplied value. Name is then parsed using the supplied IdSplitter.
+            </summary>
+            <param name="name">The name of the program element.</param>
+            <param name="splitter">An IdSplitter to use to parse the name.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.Parse(ABB.Swum.IdSplitter)">
+            <summary>
+            Parses the node's Name into words.
+            </summary>
+            <param name="splitter"></param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.SetLocation(ABB.Swum.Location)">
+            <summary>
+            Sets the program location of the node.
+            </summary>
+            <param name="location">The program location of the node.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.ToString">
+            <summary>
+            Returns a string representation of the node. This is simply the string representation of the ParsedName.
+            </summary>
+            <returns>A string representation of the node.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.ToPlainString">
+            <summary>
+            Returns a string representation of the node without any SWUM markup.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.ProgramElementNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ProgramElementNode.Name">
+            <summary>
+            The name of the program element. For example, method name, variable name, etc.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ProgramElementNode.Preamble">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ProgramElementNode.ParsedName">
+            <summary>
+            A PhraseNode representing the Name split into words and tagged with parts-of-speech.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ProgramElementNode.Score">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.ProgramElementNode.SwumRuleUsed">
+            <summary>
+            The SwumRule that was used to construct the SWUM on this node.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.FieldDeclarationNode.#ctor(System.String)">
+            <summary>
+            Creates a new FieldDeclarationNode with the given name, and no context.
+            </summary>
+            <param name="name">The name of the declared field.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.FieldDeclarationNode.#ctor(System.String,ABB.Swum.FieldContext)">
+            <summary>
+            Creates a new FieldDeclarationNode.
+            </summary>
+            <param name="name">The name of the declared field.</param>
+            <param name="context">The surrounding context of the field.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.FieldDeclarationNode.ToString">
+            <summary>
+            Creates a string representation, including the field's type and name.
+            </summary>
+            <returns>A string representation of this FieldDeclarationNode.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.FieldDeclarationNode.AssignStructuralInformation(ABB.Swum.IdSplitter,ABB.Swum.Tagger)">
+            <summary>
+            Assigns the attributes of this field related to its structure within the program.
+            </summary>
+            <param name="splitter">An IdSplitter to split the words of identifiers.</param>
+            <param name="tagger">A part-of-speech tagger</param>
+        </member>
+        <member name="P:ABB.Swum.Nodes.FieldDeclarationNode.Type">
+            <summary>
+            The type of the declared field.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.FieldDeclarationNode.DeclaringClass">
+            <summary>
+            The class that this field is part of.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.MethodDeclarationNode">
+            <summary>
+            Represents a method declaration in the program.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.#ctor(System.String)">
+            <summary>
+            Creates a new MethodDeclarationNode with the given method name.
+            </summary>
+            <param name="name">The name of the method.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.#ctor(System.String,ABB.Swum.MethodContext)">
+            <summary>
+            Creates a new MethodDeclarationNode with the given method name and context.
+            </summary>
+            <param name="name">The name of the method.</param>
+            <param name="context">The method's context.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.AssignStructuralInformation(ABB.Swum.IdSplitter,ABB.Swum.Tagger)">
+            <summary>
+            Initializes the fields containing structural information about the method. This includes the location, return type and parameters.
+            </summary>
+            <param name="splitter">An IdSplitter to split the method name into words.</param>
+            <param name="tagger">A Tagger to tag the parts-of-speech of the name.</param>
+            <exception cref="T:System.ArgumentNullException">splitter is null.</exception>
+            <exception cref="T:System.ArgumentNullException">tagger is null.</exception>
+            <exception cref="T:System.InvalidOperationException">Context property is not set.</exception>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.ToString">
+            <summary>
+            Creates a string representation of the node, which contains the action, theme and arguments.
+            </summary>
+            <returns>A string representation of the node.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.AddUnknownArgument(ABB.Swum.Nodes.Node)">
+            <summary>
+            Adds the given argument to the UnknownArguments list.
+            </summary>
+            <param name="argument">A Node corresponding to the argument to add.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.AddUnknownArguments(System.Collections.Generic.IEnumerable{ABB.Swum.Nodes.Node})">
+            <summary>
+            Adds the given arguments to the UnknownArguments list.
+            </summary>
+            <param name="arguments">A collection of the arguments to add.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.ClearUnknownArguments">
+            <summary>
+            Clears the list of UnknownArguments.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.AddSecondaryArgument(ABB.Swum.Nodes.Node,ABB.Swum.Nodes.WordNode)">
+            <summary>
+            Creates a new ArgumentNode from the given parameters, and adds it to the SecondaryArguments list.
+            </summary>
+            <param name="argument">The node that is serving as the argument.</param>
+            <param name="preposition">The preposition describing the argument's relation to the method.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.ClearSecondaryArguments">
+            <summary>
+            Clears the list of SecondaryArguments.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.CreateEquivalenceFromUnknownArguments(ABB.Swum.Nodes.Node,System.Boolean[])">
+            <summary>
+            Creates a new EquivalenceNode containing the passed node and the specified nodes from the UnknownArguments list.
+            The arguments are removed from the UnknownArguments list after being added to the EquivalenceNode.
+            </summary>
+            <param name="equivalentNode">The first node to add to the EquivalenceNode, i.e. the node that the unknown arguments are equivalent with.</param>
+            <param name="equivalentUnknownArgs">An array of booleans indicating which unknown arguments to include in the equivalence. 
+            This array must be the same length as the UnknownArguments list.
+            For each element in the array, a value of True means to include the corresponding unknown argument, False means to not include it.</param>
+            <returns>An EquivalenceNode containing the passed node and the specified nodes from the UnknownArguments list.</returns>
+            <exception cref="T:System.ArgumentNullException">equivalentNode is null.</exception>
+            <exception cref="T:System.ArgumentException">The length of equivalentUnknownArgs is not the same as the UnknownArguments property of the MethodDeclarationNode.</exception>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.CreateEquivalenceFromUnknownArguments(ABB.Swum.Nodes.Node,System.Collections.Generic.IEnumerable{ABB.Swum.Nodes.Node})">
+            <summary>
+            Creates a new EquivalenceNode containing the passed node and the specified nodes from the UnknownArguments list.
+            The arguments are removed from the UnknownArguments list after being added to the EquivalenceNode.
+            </summary>
+            <param name="equivalentNode">The first node to add to the EquivalenceNode, i.e. the node that the unknown arguments are equivalent with.</param>
+            <param name="equivalentUnknownArgs">The UnknownArguments to include in the equivalence.</param>
+            <returns>An EquivalenceNode containing the passed node and the specified nodes from the UnknownArguments list.</returns>
+            <exception cref="T:System.ArgumentNullException">equivalentNode is null.</exception>
+            <exception cref="T:System.ArgumentNullException">equivalentUnknownArgs is null.</exception>
+        </member>
+        <member name="M:ABB.Swum.Nodes.MethodDeclarationNode.CreateThemeFromPhrases(ABB.Swum.Nodes.PhraseNode,ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Concatenates the given phrases and assigns the result to Theme.
+            ** Note that this will potentially modify phrase1. **
+            </summary>
+            <param name="phrase1">The first phrase.</param>
+            <param name="phrase2">The second phrase.</param>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.Context">
+            <summary>
+            Contains various information relevent to the context of the method declaration.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.Role">
+            <summary>
+            This method's role in the program. For example, is it a getter or setter or event handler or action, etc.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.FormalParameters">
+            <summary>
+            The formal parameters in the method declaration.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.DeclaringClass">
+            <summary>
+            The class that this method is part of.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.ReturnType">
+            <summary>
+            The return type of the method.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.Action">
+            <summary>
+            Represents the action that this method is performing.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.Theme">
+            <summary>
+            Represents the object that this method is acting upon.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.SecondaryArguments">
+            <summary>
+            Arguments that have been identified as Indirect Objects for the action in the method name.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.UnknownArguments">
+            <summary>
+            Any remaining arguments that have unknown roles.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.IsReactive">
+            <summary>
+            Indicates whether this method is designed to react to some event, e.g. an event handler, callback, etc.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.IsConstructor">
+            <summary>
+            Indicates whether this is a declaration for a constructor.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.MethodDeclarationNode.IsDestructor">
+            <summary>
+            Indicates whether this is a declaration for a destructor.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.PhraseNode">
+            <summary>
+            Represents a phrase, consisting of one or more words.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.#ctor">
+            <summary>
+            Creates a new empty PhraseNode.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new PhraseNode, containing the given words.
+            </summary>
+            <param name="words">The words in the phrase.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.#ctor(System.String,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new PhraseNode that contains the words resulting from splitting the given identifier.
+            </summary>
+            <param name="id">A program identifier.</param>
+            <param name="splitter">An IdSplitter to split the given identifier into words.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.#ctor(System.Collections.Generic.IEnumerable{ABB.Swum.Nodes.WordNode},ABB.Swum.Location,System.Boolean)">
+            <summary>
+            Creates a new PhraseNode that contains the given words.
+            </summary>
+            <param name="words">A list of the words in the phrase.</param>
+            <param name="location">The program location of the phrase.</param>
+            <param name="containsPreposition">Whether the phrase contains any prepositions or not.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.InitWords(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Initializes the list of WordNodes by creating a new node for each word string.
+            </summary>
+            <param name="words">String versions of the words in the phrase.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.ToString">
+            <summary>
+            Creates a string representation of the PhraseNode, containing a string version of each word.
+            </summary>
+            <returns>A string representation.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.ToPlainString">
+            <summary>
+            Return a string representation of the PhraseNode without any added SWUM markup.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.Parse(System.String)">
+            <summary>
+            Creates a PhraseNode by parsing the given string representation.
+            </summary>
+            <param name="source">The string to parse the PhraseNode from.</param>
+            <returns>A new PhraseNode.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing the node's parsed name, i.e. returns itself.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.SetLocation(ABB.Swum.Location)">
+            <summary>
+            Sets the program location of the node.
+            </summary>
+            <param name="location">The location of the node.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.GetPhrase">
+            <summary>
+            Returns a list of the words in the phrase.
+            </summary>
+            <returns>A list of the words in the phrase.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.GetWord(System.Int32)">
+            <summary>
+            Returns the word within the phrase at the given index.
+            </summary>
+            <param name="wordIndex">The index of the word to get.</param>
+            <returns>The word within the phrase at the given index.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.FirstWord">
+            <summary>
+            Returns the first word in the phrase.
+            </summary>
+            <returns>The first word in the phrase.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.LastWord">
+            <summary>
+            Returns the last word in the phrase.
+            </summary>
+            <returns>The last word in the phrase.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.Size">
+            <summary>
+            Returns the number of words in the phrase.
+            </summary>
+            <returns>The number of words in the phrase.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.IsEmpty">
+            <summary>
+            Reports whether there are any words in the phrase.
+            </summary>
+            <returns>True if the phrase is empty (contains no words), False otherwise</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.Add(ABB.Swum.Nodes.WordNode)">
+            <summary>
+            Adds the given word to the end of the phrase.
+            </summary>
+            <param name="word">The word to add.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.Add(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Concatenates the supplied phrase to the end of the current phrase.
+            </summary>
+            <param name="phrase">The phrase to add.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.RemoveWord(System.Int32)">
+            <summary>
+            Removes the word from the phrase at the given index.
+            </summary>
+            <param name="wordIndex">The index of the word to remove.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.PhraseNode.GetNewEmpty">
+            <summary>
+            Creates a new empty node of the same type.
+            </summary>
+            <returns>A new empty PhraseNode.</returns>
+        </member>
+        <member name="P:ABB.Swum.Nodes.PhraseNode.Item(System.Int32)">
+            <summary>
+            Returns the word within the phrase at the given index.
+            </summary>
+            <param name="wordIndex">The index of the word to get.</param>
+            <returns>The word within the phrase at the given index.</returns>
+        </member>
+        <member name="T:ABB.Swum.Nodes.TypeNode">
+            <summary>
+            Represents a type within a program.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.TypeNode.#ctor">
+            <summary>
+            Creates a new TypeNode with default values.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.TypeNode.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new TypeNode.
+            </summary>
+            <param name="name">The name of the type.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.TypeNode.#ctor(System.String,System.Boolean,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new TypeNode.
+            </summary>
+            <param name="name">The name of the type.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the type name into words.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.TypeNode.#ctor(System.String,System.Boolean,ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Creates a new TypeNode.
+            </summary>
+            <param name="name">The name of the type.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="parsedName">A PhraseNode representing the parsed type name.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.TypeNode.#ctor(System.String,System.Boolean,ABB.Swum.IdSplitter,ABB.Swum.Tagger)">
+            <summary>
+            Creates a new TypeNode.
+            </summary>
+            <param name="name">The name of the type.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the type name into words.</param>
+            <param name="tagger">A Tagger to tag the parts-of-speech of each word of the name.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.TypeNode.#ctor(System.String,System.Boolean,ABB.Swum.IdSplitter,ABB.Swum.Tagger,ABB.Swum.Location)">
+            <summary>
+            Creates a new TypeNode.
+            </summary>
+            <param name="name">The name of the type.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the type name into words.</param>
+            <param name="tagger">A Tagger to tag the parts-of-speech of each word of the name.</param>
+            <param name="location">The location of the type.</param>
+        </member>
+        <member name="P:ABB.Swum.Nodes.TypeNode.IsPrimitive">
+            <summary>
+            Indicates whether this TypeNode represents a primitive type, e.g. int, bool, char, etc.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.VariableDeclarationNode">
+            <summary>
+            Represents a variable declaration in the program.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.#ctor(System.String)">
+            <summary>
+            Creates a new VariableDeclarationNode.
+            </summary>
+            <param name="name">The name of the variable.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.#ctor(System.String,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new VariableDeclarationNode.
+            </summary>
+            <param name="name">The name of the variable.</param>
+            <param name="splitter">An IdSplitter to split the name into words.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.#ctor(System.String,System.String,System.Boolean,ABB.Swum.IdSplitter,ABB.Swum.Tagger)">
+            <summary>
+            Creates a new VariableDeclarationNode.
+            </summary>
+            <param name="name">The name of the variable.</param>
+            <param name="type">A string giving the type of the variable.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the name into words.</param>
+            <param name="tagger">A part-of-speech tagger to tag the words in the name.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.#ctor(System.String,System.String,System.Boolean,ABB.Swum.IdSplitter,ABB.Swum.Tagger,ABB.Swum.Location)">
+            <summary>
+            Creates a new VariableDeclarationNode.
+            </summary>
+            <param name="name">The name of the variable.</param>
+            <param name="type">A string giving the type of the variable.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the name into words.</param>
+            <param name="tagger">A part-of-speech tagger to tag the words in the name.</param>
+            <param name="location">The program location of the variable declaration.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.#ctor(System.String,System.String,System.Boolean,ABB.Swum.IdSplitter,ABB.Swum.Tagger,ABB.Swum.Location,System.Int32)">
+            <summary>
+            Creates a new VariableDeclarationNode.
+            </summary>
+            <param name="name">The name of the variable.</param>
+            <param name="type">A string giving the type of the variable.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the name into words.</param>
+            <param name="tagger">A part-of-speech tagger to tag the words in the name.</param>
+            <param name="location">The program location of the variable declaration.</param>
+            <param name="position">The position of this variable in the declaration list.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.InitType(System.String,System.Boolean,ABB.Swum.IdSplitter,ABB.Swum.Tagger)">
+            <summary>
+            Creates a TypeNode from a string version of the type, and set it to the Type property.
+            </summary>
+            <param name="typeName">A string version of the variable's type.</param>
+            <param name="isPrimitive">Whether the type is a primitive data type.</param>
+            <param name="splitter">An IdSplitter to split the type into words.</param>
+            <param name="tagger">A Tagger to tag the parts-of-speech of the type words.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.VariableDeclarationNode.ToString">
+            <summary>
+            Creates a string representation, consisting of the type and the variable name.
+            </summary>
+            <returns>A string representation of the node.</returns>
+        </member>
+        <member name="P:ABB.Swum.Nodes.VariableDeclarationNode.Type">
+            <summary>
+            The type of the variable being declared.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.VariableDeclarationNode.Position">
+            <summary>
+            The position of the variable within the declaration list. E.g. in "int x, y, z" variables x, y and z have positions 0, 1 and 2, respectively.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Nodes.WordNode">
+            <summary>
+            A node representing a single word.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.#ctor(System.String,ABB.Swum.PartOfSpeechTag,System.Double)">
+            <summary>
+            Creates a new WordNode.
+            </summary>
+            <param name="text">The actual text of the word.</param>
+            <param name="tag">The part-of-speech of the word.</param>
+            <param name="confidence">A rating of the confidence of the part-of-speech tagging for this word.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.#ctor(System.String,ABB.Swum.PartOfSpeechTag)">
+            <summary>
+            Creates a new WordNode. The confidence is set to the default value of 0.0.
+            </summary>
+            <param name="text">The actual text of the word.</param>
+            <param name="tag">The part-of-speech of the word.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.#ctor(System.String)">
+            <summary>
+            Creates a new WordNode. The part-of-speech is set to the default value of Unknown. The confidence is set to the default value of 0.0. 
+            </summary>
+            <param name="text">The actual text of the word.</param>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.#ctor">
+            <summary>
+            Creates a new WordNode with empty text. The part-of-speech is set to the default value of Unknown. The confidence is set to the default value of 0.0. 
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.IsAllCaps">
+            <summary>
+            Reports whether the word is in all caps.
+            </summary>
+            <returns>True if the word is all caps, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.ToString">
+            <summary>
+            Converts the WordNode to a string representation, containing the text and part-of-speech.
+            </summary>
+            <returns>A string representation of the WordNode.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.ToPlainString">
+            <summary>
+            Returns the text of the word, with no added markup. 
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.Parse(System.String)">
+            <summary>
+            Creates a WordNode by parsing the given string representation.
+            </summary>
+            <param name="source">The string to parse the WordNode from.</param>
+            <returns>A new WordNode.</returns>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.GetParse">
+            <summary>
+            Returns a PhraseNode containing this WordNode.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.GetNewWord">
+            <summary>
+            Returns a new empty node of the same type.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Nodes.WordNode.GetNewWord(System.String,ABB.Swum.PartOfSpeechTag)">
+            <summary>
+            Returns a new node of the same type, containing the given text and part-of-speech tag.
+            </summary>
+            <param name="text">The text of the new word.</param>
+            <param name="tag">the part-of-speech tag of the new word.</param>
+        </member>
+        <member name="P:ABB.Swum.Nodes.WordNode.Text">
+            <summary>
+            The actual text of the word.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.WordNode.Tag">
+            <summary>
+            The word's part-of-speech.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.WordNode.Confidence">
+            <summary>
+            A rating of the confidence of the part-of-speech tagging for this word.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.Nodes.WordNode.Location">
+            <summary>
+            The node's location in the program. For a WordNode, this is always Location.None.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.NonBaseVerbRule">
+            <summary>
+            The rule to construct the SWUM for methods whose names start with a non-base verb.
+            For now, this rule performs the same processing as BaseVerbRule.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.NonBaseVerbRule.#ctor">
+            <summary>
+            Creates a new NonBaseVerbRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.NonBaseVerbRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new NonBaseVerbRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.NonBaseVerbRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new NonBaseVerbRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.NonBaseVerbRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new NonBaseVerbRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.NonBaseVerbRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.NonBaseVerbRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.NounPhraseRule">
+            <summary>
+            The rule to construct the SWUM for a method whose name is a noun phrase.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.NounPhraseRule.#ctor">
+            <summary>
+            Creates a new NounPhraseRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.NounPhraseRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new NounPhraseRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.NounPhraseRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new NounPhraseRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.NounPhraseRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new NounPhraseRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.NounPhraseRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.NounPhraseRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.NullSplitter">
+            <summary>
+            This is a null implementation of an IdSplitter. It does not split, but simply returns the original word intact.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.NullSplitter.Split(System.String)">
+            <summary>
+            Does not split the identifier, it simply returns it.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.NullStemmer">
+            <summary>
+            This is a "null" stemmer. It does not actually do any stemming, but just returns the original word unaltered.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.NullStemmer.Stem(System.String)">
+            <summary>
+            Returns the supplied word unchanged.
+            </summary>
+            <param name="word">The word to stem.</param>
+            <returns>The "stem" of the word. This is identical to the word itself.</returns>
+        </member>
+        <member name="T:ABB.Swum.NullTagger">
+            <summary>
+            This is a null implementation of the abstract Tagger class. All of the methods do nothing; they simply return.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Tagger">
+            <summary>
+            Assigns part-of-speech tags to the words in an identifier.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Tagger.TagVariableName(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given variable name.
+            </summary>
+            <param name="parsedName">The parsed variable name to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.Tagger.TagType(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given type name.
+            </summary>
+            <param name="parsedName">The parsed type name to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.Tagger.TagNounPhrase(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given phrase, assuming it is a noun phrase.
+            </summary>
+            <param name="nounPhrase">The noun phrase to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.Tagger.TagNounPhrase(ABB.Swum.Nodes.PhraseNode,System.Int32,System.Int32)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given phrase, assuming it is a noun phrase.
+            Only the words between startIndex and stopIndex, inclusive, are tagged.
+            </summary>
+            <param name="nounPhrase">The noun phrase to tag.</param>
+            <param name="startIndex">The index of the first word to tag.</param>
+            <param name="stopIndex">The index of the last word to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.Tagger.PreTag(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Performs various actions that should occur prior to further tagging. 
+            This method tags any digits in the name, identifies and removes any preamble, and tags any prepositions remaining in the name.
+            </summary>
+            <param name="node">The node to be tagged.</param>
+        </member>
+        <member name="M:ABB.Swum.NullTagger.TagVariableName(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Does nothing; simply returns
+            </summary>
+            <param name="parsedName"></param>
+        </member>
+        <member name="M:ABB.Swum.NullTagger.TagType(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Does nothing; simply returns
+            </summary>
+            <param name="parsedName"></param>
+        </member>
+        <member name="M:ABB.Swum.NullTagger.TagNounPhrase(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Does nothing; simply returns
+            </summary>
+            <param name="nounPhrase"></param>
+        </member>
+        <member name="M:ABB.Swum.NullTagger.TagNounPhrase(ABB.Swum.Nodes.PhraseNode,System.Int32,System.Int32)">
+            <summary>
+            Does nothing; simply returns
+            </summary>
+            <param name="nounPhrase"></param>
+            <param name="startIndex"></param>
+            <param name="stopIndex"></param>
+        </member>
+        <member name="M:ABB.Swum.NullTagger.PreTag(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Does nothing; simply returns;
+            </summary>
+            <param name="node"></param>
+        </member>
+        <member name="T:ABB.Swum.PartOfSpeechTag">
+            <summary>
+            The part-of-speech of a given word.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Unknown">
+            <summary>
+            An unknown part-of-speech.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Noun">
+            <summary>
+            A noun.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.NounIgnorable">
+            <summary>
+            A noun that's ignorable, i.e. an ignorable head word.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.NounPlural">
+            <summary>
+            A plural noun.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.NounModifier">
+            <summary>
+            A word modifying a noun, i.e. an adjective or another noun.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.NonVerb">
+            <summary>
+            An adjective, adverb, or noun, occurring before the verb in a name.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.VerbIgnorable">
+            <summary>
+            An ignorable verb.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Verb">
+            <summary>
+            A verb.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.PastParticiple">
+            <summary>
+            A verb in past participle tense, e.g. -ed, -en
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Verb3PS">
+            <summary>
+            A verb in third-person singular tense.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.VerbIng">
+            <summary>
+            A verb ending in -ing, i.e. present participle.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.VerbModifier">
+            <summary>
+            A word modifying a verb, i.e. an adverb.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.VerbParticle">
+            <summary>
+            A verb particle. For example, in "tear down", "tear" is a verb and "down" is a verb particle.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Preposition">
+            <summary>
+            A preposition.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Digit">
+            <summary>
+            A "word" that is actually a number.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Determiner">
+            <summary>
+            A determiner, e.g. the, this, that.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Pronoun">
+            <summary>
+            A pronoun.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.PartOfSpeechTag.Preamble">
+            <summary>
+            A word that is prefixed on an identifier, but doesn't have any relevent part-of-speech.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.ReactiveRule">
+            <summary>
+            The rule to construct the SWUM for a reactive method, i.e. one that responds to some external event.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ReactiveRule.#ctor">
+            <summary>
+            Creates a new ReactiveRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ReactiveRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new ReactiveRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.ReactiveRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new ReactiveRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.ReactiveRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new ReactiveRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.ReactiveRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.ReactiveRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.SpecialCaseRule">
+            <summary>
+            The rule to construct the SWUM for various special case methods.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SpecialCaseRule.#ctor">
+            <summary>
+            Creates a new SpecialCaseRule using default values for data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SpecialCaseRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter)">
+            <summary>
+            Creates a new SpecialCaseRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+        </member>
+        <member name="M:ABB.Swum.SpecialCaseRule.#ctor(System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new SpecialCaseRule.
+            </summary>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.SpecialCaseRule.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.Tagger,ABB.Swum.IdSplitter,System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},System.Collections.Generic.HashSet{System.String},ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new SpecialCaseRule.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="tagger">The part-of-speech tagger to use.</param>
+            <param name="splitter">The identifier splitter to use.</param>
+            <param name="specialWords">A list of words that indicate the method name needs special handling.</param>
+            <param name="booleanArgumentVerbs">A list of verbs that indicate that the boolean arguments to a method should be included in the UnknownArguments list.</param>
+            <param name="nounPhraseIndicators">A list of word that indicate that beginning of a noun phrase.</param>
+            <param name="positionalFrequencies">Positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.SpecialCaseRule.MakeClassification(ABB.Swum.Nodes.MethodDeclarationNode)">
+            <summary>
+            Determines whether the given MethodDeclarationNode meets the conditions for this rule.
+            This method assumes that the name is parsed, preamble is stripped, and digits and prepositions are tagged.
+            </summary>
+            <param name="node">The MethodDeclarationNode to test.</param>
+            <returns>True if the node meets the conditions for this rule, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.SpecialCaseRule.ConstructSwum(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Constructs the SWUM for the given node, using this rule.
+            </summary>
+            <param name="node">The node to construct SWUM for.</param>
+        </member>
+        <member name="T:ABB.Swum.SwumBuilder">
+            <summary>
+            Constructs the Software Word Use Model using a defined set of rules.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.SwumBuilder.Rules">
+            <summary>
+            The set of rules to use for building SWUMs.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SwumBuilder.#ctor">
+            <summary>
+            Creates a new SwumBuilder with the default rule set.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SwumBuilder.#ctor(System.Collections.Generic.IEnumerable{ABB.Swum.SwumRule})">
+            <summary>
+            Creates a new SwumBuilder with the specified rule set.
+            </summary>
+            <param name="ruleSet">The set of rules to use for building SWUMs.</param>
+        </member>
+        <member name="M:ABB.Swum.SwumBuilder.DefineRuleSet">
+            <summary>
+            Initializes the list of rules to use for building SWUMs.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SwumBuilder.ApplyRules(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Applies the rules defined within this SwumBuilder to the specified node.
+            The first matching rule found is used to construct the SWUM.
+            </summary>
+            <param name="node">The ProgramElementNode to construct a SWUM on.</param>
+            <returns>The SwumRule that was used to construct the SWUM for the given node.</returns>
+        </member>
+        <member name="T:ABB.Swum.UnigramSwumBuilder">
+            <summary>
+            Constructs Software Word Use Models using unigram-based rules.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramSwumBuilder.#ctor">
+            <summary>
+            Creates a new UnigramSwumBuilder with the predefined set of rules.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramSwumBuilder.DefineRuleSet">
+            <summary>
+            Initializes the builder's rule list to a defined set of Rule objects.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.UnigramSwumBuilder.PosData">
+            <summary>
+            The part-of-speech data to use.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.UnigramSwumBuilder.Tagger">
+            <summary>
+            The part-of-speech tagger to use.
+            </summary>
+        </member>
+        <member name="P:ABB.Swum.UnigramSwumBuilder.Splitter">
+            <summary>
+            The identifier splitter to use.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.Utilities.SwumConfiguration">
+            <summary>
+            Provides access to the settings specified in the SWUM configuration file.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Utilities.SwumConfiguration.#cctor">
+            <summary>
+            Reads the configuration file associated with the current assembly.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Utilities.SwumConfiguration.GetSetting(System.String)">
+            <summary>
+            Gets the value of the specified configuration setting.
+            </summary>
+            <param name="key">The name of the setting to retrieve.</param>
+            <returns>The value associated with the specified key, or null if the key is not found in the configuration.</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.SwumConfiguration.GetFileSetting(System.String)">
+            <summary>
+            Gets the value of the specified configuration setting, which is assumed to be a file path. 
+            If the path is relative, it is expanded to a full path, using the directory of the configuration file.
+            </summary>
+            <param name="key">The name of the setting to retrieve.</param>
+            <returns>The value associated with the specified key, expanded to a full path. If the key is not found, this method returns null.</returns>
+        </member>
+        <member name="T:ABB.Swum.WordData.PositionalFrequencyRecord">
+            <summary>
+            The positional frequency data for a given word.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordData.PositionalFrequencyRecord.First">
+            <summary>
+            A count of how often the word appears at the beginning of an identifier.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordData.PositionalFrequencyRecord.Middle">
+            <summary>
+            A count of how often the word appears in the middle of an identifier, i.e. not first or last.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordData.PositionalFrequencyRecord.Last">
+            <summary>
+            A count of how often the word appears at the end of an identifier.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordData.PositionalFrequencyRecord.Only">
+            <summary>
+            A count of how often the word appears by itself in an identifier.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordData.PositionalFrequencyRecord.Total">
+            <summary>
+            The total number of times the word appears in identifiers. This must be a sum of First, Middle, Last, and Only.
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.WordData.PartOfSpeechData">
+            <summary>
+            Encapsulates a collection of word part-of-speech data.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsPreposition(System.String)">
+            <summary>
+            Indicates whether the given word is a preposition.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a preposition, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsNoun(System.String)">
+            <summary>
+            Indicates whether the given word is a noun.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a noun, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsAdjective(System.String)">
+            <summary>
+            Indicates whether the given word is an adjective.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a adjective, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsAdverb(System.String)">
+            <summary>
+            Indicates whether the given word is an adverb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a adverb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsDeterminer(System.String)">
+            <summary>
+            Indicates whether the given word is a determiner, e.g. the, this, that.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a determiner, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsPronoun(System.String)">
+            <summary>
+            Indicates whether the given word is a pronoun.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a pronoun, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsPastTense(System.String)">
+            <summary>
+            Indicates whether the given word is in past tense.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is in past tense, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsPastParticiple(System.String)">
+            <summary>
+            Indicates whether the given word is in past participle form, e.g. -ed
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a past participle, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsPresentParticiple(System.String)">
+            <summary>
+            Indicates whether the given word is in present participle form, e.g. -ing
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a present participle, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsVerbParticle(System.String,System.String)">
+            <summary>
+            Indicates whether the given word is a verb particle. For example, in "pick up", "pick" is a verb and "up" is a verb particle.
+            </summary>
+            <param name="verb">The verb to test the particle against.</param>
+            <param name="word">The potential particle.</param>
+            <returns>True if the word is a verb particle, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsThirdPersonSingularVerb(System.String)">
+            <summary>
+            Indicates whether the given word is a verb in third person singular tense.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a third person singular verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsThirdPersonIrregularVerb(System.String)">
+            <summary>
+            Indicates whether the given word is an irregular third person singular verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an irregular third person verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsModalVerb(System.String)">
+            <summary>
+            Indicates whether the given word is a modal verb, e.g. can, should, will.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a modal verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsIgnorableVerb(System.String)">
+            <summary>
+            Indicates whether the given word is an ignorable verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an ignorable verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsIgnorableHeadWord(System.String)">
+            <summary>
+            Indicates whether the given word is an ignorable head word.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an ignorable head word, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsTwoLetterDictionaryWord(System.String)">
+            <summary>
+            Indicates whether the given word is a two letter word that appears in the dictionary.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a two letter dictionary word, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsPotentialVerb(System.String)">
+            <summary>
+            Indicates whether the given word is potentially a verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is potentially a verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsGeneralVerb(System.String)">
+            <summary>
+            Indicates whether the given word is a general verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a general verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsEventWord(System.String)">
+            <summary>
+            Indicates whether the given word relates generally to the execution of an event, e.g. start, begin, finish, int.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an event word, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PartOfSpeechData.IsSideEffectWord(System.String)">
+            <summary>
+            Indicates whether the given word indicates that a method might have some side effect, e.g. log, notify, throw.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a side effect word, False otherwise.</returns>
+        </member>
+        <member name="T:ABB.Swum.WordData.PCKimmoPartOfSpeechData">
+            <summary>
+            Encapsulates part-of-speech data obtained from the PCKimmo/KTagger part-of-speech tagger.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.#ctor">
+            <summary>
+            Creates a new PCKimmoPartOfSpeechData object using the default file locations for the part-of-speech data.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsPreposition(System.String)">
+            <summary>
+            Indicates whether the given word is a preposition.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a preposition, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsNoun(System.String)">
+            <summary>
+            Indicates whether the given word is a noun.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a noun, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsVerbParticle(System.String,System.String)">
+            <summary>
+            Indicates whether the given word is a verb particle. For example, in "pick up", "pick" is a verb and "up" is a verb particle.
+            </summary>
+            <param name="verb">The verb to test the particle against.</param>
+            <param name="word">The potential particle.</param>
+            <returns>True if the word is a verb particle, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsPastParticiple(System.String)">
+            <summary>
+            Indicates whether the given word is in past participle form, e.g. -ed
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a past participle, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsPastTense(System.String)">
+            <summary>
+            Indicates whether the given word is in past tense.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is in past tense, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsPresentParticiple(System.String)">
+            <summary>
+            Indicates whether the given word is in present participle form, e.g. -ing
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a present participle, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsAdjective(System.String)">
+            <summary>
+            Indicates whether the given word is an adjective.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a adjective, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsAdverb(System.String)">
+            <summary>
+            Indicates whether the given word is an adverb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a adverb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsDeterminer(System.String)">
+            <summary>
+            Indicates whether the given word is a determiner, e.g. the, this, that.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a determiner, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsPronoun(System.String)">
+            <summary>
+            Indicates whether the given word is a pronoun.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a pronoun, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsThirdPersonSingularVerb(System.String)">
+            <summary>
+            Indicates whether the given word is a verb in third person singular tense.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a third person singular verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsThirdPersonIrregularVerb(System.String)">
+            <summary>
+            Indicates whether the given word is an irregular third person singular verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an irregular third person verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsModalVerb(System.String)">
+            <summary>
+            Indicates whether the given word is a modal verb, e.g. can, should, will.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a modal verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsIgnorableVerb(System.String)">
+            <summary>
+            Indicates whether the given word is an ignorable verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an ignorable verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsGeneralVerb(System.String)">
+            <summary>
+            Indicates whether the given word is a general verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a general verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsEventWord(System.String)">
+            <summary>
+            Indicates whether the given word relates generally to the execution of an event, e.g. start, begin, finish, int.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an event word, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsSideEffectWord(System.String)">
+            <summary>
+            Indicates whether the given word indicates that a method might have some side effect, e.g. log, notify, throw.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a side effect word, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsTwoLetterDictionaryWord(System.String)">
+            <summary>
+            Indicates whether the given word is a two letter word that appears in the dictionary.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is a two letter dictionary word, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsPotentialVerb(System.String)">
+            <summary>
+            Indicates whether the given word is potentially a verb.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is potentially a verb, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PCKimmoPartOfSpeechData.IsIgnorableHeadWord(System.String)">
+            <summary>
+            Indicates whether the given word is an ignorable head word.
+            </summary>
+            <param name="word">The word to test.</param>
+            <returns>True if the word is an ignorable head word, False otherwise.</returns>
+        </member>
+        <member name="T:ABB.Swum.SamuraiIdSplitter">
+            <summary>
+            Used to split the identifiers in a program into their constituent words.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.#ctor(System.String)">
+            <summary>
+            Creates a new IdentifierSplitter using the specified program word count file.
+            </summary>
+            <param name="programWordCountPath">The path to the file containing the local program word counts.</param>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.#ctor(System.Collections.Generic.Dictionary{System.String,System.Int32})">
+            <summary>
+            Creates a new IdentifierSplitter using the specified word count dictionary.
+            </summary>
+            <param name="programWordCount">A dictionary containing the local program word counts.</param>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.Initialize(System.Collections.Generic.Dictionary{System.String,System.Int32})">
+            <summary>
+            Reads the necessary data files and initializes the member variables.
+            </summary>
+            <param name="programWordCount">A dictionary containing the word counts from the local program.</param>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.SplitOnUppercaseToLowercase(System.String)">
+            <summary>
+            Splits a word where an uppercase letter is followed by a lowercase letter. The word is split only once, at the first matching location.
+            This method assumes the input consists of zero-or-more uppercase letters followed by zero-or-more lowercase letters.
+            </summary>
+            <param name="word">The word to be split.</param>
+            <returns>An array of the subwords resulting from the split.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.IsPrefix(System.String)">
+            <summary>
+            Checks whether the supplied word is a known prefix.
+            </summary>
+            <param name="word">The word to check.</param>
+            <returns>True if the word is a prefix, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.IsSuffix(System.String)">
+            <summary>
+            Checks whether the supplied word is a known suffix.
+            </summary>
+            <param name="word">The word to check.</param>
+            <returns>True if the word is a suffix, False otherwise.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.SplitSameCase(System.String)">
+            <summary>
+            Splits a word into subwords. 
+            The word should be either (1) all lowercase, (2) all uppercase, or (3) a single uppercase letter followed by lowercase letters
+            </summary>
+            <param name="word">The word to split.</param>
+            <returns>An array of the subwords resulting from the split.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.SplitSameCase(System.String,System.Double)">
+            <summary>
+            Splits a word into subwords.
+            The word should be either (1) all lowercase, (2) all uppercase, or (3) a single uppercase letter followed by lowercase letters
+            </summary>
+            <param name="word">The word to split.</param>
+            <param name="noSplitScore">The word's score before any splitting.</param>
+            <returns>An array of the subwords resulting from the split.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.Split(System.String)">
+            <summary>
+            Splits a program identifier into its constituent words.
+            </summary>
+            <param name="identifier">The identifier to split.</param>
+            <returns>An array of the words resulting from the split.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.Split(System.String,System.Boolean)">
+            <summary>
+            Splits a program identifier into its constituent words.
+            </summary>
+            <param name="identifier">The identifier to split.</param>
+            <param name="printSplitTrace">Whether or not to print a trace of the splitting process.</param>
+            <returns>An array of the words resulting from the split.</returns>
+        </member>
+        <member name="M:ABB.Swum.SamuraiIdSplitter.CountProgramWords(System.String)">
+            <summary>
+            Counts the number of occurrences of words within the identifiers in the supplied srcML file
+            </summary>
+            <param name="path">The srcML file to analyze. This can be either a compound or singular srcML file.</param>
+            <returns>A dictionary mapping words to the number of occurrences with the file's identifiers.</returns>
+        </member>
+        <member name="T:ABB.Swum.ExternalProcessTagger">
+            <summary>
+            A part-of-speech tagger
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ExternalProcessTagger.#ctor">
+            <summary>
+            Creates a new ExternalProcessTagger with the default program path and arguments.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.ExternalProcessTagger.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new ExternalProcessTagger with the specified program path and arguments.
+            </summary>
+            <param name="programFileName">The path to the part-of-speech tagger executable.</param>
+            <param name="programArguments">Command-line arguments to be passed to the part-of-speech tagger, not including input and output arguments.</param>
+        </member>
+        <member name="M:ABB.Swum.ExternalProcessTagger.Tag(System.Collections.Generic.ICollection{System.String})">
+            <summary>
+            Calls an external part-of-speech tagger and runs it on each of the supplied words.
+            
+            Note that each call of this method creates (and cleans up) a separate process running the POS tagger.
+            For performance reasons, it is better to tag words in large batches, rather than small, frequent batches.
+            </summary>
+            <param name="words">A collection of words to be tagged</param>
+            <returns>A Dictionary that maps a word to the list of part-of-speech records for that word</returns>
+        </member>
+        <member name="T:ABB.Swum.WordRecord">
+            <summary>
+            A structure containing the output from the Ktagger POS tagger for a given word
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordRecord.word">
+            <summary>
+            The word that was tagged.
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordRecord.lex">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordRecord.gloss">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordRecord.head_pos">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordRecord.root">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:ABB.Swum.WordRecord.root_pos">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:ABB.Swum.UnigramTagger">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in an identifier. This is done based on unigram part-of-speech data.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.#ctor(ABB.Swum.WordData.PartOfSpeechData,ABB.Swum.WordData.PositionalFrequencies)">
+            <summary>
+            Creates a new UnigramTagger object, using the supplied data sets.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+            <param name="frequencies">The positional frequency data to use.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.#ctor(ABB.Swum.WordData.PartOfSpeechData)">
+            <summary>
+            Creates a new UnigramTagger object, using the specified part-of-speech data.
+            </summary>
+            <param name="posData">The part-of-speech data to use.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.#ctor">
+            <summary>
+            Creates a new UnigramTagger object. The default values are used for necessary data sets.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.PreTag(ABB.Swum.Nodes.ProgramElementNode)">
+            <summary>
+            Performs various actions that should occur prior to further tagging. 
+            This method tags any digits in the name, identifies and removes any preamble, and tags any prepositions remaining in the name.
+            </summary>
+            <param name="node">The node to be tagged.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.TagVariableName(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given variable name.
+            </summary>
+            <param name="parsedName">The parsed variable name to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.TagType(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given type name.
+            </summary>
+            <param name="parsedName">The parsed type name to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.TagNounPhrase(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given phrase, assuming it is a noun phrase.
+            </summary>
+            <param name="phrase">The noun phrase to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.TagNounPhrase(ABB.Swum.Nodes.PhraseNode,System.Int32,System.Int32)">
+            <summary>
+            Assigns part-of-speech tags to the word nodes in the given phrase, assuming it is a noun phrase.
+            Only the words between startIndex and stopIndex, inclusive, are tagged.
+            </summary>
+            <param name="phrase">The noun phrase to tag.</param>
+            <param name="startIndex">The index of the first word to tag.</param>
+            <param name="stopIndex">The index of the last word to tag.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">startIndex or stopIndex are not valid indices, or stopIndex is less than startIndex</exception>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.TagDigits(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Tags any word nodes in the given phrase that contain digits.
+            </summary>
+            <param name="phrase">The phrase to tag.</param>
+        </member>
+        <member name="M:ABB.Swum.UnigramTagger.TagPrepostions(ABB.Swum.Nodes.PhraseNode)">
+            <summary>
+            Tags any word nodes in the given phrase that are prepositions.
+            </summary>
+            <param name="phrase">The phrase to tag.</param>
+        </member>
+        <member name="T:ABB.Swum.Utilities.LibFileLoader">
+            <summary>
+            Contains various utility functions for loading library data files.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.WriteWordCount(System.Collections.Generic.Dictionary{System.String,System.Int32},System.String)">
+            <summary>
+            Writes a word count dictionary to a file. Each dictionary entry is written in the format "[count] [word]".
+            </summary>
+            <param name="wordCount">The word count dictionary to write.</param>
+            <param name="path">The file to write to.</param>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadWordCount(System.String)">
+            <summary>
+            Reads a word count file and parses it into a dictionary. The file is assumed to contain 
+            one entry per line, with each entry of the format "[count] [word]". Count must be a non-negative whole number.
+            If the file contains duplicate entries for a given word, only the last entry will be in the dictionary.
+            Words are converted to lower case before being added to the dictionary.
+            </summary>
+            <param name="path">The file to read.</param>
+            <returns>A Dictionary mapping words to counts.</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadWordCount(System.String,System.Boolean)">
+            <summary>
+            Reads a word count file and parses it into a dictionary. The file is assumed to contain 
+            one entry per line, with each entry of the format "[count] [word]". Count must be a non-negative whole number.
+            If the file contains duplicate entries for a given word, only the last entry will be in the dictionary.
+            Words are converted to lower case before being added to the dictionary.
+            </summary>
+            <param name="path">The file to read.</param>
+            <param name="keepOriginalCasing">If True, words are added to the dictionary in their original case. If False, words are converted to lower case.</param>
+            <returns>A Dictionary mapping words to counts.</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadWordCount(System.String,System.Boolean,System.Func{System.String,System.Int32,System.Boolean})">
+            <summary>
+            Reads a word count file and parses it into a dictionary. The file is assumed to contain 
+            one entry per line, with each entry of the format "[count] [word]". Count must be a non-negative whole number.
+            If the file contains duplicate entries for a given word, only the last entry will be in the dictionary.
+            </summary>
+            <param name="path">The file to read.</param>
+            <param name="keepOriginalCase">If True, words are added to the dictionary in their original case. If False, words are converted to lower case.</param>
+            <param name="includeFunction">A function specifying whether or not to include a given entry from the file. 
+            This takes a string and uint as parameters and returns True if the entry should be included and False otherwise.</param>
+            <returns>A Dictionary mapping words to counts.</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadWordList(System.String[])">
+            <summary>
+            Reads a file containing a list of words, and returns it as a set. The file is assumed 
+            to contain a single word on each line. Duplicate words will be ignored. Words are converted to lower case before being added.
+            </summary>
+            <param name="paths">One or more files to read.</param>
+            <returns>A HashSet containing the words in the file(s).</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadWordList(System.Boolean,System.String[])">
+            <summary>
+            Reads a file containing a list of words, and returns it as a set. The file is assumed 
+            to contain a single word on each line. Duplicate words will be ignored.
+            </summary>
+            <param name="keepOriginalCase">If True, words are added to the set in their original case. If False, words are converted to lower case.</param>
+            <param name="paths">One or more files to read.</param>
+            <returns>A HashSet containing the words in the file(s).</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadStemFile(System.String)">
+            <summary>
+            Reads a word stem file and parses it into a dictionary. The file is assumed to contain 
+            one entry per line, with each entry of the format "[word] [stem]".
+            If the file contains duplicate entries for a given word, only the last entry will be in the dictionary.
+            </summary>
+            <param name="path">The file to read.</param>
+            <returns>A Dictionary mapping words to stems.</returns>
+        </member>
+        <member name="M:ABB.Swum.Utilities.LibFileLoader.ReadVerbParticleFile(System.String)">
+            <summary>
+            Reads the verb particle file at the given path and reads it into a Dictionary.
+            Each line of the file should be in the format: [verb] [particle].
+            The returned Dictionary maps a particle to a set of verbs.
+            </summary>
+            <param name="path">The verb particle file to read.</param>
+            <returns>A Dictionary mapping a particle to a set of verbs.</returns>
+        </member>
+        <member name="T:ABB.Swum.WordData.PositionalFrequencies">
+            <summary>
+            Encapsulates positional frequency data for words. That is, how often a word appears in a specific postition within an identifier.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.#ctor">
+            <summary>
+            Creates a new PositionalFrequencies object, using the positional frequency data in the default file.
+            </summary>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.#ctor(System.String)">
+            <summary>
+            Creates a new PostionalFrequencies object, using the positional frequency data in the supplied file.
+            The file should contain a single word entry per line, in the format [word] [first-freq] [middle-freq] [last-freq] [only-freq]
+            </summary>
+            <param name="filePath">The path to the file with the positional frequency data.</param>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.AddFrequency(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Stores the given frequency data for the given word. This will overwrite any existing data for that word.
+            </summary>
+            <param name="word">The word.</param>
+            <param name="first">A count of how often the word appears at the beginning of an identifier.</param>
+            <param name="middle">A count of how often the word appears in the middle of an identifier, i.e. not first or last.</param>
+            <param name="last">A count of how often the word appears at the end of an identifier.</param>
+            <param name="only">A count of how often the word appears by itself in an identifier.</param>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.AddFrequency(System.String,ABB.Swum.WordData.PositionalFrequencyRecord)">
+            <summary>
+            Stores the given frequency data for the given word. This will overwrite any existing data for that word.
+            </summary>
+            <param name="word">The word.</param>
+            <param name="record">The frequency data for the word.</param>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetFirstFrequency(System.String)">
+            <summary>
+            Returns how often the given word appears at the beginning of an identifier.
+            </summary>
+            <param name="word">The word.</param>
+            <returns>A count of how often the given word appears at the beginning of an identifier.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetMiddleFrequency(System.String)">
+            <summary>
+            Returns how often the given word appears in the middle of an identifier, i.e. not first or last.
+            </summary>
+            <param name="word">The word.</param>
+            <returns>A count of how often the given word appears in the middle of an identifier.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetLastFrequency(System.String)">
+            <summary>
+            Returns how often the given word appears at the end of an identifier.
+            </summary>
+            <param name="word">The word.</param>
+            <returns>A count of how often the given word appears at the end of an identifier.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetOnlyFrequency(System.String)">
+            <summary>
+            Returns how often the given word appears by itself in an identifier
+            </summary>
+            <param name="word">The word.</param>
+            <returns>A count of how often the given word appears by itself in an identifier.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetTotalFrequency(System.String)">
+            <summary>
+            Returns the total number of times the given word appears in an identifier.
+            </summary>
+            <param name="word">The word.</param>
+            <returns>A count of the total number of times the given word appears in an identifier.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetVerbProbability(System.String)">
+            <summary>
+            Calculates the probability that the given word is a verb, based on its positional frequencies.
+            </summary>
+            <param name="word">The word.</param>
+            <returns>The probability that the given word is a verb.</returns>
+        </member>
+        <member name="M:ABB.Swum.WordData.PositionalFrequencies.GetNounProbability(System.String)">
+            <summary>
+            Calculates the probability that the given word is a noun, based on its positional frequencies.
+            </summary>
+            <param name="word">The word.</param>
+            <returns>The probability that the given word is a noun.</returns>
+        </member>
+    </members>
+</doc>

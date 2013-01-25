@@ -18,10 +18,12 @@ namespace Sando.Core.Tools
             return word.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
         }
 
+
         public static List<string> ExtractSearchTerms(string searchTerms)
         {
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
 
+			//1.handle quotes
             MatchCollection matchCollection = Regex.Matches(searchTerms, quotesPattern);
             List<string> matches = new List<string>();
             foreach (Match match in matchCollection)
@@ -31,6 +33,18 @@ namespace Sando.Core.Tools
                 if (!String.IsNullOrWhiteSpace(currentMatch))
                     matches.Add(currentMatch);
             }
+
+			//2.add unsplit terms
+			string[] splitTerms = searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach(string term in splitTerms)
+			{
+				if(term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c)))
+				{
+					matches.Add(term);
+				}
+			}
+
+			//3.do rest...
             searchTerms = Regex.Replace(searchTerms, pattern, " ");
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z][a-z]+)", " $1$2");
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");
@@ -43,6 +57,23 @@ namespace Sando.Core.Tools
                 matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
             }
             return matches.Distinct().ToList();
+        }
+
+        public static SortedSet<string> GetFileExtensions(string searchTerms)
+        {
+            //2a.add filetype extensions
+            var matchCollection = Regex.Matches(searchTerms, fileExtensionPattern);
+            SortedSet<string> matches = new SortedSet<string>();
+            foreach (Match match in matchCollection)
+            {
+                string currentMatch = match.Value;//.Trim('"', ' ');
+                searchTerms = searchTerms.Replace(match.Value, "");
+                if (!String.IsNullOrWhiteSpace(currentMatch))
+                {
+                    matches.Add(currentMatch.Substring(currentMatch.IndexOf(':')+1));                    
+                }
+            }
+            return matches;
         }
 
         public static bool InvalidCharactersFound(string searchTerms)
@@ -58,5 +89,7 @@ namespace Sando.Core.Tools
 
         private static string pattern = "[^a-zA-Z0-9\\s\\*\\-]";
         private static string quotesPattern = "-{0,1}\"[^\"]+\"";
+        private static string fileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
+
     }
 }

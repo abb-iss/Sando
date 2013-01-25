@@ -16,7 +16,7 @@ namespace Sando.Parser
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
 
-		public static void ParseFields(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
+		public static void ParseFields(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
 			IEnumerable<XElement> fields =
 				from el in elements.Descendants(SourceNamespace + "class")
@@ -43,10 +43,10 @@ namespace Sando.Parser
 				string className = classElement != null ? classElement.Name : String.Empty;
 
 				//parse access level and type
-				XElement accessElement = field.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-				AccessLevel accessLevel = accessElement != null ? StrToAccessLevel(accessElement.Value) : AccessLevel.Internal;
+			    var typeElement = field.Element(SourceNamespace + "type");
+			    AccessLevel accessLevel = RetrieveAccessLevel(typeElement);
 
-				IEnumerable<XElement> types = field.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+				IEnumerable<XElement> types = typeElement.Elements(SourceNamespace + "name");
 				string fieldType = String.Empty;
 				foreach(XElement type in types)
 				{
@@ -60,13 +60,13 @@ namespace Sando.Parser
 					initialValue = initialValueElement.Element(SourceNamespace + "expr").Value;
 
 				string fullFilePath = System.IO.Path.GetFullPath(fileName);
-                string snippet = RetrieveSnippet(field, snippetSize);
+                string snippet = RetrieveSource(field);
 
 				programElements.Add(new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue));
 			}
 		}
 
-		public static void ParseComments(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
+		public static void ParseComments(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
 			IEnumerable<XElement> comments =
 				from el in elements.Descendants(SourceNamespace + "comment")
@@ -111,6 +111,7 @@ namespace Sando.Parser
 				//comment name doesn't contain non-word characters and is compact-er than its body
                 var commentName = "";
                 commentName = GetCommentSummary(GetCommentText(oneGroup,true));
+                if(string.IsNullOrWhiteSpace(commentName)) { continue; }
 
                 //comments above method or class
                 var lastComment = oneGroup.Last() as XElement;
@@ -124,7 +125,7 @@ namespace Sando.Parser
                 if(programElement!=null)
                 {
                     programElements.Add(new DocCommentElement(commentName, commentLine, programElement.FullFilePath,
-                                                                        RetrieveSnippet(commentText, snippetSize),
+                                                                        RetrieveSource(commentText),
                                                                         commentText, programElement.Id));                    
                     continue;                    
                 }
@@ -136,7 +137,7 @@ namespace Sando.Parser
 				if(methodEl != null)
 				{
 					programElements.Add(new DocCommentElement(commentName, commentLine, methodEl.FullFilePath,
-																RetrieveSnippet(commentText, snippetSize),
+																RetrieveSource(commentText),
 																commentText, methodEl.Id));
 					continue;
 				}
@@ -144,13 +145,13 @@ namespace Sando.Parser
 				if(classEl != null)
 				{
 					programElements.Add(new DocCommentElement(commentName, commentLine, classEl.FullFilePath,
-																RetrieveSnippet(commentText,  snippetSize),
+																RetrieveSource(commentText),
 																commentText, classEl.Id));
 					continue;
 				}
 
 				//comments is not associated with another element, so it's a plain CommentElement
-				programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSnippet(commentText, snippetSize), commentText));
+				programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSource(commentText), commentText));
 			}
 		}
 
@@ -333,50 +334,61 @@ namespace Sando.Parser
 			}
 		}
 
-        public static string RetrieveSnippet(string retrieveSnippet, int numLines)
+        public static string RetrieveSource(string source)
         {
             try
             {
-                string snip = "";
-                string[] lines = retrieveSnippet.Split('\n');
-                if (lines.Length > 0)
+                var snip = new StringBuilder();
+                var lines = source.Replace("\t", "   ").Split('\n').ToList();
+                var prefixToRemove = String.Empty;
+                char[] trimChars = { '\n', '\r' };
+				//if(lines.Count > 1 && numLines > 2)
+                if(lines.Count > 1)
                 {
-                    int count = 0;
-                    foreach (var line in lines)
+                    var secondLine = lines[1].Trim(trimChars);
+                    var match = Regex.Match(secondLine, "(\\s+)");
+                    if(match.Success)
+                        prefixToRemove = match.Groups[0].Value;
+                }
+                if (lines.Count > 0)
+                {
+					//for(int i = 0; i < lines.Count && i < numLines; ++i)
+                    for(int i=0; i<lines.Count; ++i)
                     {
-                        if (count >= numLines)
-                            break;
-                        char[] trim = {'\n', '\r'};
-                        var myLine = line.TrimEnd(trim);
-                        myLine.TrimStart(trim);
-                        snip += myLine + Environment.NewLine;
+                        var line = lines[i].Trim(trimChars);
+                        if(line.StartsWith(prefixToRemove))
+                            line = line.Substring(prefixToRemove.Length);
+                        snip.AppendLine(line);
                     }
                 }
-                return snip;
+                return snip.ToString();
             }
             catch (Exception e)
             {
-                return retrieveSnippet;
+                return source;
             }
         }
 
-		public static string RetrieveSnippet(XElement theThang, int numLines)
+		public static string RetrieveSource(XElement theThang)
 		{
 		    string retrieveSnippet = theThang.Value;
-            return RetrieveSnippet(retrieveSnippet, numLines);
+            return RetrieveSource(retrieveSnippet);
 
 		}
 
-	    public static AccessLevel StrToAccessLevel(string level)
-		{
-            try
+	    public static AccessLevel RetrieveAccessLevel(XElement parent, AccessLevel defautlAccessLevel = AccessLevel.Internal)
+	    {
+	        if (parent == null)
+	            return defautlAccessLevel;
+
+	        var specifierElements = parent.Elements(SourceNamespace + "specifier");
+            foreach (var element in specifierElements)
             {
-                return (AccessLevel) Enum.Parse(typeof (AccessLevel), level, true);
-            }catch(Exception e)
-            {
-                FileLogger.DefaultLogger.Error("Problem parsing access level.  Input was: "+level);
-                return AccessLevel.Internal;
+                AccessLevel accessLevel;
+                if (Enum.TryParse(element.Value, true, out accessLevel))
+                    return accessLevel;
             }
+            return defautlAccessLevel;
 		}
 	}
 }

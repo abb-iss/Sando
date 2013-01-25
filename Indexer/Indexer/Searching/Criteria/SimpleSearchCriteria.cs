@@ -40,6 +40,12 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(" AND ");
 				ProgramElementTypeCriteriaToString(stringBuilder);
 			}
+            if (SearchByFileExtension)
+            {
+                if (stringBuilder.Length > 0)
+                    stringBuilder.Append(" AND ");
+                FileExtensionsCriteriaToString(stringBuilder);
+            }
 			if(SearchByLocation)
 			{
 				if(stringBuilder.Length > 0)
@@ -50,7 +56,7 @@ namespace Sando.Indexer.Searching.Criteria
 			return stringBuilder.ToString();
 		}
 
-		private void AccessLevelCriteriaToString(StringBuilder stringBuilder)
+	    private void AccessLevelCriteriaToString(StringBuilder stringBuilder)
 		{
 			Contract.Requires(AccessLevels != null, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be null!");
 			Contract.Requires(AccessLevels.Count > 0, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be empty!");
@@ -118,6 +124,27 @@ namespace Sando.Indexer.Searching.Criteria
 			stringBuilder.Append(")");
 		}
 
+        private void FileExtensionsCriteriaToString(StringBuilder stringBuilder)
+        {
+            Contract.Requires(FileExtensions != null, "SimpleSearchCriteria:LFileExtensionsCriteriaToString - FileExtensions cannot be null!");
+            Contract.Requires(FileExtensions.Count > 0, "SimpleSearchCriteria:FileExtensionsCriteriaToString - FileExtensions cannot be empty!");
+
+            stringBuilder.Append("(");
+            int collectionSize = FileExtensions.Count;
+            foreach (var fileExtension in FileExtensions)
+            {
+                stringBuilder.Append(SandoField.FileExtension.ToString() + ":");
+                stringBuilder.Append('\"' + fileExtension + '\"');
+                AppendBoostFactor(stringBuilder, SandoField.FileExtension.ToString());
+                if (collectionSize > 1)
+                {
+                    stringBuilder.Append(" OR ");
+                }
+                --collectionSize;
+            }
+            stringBuilder.Append(")");
+        }
+
 		private void UsageTypeCriteriaToString(StringBuilder stringBuilder, bool searchByUsageType)
 		{
 			Contract.Requires(UsageTypes != null, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be null!");
@@ -146,22 +173,21 @@ namespace Sando.Indexer.Searching.Criteria
                 if(searchTermEscaped.StartsWith("-"))
                 {
                     notCondition = true;
-                    searchTermEscaped = searchTerm.Substring(1);
+                    searchTermEscaped = searchTerm.Substring(1);                    
                 }
                 searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
 				int usageTypesLeft = UsageTypes.Count;
 				foreach(UsageType usageType in UsageTypes)
 				{
-                    if(notCondition) 
+                    if(notCondition)
                         stringBuilder.Append(" NOT ");
                     SingleUsageTypeCriteriaToString(stringBuilder, usageType, searchTermEscaped);
-					if(usageTypesLeft > 1)
-					{
-						stringBuilder.Append(" OR ");
+					if(usageTypesLeft > 1 && !notCondition)
+					{                     
+					    stringBuilder.Append(" OR ");
 					}
 					--usageTypesLeft;
 				}
-				//stringBuilder.Append(")"); 
 				if(searchTermsLeft > 1)
 				{
 					stringBuilder.Append(" OR ");
@@ -207,11 +233,6 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(searchTerm);
 					AppendBoostFactor(stringBuilder, SandoField.Name.ToString());
 					break;
-				case UsageType.EnumValues:
-					stringBuilder.Append(SandoField.Values.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.Values.ToString());
-					break;
 				case UsageType.ExtendedClasses:
 					stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
 					stringBuilder.Append(searchTerm);
@@ -242,6 +263,11 @@ namespace Sando.Indexer.Searching.Criteria
 					stringBuilder.Append(searchTerm);
 					AppendBoostFactor(stringBuilder, SandoField.DataType.ToString());
 					break;
+				case UsageType.RawSourceCode:
+					stringBuilder.Append(SandoField.Source.ToString() + ":");
+					stringBuilder.Append(searchTerm);
+					AppendBoostFactor(stringBuilder, SandoField.Source.ToString());
+					break;
 				default:
 					throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
 			}
@@ -267,6 +293,8 @@ namespace Sando.Indexer.Searching.Criteria
 		public virtual SortedSet<UsageType> UsageTypes { get; set; }
 		public virtual bool SearchByLocation { get; set; }
 		public virtual SortedSet<string> Locations { get; set; }
+        public virtual bool SearchByFileExtension { get; set; }
+        public virtual SortedSet<string> FileExtensions { get; set; }
 
 		private Dictionary<string, float> queryWeights;
 	}

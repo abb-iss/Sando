@@ -5,6 +5,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
@@ -12,8 +13,7 @@ using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.CommandBars;
-using log4net;
-using Microsoft.VisualStudio.ExtensionManager;
+using log4net; 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
@@ -87,6 +87,7 @@ namespace Sando.UI
         private ViewManager _viewManager;
 		private SolutionReloadEventListener listener;
 		private IVsUIShellDocumentWindowMgr winmgr;
+        private WindowEvents _windowEvents;
 
         private static UIPackage MyPackage
 		{
@@ -165,10 +166,38 @@ namespace Sando.UI
 
         private void SetUpLifeCycleEvents()
         {
-            var dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+            var dte = GetDte();
             _dteEvents = dte.Events.DTEEvents;
             _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
             _dteEvents.OnStartupComplete += StartupCompleted;
+            _windowEvents = dte.Events.WindowEvents;
+            _windowEvents.WindowActivated += SandoWindowActivated;
+            
+        }
+
+        private void SandoWindowActivated(Window GotFocus, Window LostFocus)
+        {
+            try
+            {
+                if (GotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
+                {
+                    var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+                    if ((null == window) || (null == window.Frame))
+                    {
+                        throw new NotSupportedException(Resources.CanNotCreateWindow);
+                    }
+                    var stw = window as SearchToolWindow;
+                    if (stw != null)
+                    {
+                        stw.GetSearchViewControl().FocusOnText();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(e);
+            }
+            
         }
 
         private void AddCommand()
@@ -186,17 +215,23 @@ namespace Sando.UI
         
         private void StartupCompleted()
         {
-            if (_viewManager.ShouldShow())
-            {
-                _viewManager.ShowSando();
-                _viewManager.ShowToolbar();
-            }
-            RegisterSolutionEvents();
-            Solution openSolution = GetOpenSolution();
-            if(openSolution!=null && !"".Equals(openSolution.FullName)&& _currentMonitor==null)
-            {
-                SolutionHasBeenOpened();
-            }
+        	if (_viewManager.ShouldShow())
+        	{
+        		_viewManager.ShowSando();
+        		_viewManager.ShowToolbar();
+        	}
+
+        	if (GetDte().Version.StartsWith("10"))
+        	{
+				//only need to do this in VS2010, and it breaks things in VS2012
+        		Solution openSolution = GetOpenSolution();
+        		if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+        		{
+        			SolutionHasBeenOpened();
+        		}
+        	}
+
+        	RegisterSolutionEvents();
         }  
 
         private void RegisterSolutionEvents()
@@ -225,6 +260,8 @@ namespace Sando.UI
             if (extensionPointsConfiguration != null)
             {                                
                 ExtensionPointsConfigurationFileReader.WriteConfiguration(GetExtensionPointsConfigurationFilePath(GetExtensionPointsConfigurationDirectory()), extensionPointsConfiguration);
+                //After writing the extension points configuration file, the index state file on disk is out of date; so it needs to be rewritten
+                IndexStateManager.SaveCurrentIndexState(GetExtensionPointsConfigurationDirectory());
             }
             //TODO - kill file processing threads
         }
@@ -232,9 +269,10 @@ namespace Sando.UI
 
         private void SetUpLogger()
         {
-            IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
-            var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
-            pluginDirectory = directoryProvider.GetExtensionDirectory();
+            //IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
+            //var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
+            //pluginDirectory = directoryProvider.GetExtensionDirectory();
+        	pluginDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
             logger = FileLogger.CreateCustomLogger(logFilePath);
             FileLogger.DefaultLogger.Info("pluginDir: "+pluginDirectory);
@@ -343,9 +381,9 @@ namespace Sando.UI
 			}
 		}
 
-        public static Solution GetOpenSolution()
+        public Solution GetOpenSolution()
         {
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+        	var dte = GetDte();
             if (dte != null)
             {
                 var openSolution = dte.Solution;
@@ -519,7 +557,9 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
                 bool isIndexRecreationRequired =
                     IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
-                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired, GetOpenSolution());
+                //SwumManager needs to be initialized after the current solution key is set, but before monitoring/indexing begins
+                Recommender.SwumManager.Instance.Initialize(PluginDirectory(), this.GetCurrentSolutionKey().GetIndexPath(), !isIndexRecreationRequired);
                 _currentMonitor.StartMonitoring();
                 _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
             }
@@ -555,28 +595,6 @@ namespace Sando.UI
 			return MyPackage;
 		}
 
-
-        private class ExtensionDirectoryProvider
-        {
-            //TODO - there must be a better way to do this?
-
-            private IVsExtensionManager _myMan;
-
-            public ExtensionDirectoryProvider(IVsExtensionManager vsExtensionManager)
-            {
-                _myMan = vsExtensionManager;
-            }
-
-            private IInstalledExtension GetExtension(string identifier)
-            {
-                return _myMan.GetInstalledExtension(identifier);
-            }
-
-            internal string GetExtensionDirectory()
-            {                
-                return GetExtension("7e03caf3-06ed-4ff5-962a-effa1fb2f383").InstallPath;
-            }
-        }
 
 
     	#endregion

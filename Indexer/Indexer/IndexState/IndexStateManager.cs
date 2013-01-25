@@ -13,15 +13,34 @@ namespace Sando.Indexer.IndexState
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public static bool IsIndexRecreationRequired(string extensionPointsConfigurationPath)
 		{
-			string indexDirectoryPath = Assembly.GetCallingAssembly().Location;
-			indexDirectoryPath = Directory.GetParent(indexDirectoryPath).FullName;
-			string indexStatePath = Path.Combine(indexDirectoryPath, IndexStateFileName);
-			IndexState previousIndexState = readPreviousIndexState(indexStatePath);
-			IndexState currentIndexState = readCurrentIndexState(indexDirectoryPath, extensionPointsConfigurationPath);
+			if(string.IsNullOrEmpty(IndexDirectoryPath) || string.IsNullOrEmpty(IndexStatePath)) 
+			{
+				ConstructIndexPaths();
+			}
+			IndexState previousIndexState = readPreviousIndexState(IndexStatePath);
+			IndexState currentIndexState = readCurrentIndexState(IndexDirectoryPath, extensionPointsConfigurationPath);
 			bool result = previousIndexState == null || !previousIndexState.Equals(currentIndexState);
-			saveIndexState(currentIndexState, indexStatePath);
+			saveIndexState(currentIndexState, IndexStatePath);
 			return result;
 		}
+
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public static void SaveCurrentIndexState(string extensionPointsConfigurationPath) 
+		{
+			if(string.IsNullOrEmpty(IndexDirectoryPath) || string.IsNullOrEmpty(IndexStatePath)) 
+			{
+				ConstructIndexPaths();
+			}
+			IndexState currentIndexState = readCurrentIndexState(IndexDirectoryPath, extensionPointsConfigurationPath);
+			saveIndexState(currentIndexState, IndexStatePath);
+		}
+
+		private static void ConstructIndexPaths() {
+			string assemblyPath = Assembly.GetCallingAssembly().Location;
+			IndexDirectoryPath = Directory.GetParent(assemblyPath).FullName;
+			IndexStatePath = Path.Combine(IndexDirectoryPath, IndexStateFileName);
+		}
+
 
 		private static IndexState readPreviousIndexState(string indexStatePath)
 		{
@@ -90,6 +109,8 @@ namespace Sando.Indexer.IndexState
 			}
 		}
 
+		private static string IndexDirectoryPath;
+		private static string IndexStatePath;
 		private static string IndexStateFileName = "sandoindexstate.xml";
 	}
 }

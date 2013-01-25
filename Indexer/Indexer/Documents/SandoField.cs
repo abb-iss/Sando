@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Sando.Indexer.Documents
+﻿namespace Sando.Indexer.Documents
 {    
-
 	public enum SandoField
 	{
 		AccessLevel,
@@ -17,6 +11,7 @@ namespace Sando.Indexer.Documents
 		DefinitionLineNumber,
 		DocumentedElementId,
 		ExtendedClasses,
+        FileExtension,
 		FullFilePath,
 		Id,
 		ImplementedInterfaces,
@@ -26,8 +21,7 @@ namespace Sando.Indexer.Documents
 		Namespace,
 		ProgramElementType,
 		ReturnType,
-		Snippet,
-		Modifiers,
-		Values
+		Source,
+		Modifiers
 	}
 }

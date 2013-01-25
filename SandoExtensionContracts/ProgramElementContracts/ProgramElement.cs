@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Reflection;
 
 namespace Sando.ExtensionContracts.ProgramElementContracts
@@ -30,7 +31,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
             Id = Guid.NewGuid();
             DefinitionLineNumber = definitionLineNumber;
             FullFilePath = fullFilePath;
-            Snippet = snippet;
+            RawSource = snippet;
             Name = name;
         }
 
@@ -52,7 +53,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
         public virtual Guid Id { get; private set; }
         public virtual int DefinitionLineNumber { get; private set; }
         public virtual string FullFilePath { get; private set; }
-        public virtual string Snippet { get; private set; }
+        public virtual string RawSource { get; private set; }
         public virtual ProgramElementType ProgramElementType
         {
             get
@@ -60,7 +61,12 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
                 return ProgramElementType.Custom;
             }
         }
-    
+
+        public string FileExtension
+        {
+            get { return Path.GetExtension(FullFilePath); }
+        }
+
 
         public List<PropertyInfo> GetCustomProperties()
         {
