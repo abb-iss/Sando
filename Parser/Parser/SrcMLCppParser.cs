@@ -66,13 +66,13 @@ namespace Sando.Parser
             ParseClasses(programElements, sourceElements, fileName);
             ParseStructs(programElements, sourceElements, fileName);
 
-            SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
-            ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
+            SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName);
+            ParseCppEnums(programElements, sourceElements, fileName);
             ParseConstructors(programElements, sourceElements, fileName);
             ParseFunctions(programElements, sourceElements, fileName);
             ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
             ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
-            SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
+            SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName);
 
             return programElements;
         }
@@ -91,13 +91,13 @@ namespace Sando.Parser
                 ParseClasses(programElements, sourceElements, fileName);
                 ParseStructs(programElements, sourceElements, fileName);
 
-                SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
-                ParseCppEnums(programElements, sourceElements, fileName, SnippetSize);
+                SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName);
+                ParseCppEnums(programElements, sourceElements, fileName);
                 ParseConstructors(programElements, sourceElements, fileName);
                 ParseFunctions(programElements, sourceElements, fileName);
                 ParseCppFunctionPrototypes(programElements, sourceElements, fileName);
                 ParseCppConstructorPrototypes(programElements, sourceElements, fileName);
-                SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
+                SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName);
             }
 
             return programElements;
@@ -158,7 +158,7 @@ namespace Sando.Parser
             string fullFilePath = System.IO.Path.GetFullPath(fileName);
             string source = SrcMLParsingUtils.RetrieveSource(function);
 
-            return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor);
+            return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, source, isConstructor);
         }
 
 
@@ -289,7 +289,7 @@ namespace Sando.Parser
                                                 string[] includedFiles, Type resolvedType, Type unresolvedType, bool isConstructor = false)
         {
             MethodElement methodElement = null;
-            string snippet = String.Empty;
+            string source = String.Empty;
             int definitionLineNumber = 0;
             string returnType = String.Empty;
 
@@ -326,7 +326,7 @@ namespace Sando.Parser
                 definitionLineNumber = Int32.Parse(nameElement.Element(SourceNamespace + "name").Attribute(PositionNamespace + "line").Value);
                 source = SrcMLParsingUtils.RetrieveSource(function);
 
-                return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body,
+                return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, fullFilePath, source, arguments, returnType, body,
                                                         className, isConstructor, includedFiles) as MethodElement;
             }
             else
@@ -359,7 +359,7 @@ namespace Sando.Parser
             return methodElement;
         }
 
-        public static void ParseCppEnums(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
+        public static void ParseCppEnums(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> enums =
                 from el in elements.Descendants(SourceNamespace + "enum")
@@ -423,7 +423,7 @@ namespace Sando.Parser
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string source = SrcMLParsingUtils.RetrieveSource(enm);
 
-                programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
+                programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName, values));
             }
         }
 

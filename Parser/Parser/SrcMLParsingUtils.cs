@@ -16,55 +16,55 @@ namespace Sando.Parser
 		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
 		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
 
-		public static void ParseFields(List<ProgramElement> programElements, XElement elements, string fileName)
-		{
-			IEnumerable<XElement> fields =
-				from el in elements.Descendants(SourceNamespace + "class")
-				select el.Element(SourceNamespace + "block");
+        public static void ParseFields(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
+            IEnumerable<XElement> fields =
+                from el in elements.Descendants(SourceNamespace + "class")
+                select el.Element(SourceNamespace + "block");
 
-			fields =
-				from el in fields.Elements(SourceNamespace + "decl_stmt").Elements(SourceNamespace + "decl")
-				where el.Element(SourceNamespace + "name") != null &&
-						el.Element(SourceNamespace + "type") != null &&
-						(
-							(el.Element(SourceNamespace + "init") != null && el.Elements().Count() == 3) ||
-							el.Elements().Count() == 2
-						)
-				select el;
+            fields =
+                from el in fields.Elements(SourceNamespace + "decl_stmt").Elements(SourceNamespace + "decl")
+                where el.Element(SourceNamespace + "name") != null &&
+                        el.Element(SourceNamespace + "type") != null &&
+                        (
+                            (el.Element(SourceNamespace + "init") != null && el.Elements().Count() == 3) ||
+                            el.Elements().Count() == 2
+                        )
+                select el;
 
-			foreach(XElement field in fields)
-			{
-				string name;
-				int definitionLineNumber;
-				SrcMLParsingUtils.ParseNameAndLineNumber(field, out name, out definitionLineNumber);
+            foreach (XElement field in fields)
+            {
+                string name;
+                int definitionLineNumber;
+                SrcMLParsingUtils.ParseNameAndLineNumber(field, out name, out definitionLineNumber);
 
-				ClassElement classElement = RetrieveClassElement(field, programElements);
-				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
-				string className = classElement != null ? classElement.Name : String.Empty;
+                ClassElement classElement = RetrieveClassElement(field, programElements);
+                Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+                string className = classElement != null ? classElement.Name : String.Empty;
 
-				//parse access level and type
-			    var typeElement = field.Element(SourceNamespace + "type");
-			    AccessLevel accessLevel = RetrieveAccessLevel(typeElement);
+                //parse access level and type
+                var typeElement = field.Element(SourceNamespace + "type");
+                AccessLevel accessLevel = RetrieveAccessLevel(typeElement);
 
-				IEnumerable<XElement> types = typeElement.Elements(SourceNamespace + "name");
-				string fieldType = String.Empty;
-				foreach(XElement type in types)
-				{
-					fieldType += type.Value + " ";
-				}
-				fieldType = fieldType.TrimEnd();
+                IEnumerable<XElement> types = typeElement.Elements(SourceNamespace + "name");
+                string fieldType = String.Empty;
+                foreach (XElement type in types)
+                {
+                    fieldType += type.Value + " ";
+                }
+                fieldType = fieldType.TrimEnd();
 
-				string initialValue = String.Empty;
-				XElement initialValueElement = field.Element(SourceNamespace + "init");
-				if(initialValueElement != null)
-					initialValue = initialValueElement.Element(SourceNamespace + "expr").Value;
+                string initialValue = String.Empty;
+                XElement initialValueElement = field.Element(SourceNamespace + "init");
+                if (initialValueElement != null)
+                    initialValue = initialValueElement.Element(SourceNamespace + "expr").Value;
 
-				string fullFilePath = System.IO.Path.GetFullPath(fileName);
+                string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string snippet = RetrieveSource(field);
 
-				programElements.Add(new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue));
-			}
-		}
+                programElements.Add(new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue));
+            }
+        }
 
 		public static void ParseComments(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
@@ -375,6 +375,8 @@ namespace Sando.Parser
             return RetrieveSource(retrieveSnippet);
 
 		}
+
+        
 
 	    public static AccessLevel RetrieveAccessLevel(XElement parent, AccessLevel defautlAccessLevel = AccessLevel.Internal)
 	    {
