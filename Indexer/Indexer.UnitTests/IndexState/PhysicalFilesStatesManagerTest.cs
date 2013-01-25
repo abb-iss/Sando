@@ -13,46 +13,22 @@ namespace Sando.Indexer.UnitTests.IndexState
     	[Test]
 		public void PhysicalFilesStatesManager_GetPhysicalFileStateThrowsWhenFullFilePathIsNull()
 		{
-			try
-			{
 				PhysicalFilesStatesManager physicalFilesStatesManager = new PhysicalFilesStatesManager();
-				physicalFilesStatesManager.GetPhysicalFileState(null);
-			}
-			catch 
-			{
-				//contract exception catched here
-			}
-			Assert.True(contractFailed, "Contract should fail!");
+				Assert.True(physicalFilesStatesManager.GetPhysicalFileState(null)==null);
 		}
 
 		[Test]
 		public void PhysicalFilesStatesManager_GetPhysicalFileStateThrowsWhenFullFilePathIsAnEmptyString()
 		{
-			try
-			{
 				PhysicalFilesStatesManager physicalFilesStatesManager = new PhysicalFilesStatesManager();
-				physicalFilesStatesManager.GetPhysicalFileState(String.Empty);
-			}
-			catch
-			{
-				//contract exception catched here
-			}
-			Assert.True(contractFailed, "Contract should fail!");
+				Assert.True(physicalFilesStatesManager.GetPhysicalFileState(String.Empty)==null);
 		}
 
 		[Test]
 		public void PhysicalFilesStatesManager_GetPhysicalFileStateThrowsWhenFileDoesNotExists()
 		{
-			try
-			{
 				PhysicalFilesStatesManager physicalFilesStatesManager = new PhysicalFilesStatesManager();
-				physicalFilesStatesManager.GetPhysicalFileState("Fake path");
-			}
-			catch
-			{
-				//contract exception catched here
-			}
-			Assert.True(contractFailed, "Contract should fail!");
+                Assert.True(physicalFilesStatesManager.GetPhysicalFileState("Fake path")==null);
 		}
 
 		[Test]

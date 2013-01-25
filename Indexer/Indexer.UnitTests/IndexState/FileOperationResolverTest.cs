@@ -11,16 +11,8 @@ namespace Sando.Indexer.UnitTests.IndexState
     	[Test]
 		public void FileOperationResolver_ResolveRequiredOperationThrowsWhenPhysicalFileStateIsNull()
 		{
-			try
-			{
 				FileOperationResolver fileOperationResolver = new FileOperationResolver();
-				fileOperationResolver.ResolveRequiredOperation(null, null);
-			}
-			catch 
-			{
-				//contract exception catched here
-			}
-			Assert.True(contractFailed, "Contract should fail!");
+				Assert.True(IndexOperation.Add==fileOperationResolver.ResolveRequiredOperation(null, null));
 		}
 
 		[Test]
