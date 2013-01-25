@@ -9,27 +9,25 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser
 {
-	public class SrcMLCSharpParser : IParser
-	{
-        // Code added by JZ: solution monitor integration
-        // TODO: Do not need this srcML generator any more.
+    public class SrcMLCSharpParser : IParser
+    {
         private readonly SrcMLGenerator Generator;
-		// End of code changes
         private static readonly int SnippetSize = 5;
-		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
-		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
+        private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
+        private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
 
-	    public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
+        public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
 
-        public SrcMLCSharpParser():this(null)
+        public SrcMLCSharpParser()
+            : this(null)
         {
-            
+
         }
 
-	    public SrcMLCSharpParser(string pluginDirectory = null)
-		{
-			//try to set this up automatically			
-			Generator = new SrcMLGenerator(LanguageEnum.CSharp);
+        public SrcMLCSharpParser(string pluginDirectory = null)
+        {
+            //try to set this up automatically			
+            Generator = new SrcMLGenerator(LanguageEnum.CSharp);
             if (pluginDirectory != null)
                 Generator.SetSrcMLLocation(pluginDirectory);
             else
@@ -42,52 +40,52 @@ namespace Sando.Parser
                 {
                     FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
                 }
-            }	        
-		}
+            }
+        }
 
         public void SetSrcMLPath(string getSrcMlDirectory)
         {
             if (getSrcMlDirectory.EndsWith("srcML-Win") || getSrcMlDirectory.EndsWith("srcML-Win\\"))
                 getSrcMlDirectory = getSrcMlDirectory.Replace("srcML-Win", "srcML-Win-cSharp");
             if (getSrcMlDirectory.EndsWith("LIBS") || getSrcMlDirectory.EndsWith("LIBS\\"))
-                getSrcMlDirectory = Path.Combine(getSrcMlDirectory, "srcML-Win-cSharp");            
+                getSrcMlDirectory = Path.Combine(getSrcMlDirectory, "srcML-Win-cSharp");
             Generator.SetSrcMLLocation(getSrcMlDirectory);
         }
 
-		public List<ProgramElement> Parse(string fileName)
-		{
-			var programElements = new List<ProgramElement>();
-			string srcml = Generator.GenerateSrcML(fileName);
+        public List<ProgramElement> Parse(string fileName)
+        {
+            var programElements = new List<ProgramElement>();
+            string srcml = Generator.GenerateSrcML(fileName);
 
-			if(srcml != String.Empty)
-			{
+            if (srcml != String.Empty)
+            {
                 XElement sourceElements = XElement.Parse(srcml, LoadOptions.PreserveWhitespace);
 
-				//classes and structs have to be parsed first
-				ParseClasses(programElements, sourceElements, fileName);
+                //classes and structs have to be parsed first
+                ParseClasses(programElements, sourceElements, fileName);
                 ParseStructs(programElements, sourceElements, fileName);
 
-				ParseEnums(programElements, sourceElements, fileName, SnippetSize);
-				SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
-				ParseConstructors(programElements, sourceElements, fileName);
-				ParseMethods(programElements, sourceElements, fileName);
-				ParseProperties(programElements, sourceElements, fileName);
-				SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
-			}
+                ParseEnums(programElements, sourceElements, fileName, SnippetSize);
+                SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName, SnippetSize);
+                ParseConstructors(programElements, sourceElements, fileName);
+                ParseMethods(programElements, sourceElements, fileName);
+                ParseProperties(programElements, sourceElements, fileName);
+                SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName, SnippetSize);
+            }
 
-			return programElements;
-		}
+            return programElements;
+        }
 
         // Code changed by JZ: solution monitor integration
         /// <summary>
         /// New Parse method that takes both source file path and the XElement representation of the source file as input arguments.
+        /// TODO: what if the XElement is null?
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="sourceElements"></param>
         /// <returns></returns>
         public List<ProgramElement> Parse(string fileName, XElement sourceElements)
         {
-            writeLog("D:\\Data\\log.txt", "SrcMLCSharpParser.Parse(): " + fileName);
             var programElements = new List<ProgramElement>();
 
             //classes and structs have to be parsed first
@@ -105,66 +103,66 @@ namespace Sando.Parser
         }
         // End of code changes
 
-		private void ParseProperties(List<ProgramElement> programElements, XElement elements, string fileName)
-		{
-			IEnumerable<XElement> props =
-				from el in elements.Descendants(SourceNamespace + "decl")
-				where el.Element(SourceNamespace + "name") != null &&
-					  el.Element(SourceNamespace + "type") != null &&
-					  el.Element(SourceNamespace + "block") != null &&
-					  el.Elements().Count() == 3
-				select el;
+        private void ParseProperties(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
+            IEnumerable<XElement> props =
+                from el in elements.Descendants(SourceNamespace + "decl")
+                where el.Element(SourceNamespace + "name") != null &&
+                      el.Element(SourceNamespace + "type") != null &&
+                      el.Element(SourceNamespace + "block") != null &&
+                      el.Elements().Count() == 3
+                select el;
 
-			foreach(XElement prop in props)
-			{
-				string name;
-				int definitionLineNumber;
-				SrcMLParsingUtils.ParseNameAndLineNumber(prop, out name, out definitionLineNumber);
+            foreach (XElement prop in props)
+            {
+                string name;
+                int definitionLineNumber;
+                SrcMLParsingUtils.ParseNameAndLineNumber(prop, out name, out definitionLineNumber);
 
-				ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(prop, programElements);
-				Guid classId = classElement != null ? classElement.Id : Guid.Empty;
-				string className = classElement != null ? classElement.Name : String.Empty;
+                ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(prop, programElements);
+                Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+                string className = classElement != null ? classElement.Name : String.Empty;
 
-				//parse access level and type
-				XElement accessElement = prop.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
-				AccessLevel accessLevel = accessElement != null ? SrcMLParsingUtils.StrToAccessLevel(accessElement.Value) : AccessLevel.Internal;
+                //parse access level and type
+                XElement accessElement = prop.Element(SourceNamespace + "type").Element(SourceNamespace + "specifier");
+                AccessLevel accessLevel = accessElement != null ? SrcMLParsingUtils.StrToAccessLevel(accessElement.Value) : AccessLevel.Internal;
 
-				IEnumerable<XElement> types = prop.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+                IEnumerable<XElement> types = prop.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
 
-				//oops, namespaces have the same structure in srcml so need this check
-				if(types.Count() == 0 || types.First().Value == "namespace") continue;
+                //oops, namespaces have the same structure in srcml so need this check
+                if (types.Count() == 0 || types.First().Value == "namespace") continue;
 
-				string propertyType = String.Empty;
-				foreach(XElement type in types)
-				{
-					propertyType += type.Value + " ";
-				}
-				propertyType = propertyType.TrimEnd();
+                string propertyType = String.Empty;
+                foreach (XElement type in types)
+                {
+                    propertyType += type.Value + " ";
+                }
+                propertyType = propertyType.TrimEnd();
 
-				string body = SrcMLParsingUtils.ParseBody(prop);
+                string body = SrcMLParsingUtils.ParseBody(prop);
 
-				string fullFilePath = System.IO.Path.GetFullPath(fileName);
+                string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string snippet = SrcMLParsingUtils.RetrieveSnippet(prop, SnippetSize);
 
-				programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, String.Empty));
-			}
-		}
+                programElements.Add(new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, String.Empty));
+            }
+        }
 
-		private void ParseClasses(List<ProgramElement> programElements, XElement elements, string fileName)
-		{
-			IEnumerable<XElement> classes =
-				from el in elements.Descendants(SourceNamespace + "class")
-				select el;
-			foreach(XElement cls in classes)
-			{
+        private void ParseClasses(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
+            IEnumerable<XElement> classes =
+                from el in elements.Descendants(SourceNamespace + "class")
+                select el;
+            foreach (XElement cls in classes)
+            {
                 programElements.Add(ParseClass(cls, fileName));
-			}
-		}
+            }
+        }
 
         private void ParseStructs(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> structs =
-				from el in elements.Descendants(SourceNamespace + "struct")
+                from el in elements.Descendants(SourceNamespace + "struct")
                 //where el.Element(SourceNamespace + "type") != null &&
                 //      el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
                 //      el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "struct"
@@ -182,17 +180,17 @@ namespace Sando.Parser
             SrcMLParsingUtils.ParseNameAndLineNumber(strct, out name, out definitionLineNumber);
 
             AccessLevel accessLevel = AccessLevel.Public; //default
-			XElement accessElement = strct.Element(SourceNamespace + "specifier");
-			if(accessElement != null)
-			{
-				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
-			}
+            XElement accessElement = strct.Element(SourceNamespace + "specifier");
+            if (accessElement != null)
+            {
+                accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
+            }
 
             var anc = strct.Ancestors();
             var x = anc;
             //parse namespace
             IEnumerable<XElement> ownerNamespaces =
-                from el in strct.Ancestors(SourceNamespace + "namespace")                
+                from el in strct.Ancestors(SourceNamespace + "namespace")
                 select el;
             string namespaceName = String.Empty;
             foreach (XElement ownerNamespace in ownerNamespaces)
@@ -213,122 +211,123 @@ namespace Sando.Parser
             return new StructElement(name, definitionLineNumber, fileName, snippet, accessLevel, namespaceName, extendedStructs, String.Empty);
         }
 
-		private ClassElement ParseClass(XElement cls, string fileName)
-		{
-			string name;
-			int definitionLineNumber;
-			SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
+        private ClassElement ParseClass(XElement cls, string fileName)
+        {
+            string name;
+            int definitionLineNumber;
+            SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
 
-			AccessLevel accessLevel = AccessLevel.Public; //default
-			XElement accessElement = cls.Element(SourceNamespace + "specifier");
-			if(accessElement != null)
-			{
-				accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
-			}
+            AccessLevel accessLevel = AccessLevel.Public; //default
+            XElement accessElement = cls.Element(SourceNamespace + "specifier");
+            if (accessElement != null)
+            {
+                accessLevel = SrcMLParsingUtils.StrToAccessLevel(accessElement.Value);
+            }
 
-			//parse namespace
-			IEnumerable<XElement> ownerNamespaces =
-				from el in cls.Ancestors(SourceNamespace + "namespace")				
-				select el;
-			string namespaceName = String.Empty;
-			foreach(XElement ownerNamespace in ownerNamespaces)
-			{
-				foreach(XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
-				{
-					namespaceName += spc.Value + " ";
-				}
-			}
-			namespaceName = namespaceName.TrimEnd();
+            //parse namespace
+            IEnumerable<XElement> ownerNamespaces =
+                from el in cls.Ancestors(SourceNamespace + "namespace")
+                select el;
+            string namespaceName = String.Empty;
+            foreach (XElement ownerNamespace in ownerNamespaces)
+            {
+                foreach (XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+                {
+                    namespaceName += spc.Value + " ";
+                }
+            }
+            namespaceName = namespaceName.TrimEnd();
 
-			//parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
-			string extendedClasses = String.Empty;
-			XElement super = cls.Element(SourceNamespace + "super");
-			if(super != null)
-			{				
-					IEnumerable<XElement> impNames =
-                        from el in super.Descendants(SourceNamespace + "name")
-						select el;
-					foreach(XElement impName in impNames)
-					{
-						extendedClasses += impName.Value + " ";
-					}
-					extendedClasses = extendedClasses.TrimEnd();				
-			}
-			//interfaces are treated as extended classes in SrcML for now
-			string implementedInterfaces = String.Empty;
+            //parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
+            string extendedClasses = String.Empty;
+            XElement super = cls.Element(SourceNamespace + "super");
+            if (super != null)
+            {
+                IEnumerable<XElement> impNames =
+                    from el in super.Descendants(SourceNamespace + "name")
+                    select el;
+                foreach (XElement impName in impNames)
+                {
+                    extendedClasses += impName.Value + " ";
+                }
+                extendedClasses = extendedClasses.TrimEnd();
+            }
+            //interfaces are treated as extended classes in SrcML for now
+            string implementedInterfaces = String.Empty;
 
-			string fullFilePath = System.IO.Path.GetFullPath(fileName);
+            string fullFilePath = System.IO.Path.GetFullPath(fileName);
             string snippet = SrcMLParsingUtils.RetrieveSnippet(cls, SnippetSize);
 
-		    string body = cls.Value;
-		    return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty, body );
-		}
+            string body = cls.Value;
+            return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, String.Empty, body);
+        }
 
-		private void ParseConstructors(List<ProgramElement> programElements, XElement elements, string fileName)
-		{
-			IEnumerable<XElement> constructors =
-				from el in elements.Descendants(SourceNamespace + "constructor")
-				select el;
-			foreach(XElement cons in constructors)
-			{
-				programElements.Add(ParseMethod(cons, programElements, fileName, true));
-			}
-		}
+        private void ParseConstructors(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
+            IEnumerable<XElement> constructors =
+                from el in elements.Descendants(SourceNamespace + "constructor")
+                select el;
+            foreach (XElement cons in constructors)
+            {
+                programElements.Add(ParseMethod(cons, programElements, fileName, true));
+            }
+        }
 
-		private void ParseMethods(List<ProgramElement> programElements, XElement elements, string fileName)
-		{
+        private void ParseMethods(List<ProgramElement> programElements, XElement elements, string fileName)
+        {
             IEnumerable<XElement> functions =
                 from el in elements.Descendants(SourceNamespace + "function")
-                where el.Element(SourceNamespace + "name") != null                 
+                where el.Element(SourceNamespace + "name") != null
                 select el;
-			foreach(XElement func in functions)
-			{
-				programElements.Add(ParseMethod(func, programElements, fileName));
-			}
-		}
+            foreach (XElement func in functions)
+            {
+                programElements.Add(ParseMethod(func, programElements, fileName));
+            }
+        }
 
         private MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, bool isConstructor = false)
         {
-            return ParseMethod(method, programElements, fileName, typeof (MethodElement), isConstructor);
+            return ParseMethod(method, programElements, fileName, typeof(MethodElement), isConstructor);
         }
 
-		public virtual MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, Type myType, bool isConstructor = false)
-		{
-			string name = String.Empty;
-			int definitionLineNumber = 0;
-			string returnType = String.Empty;
+        public virtual MethodElement ParseMethod(XElement method, List<ProgramElement> programElements, string fileName, Type myType, bool isConstructor = false)
+        {
+            string name = String.Empty;
+            int definitionLineNumber = 0;
+            string returnType = String.Empty;
 
-			SrcMLParsingUtils.ParseNameAndLineNumber(method, out name, out definitionLineNumber);
+            SrcMLParsingUtils.ParseNameAndLineNumber(method, out name, out definitionLineNumber);
 
-			AccessLevel accessLevel = AccessLevel.Protected; //default
-			XElement type = method.Element(SourceNamespace + "type");
-			if(type != null)
-			{
-				XElement access = type.Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-				}
+            AccessLevel accessLevel = AccessLevel.Protected; //default
+            XElement type = method.Element(SourceNamespace + "type");
+            if (type != null)
+            {
+                XElement access = type.Element(SourceNamespace + "specifier");
+                if (access != null)
+                {
+                    accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
+                }
 
-				XElement typeName = type.Element(SourceNamespace + "name");
+                XElement typeName = type.Element(SourceNamespace + "name");
                 if (typeName != null)
                 {
                     returnType = typeName.Value;
-                }else
+                }
+                else
                 {
                     returnType = "void";
                 }
-			}
-			else
-			{
-				XElement access = method.Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-				}
-			}
+            }
+            else
+            {
+                XElement access = method.Element(SourceNamespace + "specifier");
+                if (access != null)
+                {
+                    accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
+                }
+            }
 
-            if(String.IsNullOrEmpty(returnType))
+            if (String.IsNullOrEmpty(returnType))
             {
                 if (name.Equals("get"))
                 {
@@ -338,7 +337,8 @@ namespace Sando.Parser
                             method.Ancestors(SourceNamespace + "decl_stmt").Descendants(SourceNamespace + "decl").
                                 Descendants(SourceNamespace + "type").Elements(SourceNamespace + "name");
                         returnType = myName.First().Value;
-                    }catch(NullReferenceException nre)
+                    }
+                    catch (NullReferenceException nre)
                     {
                         returnType = "";
                     }
@@ -346,7 +346,8 @@ namespace Sando.Parser
                 else if (name.Equals("set"))
                 {
                     returnType = "void";
-                }else if(name.Equals("add")||name.Equals("remove"))
+                }
+                else if (name.Equals("add") || name.Equals("remove"))
                 {
                     try
                     {
@@ -358,13 +359,13 @@ namespace Sando.Parser
                     catch (NullReferenceException nre)
                     {
                         returnType = "";
-                    }   
+                    }
                 }
             }
 
 
-			//parse arguments
-			XElement paramlist = method.Element(SourceNamespace + "parameter_list");
+            //parse arguments
+            XElement paramlist = method.Element(SourceNamespace + "parameter_list");
             string arguments = String.Empty;
             if (paramlist != null)
             {
@@ -377,96 +378,81 @@ namespace Sando.Parser
                     arguments += elem.Value + " ";
                 }
             }
-		    arguments = arguments.TrimEnd();
+            arguments = arguments.TrimEnd();
 
-			string body = SrcMLParsingUtils.ParseBody(method);
+            string body = SrcMLParsingUtils.ParseBody(method);
 
-			ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(method, programElements);
-			Guid classId = classElement != null ? classElement.Id : Guid.Empty;
-			string className = classElement != null ? classElement.Name : String.Empty;
+            ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(method, programElements);
+            Guid classId = classElement != null ? classElement.Id : Guid.Empty;
+            string className = classElement != null ? classElement.Name : String.Empty;
 
-			string fullFilePath = System.IO.Path.GetFullPath(fileName);
+            string fullFilePath = System.IO.Path.GetFullPath(fileName);
 
             string snippet = SrcMLParsingUtils.RetrieveSnippet(method, SnippetSize);
 
             return Activator.CreateInstance(myType, name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body,
-                                        classId, className, String.Empty, isConstructor) as MethodElement;			
-		}
+                                        classId, className, String.Empty, isConstructor) as MethodElement;
+        }
 
 
-		public static void ParseEnums(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
-		{
-			IEnumerable<XElement> enums =
-				from el in elements.Descendants(SourceNamespace + "enum")
-				select el;
+        public static void ParseEnums(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
+        {
+            IEnumerable<XElement> enums =
+                from el in elements.Descendants(SourceNamespace + "enum")
+                select el;
 
-			foreach(XElement enm in enums)
-			{
-				AccessLevel accessLevel = AccessLevel.Public; //default
-				XElement access = enm.Element(SourceNamespace + "specifier");
-				if(access != null)
-				{
-					accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
-				}
+            foreach (XElement enm in enums)
+            {
+                AccessLevel accessLevel = AccessLevel.Public; //default
+                XElement access = enm.Element(SourceNamespace + "specifier");
+                if (access != null)
+                {
+                    accessLevel = SrcMLParsingUtils.StrToAccessLevel(access.Value);
+                }
 
-				string name;
-				int definitionLineNumber;
-				SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber);
+                string name;
+                int definitionLineNumber;
+                SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber);
 
-				//parse namespace
-				IEnumerable<XElement> ownerNamespaces =
-					from el in enm.Ancestors(SourceNamespace + "namespace")
-					select el;
-				string namespaceName = String.Empty;
-				foreach(XElement ownerNamespace in ownerNamespaces)
-				{
-					foreach(XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
-					{
-						namespaceName += spc.Value + " ";
-					}
-				}
-				namespaceName = namespaceName.TrimEnd();
+                //parse namespace
+                IEnumerable<XElement> ownerNamespaces =
+                    from el in enm.Ancestors(SourceNamespace + "namespace")
+                    select el;
+                string namespaceName = String.Empty;
+                foreach (XElement ownerNamespace in ownerNamespaces)
+                {
+                    foreach (XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+                    {
+                        namespaceName += spc.Value + " ";
+                    }
+                }
+                namespaceName = namespaceName.TrimEnd();
 
-				//parse values
-				XElement block = enm.Element(SourceNamespace + "block");
-				string values = String.Empty;
-				if(block != null)
-				{
-					IEnumerable<XElement> exprs =
-						from el in block.Descendants(SourceNamespace + "expr")
-						select el;
-					foreach(XElement expr in exprs)
-					{
-						IEnumerable<XElement> enames = expr.Elements(SourceNamespace + "name");
-						foreach(XElement ename in enames)
-						{
-							values += ename.Value + " ";
-						}
-					}
-					values = values.TrimEnd();
-				}
+                //parse values
+                XElement block = enm.Element(SourceNamespace + "block");
+                string values = String.Empty;
+                if (block != null)
+                {
+                    IEnumerable<XElement> exprs =
+                        from el in block.Descendants(SourceNamespace + "expr")
+                        select el;
+                    foreach (XElement expr in exprs)
+                    {
+                        IEnumerable<XElement> enames = expr.Elements(SourceNamespace + "name");
+                        foreach (XElement ename in enames)
+                        {
+                            values += ename.Value + " ";
+                        }
+                    }
+                    values = values.TrimEnd();
+                }
 
-				string fullFilePath = System.IO.Path.GetFullPath(fileName);
+                string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string snippet = SrcMLParsingUtils.RetrieveSnippet(enm, snippetSize);
 
-				programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
-			}
-		}
-
-
-        // Code changed by JZ: solution monitor integration
-        /// <summary>
-        /// For debugging.
-        /// </summary>
-        /// <param name="logFile"></param>
-        /// <param name="str"></param>
-        private void writeLog(string logFile, string str)
-        {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
+                programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, values));
+            }
         }
-        // End of code changes
     }
 
 }

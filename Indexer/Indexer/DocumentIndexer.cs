@@ -57,15 +57,12 @@ namespace Sando.Indexer
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
 
-            writeLog("D:\\Data\\log.txt", "--- DI.AddDocument() ---");
             IndexWriter.AddDocument(sandoDocument.GetDocument());
 		}
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void DeleteDocuments(string fullFilePath)
         {
-            writeLog("D:\\Data\\log.txt", "--- DI.DeleteDocuments() ---");
-
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
             var term = new Term("FullFilePath", SandoDocument.StandardizeFilePath(fullFilePath));
@@ -75,8 +72,6 @@ namespace Sando.Indexer
         [MethodImpl(MethodImplOptions.Synchronized)]
 		public void CommitChanges()
 		{
-            writeLog("D:\\Data\\log.txt", "--- DI.CommitChanges() ---");
-            
             IndexWriter.Commit();
 			UpdateReader();
 			NotifyIndexUpdateListeners();
@@ -85,8 +80,6 @@ namespace Sando.Indexer
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void ClearIndex()
 		{
-            writeLog("D:\\Data\\log.txt", "--- DI.ClearIndex() ---");
-
             IndexWriter.GetDirectory().EnsureOpen();
 			IndexWriter.DeleteAll();
 		}
@@ -145,8 +138,6 @@ namespace Sando.Indexer
 
 		public void Dispose(bool killReaders)
         {
-            writeLog("D:\\Data\\log.txt", "--- DI.Dispose() ---");
-
             Dispose(true, killReaders);
             GC.SuppressFinalize(this);
         }
@@ -182,20 +173,6 @@ namespace Sando.Indexer
 
 		private List<IIndexUpdateListener> indexUpdateListeners;
 		private bool disposed = false;
-
-
-        /// <summary>
-        /// For debugging.
-        /// </summary>
-        /// <param name="logFile"></param>
-        /// <param name="str"></param>
-        private void writeLog(string logFile, string str)
-        {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
-        }
-
     }
 
 	public enum AnalyzerType

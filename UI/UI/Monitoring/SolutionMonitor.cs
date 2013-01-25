@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-// Code changed by JZ on 10/29: Added the Delete case (maybe obsolete)
+// Code changed by JZ: Added the Delete case (obsolete)
 using System.Collections.Generic;
 // End of code changes
 using System.ComponentModel;
@@ -94,7 +94,7 @@ namespace Sando.UI.Monitoring
                     }
                 }
 
-                // Code changed by JZ on 10/30: To complete the Delete case (maybe obsolete)
+                // Code changed by JZ: To complete the Delete case (obsolete)
                 List<string> allIndexedFileNames = _indexUpdateManager.GetAllIndexedFileNames();
                 foreach (string filename in allIndexedFileNames)
                 {

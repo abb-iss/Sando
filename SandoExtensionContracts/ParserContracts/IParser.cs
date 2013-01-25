@@ -20,5 +20,5 @@ namespace Sando.ExtensionContracts.ParserContracts
         /// <returns></returns>
         List<ProgramElement> Parse(string filename, XElement sourceElements);
         // End of code changes
-	}
+    }
 }

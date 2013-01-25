@@ -4,12 +4,12 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.TestExtensionPoints
 {
-	public class TestCppParser : IParser
-	{
-		public List<ProgramElement> Parse(string filename)
-		{
-			return new List<ProgramElement>() { new TestElement("TestCppName", 1, filename, "TestElement snippet") };
-		}
+    public class TestCppParser : IParser
+    {
+        public List<ProgramElement> Parse(string filename)
+        {
+            return new List<ProgramElement>() { new TestElement("TestCppName", 1, filename, "TestElement snippet") };
+        }
 
         // Code changed by JZ: solution monitor integration
         /// <summary>
@@ -23,5 +23,5 @@ namespace Sando.TestExtensionPoints
             return Parse(fileName);
         }
         // End of code changes
-	}
+    }
 }

@@ -32,6 +32,9 @@ using Sando.UI.View;
 using Sando.Indexer.IndexState;
 
 // Code changed by JZ: solution monitor integration
+using System.Xml;
+using System.Xml.Linq;
+// TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
 // End of code changes
 
@@ -310,7 +313,8 @@ namespace Sando.UI
                 try
                 {
                     // Code changed by JZ: solution monitor integration
-                    // Don't know if the update listener is still useful. The following statement would cause an exception in ViewManager.cs (Line 42).
+                    // Don't know if the update listener is still useful. 
+                    // The following statement would cause an exception in ViewManager.cs (Line 42).
                     //SolutionMonitorFactory.RemoveUpdateListener(SearchViewControl.GetInstance());
                     ////_currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
                     // End of code changes
@@ -321,9 +325,9 @@ namespace Sando.UI
                     {
                         // Code changed by JZ: solution monitor integration
                         // Use SrcML.NET's StopMonitoring()
-                        //_currentMonitor.StopMonitoring();
                         if (_srcMLArchive != null)
                         {
+                            // SolutionMonitor.StopWatching() is called in SrcMLArchive.StopWatching()
                             _srcMLArchive.StopWatching();
                             _srcMLArchive = null;
                         }
@@ -363,8 +367,12 @@ namespace Sando.UI
 		}
 
         // Code changed by JZ: solution monitor integration
-        // Use SrcML.NET's SolutionMonitor and Sando's SolutionMonitorFactory because Sando's SolutionMonitorFactory
-        // has too many indexer code which is specific with Sando.
+        /// <summary>
+        /// Respond to solution opening.
+        /// Still use Sando's SolutionMonitorFactory because Sando's SolutionMonitorFactory has too much indexer code which is specific with Sando.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ee"></param>
         private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
         {
             try
@@ -381,18 +389,23 @@ namespace Sando.UI
                 bool isIndexRecreationRequired =
                     IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
 
-                writeLog("D:\\Data\\log.txt", "=== UIPackage.cs: Using SrcML.NET's solution monitor ===");
-                //_currentMonitor = ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
-
+                // Create a new instance of SrcML.NET's solution monitor
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                // Subscribe events from SrcML.NET's solution monitor
+                _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
+                // Create a new instance of SrcML.NET's SrcMLArchive
+                // TODO: Sando provides the path of srcML folder in some way
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, "D:\\Data\\SrcML.NETDemo\\MySrcMLArchive");
-                _srcMLArchive.SrcMLDOTNETEventRaised += SolutionMonitorFactory.RespondToSrcMLDOTNETEvent;
+                // Subscribe events from SrcML.NET's solution monitor
+                _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
+                _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
+                _srcMLArchive.MonitoringStopped += RespondToMonitoringStoppedEvent;
+                // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
 
-                //_currentMonitor.StartMonitoring();
-
-                SolutionMonitorFactory.AddUpdateListener(SearchViewControl.GetInstance());  // Don't know if it is still useful.
+                // Don't know if AddUpdateListener() is still useful.
+                SolutionMonitorFactory.AddUpdateListener(SearchViewControl.GetInstance());
                 ////_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
             }
             catch (Exception e)
@@ -401,6 +414,95 @@ namespace Sando.UI
             }    
         }
 
+        /// <summary>
+        /// Respond to the SourceFileChanged event from SrcML.NET's Solution Monitor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
+        {
+            writeLog("D:\\Data\\log.txt", "Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            // Current design decision: 
+            // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
+            if (!_srcMLArchive.isValidFileExtension(eventArgs.SourceFilePath))
+            {
+                HandleSrcMLDOTNETEvents(eventArgs);
+            }
+        }
+
+        /// <summary>
+        /// Respond to the SourceFileChanged event from SrcMLArchive.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToSourceFileChangedEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
+        {
+            writeLog("D:\\Data\\log.txt", "Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            HandleSrcMLDOTNETEvents(eventArgs);
+        }
+
+        /// <summary>
+        /// Handle SrcML.NET events, either from SrcMLArchive or from SolutionMonitor.
+        /// TODO: UpdateIndex(), DeleteIndex(), and CommitIndexChanges() might be refactored to another class.
+        /// </summary>
+        /// <param name="eventArgs"></param>
+        private void HandleSrcMLDOTNETEvents(ABB.SrcML.FileEventRaisedArgs eventArgs)
+        {
+            // Ignore files that can not be indexed by Sando.
+		    string fileExtension = Path.GetExtension(eventArgs.SourceFilePath);
+            if (fileExtension != null && !fileExtension.Equals(String.Empty))
+            {
+                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
+                {
+                    string sourceFilePath = eventArgs.SourceFilePath;
+                    string oldSourceFilePath = eventArgs.OldSourceFilePath;
+                    XElement xelement = eventArgs.SrcMLXElement;
+
+                    switch (eventArgs.EventType)
+                    {
+                        case ABB.SrcML.FileEventType.FileAdded:
+                            SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
+                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            break;
+                        case ABB.SrcML.FileEventType.FileChanged:
+                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            break;
+                        case ABB.SrcML.FileEventType.FileDeleted:
+                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                            break;
+                        case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
+                            SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
+                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            break;
+                    }
+                    SolutionMonitorFactory.CommitIndexChanges();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Respond to the StartupCompleted event from SrcMLArchive.
+        /// TODO: StartupCompleted() might be refactored to another class.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToStartupCompletedEvent(object sender, EventArgs eventArgs)
+        {
+            SolutionMonitorFactory.StartupCompleted();
+        }
+
+        /// <summary>
+        /// Respond to the MonitorStopped event from SrcMLArchive.
+        /// TODO: MonitoringStopped() might be refactored to another class.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToMonitoringStoppedEvent(object sender, EventArgs eventArgs)
+        {
+            SolutionMonitorFactory.MonitoringStopped();
+        }
+        
         /* //// Original implementation
         private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
         {
@@ -482,17 +584,17 @@ namespace Sando.UI
         // Code changed by JZ: solution monitor integration
         public string GetCurrentDirectory()
         {
-            return SolutionMonitorFactory._currentPath;
+            return SolutionMonitorFactory.GetCurrentDirectory();
         }
 
         public SolutionKey GetCurrentSolutionKey()
         {
-            return SolutionMonitorFactory._solutionKey;
+            return SolutionMonitorFactory.GetSolutionKey();
         }
 
         public bool IsPerformingInitialIndexing()
         {
-            return !SolutionMonitorFactory._initialIndexDone;
+            return SolutionMonitorFactory.PerformingInitialIndexing();
         }
 
         /* //// original implementation
@@ -550,14 +652,13 @@ namespace Sando.UI
         }
 
 
-
         // Code changed by JZ: solution monitor integration
         /// <summary>
         /// For debugging.
         /// </summary>
         /// <param name="logFile"></param>
         /// <param name="str"></param>
-        private void writeLog(string logFile, string str)
+        private static void writeLog(string logFile, string str)
         {
             StreamWriter sw = new StreamWriter(logFile, true, System.Text.Encoding.ASCII);
             sw.WriteLine(str);

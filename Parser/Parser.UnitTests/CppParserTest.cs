@@ -21,8 +21,8 @@ namespace Sando.Parser.UnitTests
 			CurrentDirectory = Environment.CurrentDirectory;
 		}
 
+        // Code changed by JZ on 12/3/2012
         /// <summary>
-        /// Changed by JZ on 12/3/2012
         /// Adapt to changes in SrcMLCppParser.cs
         /// </summary>
 		[Test]
@@ -55,6 +55,7 @@ namespace Sando.Parser.UnitTests
 
         }
         */
+        // End of code changes
 
 		[Test]
 		public void ParseCPPHeaderTest()

@@ -7,18 +7,18 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Parser
 {
-    public class TextFileParser: IParser 
+    public class TextFileParser : IParser
     {
         private static readonly int SnippetSize = 5;
-		private static readonly int SnippetLinesAbove = 0;
+        private static readonly int SnippetLinesAbove = 0;
 
         public List<ProgramElement> Parse(string filename)
         {
-            if(File.Exists(filename)&&GetSizeInMb(filename)>15)
+            if (File.Exists(filename) && GetSizeInMb(filename) > 15)
             {
                 return new List<ProgramElement>();
             }
-            var list = new List<ProgramElement>(); 
+            var list = new List<ProgramElement>();
             try
             {
                 // Create an instance of StreamReader to read from a file.
@@ -26,21 +26,21 @@ namespace Sando.Parser
                 using (var sr = new StreamReader(filename))
                 {
                     String line;
-                	int linenum = 0;
+                    int linenum = 0;
                     // Read and display lines from the file until the end of
                     // the file is reached.
                     while ((line = sr.ReadLine()) != null)
                     {
-                    	linenum++;
-						if (String.IsNullOrWhiteSpace(line)) continue;
-						//var name = Regex.Replace(line, @"(\w+)\W+", "$1 ");
-						var name = line.TrimStart(' ', '\n', '\r', '\t');
-						name = name.TrimEnd(' ');
-                    	var snippet = SrcMLParsingUtils.RetrieveSnippet(name, SnippetSize); 
-                    	var element = new TextLineElement(name, linenum, filename, snippet, line);
-                    	list.Add(element);
+                        linenum++;
+                        if (String.IsNullOrWhiteSpace(line)) continue;
+                        //var name = Regex.Replace(line, @"(\w+)\W+", "$1 ");
+                        var name = line.TrimStart(' ', '\n', '\r', '\t');
+                        name = name.TrimEnd(' ');
+                        var snippet = SrcMLParsingUtils.RetrieveSnippet(name, SnippetSize);
+                        var element = new TextLineElement(name, linenum, filename, snippet, line);
+                        list.Add(element);
                     }
-    
+
                 }
             }
             catch (Exception e)
@@ -52,7 +52,7 @@ namespace Sando.Parser
 
         private float GetSizeInMb(string filename)
         {
-            float sizeInMb = (new FileInfo(filename).Length/1024f)/1024f;
+            float sizeInMb = (new FileInfo(filename).Length / 1024f) / 1024f;
             return sizeInMb;
         }
 
@@ -65,20 +65,7 @@ namespace Sando.Parser
         /// <returns></returns>
         public List<ProgramElement> Parse(string fileName, System.Xml.Linq.XElement sourceElements)
         {
-            writeLog("D:\\Data\\log.txt", "TextFileParser.Parse(): " + fileName);
             return Parse(fileName);
-        }
-
-        /// <summary>
-        /// For debugging.
-        /// </summary>
-        /// <param name="logFile"></param>
-        /// <param name="str"></param>
-        private void writeLog(string logFile, string str)
-        {
-            System.IO.StreamWriter sw = new System.IO.StreamWriter(logFile, true, System.Text.Encoding.ASCII);
-            sw.WriteLine(str);
-            sw.Close();
         }
         // End of code changes
     }

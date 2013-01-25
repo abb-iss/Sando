@@ -154,6 +154,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\VisualStudio\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="Parser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Parser.dll</HintPath>
+    </Reference>
+    <Reference Include="SandoExtensionContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22c1f6d7660dc0a2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\SandoExtensionContracts.dll</HintPath>
+    </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -175,7 +183,6 @@
   <ItemGroup>
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
-    <Compile Include="Monitoring\Class5.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
@@ -578,14 +585,6 @@
     <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Parser\Parser\Parser.csproj">
-      <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
-      <Name>Parser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
-      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
-      <Name>SandoExtensionContracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
