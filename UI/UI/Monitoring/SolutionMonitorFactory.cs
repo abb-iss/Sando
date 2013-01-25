@@ -40,7 +40,7 @@ namespace Sando.UI.Monitoring
         /// <returns></returns>
         public static ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor CreateMonitor(bool isIndexRecreationRequired)
 		{
-			var openSolution = UIPackage.GetOpenSolution();
+			var openSolution = UIPackage.GetInstance().GetOpenSolution();
 			return CreateMonitor(openSolution, isIndexRecreationRequired);
 		}
 
