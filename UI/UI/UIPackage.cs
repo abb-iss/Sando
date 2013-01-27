@@ -13,6 +13,7 @@ using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.CommandBars;
+using Sando.Indexer.IndexFiltering;
 using log4net; 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -294,6 +295,7 @@ namespace Sando.UI
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
 
 
             

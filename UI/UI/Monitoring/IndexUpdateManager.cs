@@ -32,7 +32,7 @@ namespace Sando.UI.Monitoring
 		{
 			_currentIndexer = currentIndexer;
 
-            _indexFilterManager = new IndexFilterManager(solutionKey.GetIndexPath());
+            _indexFilterManager = ExtensionPointsRepository.Instance.GetIndexFilterManagerImplementation();
 
 			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath(), isIndexRecreationRequired);
 			_indexFilesStatesManager.ReadIndexFilesStates();
