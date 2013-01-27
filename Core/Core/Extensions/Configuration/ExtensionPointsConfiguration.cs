@@ -10,5 +10,6 @@ namespace Sando.Core.Extensions.Configuration
 		public BaseExtensionPointConfiguration ResultsReordererConfiguration { get; set; }
 		public BaseExtensionPointConfiguration QueryWeightsSupplierConfiguration { get; set; }
 		public BaseExtensionPointConfiguration QueryRewriterConfiguration { get; set; }
+        public BaseExtensionPointConfiguration IndexFilterManagerConfiguration { get; set; }
 	}
 }

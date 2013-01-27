@@ -86,6 +86,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IndexerContracts\IndexFilterSettings.cs" />
+    <Compile Include="IndexerContracts\IIndexFilterManager.cs" />
     <Compile Include="ProgramElementContracts\AccessLevel.cs" />
     <Compile Include="ProgramElementContracts\ClassElement.cs" />
     <Compile Include="ProgramElementContracts\CommentElement.cs" />

@@ -106,6 +106,10 @@
     <Reference Include="Contrib.Regex">
       <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Contrib.Regex.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Lucene.Net">
       <HintPath>..\Lucene.Net-2.9.4\bin\Lucene.Net.dll</HintPath>
     </Reference>
@@ -138,6 +142,7 @@
     <Compile Include="Documents\DocumentFactoryTest.cs" />
     <Compile Include="Documents\MyCustomProgramElementForTesting.cs" />
     <Compile Include="Documents\SandoDocumentStringExtensionTest.cs" />
+    <Compile Include="IndexFiltering\IndexFilterManagerTest.cs" />
     <Compile Include="IndexState\IndexFilesStatesManagerTest.cs" />
     <Compile Include="IndexState\PhysicalFilesStatesManagerTest.cs" />
     <Compile Include="IndexState\FileOperationResolverTest.cs" />

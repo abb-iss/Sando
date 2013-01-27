@@ -2,6 +2,7 @@
 using System.IO;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.Indexer.IndexFiltering;
 using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
@@ -35,6 +36,8 @@ namespace UnitTestHelpers
 			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
 
 			extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(Path.GetTempPath()));
 		}
     }
 }

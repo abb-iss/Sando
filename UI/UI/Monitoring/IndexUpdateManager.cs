@@ -9,17 +9,19 @@ using System.Xml.Linq;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
+using Sando.ExtensionContracts.IndexerContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
+using Sando.Indexer.IndexFiltering;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
 
 namespace Sando.UI.Monitoring
 {
     public class IndexUpdateManager
-	{ 
-
+	{
+        private IIndexFilterManager _indexFilterManager;
 		private FileOperationResolver _fileOperationResolver;
 		private IndexFilesStatesManager _indexFilesStatesManager;
 		private PhysicalFilesStatesManager _physicalFilesStatesManager;		
@@ -29,6 +31,9 @@ namespace Sando.UI.Monitoring
 		public IndexUpdateManager(SolutionKey solutionKey, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
 		{
 			_currentIndexer = currentIndexer;
+
+            _indexFilterManager = new IndexFilterManager(solutionKey.GetIndexPath());
+
 			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath(), isIndexRecreationRequired);
 			_indexFilesStatesManager.ReadIndexFilesStates();
 
@@ -64,11 +69,21 @@ namespace Sando.UI.Monitoring
 		{
 			try
 			{
-				IndexFileState indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
-				PhysicalFileState physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);
-				IndexOperation requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(physicalFileState, indexFileState);
+                IndexOperation requiredIndexOperation;
+			    IndexFileState indexFileState = null;
+			    PhysicalFileState physicalFileState = null;
+			    if (!_indexFilterManager.ShouldFileBeIndexed(path))
+			    {
+			        requiredIndexOperation = IndexOperation.Delete;
+			    }
+			    else
+			    {
+			        indexFileState = _indexFilesStatesManager.GetIndexFileState(path);
+			        physicalFileState = _physicalFilesStatesManager.GetPhysicalFileState(path);
+			        requiredIndexOperation = _fileOperationResolver.ResolveRequiredOperation(physicalFileState, indexFileState);
+			    }
 
-				switch(requiredIndexOperation)
+			    switch(requiredIndexOperation)
 				{
 					case IndexOperation.Add:
 						{

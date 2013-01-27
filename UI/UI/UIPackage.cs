@@ -274,7 +274,7 @@ namespace Sando.UI
             //pluginDirectory = directoryProvider.GetExtensionDirectory();
         	pluginDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
-            logger = FileLogger.CreateCustomLogger(logFilePath);
+            logger = FileLogger.CreateFileLogger("UIPackageLogger", logFilePath);
             FileLogger.DefaultLogger.Info("pluginDir: "+pluginDirectory);
         }
 
