@@ -20,7 +20,7 @@ namespace LocalSearch.UnitTests
         [STAThread] 
         public void ShowUIOfField()
         {
-            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\ConfigManip.cs");
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\SrcMLCSharpParser.cs"); // ConfigManip
             var elements = gbuilder.GetFieldsAsFieldElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;
@@ -42,7 +42,7 @@ namespace LocalSearch.UnitTests
         [STAThread]
         public void ShowUIOfMethod()
         {
-            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\ConfigManip.cs");
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\SrcMLCSharpParser.cs");
             var elements = gbuilder.GetMethodsAsMethodElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

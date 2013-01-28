@@ -165,7 +165,7 @@ namespace LocalSearch.View
             //var methods = InformationSource.GetRelatedMethods(FirstProgramElementsList.SelectedItem as CodeSearchResult);
             var relatedmembers = InformationSource.GetRelatedInfo(FirstProgramElementsList.SelectedItem as CodeSearchResult);
             foreach (var member in relatedmembers)
-            {
+            {   
                 CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
                 SecondProgramElements.Add(memberAsSearchResult);
             }

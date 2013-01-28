@@ -147,7 +147,7 @@ namespace LocalSearch.UnitTests
             { "ConfigManip", "genConfigImp", "findChangeImpConfig" };
 
             GraphBuilder gbuilder = new GraphBuilder(xmlPath);
-            var methodsuse = gbuilder.GetMethodsUseField("configWorkspaceRoot");
+            var methodsuse = gbuilder.GetMethodNamesUseField("configWorkspaceRoot");
             foreach (var method in methodsuse)
             {
                 String methodname = method.Value;
@@ -164,7 +164,7 @@ namespace LocalSearch.UnitTests
             List<String> listMethodsUse = new List<String>() { "ConfigManip", "displayConfig"};
 
             GraphBuilder gbuilder = new GraphBuilder(xmlPath);
-            var methodsuse = gbuilder.GetMethodsUseField("configList");
+            var methodsuse = gbuilder.GetMethodNamesUseField("configList");
             foreach (var method in methodsuse)
             {
                 String methodname = method.Value;
@@ -181,7 +181,7 @@ namespace LocalSearch.UnitTests
             List<String> listMethodsUse = new List<String>() { "getConfigSelect", "getChangeSets" };
 
             GraphBuilder gbuilder = new GraphBuilder(xmlPath);
-            var methodsuse = gbuilder.GetMethodsUseField("configSelect");
+            var methodsuse = gbuilder.GetMethodNamesUseField("configSelect");
             foreach (var method in methodsuse)
             {
                 String methodname = method.Value;

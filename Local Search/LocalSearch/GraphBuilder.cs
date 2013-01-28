@@ -239,7 +239,7 @@ namespace LocalSearch
         /// </summary>
         /// <param name="fieldname">field NAME in String</param>
         /// <returns>an array of method NAMES in XElement</returns>
-        public XElement[] GetMethodsUseField(String fieldname)
+        public XElement[] GetMethodNamesUseField(String fieldname)
         {
             List<XElement> listMethods = new List<XElement>();
 
@@ -256,23 +256,61 @@ namespace LocalSearch
             return listMethods.ToArray();
         }
 
-        public XElement[] GetMethodsUseField(XElement fieldname)
+        public XElement[] GetMethodNamesUseField(XElement fieldname)
         {
-            return GetMethodsUseField(fieldname.Value);
+            return GetMethodNamesUseField(fieldname.Value);
+        }
+
+        /// <summary>
+        /// Get methods that uses a given field.
+        /// </summary>
+        /// <param name="fieldname">field NAME in String</param>
+        /// <returns>an array of FULL methods in XElement</returns>
+        public XElement[] GetMethodsUseField(String fieldname)
+        {
+            List<XElement> listMethods = new List<XElement>();
+
+            XElement[] allmethods = GetMethods();
+            foreach (var method in allmethods)
+            {
+                if (ifFieldUsedinMethod(method, fieldname))
+                {   
+                    listMethods.Add(method);
+                }
+            }
+
+            return listMethods.ToArray();
         }
 
         /// <summary>
         /// Get full method XElement from a given method name.
         /// </summary>
-        /// <param name="methodname">method NAME in String</param>
+        /// <param name="methodname">method NAME in XElement</param>
         /// <returns>Full method in XElement</returns>
-        public XElement GetFullMethodFromName(String methodname)
+        public XElement GetFullMethodFromName(XElement methodname)
+        {
+            //var methods = GetMethods();
+
+            //foreach (XElement method in methods)
+            //{
+            //    if (methodname.Equals(method.Element(SRC.Name)))
+            //        return method;
+            //}
+
+            //return null;
+            int srcLineNum = methodname.GetSrcLineNumber();
+            String methodName = methodname.Value;
+
+            return GetFullMethodFromName(methodName, srcLineNum);
+        }
+
+        public XElement GetFullMethodFromName(String methodname, int srclinenum)
         {
             var methods = GetMethods();
-
             foreach (XElement method in methods)
             {
-                if (methodname.Equals(method.Element(SRC.Name).Value))
+                if ( (methodname.Equals(method.Element(SRC.Name).Value))
+                    && (srclinenum == method.Element(SRC.Name).GetSrcLineNumber() ))
                     return method;
             }
 
@@ -312,13 +350,14 @@ namespace LocalSearch
                 = new List<ProgramElementWithRelation>();
             String fieldname = codeSearchResult.Name;
 
-            //get methods that use this field
-            var methodnames = GetMethodsUseField(fieldname);
-            foreach (var methodname in methodnames)
+            //relation 1: get methods that use this field
+            var methods = GetMethodsUseField(fieldname);
+            //var methods = GetMethodNamesUseField(fieldname); // alternative-1
+            foreach (var method in methods)
             {
-                //var methodaselement = GetMethodElementWRelationFromName(methodname);
-                var fullmethod = GetFullMethodFromName(methodname.Value);
-                Contract.Requires((fullmethod != null), "Method " + methodname.Value + " does not belong to this local file.");
+                //var fullmethod = GetFullMethodFromName(method); // alternative-1
+                var fullmethod = method;
+                Contract.Requires((fullmethod != null), "Method " + method.Element(SRC.Name).Value + " does not belong to this local file.");
                 var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
                 methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
                 listFiledRelated.Add(methodaselement);
@@ -336,7 +375,8 @@ namespace LocalSearch
             List<ProgramElementWithRelation> listMethodRelated
                 = new List<ProgramElementWithRelation>();
             String methodname = codeSearchResult.Name;
-            var method = GetFullMethodFromName(methodname);
+            int srcLineNumber = codeSearchResult.Element.DefinitionLineNumber;
+            var method = GetFullMethodFromName(methodname, srcLineNumber);
 
             Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
 

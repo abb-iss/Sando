@@ -53,6 +53,11 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
            get { return Element.ProgramElementType; }
        }
 
+       public string DefinitionLineNumber
+       {
+           get { return Element.DefinitionLineNumber.ToString(); }
+       }
+
         public string Type
         {
             get
