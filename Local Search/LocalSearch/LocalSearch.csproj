@@ -48,8 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProgramElementPairRelation.cs" />
-    <Compile Include="MethodElementWithRelation.cs" />
-    <Compile Include="FieldElementWithRelation.cs" />
     <Compile Include="ProgramElementWithRelation.cs" />
     <Compile Include="ProgramElementRelation.cs" />
     <Compile Include="GraphBuilder.cs" />

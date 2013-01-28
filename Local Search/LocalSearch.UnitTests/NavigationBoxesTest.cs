@@ -18,7 +18,7 @@ namespace LocalSearch.UnitTests
     {
         [Test]
         [STAThread] 
-        public void ShowUI()
+        public void ShowUIOfField()
         {
             GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\ConfigManip.cs");
             var elements = gbuilder.GetFieldsAsFieldElements();
@@ -32,6 +32,28 @@ namespace LocalSearch.UnitTests
             {
                 Title = "My User Control Dialog",
                 Content = boxes 
+            };
+            window.ShowDialog();
+            window.Close();
+            Dispatcher.CurrentDispatcher.InvokeShutdown();
+        }
+
+        [Test]
+        [STAThread]
+        public void ShowUIOfMethod()
+        {
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\ConfigManip.cs");
+            var elements = gbuilder.GetMethodsAsMethodElements();
+            var boxes = new NavigationBoxes();
+            boxes.InformationSource = gbuilder;
+            foreach (var element in elements)
+            {
+                boxes.FirstProgramElements.Add(element);
+            }
+            Window window = new Window
+            {
+                Title = "My User Control Dialog",
+                Content = boxes
             };
             window.ShowDialog();
             window.Close();

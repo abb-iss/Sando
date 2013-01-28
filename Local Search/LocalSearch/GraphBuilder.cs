@@ -318,7 +318,7 @@ namespace LocalSearch
             {
                 //var methodaselement = GetMethodElementWRelationFromName(methodname);
                 var fullmethod = GetFullMethodFromName(methodname.Value);
-                Contract.Requires(!fullmethod.Equals(null), "Method " + methodname.Value + " does not belong to this local file.");
+                Contract.Requires((fullmethod != null), "Method " + methodname.Value + " does not belong to this local file.");
                 var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
                 methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
                 listFiledRelated.Add(methodaselement);
@@ -338,7 +338,7 @@ namespace LocalSearch
             String methodname = codeSearchResult.Name;
             var method = GetFullMethodFromName(methodname);
 
-            Contract.Requires(!method.Equals(null), "Method "+ methodname + " does not belong to this local file.");
+            Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
 
             //get fields that are used by this method
             var fieldnames = GetFieldsUsedinMethod(method);
@@ -346,7 +346,7 @@ namespace LocalSearch
             {
                 //var fieldaselement = GetFieldElementWRelationFromName(fieldname);
                 var fielddecl = GetFieldDeclFromName(fieldname.Value);
-                Contract.Requires(!fielddecl.Equals(null), "Field " + fieldname.Value + " does not belong to this local file.");
+                Contract.Requires((fielddecl != null), "Field " + fieldname.Value + " does not belong to this local file.");
                 var fieldaselement = GetFieldElementWRelationFromDecl(fielddecl);
                 fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
                 listMethodRelated.Add(fieldaselement);
@@ -367,7 +367,7 @@ namespace LocalSearch
 
             AccessLevel accessLevel = AccessLevel.Internal; //by default
             var specifier = fielddecl.Element(SRC.Type).Element(SRC.Specifier);
-            if (!specifier.Equals(null)) //question: specifier.IsEmpty?
+            if (specifier != null) 
                 accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value,true); 
             
             var fieldType = fielddecl.Element(SRC.Type).Element(SRC.Name);
@@ -375,11 +375,19 @@ namespace LocalSearch
             var className = String.Empty;
             var initialValue = String.Empty;
 
-            var element = new FieldElementWithRelation(fielddecl.Element(SRC.Name).Value, 
-                definitionLineNumber, fullFilePath, snippet, relation,
+            var element = new FieldElement(fielddecl.Element(SRC.Name).Value, 
+                definitionLineNumber, fullFilePath, snippet, 
                 accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
 
-            return element;
+            var elementwrelation = new ProgramElementWithRelation(element, relation);
+
+            return elementwrelation;
+
+            //var element = new FieldElementWithRelation(fielddecl.Element(SRC.Name).Value, 
+            //    definitionLineNumber, fullFilePath, snippet, relation,
+            //    accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
+
+            //return element;
         }
 
         private ProgramElementWithRelation GetMethodElementWRelationFromXElement(XElement fullmethod)
@@ -391,15 +399,15 @@ namespace LocalSearch
             
             AccessLevel accessLevel = AccessLevel.Internal; //by default
             var specifier = fullmethod.Element(SRC.Specifier); //for constructor
-            if (specifier.Equals(null))
+            if (specifier == null)
                 specifier = fullmethod.Element(SRC.Type).Element(SRC.Specifier); //for other functions
-            if (!specifier.Equals(null)) 
+            if (specifier != null) 
                 accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value, true);
             
             var returnType = String.Empty;
             bool isconstructor = true;
             var type = fullmethod.Element(SRC.Type);
-            if (!type.Equals(null))
+            if (type != null)
             {
                 returnType = type.Element(SRC.Name).Value;
                 isconstructor = false;
@@ -410,56 +418,18 @@ namespace LocalSearch
             var args = fullmethod.Element(SRC.ParameterList).ToSource();
             var body = fullmethod.Element(SRC.Block).ToSource();
 
-            var element = new MethodElementWithRelation(fullmethod.Element(SRC.Name).Value, 
-                definitionLineNumber, fullFilePath, snippet, relation,
+            var element = new MethodElement(fullmethod.Element(SRC.Name).Value,
+                definitionLineNumber, fullFilePath, snippet, 
                 accessLevel, args, returnType, body, classId, className, String.Empty, isconstructor);
+            var elementwrelation = new ProgramElementWithRelation(element, relation);
 
-            return element;
+            return elementwrelation;
+            
+            //var element = new MethodElementWithRelation(fullmethod.Element(SRC.Name).Value, 
+            //    definitionLineNumber, fullFilePath, snippet, relation,
+            //    accessLevel, args, returnType, body, classId, className, String.Empty, isconstructor);
+            //return element;
         }
-
-
-        #region maybe obsoleted
-        
-        private ProgramElementWithRelation GetFieldElementWRelationFromName(XElement fieldname)
-        {
-            var definitionLineNumber = fieldname.GetSrcLineNumber();
-            var fullFilePath = srcmlFile.FileName;
-            var snippet = String.Empty;
-            var relation = ProgramElementRelation.Other;
-            var accessLevel = AccessLevel.Public;
-            var fieldType = String.Empty;
-            var classId = Guid.Empty;
-            var className = String.Empty;
-            var initialValue = String.Empty;
-            var element = new FieldElementWithRelation(fieldname.Value, definitionLineNumber,
-                fullFilePath, snippet, relation,
-                accessLevel, fieldType, classId, className, String.Empty, initialValue);
-
-            return element;
-        }
-
-        private ProgramElementWithRelation GetMethodElementWRelationFromName(XElement methodname)
-        {
-            var definitionLineNumber = methodname.GetSrcLineNumber();
-            var fullFilePath = srcmlFile.FileName;
-            var snippet = String.Empty;
-            var relation = ProgramElementRelation.Other;
-            var accessLevel = AccessLevel.Public;
-            var fieldType = String.Empty;
-            var classId = Guid.Empty;
-            var className = String.Empty;
-            var initialValue = String.Empty;
-            bool isconstructor = false;
-            var args = String.Empty;
-            var body = string.Empty;
-            var element = new MethodElementWithRelation(methodname.Value, definitionLineNumber, 
-                fullFilePath, snippet, relation, 
-                accessLevel, args, fieldType, body, classId, className, String.Empty, isconstructor);
-
-            return element;
-        }
-        
-        #endregion 
 
 
         #region Dave's zone
@@ -494,8 +464,7 @@ namespace LocalSearch
             return elements;
         }
 
-
-        private List<CodeSearchResult> GetMethodsAsMethodElements()
+        public List<CodeSearchResult> GetMethodsAsMethodElements()
         {
             var elements = new List<CodeSearchResult>();
 
