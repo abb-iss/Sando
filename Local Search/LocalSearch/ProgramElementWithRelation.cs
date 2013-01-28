@@ -5,37 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace LocalSearch
 {
-    public class ProgramElementWithRelation //: ProgramElement
+    public class ProgramElementWithRelation : CodeSearchResult
     {
-        //public ProgramElementWithRelation(string name, int definitionLineNumber, string fullFilePath,
-        //    string snippet, ProgramElementRelation elementrelation)
-        //    : base(name, definitionLineNumber, fullFilePath, snippet)
+        public ProgramElementRelation ProgramElementRelation { get; set; }
+
+        //public ProgramElement Element
         //{
-        //    ProgramElementRelation = elementrelation;
+        //    get;
+        //    private set;
         //}
 
-        public virtual ProgramElementRelation ProgramElementRelation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the element.
-        /// </summary>
-        /// <value>
-        /// Sando Program Element.
-        /// </value>
-        public ProgramElement Element
-        {
-            get;
-            private set;
-        }
-
-        public ProgramElementWithRelation(ProgramElement programElement, ProgramElementRelation relation)
-	   {
-		   this.Element = programElement;
+        public ProgramElementWithRelation(ProgramElement element, double score, ProgramElementRelation relation):
+            base(element, score)
+	   {           
 		   this.ProgramElementRelation = relation;
 	   }
-        
+
+        public ProgramElementWithRelation(ProgramElement element, double score) :
+            base(element, score)
+        {
+            this.ProgramElementRelation = ProgramElementRelation.Other;
+        }
+
+               
     }
 }

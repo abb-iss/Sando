@@ -26,7 +26,8 @@ namespace LocalSearch.UnitTests
             boxes.InformationSource = gbuilder;
             foreach (var element in elements)
             {
-                boxes.FirstProgramElements.Add(element);
+                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
+                boxes.FirstProgramElements.Add(element2);
             }
             Window window = new Window
             {
@@ -48,7 +49,8 @@ namespace LocalSearch.UnitTests
             boxes.InformationSource = gbuilder;
             foreach (var element in elements)
             {
-                boxes.FirstProgramElements.Add(element);
+                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
+                boxes.FirstProgramElements.Add(element2);
             }
             Window window = new Window
             {

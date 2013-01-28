@@ -419,7 +419,7 @@ namespace LocalSearch
                 definitionLineNumber, fullFilePath, snippet, 
                 accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
 
-            var elementwrelation = new ProgramElementWithRelation(element, relation);
+            var elementwrelation = new ProgramElementWithRelation(element, 1.0, relation);
 
             return elementwrelation;
 
@@ -461,7 +461,7 @@ namespace LocalSearch
             var element = new MethodElement(fullmethod.Element(SRC.Name).Value,
                 definitionLineNumber, fullFilePath, snippet, 
                 accessLevel, args, returnType, body, classId, className, String.Empty, isconstructor);
-            var elementwrelation = new ProgramElementWithRelation(element, relation);
+            var elementwrelation = new ProgramElementWithRelation(element, 1.0, relation);
 
             return elementwrelation;
             

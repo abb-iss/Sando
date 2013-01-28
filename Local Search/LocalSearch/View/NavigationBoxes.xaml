@@ -25,6 +25,7 @@
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="{Binding Path=ProgramElementType}" FontSize="9" FontStyle="Italic"></Label>
                                     <Label Content="{Binding Path=DefinitionLineNumber}" FontSize="9"></Label>
+                                    <Label Content="{Binding Path=ProgramElementRelation}" FontSize="9"></Label>
                                 </StackPanel>
                             </StackPanel>                            
                         </Border>

@@ -42,55 +42,55 @@ namespace LocalSearch.View
         public NavigationBoxes()
         {
             this.DataContext = this;
-            FirstProgramElements = new ObservableCollection<CodeSearchResult>();
-            SecondProgramElements = new ObservableCollection<CodeSearchResult>();
-            ThirdProgramElements = new ObservableCollection<CodeSearchResult>();
-            FourthProgramElements = new ObservableCollection<CodeSearchResult>();
-            FifthProgramElements = new ObservableCollection<CodeSearchResult>();
-            SixthProgramElements = new ObservableCollection<CodeSearchResult>();
-            SeventhProgramElements = new ObservableCollection<CodeSearchResult>();
+            FirstProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            SecondProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            ThirdProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            FourthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            FifthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            SixthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            SeventhProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             InitializeComponent();
         }
 
         public static readonly DependencyProperty FirstProgramElementsProperty =
-                DependencyProperty.Register("FirstProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("FirstProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SecondProgramElementsProperty =
-                DependencyProperty.Register("SecondProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("SecondProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty ThirdProgramElementsProperty =
-                DependencyProperty.Register("ThirdProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("ThirdProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty FourthProgramElementsProperty =
-                DependencyProperty.Register("FourthProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("FourthProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty FifthProgramElementsProperty =
-                DependencyProperty.Register("FifthProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("FifthProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SixthProgramElementsProperty =
-                DependencyProperty.Register("SixthProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("SixthProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SeventhProgramElementsProperty =
-                DependencyProperty.Register("SeventhProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("SeventhProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
 
-        public ObservableCollection<CodeSearchResult> FirstProgramElements
+        public ObservableCollection<ProgramElementWithRelation> FirstProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(FirstProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(FirstProgramElementsProperty);
             }
             set
             {
                 SetValue(FirstProgramElementsProperty, value);
             }
         }
-                
-        public ObservableCollection<CodeSearchResult> SecondProgramElements
+
+        public ObservableCollection<ProgramElementWithRelation> SecondProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(SecondProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(SecondProgramElementsProperty);
             }
             set
             {
@@ -98,11 +98,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<CodeSearchResult> ThirdProgramElements
+        public ObservableCollection<ProgramElementWithRelation> ThirdProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(ThirdProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(ThirdProgramElementsProperty);
             }
             set
             {
@@ -110,11 +110,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<CodeSearchResult> FourthProgramElements
+        public ObservableCollection<ProgramElementWithRelation> FourthProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(FourthProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(FourthProgramElementsProperty);
             }
             set
             {
@@ -122,11 +122,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<CodeSearchResult> FifthProgramElements
+        public ObservableCollection<ProgramElementWithRelation> FifthProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(FifthProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(FifthProgramElementsProperty);
             }
             set
             {
@@ -134,11 +134,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<CodeSearchResult> SixthProgramElements
+        public ObservableCollection<ProgramElementWithRelation> SixthProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(SixthProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(SixthProgramElementsProperty);
             }
             set
             {
@@ -146,84 +146,59 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<CodeSearchResult> SeventhProgramElements
+        public ObservableCollection<ProgramElementWithRelation> SeventhProgramElements
         {
             get
             {
-                return (ObservableCollection<CodeSearchResult>)GetValue(SeventhProgramElementsProperty);
+                return (ObservableCollection<ProgramElementWithRelation>)GetValue(SeventhProgramElementsProperty);
             }
             set
             {
                 SetValue(SeventhProgramElementsProperty, value);
             }
-        }   
+        }
+
+        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<ProgramElementWithRelation> relatedInfo)
+        {
+            relatedInfo.Clear(); //may triger relatedInfo NavigationBox selection change
+            if (currentNavigationBox.SelectedItem != null)
+            {
+                var relatedmembers = InformationSource.GetRelatedInfo(currentNavigationBox.SelectedItem as ProgramElementWithRelation);
+                foreach (var member in relatedmembers)
+                {
+                    relatedInfo.Add(member);
+                }
+            }
+        }
 
         private void FirstProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-
-            SecondProgramElements.Clear();
-            //var methods = InformationSource.GetRelatedMethods(FirstProgramElementsList.SelectedItem as CodeSearchResult);
-            var relatedmembers = InformationSource.GetRelatedInfo(FirstProgramElementsList.SelectedItem as CodeSearchResult);
-            foreach (var member in relatedmembers)
-            {   
-                CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
-                SecondProgramElements.Add(memberAsSearchResult);
-            }
+            ClearGetAndShow(FirstProgramElementsList, SecondProgramElements);            
         }
 
         private void SecondProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ThirdProgramElements.Clear();
-            var relatedmembers = InformationSource.GetRelatedInfo(SecondProgramElementsList.SelectedItem as CodeSearchResult);
-            foreach (var member in relatedmembers)
-            {
-                CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
-                ThirdProgramElements.Add(memberAsSearchResult);
-            }
+            ClearGetAndShow(SecondProgramElementsList, ThirdProgramElements);
         }
 
         private void ThirdProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            FourthProgramElements.Clear();
-            var relatedmembers = InformationSource.GetRelatedInfo(ThirdProgramElementsList.SelectedItem as CodeSearchResult);
-            foreach (var member in relatedmembers)
-            {
-                CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
-                FourthProgramElements.Add(memberAsSearchResult);
-            }
+            ClearGetAndShow(ThirdProgramElementsList, FourthProgramElements);
         }
 
         private void FourthProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            FifthProgramElements.Clear();
-            var relatedmembers = InformationSource.GetRelatedInfo(FourthProgramElementsList.SelectedItem as CodeSearchResult);
-            foreach (var member in relatedmembers)
-            {
-                CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
-                FifthProgramElements.Add(memberAsSearchResult);
-            }
+            ClearGetAndShow(FourthProgramElementsList, FifthProgramElements);
         }
 
         private void FifthProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            SixthProgramElements.Clear();
-            var relatedmembers = InformationSource.GetRelatedInfo(FifthProgramElementsList.SelectedItem as CodeSearchResult);
-            foreach (var member in relatedmembers)
-            {
-                CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
-                SixthProgramElements.Add(memberAsSearchResult);
-            }
+            ClearGetAndShow(FifthProgramElementsList, SixthProgramElements);
         }
 
         private void SixthProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            SeventhProgramElements.Clear();
-            var relatedmembers = InformationSource.GetRelatedInfo(SixthProgramElementsList.SelectedItem as CodeSearchResult);
-            foreach (var member in relatedmembers)
-            {
-                CodeSearchResult memberAsSearchResult = new CodeSearchResult(member.Element, 1.0);
-                SeventhProgramElements.Add(memberAsSearchResult);
-            }
+            ClearGetAndShow(SixthProgramElementsList, SeventhProgramElements);
         }
 
         private void SeventhProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
