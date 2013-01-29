@@ -433,8 +433,10 @@ namespace Sando.UI
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
                 // Create a new instance of SrcML.NET's SrcMLArchive
-                // TODO: Sando provides the path of srcML folder in some way
-                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()));
+                string src2srcmlDir = Path.Combine(pluginDirectory, "LIBS");
+                var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
+                generator.RegisterExecutable(Path.Combine(src2srcmlDir, "srcML-Win-cSharp"), new[] {ABB.SrcML.Language.CSharp});
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), generator);
                 // Subscribe events from SrcML.NET's solution monitor
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
@@ -462,7 +464,7 @@ namespace Sando.UI
             writeLog("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             // Current design decision: 
             // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
-            if (!_srcMLArchive.isValidFileExtension(eventArgs.SourceFilePath))
+            if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
             {
                 HandleSrcMLDOTNETEvents(eventArgs);
             }
