@@ -20,15 +20,16 @@
           Padding="2"
           SnapsToDevicePixels="true"
           Background="Transparent">
-                            <StackPanel Orientation="Vertical">
-                                <Label Content="{Binding Path=Name}"></Label>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="{Binding Path=ProgramElementType}" FontSize="9" FontStyle="Italic"></Label>
-                                    <Label Content="{Binding Path=DefinitionLineNumber}" FontSize="9"></Label>
-                                    <Label Content="{Binding Path=ProgramElementRelation}" FontSize="9"></Label>
-                                </StackPanel>
-                            </StackPanel>                            
-                        </Border>
+                                    <StackPanel Orientation="Vertical">
+                                        <Label Content="{Binding Path=Name}"></Label>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="{Binding Path=ProgramElementType}" FontSize="9" FontStyle="Italic"></Label>
+                                            <Label Content="{Binding Path=DefinitionLineNumber}" FontSize="9"></Label>
+                                            <Label Content="{Binding Path=ProgramElementRelation}" FontSize="9"></Label>
+                                        </StackPanel>                                
+                                <Separator Width="140" Background="Black" />
+                            </StackPanel>
+                        </Border>                            
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="true">
                                 <Setter TargetName="Border"
@@ -43,7 +44,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        </UserControl.Resources>
+    </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
         <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
 
@@ -65,7 +66,6 @@
         </ListView>
         <ListView Name="SeventhProgramElementsList" SelectionChanged="SeventhProgramElements_SelectionChanged" ItemsSource="{Binding Path=SeventhProgramElements}"
  MinWidth="142"/>
-
 
     </StackPanel>
 </UserControl>

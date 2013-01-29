@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -53,8 +54,21 @@
     <Compile Include="GraphBuilderTest.cs" />
     <Compile Include="NavigationBoxesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="TestFiles\ConfigManip.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="TestFiles\SrcMLCSharpParser.cs">
+      <SubType>Code</SubType>
+    </None>
+    <None Include="TestFiles\TestMethod.cs">
+      <SubType>Code</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+      <Project>{db482a0e-4294-4008-bc79-d22505b5b661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17aa2b71-c4f9-4397-9d05-6119763d07a5}</Project>
       <Name>SandoExtensionContracts</Name>
@@ -63,6 +77,10 @@
       <Project>{6de1bf7e-f357-40f8-aedc-b52d19cbdb11}</Project>
       <Name>LocalSearch</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\ConfigManip.XML" />
+    <Content Include="TestFiles\TestMethod.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
