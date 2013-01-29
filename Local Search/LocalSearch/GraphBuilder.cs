@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using System.Diagnostics.Contracts;
+using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace LocalSearch
 {   
@@ -19,7 +21,7 @@ namespace LocalSearch
         private const String SrcmlLib = @"..\..\..\..\LIBS\srcML-Win";
         private SrcMLFile srcmlFile;
         private XElement[] FieldDecs;
-        private XElement[] Methods;
+        private XElement[] Methods;        
 
         /// <summary>
         /// Constructing a new Graph Builder.
@@ -41,8 +43,102 @@ namespace LocalSearch
 
                 String tmpFile = Path.GetTempPath() + Guid.NewGuid().ToString() + ".xml";
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
-            }
+            }            
         }
+
+        private List<ProgramElementWithRelation> GetCallees(CodeSearchResult codeSearchResult)
+        {         
+            List<ProgramElementWithRelation> listFiledRelated = new List<ProgramElementWithRelation>();
+            XElement[] allmethods = GetMethods();
+            var allCalls = SrcMLHelper.GetCallsFromFunction(GetMethod(codeSearchResult.Element as MethodElement));
+            foreach (var method in allmethods)
+            {
+                if (IfCalledByMe(method, allCalls)!=-1)
+                {   
+                    var fullmethod = method;
+                    Contract.Requires((fullmethod != null), "Method " + method.Element(SRC.Name).Value + " does not belong to this local file.");
+                    var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
+                    methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+                    listFiledRelated.Add(methodaselement);
+                }
+            }
+            return listFiledRelated;
+        }
+
+        private XElement GetMethod(MethodElement programElement)
+        {
+            XElement[] allmethods = GetMethods();
+            foreach (var method in allmethods)
+            {
+                if (programElement.DefinitionLineNumber == method.GetSrcLineNumber())
+                    return method;
+            }
+            return null;
+        }
+
+        private int IfCalledByMe(XElement method,  IEnumerable<XElement> allCalls)
+        {            
+            foreach (var call in allCalls)
+            {
+                if(Matches(call,method))
+                    return call.GetSrcLineNumber();
+            }
+            return -1;
+        }
+
+        private bool Matches(XElement call, XElement methodElement)
+        {
+            var name = "";
+            try
+            {
+                name = call.Elements(SRC.Name).Elements(SRC.Name).Last().Value;	                
+            }catch(InvalidOperationException e){
+                name = call.Elements(SRC.Name).Last().Value;
+            }
+            var argCount = call.Element(SRC.ArgumentList).Elements(SRC.Argument).Count();
+            
+            var elementArgCount =   methodElement.Element(SRC.ParameterList).Elements(SRC.Parameter).Count();
+            var elementName = methodElement.Element(SRC.Name).Value;
+            if (name.Equals(elementName) && elementArgCount == argCount)
+                return true;
+            else
+                return false;
+        }
+
+       
+        private static string GetMethodSignature(XElement methodElement)
+        {
+            if (methodElement == null)
+            {
+                throw new ArgumentNullException("methodElement");
+            }
+            if (!(new[] { SRC.Call}).Contains(methodElement.Name))
+            {
+                throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
+            }
+
+            var sig = new StringBuilder();
+            var paramListElement = methodElement.Element(SRC.ParameterList);
+            //add all the text and whitespace prior to the parameter list
+            foreach (var n in paramListElement.NodesBeforeSelf())
+            {
+                if (n.NodeType == XmlNodeType.Element)
+                {
+                    sig.Append(((XElement)n).Value);
+                }
+                else if (n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    sig.Append(((XText)n).Value);
+                }
+            }
+            //add the parameter list
+            sig.Append(paramListElement.Value);
+
+            //convert whitespace chars to spaces and condense any consecutive whitespaces.
+            return Regex.Replace(sig.ToString().Trim(), @"\s+", " ");
+        }
+
+
 
         /// <summary>
         /// Get all field "declaration statements" in the source file.
@@ -379,6 +475,8 @@ namespace LocalSearch
             var method = GetFullMethodFromName(methodname, srcLineNumber);
 
             Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
+
+            listMethodRelated.AddRange(GetCallees(codeSearchResult));
 
             //get fields that are used by this method
             var fieldnames = GetFieldsUsedinMethod(method);
