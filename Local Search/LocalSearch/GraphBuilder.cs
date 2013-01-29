@@ -58,7 +58,7 @@ namespace LocalSearch
                     var fullmethod = method;
                     Contract.Requires((fullmethod != null), "Method " + method.Element(SRC.Name).Value + " does not belong to this local file.");
                     var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
-                    methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+                    methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
                     listFiledRelated.Add(methodaselement);
                 }
             }
