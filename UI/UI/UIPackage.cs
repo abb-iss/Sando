@@ -295,7 +295,6 @@ namespace Sando.UI
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
 
 
             
@@ -424,6 +423,7 @@ namespace Sando.UI
                 {
                     extensionPointsConfigurationDirectory = pluginDirectory;
                 }
+                ExtensionPointsRepository.Instance.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
 
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
                 bool isIndexRecreationRequired =
