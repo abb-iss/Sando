@@ -45,27 +45,30 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <StackPanel Orientation="Horizontal">
-        <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
-
-        </ListView>
-        <ListView Name="SecondProgramElementsList" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" MinWidth="143">
-        
-        </ListView>
-        <ListView Name="ThirdProgramElementsList" SelectionChanged="ThirdProgramElements_SelectionChanged" ItemsSource="{Binding Path=ThirdProgramElements}" MinWidth="143">
-
-        </ListView>
-        <ListView Name="FourthProgramElementsList" SelectionChanged="FourthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FourthProgramElements}" MinWidth="143">
-
-        </ListView>
-        <ListView Name="FifthProgramElementsList" SelectionChanged="FifthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FifthProgramElements}" MinWidth="143">
-
-        </ListView>
-        <ListView Name="SixthProgramElementsList" SelectionChanged="SixthProgramElements_SelectionChanged" ItemsSource="{Binding Path=SixthProgramElements}" MinWidth="143">
-
-        </ListView>
-        <ListView Name="SeventhProgramElementsList" SelectionChanged="SeventhProgramElements_SelectionChanged" ItemsSource="{Binding Path=SeventhProgramElements}"
- MinWidth="142"/>
-
-    </StackPanel>
+    <DockPanel >
+        <Label DockPanel.Dock="Top" Content="{Binding Path=RelationSequence}" />
+        <DockPanel VerticalAlignment="Stretch" Height="Auto" Width="1000">
+            <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
+            </ListView>
+            
+            <ListView Name="SecondProgramElementsList" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" MinWidth="143">
+            </ListView>
+            
+            <ListView Name="ThirdProgramElementsList" SelectionChanged="ThirdProgramElements_SelectionChanged" ItemsSource="{Binding Path=ThirdProgramElements}" MinWidth="143">
+            </ListView>
+            
+            <ListView Name="FourthProgramElementsList" SelectionChanged="FourthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FourthProgramElements}" MinWidth="143">
+            </ListView>
+            
+            <ListView Name="FifthProgramElementsList" SelectionChanged="FifthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FifthProgramElements}" MinWidth="143">
+            </ListView>
+            
+            <ListView Name="SixthProgramElementsList" SelectionChanged="SixthProgramElements_SelectionChanged" ItemsSource="{Binding Path=SixthProgramElements}" MinWidth="143">
+            </ListView>
+            
+            <ListView Name="SeventhProgramElementsList" SelectionChanged="SeventhProgramElements_SelectionChanged" ItemsSource="{Binding Path=SeventhProgramElements}"
+ MinWidth="143">
+            </ListView>
+        </DockPanel>        
+    </DockPanel>
 </UserControl>

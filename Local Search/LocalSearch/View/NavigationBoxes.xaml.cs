@@ -49,6 +49,7 @@ namespace LocalSearch.View
             FifthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             SixthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             SeventhProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            SelectedElements = new List<ProgramElementWithRelation>();
             InitializeComponent();
         }
 
@@ -72,6 +73,9 @@ namespace LocalSearch.View
 
         public static readonly DependencyProperty SeventhProgramElementsProperty =
                 DependencyProperty.Register("SeventhProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+
+        public static readonly DependencyProperty RelationSequenceProperty =
+             DependencyProperty.Register("RelationSequence", typeof(string), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
 
         public ObservableCollection<ProgramElementWithRelation> FirstProgramElements
@@ -158,52 +162,116 @@ namespace LocalSearch.View
             }
         }
 
-        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<ProgramElementWithRelation> relatedInfo)
+        public List<ProgramElementWithRelation> SelectedElements { get; set; }
+
+        public string RelationSequence
         {
+            get
+            {
+                return (string)GetValue(RelationSequenceProperty);
+            }
+            private set
+            {
+                SetValue(RelationSequenceProperty, value);
+            }
+        }
+
+        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<ProgramElementWithRelation> relatedInfo, int currentPos)
+        {
+            ClearSelectedElements(currentPos);
+
             relatedInfo.Clear(); //may triger relatedInfo NavigationBox selection change
+
             if (currentNavigationBox.SelectedItem != null)
             {
-                var relatedmembers = InformationSource.GetRelatedInfo(currentNavigationBox.SelectedItem as ProgramElementWithRelation);
+                ProgramElementWithRelation selected = currentNavigationBox.SelectedItem as ProgramElementWithRelation;
+                SelectedElements.Add(selected);
+                var relatedmembers = InformationSource.GetRelatedInfo(selected);
                 foreach (var member in relatedmembers)
                 {
                     relatedInfo.Add(member);
                 }
+
+                //MessageBox.Show(ShowSequenceOfSelects());
+                RelationSequence = ShowSequenceOfSelects();
             }
         }
 
-        private void FirstProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ClearSelectedElements(int currentPos)
         {
-            ClearGetAndShow(FirstProgramElementsList, SecondProgramElements);            
+            int SelectedNum = SelectedElements.Count;
+            if (SelectedNum > currentPos)
+                SelectedElements.RemoveRange(currentPos, SelectedNum-currentPos);
+        }
+
+        private String ShowSequenceOfSelects()
+        {
+            String strbuilder = "";
+            int count = SelectedElements.Count;
+
+            if (count == 0)
+                return strbuilder;
+            
+            ProgramElementWithRelation firstElement = SelectedElements[0];
+            String NameOfElement = firstElement.Element.Name;
+            String TypeOfElement = firstElement.ProgramElementType.ToString();
+            strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
+
+            int i = 1;
+            while (i < count)
+            {
+                ProgramElementWithRelation Element = SelectedElements[i];
+                String Name = Element.Name;
+                String Type = Element.ProgramElementType.ToString();
+
+                var type = typeof(ProgramElementRelation);
+                var memInfo = type.GetMember(Element.ProgramElementRelation.ToString());
+                var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
+                    false);
+                var description = ((DescriptionAttribute)attributes[0]).Description;
+
+                strbuilder += description + " " + Type + " \"" + Name + "\" ";
+
+                i++;
+            }
+
+            return strbuilder.ToString();
+        }
+
+        private void FirstProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {            
+            ClearGetAndShow(FirstProgramElementsList, SecondProgramElements,0);
         }
 
         private void SecondProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ClearGetAndShow(SecondProgramElementsList, ThirdProgramElements);
+            ClearGetAndShow(SecondProgramElementsList, ThirdProgramElements,1);
         }
 
         private void ThirdProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ClearGetAndShow(ThirdProgramElementsList, FourthProgramElements);
+            ClearGetAndShow(ThirdProgramElementsList, FourthProgramElements,2);
         }
 
         private void FourthProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ClearGetAndShow(FourthProgramElementsList, FifthProgramElements);
+            ClearGetAndShow(FourthProgramElementsList, FifthProgramElements,3);
         }
 
         private void FifthProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ClearGetAndShow(FifthProgramElementsList, SixthProgramElements);
+            ClearGetAndShow(FifthProgramElementsList, SixthProgramElements,4);
         }
 
         private void SixthProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            ClearGetAndShow(SixthProgramElementsList, SeventhProgramElements);
+            ClearGetAndShow(SixthProgramElementsList, SeventhProgramElements,5);
         }
 
         private void SeventhProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            //todo
+            //MessageBox.Show(ShowSequenceOfSelects());
+            RelationSequence = ShowSequenceOfSelects();
         }
 
         public GraphBuilder InformationSource = null;
