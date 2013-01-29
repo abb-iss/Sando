@@ -423,7 +423,6 @@ namespace Sando.UI
                 {
                     extensionPointsConfigurationDirectory = pluginDirectory;
                 }
-                ExtensionPointsRepository.Instance.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
 
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
                 bool isIndexRecreationRequired =
@@ -431,6 +430,9 @@ namespace Sando.UI
 
                 // Create a new instance of SrcML.NET's solution monitor
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                //Create the default IndexFilterManager
+                //This must happen after calling CreateMonitor, because that sets the Solution Key, but before subscribing to file events
+                ExtensionPointsRepository.Instance.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
                 // Subscribe events from SrcML.NET's solution monitor
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
