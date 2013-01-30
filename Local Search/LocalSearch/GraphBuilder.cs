@@ -315,7 +315,7 @@ namespace LocalSearch
         /// <param name="method">FULL method in XElement</param>
         /// <param name="fieldname">field NAME in String</param>
         /// <returns>true if it is used.</returns>
-        public bool ifFieldUsedinMethod(XElement method, String fieldname)
+        public bool ifFieldUsedinMethod(XElement method, String fieldname, ref int UsedLineNumber)
         {
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
@@ -325,9 +325,13 @@ namespace LocalSearch
             var localvars = GetAllLocalVarsinMethod(method);
             var paras = GetAllParametersinMethod(method);
 
-            List<String> listNames = new List<String>();
+            List<String> listNames = new List<String>();  
+            List<XElement> listNameElements = new List<XElement>();
             foreach (var name in allnames)
+            {
+                listNameElements.Add(name);
                 listNames.Add(name.Value);
+            }
 
             List<String> listLocalVars = new List<string>();
             foreach (var localvar in localvars)
@@ -340,14 +344,18 @@ namespace LocalSearch
             if (listNames.Contains(fieldname) &&
                 !(listLocalVars.Contains(fieldname)) &&
                 !(listParas.Contains(fieldname)))
+            {
+                int index = listNames.FindIndex(name => name == fieldname ); //just search for the first use for now [todo later]
+                UsedLineNumber = listNameElements[index].GetSrcLineNumber();
                 return true;
+            }
             else
                 return false;
         }
 
-        public bool ifFieldUsedinMethod(XElement method, XElement fieldname)
+        public bool ifFieldUsedinMethod(XElement method, XElement fieldname, ref int UsedLineNumber)
         {
-            return ifFieldUsedinMethod(method, fieldname.Value);
+            return ifFieldUsedinMethod(method, fieldname.Value, ref UsedLineNumber);
 
         }
 
@@ -363,11 +371,39 @@ namespace LocalSearch
             XElement[] allfields = GetFieldNames();
             foreach (var field in allfields)
             {
-                if (ifFieldUsedinMethod(method, field))
+                int useLineNum = 0;
+                if (ifFieldUsedinMethod(method, field, ref useLineNum))
                     listFieldsUsed.Add(field);
             }
 
             return listFieldsUsed.ToArray();
+        }
+
+        /// <summary>
+        /// Get fields used in a given method.
+        /// </summary>
+        /// <param name="method">FULL method in XElement</param>
+        /// <returns>an array of fields in ProgramElementWithRelation</returns>
+        public ProgramElementWithRelation[] GetFieldElementsUsedinMethod(XElement method)
+        {
+            List<ProgramElementWithRelation> listFieldElementsUsed = new List<ProgramElementWithRelation>();
+
+            XElement[] allfields = GetFieldNames();
+            foreach (var field in allfields)
+            {
+                int useLineNum = 0;
+                if (ifFieldUsedinMethod(method, field, ref useLineNum))
+                {
+                    var fielddecl = GetFieldDeclFromName(field.Value);
+                    var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
+                    fieldelement.RelationLineNumber = useLineNum;
+                    fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
+
+                    listFieldElementsUsed.Add(fieldelement);
+                }
+            }
+
+            return listFieldElementsUsed.ToArray();
         }
 
         /// <summary>
@@ -382,7 +418,8 @@ namespace LocalSearch
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
             {
-                if (ifFieldUsedinMethod(method, fieldname))
+                int useLineNum = 0;
+                if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
                 {
                     var methodname = method.Element(SRC.Name);
                     listMethods.Add(methodname);
@@ -409,7 +446,8 @@ namespace LocalSearch
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
             {
-                if (ifFieldUsedinMethod(method, fieldname))
+                int useLineNum = 0;
+                if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
                 {   
                     listMethods.Add(method);
                 }
@@ -516,20 +554,21 @@ namespace LocalSearch
 
             Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
 
-            //get methods that are called by this method
+            //relation 1: get methods that are called by this method
             listMethodRelated.AddRange(GetCallees(codeSearchResult));
 
-            //get fields that are used by this method
-            var fieldnames = GetFieldsUsedinMethod(method);
-            foreach (var fieldname in fieldnames)
-            {
-                //var fieldaselement = GetFieldElementWRelationFromName(fieldname);
-                var fielddecl = GetFieldDeclFromName(fieldname.Value);
-                Contract.Requires((fielddecl != null), "Field " + fieldname.Value + " does not belong to this local file.");
-                var fieldaselement = GetFieldElementWRelationFromDecl(fielddecl);
-                fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
-                listMethodRelated.Add(fieldaselement);
-            }
+            //relation 2: get fields that are used by this method
+            //var fieldnames = GetFieldsUsedinMethod(method);
+            //foreach (var fieldname in fieldnames)
+            //{
+            //    //var fieldaselement = GetFieldElementWRelationFromName(fieldname);
+            //    var fielddecl = GetFieldDeclFromName(fieldname.Value);
+            //    Contract.Requires((fielddecl != null), "Field " + fieldname.Value + " does not belong to this local file.");
+            //    var fieldaselement = GetFieldElementWRelationFromDecl(fielddecl);
+            //    fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
+            //    listMethodRelated.Add(fieldaselement);
+            //}
+            listMethodRelated.AddRange(GetFieldElementsUsedinMethod(method));
 
             //get other method related info. 
             //todo

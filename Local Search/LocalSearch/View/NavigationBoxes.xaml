@@ -20,7 +20,7 @@
           Padding="2"
           SnapsToDevicePixels="true"
           Background="Transparent">
-                                    <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
                                 <Label>
                                     <Label.Content>
                                         <TextBlock FontFamily="Courier New">
@@ -28,19 +28,19 @@
                                                 <MultiBinding StringFormat="{}[{0}-{1}]({2}) {3}">
                                                     <Binding Path="ProgramElementTypeSimple" />
                                                     <Binding Path="ProgramElementRelationSimple" />
-                                                    <Binding Path="ElemenetRelationLineNumber" />
+                                                    <Binding Path="RelationLineNumber" />
                                                     <Binding Path="Name" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
-                                    </Label.Content>
-                                    <!--<Label Content="{Binding Path=Name}"></Label>-->
-                                    <!--<StackPanel Orientation="Horizontal">
+                                    </Label.Content>                                    
+                                </Label>
+                                <!--<Label Content="{Binding Path=Name}"></Label>
+                                <StackPanel Orientation="Horizontal">
                                             <Label Content="{Binding Path=ProgramElementType}" FontSize="9" FontStyle="Italic"></Label>
                                             <Label Content="{Binding Path=DefinitionLineNumber}" FontSize="9"></Label>
                                             <Label Content="{Binding Path=ProgramElementRelation}" FontSize="9"></Label>
                                         </StackPanel>-->
-                                </Label>
                                 <Separator Width="140" Background="Black" />
                             </StackPanel>
                         </Border>                            
@@ -60,7 +60,7 @@
         </Style>
     </UserControl.Resources>
     <DockPanel >
-        <Label DockPanel.Dock="Top" Content="{Binding Path=RelationSequence}" />
+        <Label DockPanel.Dock="Top" Content="{Binding Path=RelationSequence}" FontFamily="Segoe UI Semibold" />
         <DockPanel VerticalAlignment="Stretch" Height="Auto" Width="1000">
             <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
             </ListView>

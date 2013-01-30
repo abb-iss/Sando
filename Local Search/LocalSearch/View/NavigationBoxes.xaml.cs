@@ -243,7 +243,7 @@ namespace LocalSearch.View
                     false);
                 var description = ((DescriptionAttribute)attributes[0]).Description;
 
-                strbuilder += description + " " + Type + " \"" + Name + "\" ";
+                strbuilder += " --- " + description + " ---> " + Type + " \"" + Name + "\" ";
 
                 i++;
             }

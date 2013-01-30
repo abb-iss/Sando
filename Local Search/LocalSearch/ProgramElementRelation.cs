@@ -9,11 +9,11 @@ namespace LocalSearch
 {
     public enum ProgramElementRelation
     {
-        [Description("is used by")]
+        [Description("used by")]
         Use, //method uses field
         [Description("uses")]
         UseBy, //field used by method
-        [Description("is called by")]
+        [Description("called by")]
         Call, //method calls method
         [Description("calls")]
         CallBy, //method called by method
