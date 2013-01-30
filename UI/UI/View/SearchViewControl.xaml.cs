@@ -504,6 +504,11 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         }
 
 
+
+        internal SearchManager GetSearchManager()
+        {
+            return _searchManager;
+        }
     }
     
     public  class AccessWrapper
