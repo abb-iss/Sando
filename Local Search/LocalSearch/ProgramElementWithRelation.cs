@@ -35,12 +35,14 @@ namespace LocalSearch
             base(element, score)
 	   {           
 		   this.ProgramElementRelation = relation;
+           this.RelationLineNumber = Convert.ToInt32(this.DefinitionLineNumber);
 	   }
 
         public ProgramElementWithRelation(ProgramElement element, double score) :
             base(element, score)
         {
             this.ProgramElementRelation = ProgramElementRelation.Other;
+            this.RelationLineNumber = Convert.ToInt32(this.DefinitionLineNumber);
         }
 
                

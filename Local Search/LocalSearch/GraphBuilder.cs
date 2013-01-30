@@ -395,6 +395,7 @@ namespace LocalSearch
                 if (ifFieldUsedinMethod(method, field, ref useLineNum))
                 {
                     var fielddecl = GetFieldDeclFromName(field.Value);
+                    Contract.Requires((fielddecl != null), "Field " + field.Value + " does not belong to this local file.");
                     var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
                     fieldelement.RelationLineNumber = useLineNum;
                     fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
@@ -454,6 +455,31 @@ namespace LocalSearch
             }
 
             return listMethods.ToArray();
+        }
+
+        /// <summary>
+        /// Get methods that uses a given field.
+        /// </summary>
+        /// <param name="fieldname">field NAME in String</param>
+        /// <returns>an array of FULL methods in ProgramElementWithRelation</returns>
+        public ProgramElementWithRelation[] GetMethodElementsUseField(String fieldname)
+        {
+            List<ProgramElementWithRelation> listMethodElements = new List<ProgramElementWithRelation>();
+
+            XElement[] allmethods = GetMethods();
+            foreach (var method in allmethods)
+            {
+                int useLineNum = 0;
+                if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
+                {
+                    var methodaselement = GetMethodElementWRelationFromXElement(method);
+                    methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+                    methodaselement.RelationLineNumber = useLineNum;
+                    listMethodElements.Add(methodaselement);
+                }
+            }
+
+            return listMethodElements.ToArray();
         }
 
         /// <summary>
@@ -525,17 +551,15 @@ namespace LocalSearch
             String fieldname = codeSearchResult.Name;
 
             //relation 1: get methods that use this field
-            var methods = GetMethodsUseField(fieldname);
-            //var methods = GetMethodNamesUseField(fieldname); // alternative-1
-            foreach (var method in methods)
-            {
-                //var fullmethod = GetFullMethodFromName(method); // alternative-1
-                var fullmethod = method;
-                Contract.Requires((fullmethod != null), "Method " + method.Element(SRC.Name).Value + " does not belong to this local file.");
-                var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
-                methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
-                listFiledRelated.Add(methodaselement);
-            }
+            //var methods = GetMethodsUseField(fieldname);
+            //foreach (var method in methods)
+            //{
+            //    var fullmethod = method;                
+            //    var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
+            //    methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+            //    listFiledRelated.Add(methodaselement);
+            //}
+            listFiledRelated.AddRange(GetMethodElementsUseField(fieldname));
 
             //there may be other relations that will be considered in the future
             // todo
