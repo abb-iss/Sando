@@ -516,6 +516,7 @@ namespace LocalSearch
 
             Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
 
+            //get methods that are called by this method
             listMethodRelated.AddRange(GetCallees(codeSearchResult));
 
             //get fields that are used by this method

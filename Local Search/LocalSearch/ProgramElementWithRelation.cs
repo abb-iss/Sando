@@ -15,11 +15,21 @@ namespace LocalSearch
 
         public int RelationLineNumber { get; set; }
 
-        //public ProgramElement Element
-        //{
-        //    get;
-        //    private set;
-        //}
+        public String ProgramElementRelationSimple 
+        {
+            get
+            {
+                if (ProgramElementRelation == ProgramElementRelation.Other)
+                    return "D";
+                else
+                    return "U";
+            } 
+        }
+
+        public String ProgramElementTypeSimple
+        {
+            get { return ProgramElementType.ToString().Substring(0, 1); }
+        }
 
         public ProgramElementWithRelation(ProgramElement element, double score, ProgramElementRelation relation):
             base(element, score)
