@@ -76,7 +76,25 @@
           <ButtonText>Sando Search</ButtonText>
         </Strings>
       </Button>
-      
+
+      <Button guid="guidIDEToolbarCmdSet" id="localSandoSearch" priority="0x0100" type="Button">
+        <Parent guid="guidIDEToolbarCmdSet" id="ToolbarGroup" />        
+        <Strings>
+          <CommandName>localSandoSearch</CommandName>
+          <ButtonText>Single File Search</ButtonText>
+        </Strings>
+      </Button>
+
+
+      <Button guid="guidIDEToolbarCmdSet" id="localSandoSearch" priority="0x0100" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
+        <Icon guid="guidSandoImages" id="sandosearchicon" />
+        <Strings>
+          <CommandName>localSandoSearch</CommandName>
+          <ButtonText>Single File Search</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidIDEToolbarCmdSet" id="sandoSearch" priority="0x0100" type="Button">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1" />
         <Icon guid="guidSandoImages" id="sandosearchicon" />
@@ -103,6 +121,9 @@
   </Commands>
 	<KeyBindings>
 		<KeyBinding guid="guidIDEToolbarCmdSet" id="sandoSearch" mod1="Alt Shift" key1="S" editor="guidVSStd97" />
+    <KeyBinding guid="guidIDEToolbarCmdSet" id="localSandoSearch" mod1="Alt Shift" key1="I" editor="guidVSStd97" />
+
+
 	</KeyBindings>
 
   <Symbols>
@@ -113,9 +134,9 @@
     
     <!-- This is the guid used to group the menu commands together -->
     <GuidSymbol name="guidIDEToolbarCmdSet" value="{61e80ffa-f99b-46ac-8dd0-f3f4171568f3}">
-
       <!--<IDSymbol name="MyMenuGroup" value="0x1020" />-->
       <IDSymbol name="sandoSearch" value="0x0101" />
+      <IDSymbol name="localSandoSearch" value="0x0109" />
       <IDSymbol name="sandoSearchTool" value="0x0102" />
       <IDSymbol name="Toolbar" value="0x1000" />
       <IDSymbol name="ToolbarGroup" value="0x1050" />

@@ -21,6 +21,7 @@ namespace Sando.UI.View
     				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber);
     			}
     		}
+           
 
     		public static void OpenFile(string filePath, int lineNumber)
     		{
@@ -45,6 +46,7 @@ namespace Sando.UI.View
     				dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
     			}
     		}
+
     	}
 
 }

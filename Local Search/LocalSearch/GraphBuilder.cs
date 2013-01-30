@@ -17,18 +17,23 @@ namespace LocalSearch
 {   
     public class GraphBuilder
     {
-        private const String SrcmlLibSharp = @"..\..\..\..\LIBS\srcML-Win-cSharp";
-        private const String SrcmlLib = @"..\..\..\..\LIBS\srcML-Win";
+        private String SrcmlLibSharp = @"..\..\LIBS\srcML-Win-cSharp";
+        private const String SrcmlLib = @"..\..\LIBS\srcML-Win";
         private SrcMLFile srcmlFile;
         private XElement[] FieldDecs;
-        private XElement[] Methods;        
+        private XElement[] Methods;
+        private Dictionary<int, List<Tuple<XElement, int>>> Calls = new Dictionary<int, List<Tuple<XElement, int>>>();
 
         /// <summary>
         /// Constructing a new Graph Builder.
         /// </summary>
         /// <param name="srcPath">The full path to the given Source Code or XML file.</param>
-        public GraphBuilder(String srcPath)
+        public GraphBuilder(String srcPath, string SrcMLForCSharp = null)
         {
+            if (SrcMLForCSharp != null)
+            {
+                SrcmlLibSharp = SrcMLForCSharp;
+            }
             Src2SrcMLRunner srcmlConverter;
             String fileExt = Path.GetExtension(srcPath);
 
@@ -41,28 +46,82 @@ namespace LocalSearch
                 else
                     srcmlConverter = new Src2SrcMLRunner(SrcmlLib);
 
-                String tmpFile = Path.GetTempPath() + Guid.NewGuid().ToString() + ".xml";
+                String tmpFile = Path.GetTempFileName();
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
+            }
+            CreateCallGraph();
+        }
+
+        private void CreateCallGraph()
+        {
+            XElement[] allmethods = GetMethods();
+            foreach (var method in allmethods)
+            {
+                var allCalls = SrcMLHelper.GetCallsFromFunction(method);
+                foreach (var call in allCalls)
+                {
+                    var methodCallAsDeclaration = GetMethod(call);
+                    if (methodCallAsDeclaration != null)
+                    {
+                        List<Tuple<XElement,int>> calls = null;
+                        Calls.TryGetValue(method.GetSrcLineNumber(), out calls);
+                        if (calls == null)
+                            calls = new List<Tuple<XElement, int>>();
+                        calls.Add(Tuple.Create(methodCallAsDeclaration,call.GetSrcLineNumber()));
+                        Calls[method.GetSrcLineNumber()] = calls;
+                    }
+                }
+
+                //foreach (var anotherMethod in allmethods)
+                //{
+                //    if (IfCalledByMe(anotherMethod, allCalls) != -1)
+                //    {
+                //        List<Tuple<XElement, int>> calls = null;
+                //        Calls.TryGetValue(method.GetSrcLineNumber(), out calls);
+                //        if (calls == null)
+                //            calls = new List<Tuple<XElement, int>>();
+                //        calls.Add(anotherMethod);
+                //    }
+                //}
             }            
         }
 
         private List<ProgramElementWithRelation> GetCallees(CodeSearchResult codeSearchResult)
         {         
+            
+            var method = GetMethod(codeSearchResult.Element as MethodElement);
+            return GetCallees( method);
+        }
+
+        public List<ProgramElementWithRelation> GetCallees( XElement method)
+        {
             List<ProgramElementWithRelation> listFiledRelated = new List<ProgramElementWithRelation>();
-            XElement[] allmethods = GetMethods();
-            var allCalls = SrcMLHelper.GetCallsFromFunction(GetMethod(codeSearchResult.Element as MethodElement));
-            foreach (var method in allmethods)
+            List<Tuple<XElement, int>> myCallees = null;
+            Calls.TryGetValue(method.GetSrcLineNumber(), out myCallees);
+            if (myCallees != null)
             {
-                if (IfCalledByMe(method, allCalls)!=-1)
-                {   
-                    var fullmethod = method;
+                foreach (var callee in myCallees)
+                {
+                    var fullmethod = callee;
                     Contract.Requires((fullmethod != null), "Method " + method.Element(SRC.Name).Value + " does not belong to this local file.");
-                    var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
+                    var methodaselement = GetMethodElementWRelationFromXElement(fullmethod.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
                     listFiledRelated.Add(methodaselement);
+                    methodaselement.RelationLineNumber = fullmethod.Item2;
                 }
             }
             return listFiledRelated;
+        }
+
+        private XElement GetMethod(XElement call)
+        {
+            XElement[] allmethods = GetMethods();
+            foreach (var method in allmethods)
+            {
+                if (Matches(call,method))
+                    return method;
+            }
+            return null;
         }
 
         private XElement GetMethod(MethodElement programElement)
@@ -97,7 +156,10 @@ namespace LocalSearch
             }
             var argCount = call.Element(SRC.ArgumentList).Elements(SRC.Argument).Count();
             
-            var elementArgCount =   methodElement.Element(SRC.ParameterList).Elements(SRC.Parameter).Count();
+            var paramList = methodElement.Element(SRC.ParameterList);
+            var elementArgCount = 0;
+            if(paramList!=null)
+                elementArgCount =   paramList.Elements(SRC.Parameter).Count();
             var elementName = methodElement.Element(SRC.Name).Value;
             if (name.Equals(elementName) && elementArgCount == argCount)
                 return true;
@@ -106,37 +168,7 @@ namespace LocalSearch
         }
 
        
-        private static string GetMethodSignature(XElement methodElement)
-        {
-            if (methodElement == null)
-            {
-                throw new ArgumentNullException("methodElement");
-            }
-            if (!(new[] { SRC.Call}).Contains(methodElement.Name))
-            {
-                throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
-            }
-
-            var sig = new StringBuilder();
-            var paramListElement = methodElement.Element(SRC.ParameterList);
-            //add all the text and whitespace prior to the parameter list
-            foreach (var n in paramListElement.NodesBeforeSelf())
-            {
-                if (n.NodeType == XmlNodeType.Element)
-                {
-                    sig.Append(((XElement)n).Value);
-                }
-                else if (n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace)
-                {
-                    sig.Append(((XText)n).Value);
-                }
-            }
-            //add the parameter list
-            sig.Append(paramListElement.Value);
-
-            //convert whitespace chars to spaces and condense any consecutive whitespaces.
-            return Regex.Replace(sig.ToString().Trim(), @"\s+", " ");
-        }
+  
 
 
 
@@ -257,18 +289,24 @@ namespace LocalSearch
         public XElement[] GetAllParametersinMethod(XElement method)
         {
             XElement paralist = method.Element(SRC.ParameterList);
-            var parameters = paralist.Elements(SRC.Parameter);
-
-            List<XElement> listParas = new List<XElement>();
-
-            foreach (var parameter in parameters)
+            try
             {
-                var paradec = parameter.Element(SRC.Declaration);
-                var para = paradec.Element(SRC.Name);
-                listParas.Add(para);
-            }
+                var parameters = paralist.Elements(SRC.Parameter);
 
-            return listParas.ToArray();
+                List<XElement> listParas = new List<XElement>();
+
+                foreach (var parameter in parameters)
+                {
+                    var paradec = parameter.Element(SRC.Declaration);
+                    var para = paradec.Element(SRC.Name);
+                    listParas.Add(para);
+                }
+                return listParas.ToArray();
+            }
+            catch (NullReferenceException nre)
+            {
+                return new XElement[0];
+            }
         }
         
         /// <summary>
@@ -280,6 +318,8 @@ namespace LocalSearch
         public bool ifFieldUsedinMethod(XElement method, String fieldname)
         {
             XElement methodbody = method.Element(SRC.Block);
+            if (methodbody == null)
+                return false;
             var allnames = methodbody.Descendants(SRC.Name);
 
             var localvars = GetAllLocalVarsinMethod(method);
@@ -537,10 +577,17 @@ namespace LocalSearch
             
             AccessLevel accessLevel = AccessLevel.Internal; //by default
             var specifier = fullmethod.Element(SRC.Specifier); //for constructor
-            if (specifier == null)
-                specifier = fullmethod.Element(SRC.Type).Element(SRC.Specifier); //for other functions
-            if (specifier != null) 
-                accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value, true);
+            try
+            {
+                if (specifier == null)
+                    specifier = fullmethod.Element(SRC.Type).Element(SRC.Specifier); //for other functions
+                if (specifier != null)
+                    accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value, true);
+            }
+            catch (NullReferenceException nre)
+            {
+                //TODO: handle properties, add, get, etc.
+            }
             
             var returnType = String.Empty;
             bool isconstructor = true;
@@ -553,7 +600,10 @@ namespace LocalSearch
 
             var classId = Guid.Empty;
             var className = String.Empty;
-            var args = fullmethod.Element(SRC.ParameterList).ToSource();
+            var myParams = fullmethod.Element(SRC.ParameterList);
+            var args = "";
+            if(myParams!=null)
+                args = myParams.ToSource();
             var body = fullmethod.Element(SRC.Block).ToSource();
 
             var element = new MethodElement(fullmethod.Element(SRC.Name).Value,

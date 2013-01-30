@@ -12,6 +12,8 @@ using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
+using LocalSearch;
+using LocalSearch.View;
 using Microsoft.VisualStudio.CommandBars;
 using log4net; 
 using Microsoft.VisualStudio.Shell;
@@ -196,9 +198,40 @@ namespace Sando.UI
                 var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int) PkgCmdIDList.sandoSearch);
                 var menuToolWin = new MenuCommand(_viewManager.ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand(menuToolWin);
+                
+                var menuCommandID = new CommandID(GuidList.guidUICmdSet,(int)PkgCmdIDList.localSandoSearch);                
+                var menuItem = new MenuCommand((sender, evt) => TriggerLocalSearch(), menuCommandID);
+                mcs.AddCommand(menuItem);                
             }
         }
-        
+
+        private void TriggerLocalSearch()
+        {
+            var active = GetDte().ActiveDocument;
+            if (active != null)
+            {
+                var fileName = Path.Combine(active.Path, active.Name);
+                GraphBuilder gbuilder = new GraphBuilder(fileName,  Path.Combine(GetSrcMLDirectory(), "srcML-Win-cSharp")); // ConfigManip
+                var elements = gbuilder.GetMethodsAsMethodElements();
+                elements.AddRange(gbuilder.GetFieldsAsFieldElements());
+                
+                var boxes = new NavigationBoxes();
+                boxes.InformationSource = gbuilder;
+                foreach (var element in elements)
+                {
+                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
+                    boxes.FirstProgramElements.Add(element2);
+                }
+                System.Windows.Window window = new System.Windows.Window
+                                                   {
+                                                       Title = "Single File Search",
+                                                       Content = boxes
+                                                   };
+                window.ShowDialog();
+                window.Close();
+            }
+        }
+
         private void StartupCompleted()
         {
         	if (_viewManager.ShouldShow())
