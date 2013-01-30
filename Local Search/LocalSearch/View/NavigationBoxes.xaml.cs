@@ -191,8 +191,7 @@ namespace LocalSearch.View
                 {
                     relatedInfo.Add(member);
                 }
-
-                //MessageBox.Show(ShowSequenceOfSelects());
+                                
                 RelationSequence = ShowSequenceOfSelects();
             }
         }
@@ -269,8 +268,7 @@ namespace LocalSearch.View
         }
 
         private void SeventhProgramElements_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            //MessageBox.Show(ShowSequenceOfSelects());
+        {            
             RelationSequence = ShowSequenceOfSelects();
         }
 
