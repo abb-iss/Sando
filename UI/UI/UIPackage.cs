@@ -32,6 +32,10 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
+using System.ComponentModel.Composition;
+using Sando.ExtensionContracts.Services;
+using System.Linq;
+using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.UI
 {
@@ -63,7 +67,8 @@ namespace Sando.UI
     //[ProvideAutoLoad("f1536ef8-92ec-443c-9ed7-fdadf150da82")]    
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
-    public sealed class UIPackage : Package, IToolWindowFinder
+    [Export(typeof(ISearchService))]
+    public sealed class UIPackage : Package, IToolWindowFinder, ISearchService
     {        
 
         private SolutionMonitor _currentMonitor;
@@ -75,7 +80,7 @@ namespace Sando.UI
         private ViewManager _viewManager;
 		private SolutionReloadEventListener listener;
 		private IVsUIShellDocumentWindowMgr winmgr;
-        private WindowEvents _windowEvents;
+        private WindowEvents _windowEvents;        
 
         private static UIPackage MyPackage
 		{
@@ -166,15 +171,10 @@ namespace Sando.UI
         private void SandoWindowActivated(Window GotFocus, Window LostFocus)
         {
             try
-            {
+            {                
                 if (GotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
                 {
-                    var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
-                    if ((null == window) || (null == window.Frame))
-                    {
-                        throw new NotSupportedException(Resources.CanNotCreateWindow);
-                    }
-                    var stw = window as SearchToolWindow;
+                    SearchToolWindow stw = GetSearchToolWindow();
                     if (stw != null)
                     {
                         stw.GetSearchViewControl().FocusOnText();
@@ -186,6 +186,18 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Error(e);
             }
             
+        }
+
+        private SearchToolWindow GetSearchToolWindow()
+        {
+            SearchToolWindow stw = null;
+            var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+            if ((null == window) || (null == window.Frame))
+            {
+                throw new NotSupportedException(Resources.CanNotCreateWindow);
+            }
+            stw = window as SearchToolWindow;
+            return stw;
         }
 
         private void AddCommand()
@@ -517,6 +529,48 @@ namespace Sando.UI
         public void EnsureViewExists()
         {
             _viewManager.EnsureViewExists();
+        }
+
+        public List<CodeSearchResult> Search(string searchCriteria)
+        {            
+                SearchManager manager = SearchManager.GetSearchManager();
+                var oldDaddy = manager._myDaddy;
+                ListUpdater updater = new ListUpdater(new List<CodeSearchResult>());
+                manager._myDaddy = updater;
+                var criteria = new SimpleSearchCriteria();
+                //criteria.SearchByLocation = true;
+                criteria.SearchByProgramElementType = true;
+                var dteTemp = Package.GetGlobalService(typeof(DTE)) as DTE2;
+                criteria.Locations.Add(dteTemp.ActiveDocument.FullName);
+                criteria.ProgramElementTypes.Add(ProgramElementType.Method);
+                criteria.ProgramElementTypes.Add(ProgramElementType.MethodPrototype);
+                criteria.ProgramElementTypes.Add(ProgramElementType.Field);
+                criteria.ProgramElementTypes.Add(ProgramElementType.Property);
+                manager.Search(searchCriteria,criteria);
+                manager._myDaddy = oldDaddy;
+                return updater.list;
+        }
+
+        public class ListUpdater : ISearchResultListener
+        {
+            
+            public List<CodeSearchResult> list;
+
+            public ListUpdater(List<CodeSearchResult> list)
+            {
+                // TODO: Complete member initialization
+                this.list = list;
+            }
+
+            public void Update(IQueryable<CodeSearchResult> results)
+            {
+                list.Clear();
+                list.AddRange(results);
+            }
+            public void UpdateMessage(string message)
+            {
+
+            }
         }
     }
 }

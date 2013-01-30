@@ -34,6 +34,8 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Microsoft.VisualStudio.Shell;
 using EnvDTE;
 using EnvDTE80;
+using Sando.ExtensionContracts.Services;
+using System.ComponentModel.Composition;
 
 
 namespace LocalSearch.View
@@ -43,22 +45,45 @@ namespace LocalSearch.View
     /// </summary>
     public partial class NavigationBoxes : UserControl
     {
+
+        [Import(typeof(ISearchService))]
+        ISearchService searcher;
+
         public NavigationBoxes()
         {
             this.DataContext = this;
-            FirstProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            FirstProgramElements = new ObservableCollection<CodeSearchResult>();
             SecondProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             ThirdProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             FourthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             FifthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             SixthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
             SeventhProgramElements = new ObservableCollection<ProgramElementWithRelation>();
-            SelectedElements = new List<ProgramElementWithRelation>();
-            InitializeComponent();
+            SelectedElements = new List<CodeSearchResult>();
+            InitializeComponent();            
+        }
+
+        public void Search(string s)
+        {
+            try
+            {
+                InitDte2();
+                var sp = new ServiceProvider(dte as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+                var container = sp.GetService(typeof(Microsoft.VisualStudio.ComponentModelHost.SComponentModel)) as Microsoft.VisualStudio.ComponentModelHost.IComponentModel;
+                container.DefaultCompositionService.SatisfyImportsOnce(this);
+                var results = searcher.Search(s);
+                FirstProgramElements.Clear();
+                foreach (var result in results)
+                    FirstProgramElements.Add(result);
+            }
+            catch (NullReferenceException e)
+            {
+                //only in unit tests?
+            }
         }
 
         public static readonly DependencyProperty FirstProgramElementsProperty =
-                DependencyProperty.Register("FirstProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("FirstProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SecondProgramElementsProperty =
                 DependencyProperty.Register("SecondProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
@@ -81,12 +106,15 @@ namespace LocalSearch.View
         public static readonly DependencyProperty RelationSequenceProperty =
              DependencyProperty.Register("RelationSequence", typeof(string), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
+        public static readonly DependencyProperty SearchStringProperty =
+            DependencyProperty.Register("SearchString", typeof(string), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
-        public ObservableCollection<ProgramElementWithRelation> FirstProgramElements
+
+        public ObservableCollection<CodeSearchResult> FirstProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(FirstProgramElementsProperty);
+                return (ObservableCollection<CodeSearchResult>)GetValue(FirstProgramElementsProperty);
             }
             set
             {
@@ -166,7 +194,7 @@ namespace LocalSearch.View
             }
         }
 
-        public List<ProgramElementWithRelation> SelectedElements { get; set; }
+        public List<CodeSearchResult> SelectedElements { get; set; }
 
         public string RelationSequence
         {
@@ -180,8 +208,21 @@ namespace LocalSearch.View
             }
         }
 
+        public string SearchString
+        {
+            get
+            {
+                return (string)GetValue(SearchStringProperty);
+            }
+            private set
+            {
+                SetValue(SearchStringProperty, value);
+            }
+        }
+
         private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<ProgramElementWithRelation> relatedInfo, int currentPos)
         {
+
             ClearSelectedElements(currentPos);
 
             relatedInfo.Clear(); //may triger relatedInfo NavigationBox selection change
@@ -197,7 +238,7 @@ namespace LocalSearch.View
                         NavigationBoxes.SelectLine(relation.RelationLineNumber);
                     }
                 }
-                ProgramElementWithRelation selected = currentNavigationBox.SelectedItem as ProgramElementWithRelation;
+                var selected = currentNavigationBox.SelectedItem as CodeSearchResult;
                 SelectedElements.Add(selected);
                 var relatedmembers = InformationSource.GetRelatedInfo(selected);
 
@@ -225,7 +266,7 @@ namespace LocalSearch.View
             if (count == 0)
                 return strbuilder;
             
-            ProgramElementWithRelation firstElement = SelectedElements[0];
+            CodeSearchResult firstElement = SelectedElements[0];
             String NameOfElement = firstElement.Element.Name;
             String TypeOfElement = firstElement.ProgramElementType.ToString();
             strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
@@ -233,18 +274,25 @@ namespace LocalSearch.View
             int i = 1;
             while (i < count)
             {
-                ProgramElementWithRelation Element = SelectedElements[i];
+                CodeSearchResult Element = SelectedElements[i];
                 String Name = Element.Name;
                 String Type = Element.ProgramElementType.ToString();
 
                 var type = typeof(ProgramElementRelation);
-                var memInfo = type.GetMember(Element.ProgramElementRelation.ToString());
-                var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
-                    false);
-                var description = ((DescriptionAttribute)attributes[0]).Description;
 
-                strbuilder += " --- " + description + " ---> " + Type + " \"" + Name + "\" ";
-
+                if (Element as ProgramElementWithRelation != null)
+                {
+                    var memInfo = type.GetMember(((Element as ProgramElementWithRelation)).ProgramElementRelation.ToString());
+                    var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
+                        false);
+                    var description = ((DescriptionAttribute)attributes[0]).Description;
+                    strbuilder += " --- " + description + " ---> " + Type + " \"" + Name + "\" ";
+                }
+                else
+                {
+                    strbuilder += Name;
+                }
+                    
                 i++;
             }
 
@@ -298,7 +346,7 @@ namespace LocalSearch.View
         {
             if (dte == null)
             {
-                dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+                dte = Package.GetGlobalService(typeof(DTE)) as DTE2;                
             }
         }
 
@@ -315,6 +363,21 @@ namespace LocalSearch.View
             {
                 //ignore, we don't want this feature ever causing a crash
             }
+
+        }
+
+        private void TextBox_KeyDown_1(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                var terms = searchBox.Text;
+                Search(terms);
+            }
+        }
+
+        private void TextBox_TextChanged_1(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
     }
 }

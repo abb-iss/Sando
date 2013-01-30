@@ -18,6 +18,15 @@ namespace Sando.Indexer.Searching
 		{
 			string searchQueryString = searchCriteria.ToQueryString();
 			Query query = documentIndexer.QueryParser.Parse(searchQueryString);
+            
+            foreach(string location in (searchCriteria as SimpleSearchCriteria).Locations){
+                var t = new Lucene.Net.Index.Term("FullFilePath",location);
+                BooleanQuery combined = new BooleanQuery();
+                combined.Add(query, BooleanClause.Occur.MUST);
+                combined.Add(new TermQuery(t), BooleanClause.Occur.MUST);
+                query = combined;
+            }
+            
 			int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
 			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
 			documentIndexer.IndexSearcher.Search(query, collector);

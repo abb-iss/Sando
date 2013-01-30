@@ -19,11 +19,13 @@ public  class SearchManager
 			private CodeSearcher _currentSearcher;
 			private string _currentDirectory = "";
 			private bool _invalidated = true;
-			private ISearchResultListener _myDaddy;
+			public ISearchResultListener _myDaddy;
+            private static SearchManager current;
 
 			public SearchManager(ISearchResultListener daddy)
 			{
 				_myDaddy = daddy;
+                current = this;
 			}
 
 			private CodeSearcher GetSearcher(UIPackage myPackage)
@@ -143,6 +145,11 @@ public  class SearchManager
 				return criteria;
 			}
 			#endregion
-		}
+
+            internal static SearchManager GetSearchManager()
+            {
+                return current;
+            }
+        }
 
 }

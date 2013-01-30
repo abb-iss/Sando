@@ -76,7 +76,7 @@
           <ButtonText>Sando Search</ButtonText>
         </Strings>
       </Button>
-
+      <!--
       <Button guid="guidIDEToolbarCmdSet" id="localSandoSearch" priority="0x0100" type="Button">
         <Parent guid="guidIDEToolbarCmdSet" id="ToolbarGroup" />        
         <Strings>
@@ -84,6 +84,7 @@
           <ButtonText>Single File Search</ButtonText>
         </Strings>
       </Button>
+      -->
 
 
       <Button guid="guidIDEToolbarCmdSet" id="localSandoSearch" priority="0x0100" type="Button">
