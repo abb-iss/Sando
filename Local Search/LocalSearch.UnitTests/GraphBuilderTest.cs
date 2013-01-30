@@ -13,10 +13,11 @@ namespace LocalSearch.UnitTests
     [TestFixture]
     public class GraphBuilderTest
     {
-        private static String srcPath = @"..\..\TestFiles\ConfigManip.cs";
-        private static String xmlPath = @"..\..\TestFiles\ConfigManip.XML";
+        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.cs";
+        private static String callsSrcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestingFile.cs";
+        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.XML";
 
-        private static String singlemethodPath = @"..\..\TestFiles\TestMethod.cs";
+        private static String singlemethodPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestMethod.cs";
 
         //[Test]
         //public void ConvertSrcToXMLTest()
@@ -204,7 +205,17 @@ namespace LocalSearch.UnitTests
             Assert.IsTrue(fielddecl.ToSource().Equals(strDecl));
         }
 
+        [Test]
+        public void GetMethodCallsMethodTest()
+        {
 
+
+            GraphBuilder gbuilder = new GraphBuilder(callsSrcPath);
+            var methods = gbuilder.GetMethods();
+            var updateMethod = methods.Where(x => x.Element(SRC.Name).Value.Equals("UpdateFile"));
+            var callees = gbuilder.GetCallees(updateMethod.First());
+            Assert.IsTrue(callees.Count() > 0);
+        }
     }
     
 }

@@ -9,5 +9,7 @@ namespace Sando.UI
 
         public const uint sandoSearch =    0x101;
 
+
+        public const uint localSandoSearch = 0x109;
     };
 }

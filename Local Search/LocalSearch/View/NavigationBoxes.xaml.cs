@@ -31,6 +31,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Microsoft.VisualStudio.Shell;
+using EnvDTE;
+using EnvDTE80;
+
 
 namespace LocalSearch.View
 {
@@ -163,6 +167,14 @@ namespace LocalSearch.View
             relatedInfo.Clear(); //may triger relatedInfo NavigationBox selection change
             if (currentNavigationBox.SelectedItem != null)
             {
+                var relation = currentNavigationBox.SelectedItem as ProgramElementWithRelation;
+                if (relation!=null)
+                {
+                    if (relation.RelationLineNumber != -1 && relation.RelationLineNumber != 0)
+                    {
+                        NavigationBoxes.SelectLine(relation.RelationLineNumber);
+                    }
+                }
                 var relatedmembers = InformationSource.GetRelatedInfo(currentNavigationBox.SelectedItem as ProgramElementWithRelation);
                 foreach (var member in relatedmembers)
                 {
@@ -207,6 +219,34 @@ namespace LocalSearch.View
         }
 
         public GraphBuilder InformationSource = null;
+        private static DTE2 dte;
 
+        public void Connect(int connectionId, object target)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void InitDte2()
+        {
+            if (dte == null)
+            {
+                dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            }
+        }
+
+        public static void SelectLine(int lineNumber)
+        {
+            InitDte2();
+            try
+            {
+                var selection = (EnvDTE.TextSelection)dte.ActiveDocument.Selection;
+                selection.GotoLine(lineNumber);
+                selection.SelectLine();
+            }
+            catch (Exception)
+            {
+                //ignore, we don't want this feature ever causing a crash
+            }
+        }
     }
 }
