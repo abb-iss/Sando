@@ -46,7 +46,10 @@
         </Style>
     </UserControl.Resources>
     <DockPanel >
-        <Label DockPanel.Dock="Top" Content="{Binding Path=RelationSequence}" />
+        <DockPanel DockPanel.Dock="Top">
+            <TextBox Name="searchBox" DockPanel.Dock="Left" Width="142" Text="{Binding Path=SearchString}" KeyDown="TextBox_KeyDown_1" TextChanged="TextBox_TextChanged_1"/>
+            <Label DockPanel.Dock="Right" Content="{Binding Path=RelationSequence}" />
+        </DockPanel>                
         <DockPanel VerticalAlignment="Stretch" Height="Auto" Width="1000">
             <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
             </ListView>

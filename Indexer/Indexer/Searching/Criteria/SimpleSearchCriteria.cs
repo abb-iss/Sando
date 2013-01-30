@@ -47,7 +47,8 @@ namespace Sando.Indexer.Searching.Criteria
 				LocationCriteriaToString(stringBuilder);
 			}
 			UsageTypeCriteriaToString(stringBuilder, SearchByUsageType);
-			return stringBuilder.ToString();
+            var query = stringBuilder.ToString();
+			return query;
 		}
 
 		private void AccessLevelCriteriaToString(StringBuilder stringBuilder)
