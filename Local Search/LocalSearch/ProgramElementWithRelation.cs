@@ -13,6 +13,8 @@ namespace LocalSearch
     {
         public ProgramElementRelation ProgramElementRelation { get; set; }
 
+        public int RelationLineNumber { get; set; }
+
         //public ProgramElement Element
         //{
         //    get;
