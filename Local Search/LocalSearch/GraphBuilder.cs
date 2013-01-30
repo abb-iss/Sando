@@ -514,7 +514,7 @@ namespace LocalSearch
                     return method;
             }
 
-            return null;
+            return null; 
         }
 
         /// <summary>
@@ -550,6 +550,19 @@ namespace LocalSearch
                 = new List<ProgramElementWithRelation>();
             String fieldname = codeSearchResult.Name;
 
+            if ((codeSearchResult as ProgramElementWithRelation) == null || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
+            {
+                var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
+                listFiledRelated.Add(GetFieldElementWRelationFromDecl(fieldDeclaration));
+            }
+
+            //var methodDeclaration = getfie(codeSearchResult.Element as MethodElement);
+
+            //listMethodRelated.Add(GetMethodElementWRelationFromXElement(methodDeclaration));
+
             //relation 1: get methods that use this field
             //var methods = GetMethodsUseField(fieldname);
             //foreach (var method in methods)
@@ -572,6 +585,14 @@ namespace LocalSearch
         {
             List<ProgramElementWithRelation> listMethodRelated
                 = new List<ProgramElementWithRelation>();
+            if ((codeSearchResult as ProgramElementWithRelation) == null || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
+            {
+                var methodDeclaration = GetMethod(codeSearchResult.Element as MethodElement);
+                listMethodRelated.Add(GetMethodElementWRelationFromXElement(methodDeclaration));
+            }
             String methodname = codeSearchResult.Name;
             int srcLineNumber = codeSearchResult.Element.DefinitionLineNumber;
             var method = GetFullMethodFromName(methodname, srcLineNumber);

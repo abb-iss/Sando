@@ -74,7 +74,10 @@ namespace LocalSearch.View
                 var results = searcher.Search(s);
                 FirstProgramElements.Clear();
                 foreach (var result in results)
-                    FirstProgramElements.Add(result);
+                {
+                    //var element = new ProgramElementWithRelation(result.Element, result.Score);                    
+                    FirstProgramElements.Add(new ProgramElementWithRelation(result.Element, result.Score));
+                }
             }
             catch (NullReferenceException e)
             {
@@ -286,7 +289,7 @@ namespace LocalSearch.View
                     var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
                         false);
                     var description = ((DescriptionAttribute)attributes[0]).Description;
-                    strbuilder += " --- " + description + " ---> " + Type + " \"" + Name + "\" ";
+                    strbuilder += " --" + description + "--> " + Type + " \"" + Name + "\" ";
                 }
                 else
                 {

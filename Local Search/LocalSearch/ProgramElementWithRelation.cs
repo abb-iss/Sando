@@ -20,15 +20,15 @@ namespace LocalSearch
             get
             {
                 if (ProgramElementRelation == ProgramElementRelation.Other)
-                    return "D";
+                    return "d";
                 else
-                    return "U";
+                    return "u";
             } 
         }
 
         public String ProgramElementTypeSimple
         {
-            get { return ProgramElementType.ToString().Substring(0, 1); }
+            get { return ProgramElementType.ToString().Substring(0, 1).ToLower(); }
         }
 
         public ProgramElementWithRelation(ProgramElement element, double score, ProgramElementRelation relation):

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="1000">
+             d:DesignHeight="500" d:DesignWidth="1350">
     <UserControl.Resources>
         <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#DDD" />
         <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#888" />
@@ -17,13 +17,13 @@
                     <ControlTemplate TargetType="ListViewItem">
                         <Border 
           Name="Border"
-          Padding="2"
+          Padding="0" Margin="0,0,0,0"
           SnapsToDevicePixels="true"
           Background="Transparent">
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                                <Label>
+                                <Label Margin="0,0,0,0">
                                     <Label.Content>
-                                        <TextBlock FontFamily="Courier New">
+                                        <TextBlock Margin="0,0,0,0" FontFamily="Courier New" FontSize="12">
                                             <TextBlock.Text>
                                                 <MultiBinding StringFormat="{}[{0}-{1}]({2}) {3}">
                                                     <Binding Path="ProgramElementTypeSimple" />
@@ -60,31 +60,31 @@
         </Style>
     </UserControl.Resources>
     <DockPanel >
-       <DockPanel DockPanel.Dock="Top">
-            <TextBox Name="searchBox" DockPanel.Dock="Left" Width="142" Text="{Binding Path=SearchString}" KeyDown="TextBox_KeyDown_1" TextChanged="TextBox_TextChanged_1" FontFamily="Segoe UI Semibold"/>
+        <DockPanel DockPanel.Dock="Top" Width="1350">
+            <TextBox Margin="1,1,1,1" Name="searchBox" DockPanel.Dock="Left" Width="223" Text="{Binding Path=SearchString}" KeyDown="TextBox_KeyDown_1" TextChanged="TextBox_TextChanged_1" FontFamily="Segoe UI Semibold"/>
             <Label DockPanel.Dock="Right" Content="{Binding Path=RelationSequence}" />
         </DockPanel>   
-        <DockPanel VerticalAlignment="Stretch" Height="Auto" Width="1000">
-            <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" MinWidth="143">
+        <DockPanel VerticalAlignment="Stretch" Height="Auto" Width="1350">
+            <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" Width="225">
             </ListView>
-            
-            <ListView Name="SecondProgramElementsList" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" MinWidth="143">
+
+            <ListView Name="SecondProgramElementsList" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" Width="225">
             </ListView>
-            
-            <ListView Name="ThirdProgramElementsList" SelectionChanged="ThirdProgramElements_SelectionChanged" ItemsSource="{Binding Path=ThirdProgramElements}" MinWidth="143">
+
+            <ListView Name="ThirdProgramElementsList" SelectionChanged="ThirdProgramElements_SelectionChanged" ItemsSource="{Binding Path=ThirdProgramElements}" Width="225">
             </ListView>
-            
-            <ListView Name="FourthProgramElementsList" SelectionChanged="FourthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FourthProgramElements}" MinWidth="143">
+
+            <ListView Name="FourthProgramElementsList" SelectionChanged="FourthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FourthProgramElements}" Width="225">
             </ListView>
-            
-            <ListView Name="FifthProgramElementsList" SelectionChanged="FifthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FifthProgramElements}" MinWidth="143">
+
+            <ListView Name="FifthProgramElementsList" SelectionChanged="FifthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FifthProgramElements}" Width="225">
             </ListView>
-            
-            <ListView Name="SixthProgramElementsList" SelectionChanged="SixthProgramElements_SelectionChanged" ItemsSource="{Binding Path=SixthProgramElements}" MinWidth="143">
+
+            <ListView Name="SixthProgramElementsList" SelectionChanged="SixthProgramElements_SelectionChanged" ItemsSource="{Binding Path=SixthProgramElements}" Width="225">
             </ListView>
             
             <ListView Name="SeventhProgramElementsList" SelectionChanged="SeventhProgramElements_SelectionChanged" ItemsSource="{Binding Path=SeventhProgramElements}"
- MinWidth="143">
+ Width="225">
             </ListView>
         </DockPanel>        
     </DockPanel>

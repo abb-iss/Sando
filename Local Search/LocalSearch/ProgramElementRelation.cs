@@ -19,7 +19,7 @@ namespace LocalSearch
         CallBy, //method called by method
         [Description("uses as parameter")]
         UseAsPara, //field used as method paramter
-        [Description("")]
+        [Description("defines")]
         Other   
     }
     
