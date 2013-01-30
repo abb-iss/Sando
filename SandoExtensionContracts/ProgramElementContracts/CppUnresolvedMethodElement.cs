@@ -29,7 +29,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 
 			IsResolved = true;
 		    outMethodElement =
-                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel,
+                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, RawSource, accessLevel,
 		                                 Arguments, ReturnType, Body,
 		                                 classId, ClassName, String.Empty, IsConstructor) as MethodElement;
 		    SetCustomFields(unresolvedMethod, outMethodElement);
@@ -39,7 +39,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		//TODO: Remove this method
 		public MethodElement Copy()
 		{
-            var outMethodElement = Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, Snippet, AccessLevel.Protected,
+            var outMethodElement = Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, RawSource, AccessLevel.Protected,
                                          Arguments, ReturnType, Body,
                                          Guid.NewGuid(), ClassName, String.Empty, IsConstructor) as MethodElement;
             SetCustomFields(this, outMethodElement);

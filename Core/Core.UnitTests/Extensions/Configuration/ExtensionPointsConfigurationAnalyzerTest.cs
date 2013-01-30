@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Sando.ExtensionContracts.IndexerContracts;
 using log4net;
 using NUnit.Framework;
 using Sando.Core.Extensions;
@@ -108,6 +109,21 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
         }
 
         [Test]
+        public void FindAndRegisterValidExtensionPoints_RegistersUsableCustomIndexFilterManager()
+        {
+            CreateExtensionPointsConfiguration(addValidIndexFilterManagerConfiguration: true);
+            ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+            IIndexFilterManager indexFilterManager = ExtensionPointsRepository.Instance.GetIndexFilterManagerImplementation();
+            Assert.IsNotNull(indexFilterManager, "Index filter manager should be registered!");
+            Assert.AreEqual(indexFilterManager.GetType().FullName, "Sando.TestExtensionPoints.TestIndexFilterManager", "Invalid index filter manager returned!");
+
+            bool shouldBeIndexed = false;
+            Assert.DoesNotThrow(() => shouldBeIndexed = indexFilterManager.ShouldFileBeIndexed("C:\\\\index.xml"));
+            Assert.IsTrue(shouldBeIndexed, "Invalid results from ShouldFileBeIndexed method!");
+        }
+
+        [Test]
         public void FindAndRegisterValidExtensionPoints_RegistersCustomParsers()
         {
             CreateExtensionPointsConfiguration(addValidParserConfigurations: true);
@@ -197,7 +213,21 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             Assert.AreEqual(queryRewriter.GetType().FullName, "Sando.Indexer.Searching.DefaultQueryRewriter", "Invalid query rewriter returned!");
 
             string logFileContent = File.ReadAllText(logFilePath);
-            Assert.IsTrue(logFileContent.Contains("Invalid query rewriter configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid word splitter configuration!");
+            Assert.IsTrue(logFileContent.Contains("Invalid query rewriter configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid query rewriter configuration!");
+        }
+
+        [Test]
+        public void FindAndRegisterValidExtensionPoints_RemovesInvalidCustomIndexFilterManagerConfiguration()
+        {
+            CreateExtensionPointsConfiguration(addInvalidIndexFilterManagerConfiguration: true);
+            ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+
+            IIndexFilterManager indexFilterManager = ExtensionPointsRepository.Instance.GetIndexFilterManagerImplementation();
+            Assert.IsNotNull(indexFilterManager, "Default index filter manager should be used!");
+            Assert.AreEqual(indexFilterManager.GetType().FullName, "Sando.Indexer.IndexFiltering.IndexFilterManager", "Invalid index filter manager returned!");
+
+            string logFileContent = File.ReadAllText(logFilePath);
+            Assert.IsTrue(logFileContent.Contains("Invalid index filter manager configuration found - it will be omitted during registration process."), "Log file should contain information about removed invalid index filter manager configuration!");
         }
 
         [Test]
@@ -226,6 +256,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingResultsReorderer"), "Log file should contain information about errors occurred during the assembly loading!");
             Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingQueryWeightsSupplier"), "Log file should contain information about errors occurred during the assembly loading!");
             Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingQueryRewriter"), "Log file should contain information about errors occurred during the assembly loading!");
+            Assert.IsTrue(logFileContent.Contains("Type cannot be found: Sando.TestExtensionPoints.NonExistingIndexFilterManager"), "Log file should contain information about errors occurred during the assembly loading!");
         }
 
         [SetUp]
@@ -247,7 +278,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             }
 
             logFilePath = Path.Combine(pluginDirectory, "ExtensionAnalyzer.log");
-            logger = FileLogger.CreateCustomLogger(logFilePath);
+            logger = FileLogger.CreateFileLogger("ExtensionPointsLogger", logFilePath);
         }
 
         [TearDown]
@@ -267,6 +298,8 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             bool addInvalidQueryWeightsSupplierConfiguration = false,
             bool addValidQueryRewriterConfiguration = false,
             bool addInvalidQueryRewriterConfiguration = false,
+            bool addValidIndexFilterManagerConfiguration = false,
+            bool addInvalidIndexFilterManagerConfiguration = false,
             bool addInvalidExtensionPoints = false)
         {
             extensionPointsConfiguration = new ExtensionPointsConfiguration();
@@ -414,6 +447,26 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
                     };
             }
 
+            if (addValidIndexFilterManagerConfiguration)
+            {
+                extensionPointsConfiguration.IndexFilterManagerConfiguration =
+                    new BaseExtensionPointConfiguration()
+                    {
+                        FullClassName = "Sando.TestExtensionPoints.TestIndexFilterManager",
+                        LibraryFileRelativePath = "TestExtensionPoints.dll"
+                    };
+            }
+
+            if (addInvalidIndexFilterManagerConfiguration)
+            {
+                extensionPointsConfiguration.IndexFilterManagerConfiguration =
+                    new BaseExtensionPointConfiguration()
+                    {
+                        FullClassName = "",
+                        LibraryFileRelativePath = "TestExtensionPoints.dll"
+                    };
+            }
+
             if (addInvalidExtensionPoints)
             {
                 extensionPointsConfiguration.ParsersConfiguration.AddRange(
@@ -472,6 +525,13 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
                     new BaseExtensionPointConfiguration()
                     {
                         FullClassName = "Sando.TestExtensionPoints.NonExistingQueryRewriter",
+                        LibraryFileRelativePath = "TestExtensionPoints.dll"
+                    };
+
+                extensionPointsConfiguration.IndexFilterManagerConfiguration =
+                    new BaseExtensionPointConfiguration()
+                    {
+                        FullClassName = "Sando.TestExtensionPoints.NonExistingIndexFilterManager",
                         LibraryFileRelativePath = "TestExtensionPoints.dll"
                     };
             }

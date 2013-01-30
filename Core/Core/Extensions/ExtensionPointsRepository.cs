@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using Sando.ExtensionContracts.IndexerContracts;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.QueryContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -81,6 +82,18 @@ namespace Sando.Core.Extensions
 			this.queryRewriter = queryRewriter;
 		}
 
+        public IIndexFilterManager GetIndexFilterManagerImplementation()
+        {
+            return indexFilterManager;
+        }
+
+        public void RegisterIndexFilterManagerImplementation(IIndexFilterManager indexFilterManager)
+        {
+            Contract.Requires(indexFilterManager != null, "ExtensionPointsManager:RegisterIndexFilterManagerImplementation - indexFilterManager cannot be null!");
+
+            this.indexFilterManager = indexFilterManager;
+        }
+
 		public void ClearRepository()
 		{
 			parsers.Clear();
@@ -88,6 +101,7 @@ namespace Sando.Core.Extensions
 			resultsReorderer = null;
 			queryWeightsSupplier = null;
 			queryRewriter = null;
+		    indexFilterManager = null;
 		}
 
 		public static ExtensionPointsRepository Instance
@@ -114,5 +128,6 @@ namespace Sando.Core.Extensions
 		private IResultsReorderer resultsReorderer;
 		private IQueryWeightsSupplier queryWeightsSupplier;
 		private IQueryRewriter queryRewriter;
+	    private IIndexFilterManager indexFilterManager;
 	}
 }

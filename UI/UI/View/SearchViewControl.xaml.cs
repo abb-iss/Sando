@@ -170,34 +170,34 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             recommender = new QueryRecommender();   
         }
 
-        private void searchBox_Loaded_1(object sender, RoutedEventArgs e)
-        {
-            if (this.searchBox != null)
-            {
-                var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
-                TextBoxFocusHelper.RegisterFocus(textBox);
+        private void searchBox_Loaded(object sender, RoutedEventArgs e) {
+            if(this.searchBox != null) {
+                var textBox = searchBox.Template.FindName("Text", searchBox) as TextBox;
+                if(textBox != null) {
+                    TextBoxFocusHelper.RegisterFocus(textBox);
+                    textBox.KeyDown += new KeyEventHandler(HandleTextBoxKeyDown);
+                }
+
+                var listBox = searchBox.Template.FindName("Selector", searchBox) as ListBox;
+                if(listBox != null) {
+                    listBox.SelectionChanged += new SelectionChangedEventHandler(searchBoxListBox_SelectionChanged);
+                }
+
             }
         }
 
-        public T FindVisualChildByName<T>(DependencyObject parent, string name) where T : DependencyObject
+        private void HandleTextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            if (e.Key == Key.Tab)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                string controlName = child.GetValue(Control.NameProperty) as string;
-                if (controlName == name)
+                if (e.Key == Key.Tab && (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)))
                 {
-                    return child as T;
-                }
-                else
-                {
-                    T result = FindVisualChildByName<T>(child, name);
-                    if (result != null)
-                        return result;
+                    this.searchResultListbox.Focus();
+                    e.Handled = true;
                 }
             }
-            return null;
         }
+
 
         private void InitProgramElements()
         {
@@ -309,7 +309,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         {
             try
             {
-                FileOpener.OpenItem(sender);
+                FileOpener.OpenItem(sender,searchBox.Text);
             }
             catch (ArgumentException aex)
             {
@@ -324,7 +324,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             {
                 try
                 {
-                    FileOpener.OpenItem(sender);
+                    FileOpener.OpenItem(sender,searchBox.Text);
                 }
                 catch(ArgumentException aex)
                 {
@@ -476,20 +476,58 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-
-
         public void FocusOnText()
         {
-            var textBox = FindVisualChildByName<TextBox>(this.searchBox, "Text");
+            var textBox = searchBox.Template.FindName("Text", searchBox) as TextBox;
             if (textBox != null)
                 textBox.Focus();
         }
 
-        private void searchBox_GotFocus_1(object sender, RoutedEventArgs e)
-        {
-            FocusOnText();
+        private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var listBox = sender as ListBox;
+            if(listBox != null) {
+                listBox.ScrollIntoView(listBox.SelectedItem);
+            }
         }
+
+
+              private void ToggleButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Toggled_Popup(object sender, RoutedEventArgs e)
+        {
+            if(!SelectionPopup.IsOpen)
+                SelectionPopup.IsOpen = true;
+        }
+
+
     }
+
+    public class BoolToOppositeBoolConverter : IValueConverter
+    {
+        #region IValueConverter Members
+
+        public object Convert(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            if (targetType != typeof(bool))
+                throw new InvalidOperationException("The target must be a boolean");
+
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter,
+            System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
+    }
+
+
     
     public  class AccessWrapper
     {
@@ -591,6 +629,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             return new NotImplementedException();
         }
     }
+
 
     [ValueConversion(typeof(string), typeof(BitmapImage))]
     public class FileTypeToIcon : IValueConverter

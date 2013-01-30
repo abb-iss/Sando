@@ -195,7 +195,7 @@ namespace Sando.Parser.UnitTests
 				if(programElement as ClassElement != null)
 					hasClass = true;
 
-				Assert.IsTrue(programElement.Snippet != null);
+				Assert.IsTrue(programElement.RawSource != null);
 			}
 			Assert.IsTrue(hasClass && hasMethod);
 		}

@@ -1,5 +1,7 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using System;
 
 namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
@@ -61,41 +63,48 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             }
         }
 
+		public static readonly int DefaultSnippetSize = 5;
+
 		public string Snippet
 		{
 			get
 			{
-				var snip = Element.Snippet;
-				return FixSnip(snip);               
+				var raw = Element.RawSource;
+				return SourceToSnippet(raw, DefaultSnippetSize);               
 			}           
 		}
 
-		public static string FixSnip(string snip)
+		public static string SourceToSnippet(string source, int numLines)
 		{
 			int toRemove = int.MaxValue;
-			string[] split = snip.Split('\n');
+			var lines = new List<string>(source.Split('\n'));
+			if(numLines < lines.Count)
+			{
+				lines.RemoveRange(numLines, lines.Count - numLines);
+			}
 
 			//measure the shortest empty space prefix in all the lines in the snip
-			foreach (string line in split)
+			for(int i = 0; i < lines.Count; i++)
 			{
-				if (! string.IsNullOrWhiteSpace(line))
+				string line = lines[i];
+				if(!string.IsNullOrWhiteSpace(line))
 				{
 					int perLineToRemove;
 
-					if (snip.StartsWith("\t"))
+					if(source.StartsWith("\t"))
 					{
-						perLineToRemove = snip.Length - snip.TrimStart('\t').Length;
+						perLineToRemove = source.Length - source.TrimStart('\t').Length;
 					}
-					else if (snip.StartsWith(" "))
+					else if(source.StartsWith(" "))
 					{
-						perLineToRemove = snip.Length - snip.TrimStart(' ').Length;
+						perLineToRemove = source.Length - source.TrimStart(' ').Length;
 					}
 					else
 					{
 						perLineToRemove = 0;
 					}
 
-					if (perLineToRemove < toRemove)
+					if(perLineToRemove < toRemove)
 					{
 						toRemove = perLineToRemove;
 					}
@@ -106,7 +115,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 			if (toRemove > 0 && toRemove < int.MaxValue)
 			{
 				string newSnip = "";
-				foreach (string line in split)
+				foreach (string line in lines)
 				{
        				if (line.Length > toRemove + 1)
        					newSnip += line.Remove(0, toRemove) + "\n";
@@ -114,7 +123,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 				return newSnip;
 			}
 
-			return snip;
+			return String.Join("\n", lines.ToArray());
 		}
 
     	public string FileName

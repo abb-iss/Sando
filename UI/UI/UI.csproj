@@ -67,7 +67,7 @@
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DeployExtension>True</DeployExtension>
+    <DeployExtension>False</DeployExtension>
     <CreateVsixContainer>True</CreateVsixContainer>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -82,6 +82,14 @@
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+    </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -149,6 +157,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\VisualStudio\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="SandoExtensionContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22c1f6d7660dc0a2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\SandoExtensionContracts.dll</HintPath>
+    </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -166,6 +178,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -178,8 +191,8 @@
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
-    <Compile Include="MyFontConverter.cs" />
-    <Compile Include="MyStrokeConverter.cs" />
+    <Compile Include="View\Converters\MyFontConverter.cs" />
+    <Compile Include="View\Converters\MyStrokeConverter.cs" />
     <Compile Include="View\FileOpener.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\ISearchResultListener.cs" />
@@ -590,10 +603,6 @@
     <ProjectReference Include="..\..\Recommender\Recommender\Recommender.csproj">
       <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>
       <Name>Recommender</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
-      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
-      <Name>SandoExtensionContracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>

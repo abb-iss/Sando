@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections;
+// Code changed by JZ: Added the Delete case (obsolete)
+using System.Collections.Generic;
+// End of code changes
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -54,8 +57,8 @@ namespace Sando.UI.Monitoring
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 		{
 			ProjectItem projectItem = e.Argument as ProjectItem;
-			ProcessItem(projectItem,null);			
-            UpdateAfterAdditions();
+			ProcessItem(projectItem,null);
+            UpdateAfterAdditions();            
 		}
 
         private void _runStartupInBackground_DoWork(object sender, DoWorkEventArgs anEvent)
@@ -67,29 +70,26 @@ namespace Sando.UI.Monitoring
                 var enumerator = allProjects.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    var project = (Project)enumerator.Current;
-                    if (project != null)
+                    var project = enumerator.Current as Project;
+                    ProcessProject(project,worker);
+                    if (worker != null && worker.CancellationPending)
                     {
-                        if (project.ProjectItems != null)
-                        {
-                            try
-                            {
-                                ProcessItems(project.ProjectItems.GetEnumerator(), worker);
-                            }catch(Exception e)
-                            {
-                                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
-                            }
-                            finally
-                            {
-                                UpdateAfterAdditions();
-                            }
-                        }
-                        if (worker != null && worker.CancellationPending)
-                        {
-                            return;
-                        }                     
+                        return;
+                    }                     
+                    
+                }
+
+                // Code changed by JZ: To complete the Delete case (obsolete)
+                List<string> allIndexedFileNames = _indexUpdateManager.GetAllIndexedFileNames();
+                foreach (string filename in allIndexedFileNames)
+                {
+                    if (!File.Exists(filename))
+                    {
+                        Console.WriteLine("Delete index for: " + filename);
+                        _indexUpdateManager.UpdateFile(filename);
                     }
                 }
+                // End of code changes
             } 
             catch(Exception e)
             {
@@ -149,13 +149,42 @@ namespace Sando.UI.Monitoring
 		{
             try
             {
-                if(item!=null && item.ProjectItems!=null)
-                    ProcessItems(item.ProjectItems.GetEnumerator(),worker);
+                if (item != null && item.ProjectItems != null)
+                    ProcessItems(item.ProjectItems.GetEnumerator(), worker);
+                else
+                {
+                    var proj = item.SubProject as Project;
+                    ProcessProject(proj, worker);
+                }
+
             }catch(COMException dll)
             {
                 //ignore, can't parse these types of files
             }
 		}
+
+        private void ProcessProject(Project project, BackgroundWorker worker)
+        {
+            if (project != null)
+            {
+                if (project.ProjectItems != null)
+                {
+                    try
+                    {
+                        ProcessItems(project.ProjectItems.GetEnumerator(), worker);
+                    }
+                    catch (Exception e)
+                    {
+                        FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem parsing files:"));
+                    }
+                    finally
+                    {
+                        UpdateAfterAdditions();
+                    }
+                }
+            }
+        }
+
 
         private void ProcessSingleFile(ProjectItem item, BackgroundWorker worker)
 		{
@@ -177,7 +206,6 @@ namespace Sando.UI.Monitoring
 		                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
 		                {
 		                    Debug.WriteLine("Start: " + path);
-
 		                    ProcessFileForTesting(path);
 		                    Debug.WriteLine("End: " + path);
 		                }

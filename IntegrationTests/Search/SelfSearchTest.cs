@@ -56,7 +56,7 @@ namespace Sando.IntegrationTests.Search
         [Test]
         public void TestSolutionMonitor()
         {
-            string keywords = "solution monitor";
+            string keywords = "solutionmonitor";
             var expectedLowestRank = 4;
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SolutionMonitor");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
@@ -82,7 +82,7 @@ namespace Sando.IntegrationTests.Search
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetCustomProperties");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "analyze type";
-            expectedLowestRank = 4;
+            expectedLowestRank = 6;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Enum && (el.Element.Name == "AnalyzerType");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "ParserException";
@@ -102,7 +102,7 @@ namespace Sando.IntegrationTests.Search
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetTranslation");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "register extension points";
-            expectedLowestRank = 8;
+            expectedLowestRank = 9;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "RegisterExtensionPoints");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
         }

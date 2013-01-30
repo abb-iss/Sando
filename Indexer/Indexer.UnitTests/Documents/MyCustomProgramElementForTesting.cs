@@ -32,7 +32,7 @@ namespace Sando.Indexer.UnitTests.Documents
             document.Add(new Field(SandoField.ProgramElementType.ToString(), ProgramElementType.Custom.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.FullFilePath.ToString(), @"C:\stuff\place.txt", Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), "123", Field.Store.YES, Field.Index.NO));
-            document.Add(new Field(SandoField.Snippet.ToString(), "The text of the custom thing.", Field.Store.YES, Field.Index.NO));
+            document.Add(new Field(SandoField.Source.ToString(), "The text of the custom thing.", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(ProgramElement.CustomTypeTag, typeof(MyCustomProgramElementForTesting).AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
             return document;
         }

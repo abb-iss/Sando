@@ -18,6 +18,7 @@ namespace Sando.Core.Tools
             return word.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
         }
 
+
         public static List<string> ExtractSearchTerms(string searchTerms)
         {
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
@@ -58,6 +59,23 @@ namespace Sando.Core.Tools
             return matches.Distinct().ToList();
         }
 
+        public static SortedSet<string> GetFileExtensions(string searchTerms)
+        {
+            //2a.add filetype extensions
+            var matchCollection = Regex.Matches(searchTerms, fileExtensionPattern);
+            SortedSet<string> matches = new SortedSet<string>();
+            foreach (Match match in matchCollection)
+            {
+                string currentMatch = match.Value;//.Trim('"', ' ');
+                searchTerms = searchTerms.Replace(match.Value, "");
+                if (!String.IsNullOrWhiteSpace(currentMatch))
+                {
+                    matches.Add(currentMatch.Substring(currentMatch.IndexOf(':')+1));                    
+                }
+            }
+            return matches;
+        }
+
         public static bool InvalidCharactersFound(string searchTerms)
         {
             MatchCollection matchCollection = Regex.Matches(searchTerms, quotesPattern);
@@ -71,5 +89,7 @@ namespace Sando.Core.Tools
 
         private static string pattern = "[^a-zA-Z0-9\\s\\*\\-]";
         private static string quotesPattern = "-{0,1}\"[^\"]+\"";
+        private static string fileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
+
     }
 }

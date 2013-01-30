@@ -28,7 +28,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.Namespace == returnedElement.Namespace, "Namespace is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
 
 		[Test]
@@ -45,7 +45,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(StandardizeFilePath(element.FullFilePath) == returnedElement.FullFilePath, "FullFilePath is different!");
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
 		
 		[Test]
@@ -63,7 +63,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(StandardizeFilePath(element.FullFilePath) == returnedElement.FullFilePath, "FullFilePath is different!");
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
 
 		[Test]
@@ -81,7 +81,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.Namespace == returnedElement.Namespace, "Namespace is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
             Assert.True("not stored in index" == returnedElement.Body, "Body is different");
 		}
 
@@ -102,7 +102,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(StandardizeFilePath(element.FullFilePath) == returnedElement.FullFilePath, "FullFilePath is different!");
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
 
 		[Test]
@@ -124,7 +124,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
 			Assert.True(element.ReturnType == returnedElement.ReturnType, "ReturnType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
 
 		[Test]
@@ -145,7 +145,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.Name == returnedElement.Name, "Name is different!");
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
 			Assert.True(element.PropertyType == returnedElement.PropertyType, "PropertyType is different!");
-			Assert.True(element.Snippet == returnedElement.Snippet, "Snippet is different!");
+			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
 
 		[TestFixtureSetUp]

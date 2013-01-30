@@ -10,6 +10,7 @@ using Sando.SearchEngine;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
 using System.Collections.Generic;
+using Sando.Core.Extensions.Logging;
 
 namespace Sando.UI.View
 {
@@ -94,7 +95,8 @@ public  class SearchManager
                 }catch(Exception e)
                 {
                     _myDaddy.UpdateMessage(
-                       "Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");  
+                       "Sando is experiencing difficulties. See log file for details.");
+                    FileLogger.DefaultLogger.Error(e.Message,e);
                 }
 			    return null;
 			}
@@ -140,6 +142,8 @@ public  class SearchManager
                 searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
 			    List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
                 criteria.SearchTerms = new SortedSet<string>(searchTerms);
+                criteria.FileExtensions = WordSplitter.GetFileExtensions(searchString);
+                criteria.SearchByFileExtension = criteria.FileExtensions.Count()>0;
 				return criteria;
 			}
 			#endregion

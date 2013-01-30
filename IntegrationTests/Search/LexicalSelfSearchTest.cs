@@ -44,7 +44,10 @@ namespace Sando.IntegrationTests.Search
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
-        private void EyeIsBullsThis() { }
+		/*
+        private void EyeIsBullsThis() { 
+		  //bulls eye bulls eye bulls eye is here
+		}
         private void ThisIsBullsEye() { }
         private void ThisIsBulls() { }
       
@@ -56,6 +59,7 @@ namespace Sando.IntegrationTests.Search
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ThisIsBullsEye");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
+		*/
 
         private void PumpkinSpiceLatte() { }
         private void Pumpkin() { }
@@ -99,6 +103,15 @@ namespace Sando.IntegrationTests.Search
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 */
+
+		[Test]
+		public void QuotedExactQueryTest()
+		{
+            string keywords = "\"private static void InitDte2()\"";
+            var expectedLowestRank = 3;
+            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "InitDte2");
+            List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+		}
 
 		[TestFixtureSetUp]
 		public void SetUp()

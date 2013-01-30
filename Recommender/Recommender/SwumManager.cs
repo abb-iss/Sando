@@ -9,6 +9,13 @@ using System.Text;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 
 
 namespace Sando.Recommender {
@@ -440,5 +447,51 @@ namespace Sando.Recommender {
         #endregion Protected methods
     }
 
+ 
+
+    ///XXX: Temporary until I figure out where SrcMLElement went within the SrcML.NET project.  Should just use that one.
+    /// 
+    /// <summary>
+    /// Contains static utility methods that act upon srcML XElements.
+    /// </summary>
+    public static class SrcMLElement
+    {
+        /// <summary>
+        /// Gets the method signature from the method definition srcML element.
+        /// </summary>
+        /// <param name="methodElement">The srcML method element to extract the signature from.</param>
+        /// <returns>The method signature</returns>
+        public static string GetMethodSignature(XElement methodElement)
+        {
+            if(methodElement == null)
+            {
+                throw new ArgumentNullException("methodElement");
+            }
+            if(!(new[] {SRC.Function, SRC.Constructor, SRC.Destructor}).Contains(methodElement.Name))
+            {
+                throw new ArgumentException(string.Format("Not a valid method element: {0}", methodElement.Name), "methodElement");
+            }
+
+            var sig = new StringBuilder();
+            var paramListElement = methodElement.Element(SRC.ParameterList);
+            //add all the text and whitespace prior to the parameter list
+            foreach(var n in paramListElement.NodesBeforeSelf())
+            {
+                if(n.NodeType == XmlNodeType.Element)
+                {
+                    sig.Append(((XElement)n).Value);
+                }
+                else if(n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace)
+                {
+                    sig.Append(((XText)n).Value);
+                }
+            }
+            //add the parameter list
+            sig.Append(paramListElement.Value);
+
+            //convert whitespace chars to spaces and condense any consecutive whitespaces.
+            return Regex.Replace(sig.ToString().Trim(), @"\s+", " ");
+        }
+    }
     
 }

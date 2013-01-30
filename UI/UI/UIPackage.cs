@@ -13,6 +13,7 @@ using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.CommandBars;
+using Sando.Indexer.IndexFiltering;
 using log4net; 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -30,6 +31,13 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
+
+// Code changed by JZ: solution monitor integration
+using System.Xml;
+using System.Xml.Linq;
+// TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
+//using ABB.SrcML.VisualStudio.SolutionMonitor;
+// End of code changes
 
 namespace Sando.UI
 {
@@ -62,9 +70,16 @@ namespace Sando.UI
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
     public sealed class UIPackage : Package, IToolWindowFinder
-    {        
+    {
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// Use SrcML.NET's SolutionMonitor, instead of Sando's SolutionMonitor
+        /// </summary>
+        private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
+        private ABB.SrcML.SrcMLArchive _srcMLArchive;
+        ////private SolutionMonitor _currentMonitor;
+        // End of code changes
 
-        private SolutionMonitor _currentMonitor;
     	private SolutionEvents _solutionEvents;
 		private ILog logger;
         private string pluginDirectory;        
@@ -222,7 +237,7 @@ namespace Sando.UI
 
         private void RegisterSolutionEvents()
         {
-        	var dte = GetDte();
+            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
             if (dte != null)
             {
                 _solutionEvents = dte.Events.SolutionEvents;                
@@ -260,7 +275,7 @@ namespace Sando.UI
             //pluginDirectory = directoryProvider.GetExtensionDirectory();
         	pluginDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
             var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
-            logger = FileLogger.CreateCustomLogger(logFilePath);
+            logger = FileLogger.CreateFileLogger("UIPackageLogger", logFilePath);
             FileLogger.DefaultLogger.Info("pluginDir: "+pluginDirectory);
         }
 
@@ -336,15 +351,30 @@ namespace Sando.UI
 			{
                 try
                 {
-                    _currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    // Code changed by JZ: solution monitor integration
+                    // Don't know if the update listener is still useful. 
+                    // The following statement would cause an exception in ViewManager.cs (Line 42).
+                    //SolutionMonitorFactory.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    ////_currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    // End of code changes
                 }
                 finally
                 {
                     try
                     {
-                        _currentMonitor.Dispose();
-                        _currentMonitor = null;
-                    }catch(Exception e)
+                        // Code changed by JZ: solution monitor integration
+                        // Use SrcML.NET's StopMonitoring()
+                        if (_srcMLArchive != null)
+                        {
+                            // SolutionMonitor.StopWatching() is called in SrcMLArchive.StopWatching()
+                            _srcMLArchive.StopWatching();
+                            _srcMLArchive = null;
+                        }
+                        ////_currentMonitor.Dispose();
+                        ////_currentMonitor = null;
+                        // End of code changes
+                    }
+                    catch (Exception e)
                     {
                         FileLogger.DefaultLogger.Error(e);
                     }
@@ -375,6 +405,149 @@ namespace Sando.UI
 		    bw.RunWorkerAsync();
 		}
 
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// Respond to solution opening.
+        /// Still use Sando's SolutionMonitorFactory because Sando's SolutionMonitorFactory has too much indexer code which is specific with Sando.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="ee"></param>
+        private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
+        {
+            try
+            {
+                SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
+                string extensionPointsConfigurationDirectory =
+                    GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
+                if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory) == false)
+                {
+                    extensionPointsConfigurationDirectory = pluginDirectory;
+                }
+
+                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
+                bool isIndexRecreationRequired =
+                    IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+
+                // Create a new instance of SrcML.NET's solution monitor
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                //Create the default IndexFilterManager
+                //This must happen after calling CreateMonitor, because that sets the Solution Key, but before subscribing to file events
+                ExtensionPointsRepository.Instance.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
+                // Subscribe events from SrcML.NET's solution monitor
+                _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
+
+                // Create a new instance of SrcML.NET's SrcMLArchive
+                string src2srcmlDir = Path.Combine(pluginDirectory, "LIBS");
+                var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
+                generator.RegisterExecutable(Path.Combine(src2srcmlDir, "srcML-Win-cSharp"), new[] {ABB.SrcML.Language.CSharp});
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), generator);
+                // Subscribe events from SrcML.NET's solution monitor
+                _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
+                _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
+                _srcMLArchive.MonitoringStopped += RespondToMonitoringStoppedEvent;
+                // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
+                _srcMLArchive.StartWatching();
+
+                // Don't know if AddUpdateListener() is still useful.
+                SolutionMonitorFactory.AddUpdateListener(SearchViewControl.GetInstance());
+                ////_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
+            }    
+        }
+
+        /// <summary>
+        /// Respond to the SourceFileChanged event from SrcML.NET's Solution Monitor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
+        {
+            writeLog("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            // Current design decision: 
+            // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
+            if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
+            {
+                HandleSrcMLDOTNETEvents(eventArgs);
+            }
+        }
+
+        /// <summary>
+        /// Respond to the SourceFileChanged event from SrcMLArchive.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToSourceFileChangedEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
+        {
+            writeLog( "Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            HandleSrcMLDOTNETEvents(eventArgs);
+        }
+
+        /// <summary>
+        /// Handle SrcML.NET events, either from SrcMLArchive or from SolutionMonitor.
+        /// TODO: UpdateIndex(), DeleteIndex(), and CommitIndexChanges() might be refactored to another class.
+        /// </summary>
+        /// <param name="eventArgs"></param>
+        private void HandleSrcMLDOTNETEvents(ABB.SrcML.FileEventRaisedArgs eventArgs)
+        {
+            // Ignore files that can not be indexed by Sando.
+		    string fileExtension = Path.GetExtension(eventArgs.SourceFilePath);
+            if (fileExtension != null && !fileExtension.Equals(String.Empty))
+            {
+                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
+                {
+                    string sourceFilePath = eventArgs.SourceFilePath;
+                    string oldSourceFilePath = eventArgs.OldSourceFilePath;
+                    XElement xelement = eventArgs.SrcMLXElement;
+
+                    switch (eventArgs.EventType)
+                    {
+                        case ABB.SrcML.FileEventType.FileAdded:
+                            SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
+                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            break;
+                        case ABB.SrcML.FileEventType.FileChanged:
+                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            break;
+                        case ABB.SrcML.FileEventType.FileDeleted:
+                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                            break;
+                        case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
+                            SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
+                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            break;
+                    }
+                    SolutionMonitorFactory.CommitIndexChanges();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Respond to the StartupCompleted event from SrcMLArchive.
+        /// TODO: StartupCompleted() might be refactored to another class.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToStartupCompletedEvent(object sender, EventArgs eventArgs)
+        {
+            SolutionMonitorFactory.StartupCompleted();
+        }
+
+        /// <summary>
+        /// Respond to the MonitorStopped event from SrcMLArchive.
+        /// TODO: MonitoringStopped() might be refactored to another class.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        private void RespondToMonitoringStoppedEvent(object sender, EventArgs eventArgs)
+        {
+            SolutionMonitorFactory.MonitoringStopped();
+        }
+        
+        /* //// Original implementation
         private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
         {
             try
@@ -399,9 +572,10 @@ namespace Sando.UI
             catch (Exception e)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
-            }    
+            }
         }
-
+        */
+        // End of code changes
 
         public void AddNewParser(string qualifiedClassName, string dllName, List<string> supportedFileExtensions)
         {            
@@ -431,31 +605,38 @@ namespace Sando.UI
 
     	#endregion
 
-    	public string GetCurrentDirectory()
-    	{
-			if(_currentMonitor != null)
-				return _currentMonitor.GetCurrentDirectory();
-			else
-				return null;
-    	}
+        // Code changed by JZ: solution monitor integration
+        public string GetCurrentDirectory()
+        {
+            return SolutionMonitorFactory.GetCurrentDirectory();
+        }
 
+        public SolutionKey GetCurrentSolutionKey()
+        {
+            return SolutionMonitorFactory.GetSolutionKey();
+        }
 
-		public SolutionKey GetCurrentSolutionKey()
-		{
-			if(_currentMonitor != null)
-				return _currentMonitor.GetSolutionKey();
-			else
-				return null;
-		}
+        public bool IsPerformingInitialIndexing()
+        {
+            return SolutionMonitorFactory.PerformingInitialIndexing();
+        }
 
-    	#region Implementation of IIndexUpdateListener
+        /* //// original implementation
+        public string GetCurrentDirectory()
+        {
+            if (_currentMonitor != null)
+                return _currentMonitor.GetCurrentDirectory();
+            else
+                return null;
+        }
 
-    	public void NotifyAboutIndexUpdate()
-    	{
-    		throw new NotImplementedException();
-    	}
-
-    	#endregion
+        public SolutionKey GetCurrentSolutionKey()
+        {
+            if (_currentMonitor != null)
+                return _currentMonitor.GetSolutionKey();
+            else
+                return null;
+        }
 
         public bool IsPerformingInitialIndexing()
         {
@@ -467,9 +648,17 @@ namespace Sando.UI
                 return false;
             }
         }
+        */
+        // End of code changes
 
-    
+    	#region Implementation of IIndexUpdateListener
 
+    	public void NotifyAboutIndexUpdate()
+    	{
+    		throw new NotImplementedException();
+    	}
+
+    	#endregion
 
         public string PluginDirectory()
         {
@@ -485,5 +674,19 @@ namespace Sando.UI
         {
             _viewManager.EnsureViewExists();
         }
+
+
+        // Code changed by JZ: solution monitor integration
+        /// <summary>
+        /// For debugging.
+        /// </summary>
+        /// <param name="logFile"></param>
+        /// <param name="str"></param>
+        private static void writeLog(string str)
+        {
+            FileLogger.DefaultLogger.Info(str);
+        }
+        // End of code changes
+
     }
 }

@@ -56,7 +56,7 @@ namespace Sando.Indexer
 		public virtual void AddDocument(SandoDocument sandoDocument)
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
-            
+
             IndexWriter.AddDocument(sandoDocument.GetDocument());
 		}
 
@@ -72,14 +72,14 @@ namespace Sando.Indexer
         [MethodImpl(MethodImplOptions.Synchronized)]
 		public void CommitChanges()
 		{
-			IndexWriter.Commit();
+            IndexWriter.Commit();
 			UpdateReader();
 			NotifyIndexUpdateListeners();
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void ClearIndex()
-		{   
+		{
             IndexWriter.GetDirectory().EnsureOpen();
 			IndexWriter.DeleteAll();
 		}
@@ -138,7 +138,7 @@ namespace Sando.Indexer
 
 		public void Dispose(bool killReaders)
         {
-            Dispose(true,killReaders);
+            Dispose(true, killReaders);
             GC.SuppressFinalize(this);
         }
 		
@@ -173,7 +173,7 @@ namespace Sando.Indexer
 
 		private List<IIndexUpdateListener> indexUpdateListeners;
 		private bool disposed = false;
-	}
+    }
 
 	public enum AnalyzerType
 	{
@@ -217,5 +217,5 @@ namespace Sando.Indexer
 		}
 
 		private static Dictionary<Guid, DocumentIndexer> documentIndexers = new Dictionary<Guid, DocumentIndexer>();
-	}
+    }
 }
