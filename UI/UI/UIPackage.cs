@@ -283,7 +283,7 @@ namespace Sando.UI
             var extensionPointsRepository = ExtensionPointsRepository.Instance;
 
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(GetSrcMLDirectory()));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx"},
                                                                    new XMLFileParser());
 			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".txt" },
@@ -313,7 +313,7 @@ namespace Sando.UI
             }
             var cppParser = extensionPointsRepository.GetParserImplementation(".cpp") as SrcMLCppParser;
             if(cppParser != null) {
-                cppParser.SetSrcMLPath(GetSrcMLDirectory());
+                cppParser.Archive = _srcMLArchive;
             }
 
         }

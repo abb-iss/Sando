@@ -89,10 +89,6 @@ namespace Sando.IntegrationTests.Search
             expectedLowestRank = 1;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "ParserException");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
-            keywords = "Source Namespace";
-            expectedLowestRank = 1;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Field && (el.Element.Name == "SourceNamespace");
-            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "word extract";
             expectedLowestRank = 1;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ExtractWords");
@@ -102,7 +98,7 @@ namespace Sando.IntegrationTests.Search
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetTranslation");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "register extension points";
-            expectedLowestRank = 9;
+            expectedLowestRank = 12;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "RegisterExtensionPoints");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
         }

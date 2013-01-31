@@ -69,8 +69,9 @@ namespace Sando.Indexer.UnitTests.Documents
         public static void InitializeExtensionPoints()
         {
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
+            var generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(generator));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser(generator));
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());           
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
         }

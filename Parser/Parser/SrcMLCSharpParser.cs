@@ -15,7 +15,7 @@ namespace Sando.Parser
         private static readonly int snippetSize = 5;
 
         public SrcMLArchive Archive { get; set; }
-        public ABB.SrcML.SrcMLGenerator Generator { get; set; }
+        public SrcMLGenerator Generator { get; set; }
 
 
         public SrcMLCSharpParser() {}
@@ -24,7 +24,7 @@ namespace Sando.Parser
             this.Archive = archive;
         }
 
-        public SrcMLCSharpParser(ABB.SrcML.SrcMLGenerator generator) {
+        public SrcMLCSharpParser(SrcMLGenerator generator) {
             this.Generator = generator;
         }
 
@@ -37,6 +37,8 @@ namespace Sando.Parser
                 sourceElements = Archive.GetXElementForSourceFile(fileName);
                 if(sourceElements != null) {
                     programElements = Parse(fileName, sourceElements);
+                } else {
+                    FileLogger.DefaultLogger.ErrorFormat("SrcMLCSharpParser: File not found in archive: {0}", fileName);
                 }
             } else if(Generator != null) {
                 string outFile = Path.GetTempFileName();
@@ -51,7 +53,7 @@ namespace Sando.Parser
                     File.Delete(outFile);
                 }
             } else {
-                throw new InvalidOperationException("Archive and Generator are both null");
+                throw new InvalidOperationException("SrcMLCSharpParser - Archive and Generator are both null");
             }
 
             return programElements;

@@ -89,7 +89,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SrcMLGenerator.cs" />
     <Compile Include="XMLFileParser.cs" />
     <Compile Include="SrcMLParsingUtils.cs" />
     <Compile Include="SrcMLCppParser.cs" />
