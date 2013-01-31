@@ -115,17 +115,9 @@ namespace Sando.Recommender {
         public void AddSourceFile(string sourcePath) {
             string fullPath = Path.GetFullPath(sourcePath);
             string fileExt = Path.GetExtension(fullPath);
-            if(fileExt != null) {
-                //remove the dot from the extension
-                if(fileExt.Length > 1 && fileExt[0] == '.') {
-                    fileExt = fileExt.Substring(1);
-                } else if(fileExt.Length == 1 && fileExt[0] == '.') {
-                    fileExt = string.Empty;
-                }
-            }
 
             Src2SrcMLRunner srcmlConverter;
-            if(string.Compare(fileExt, "cs", StringComparison.InvariantCultureIgnoreCase) == 0) {
+            if(string.Compare(fileExt, ".cs", StringComparison.InvariantCultureIgnoreCase) == 0) {
                 srcmlConverter = new Src2SrcMLRunner(Path.Combine(PluginDirectory, SrcmlCSharpBinDir));
             } else {
                 srcmlConverter = new Src2SrcMLRunner(Path.Combine(PluginDirectory, SrcmlBinDir));
