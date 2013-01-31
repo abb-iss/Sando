@@ -4,75 +4,34 @@ using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using UnitTestHelpers;
 using System.Linq;
+using ABB.SrcML;
 
 namespace Sando.Parser.UnitTests
 {
 	[TestFixture]
 	public class CSharpParserTest
 	{
-		static String HelloWorldFile;
-		private static string CurrentDirectory;
-		private static SrcMLGenerator Generator;
+		
+		private ABB.SrcML.SrcMLGenerator generator;
 
-		[SetUp]
-		public static void Init()
-		{
-			//Note: may not want to create this in mydocuments.... 
-			//create a test file
-			String HelloWorld = "public class Hello1 { public static void Main() { System.Console.WriteLine(\"Hello, World!\"); } }";
-			HelloWorldFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\HelloWorld1.cs";
-			System.IO.File.WriteAllText(HelloWorldFile, HelloWorld);
-			//set up generator
-			CurrentDirectory = Environment.CurrentDirectory;
-			Generator = new SrcMLGenerator(LanguageEnum.CSharp);
-			Generator.SetSrcMLLocation(CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win");
-		}
-
-		[Test]
-		public void GenerateSrcMLBasicFileTest()
-		{
-			String srcML = Generator.GenerateSrcML(HelloWorldFile);
-			Assert.IsNotNullOrEmpty(srcML);
-		}
-
-		[Test]
-		public void GenerateSrcMLShortFileTest()
-		{
-			String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
-			Assert.IsNotNullOrEmpty(srcML);
-		}
-
-        [Test]
-        public void GenerateSrcMLLargeFileTest()
-        {
-            String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\VeryLargeCsFile.txt");
-            Assert.IsNotNullOrEmpty(srcML);
+        [TestFixtureSetUp]
+        public void FixtureSetUp() {
+            TestUtils.InitializeDefaultExtensionPoints();
+            generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
         }
 
-
-
-
-
 		[Test]
-		public void GenerateSrcMLShortestFileTest()
-		{			
-			var parser = new SrcMLCSharpParser();
-			var srcML = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortestCSharpFile.txt");
+		public void GenerateSrcMLShortestFileTest() {
+		    var parser = new SrcMLCSharpParser(generator);
+            var srcML = parser.Parse("TestFiles\\ShortestCSharpFile.txt");
 			Assert.IsTrue(srcML!=null);
 		}
 
         [Test]
-        public void GenerateSrcMLPossiblyFailingFileTest()
-        {
-            String srcML = Generator.GenerateSrcML("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
-            Assert.IsNotNullOrEmpty(srcML);
-        }
-
-        [Test]
         public void ParsePossiblyFailingFile()
         {
-            var parser = new SrcMLCSharpParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MESTParsingFile.txt");
+            var parser = new SrcMLCSharpParser(generator);
+            var elements = parser.Parse("TestFiles\\MESTParsingFile.txt");
             Assert.IsNotNull(elements);
             Assert.IsTrue(elements.Count > 0);
 
@@ -81,8 +40,8 @@ namespace Sando.Parser.UnitTests
 	    [Test]
 		public void ParseMethodTest()
 		{
-			var parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+			var parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Count>0);
 
@@ -92,8 +51,8 @@ namespace Sando.Parser.UnitTests
         [Test]
         public void ParseMethodWithAlternativeParserTest()
         {            
-            var parser = new MySrcMLCSharpParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+            var parser = new MySrcMLCSharpParser(generator);
+            var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
             Assert.IsNotNull(elements);
             Assert.IsTrue(elements.Count > 0);
 
@@ -156,8 +115,8 @@ namespace Sando.Parser.UnitTests
 		public void ParseClassTest()
 		{
 			bool seenClass = false;
-			var parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+			var parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Count > 0);
 			foreach(ProgramElement pe in elements)
@@ -171,7 +130,7 @@ namespace Sando.Parser.UnitTests
 						Assert.AreEqual(classElem.DefinitionLineNumber, 14);
 						Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
 						Assert.AreEqual(classElem.Namespace, "Sando.Parser");
-						Assert.True(classElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt"));
+						Assert.True(classElem.FullFilePath.EndsWith("TestFiles\\ShortCSharpFile.txt"));
 					}
 				}
 			}
@@ -183,8 +142,8 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void BasicParserTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+			SrcMLCSharpParser parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Count>0);
 			bool hasClass=false, hasMethod=false;
@@ -203,8 +162,8 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void EnumParserTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+			SrcMLCSharpParser parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
 			bool hasEnum = false;
 			foreach(var programElement in elements)
 			{
@@ -216,7 +175,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.Namespace, "Sando.Parser");
 					Assert.AreEqual(enumElem.Body, "Java C CSharp");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
-					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt"));
+					Assert.True(enumElem.FullFilePath.EndsWith("TestFiles\\ShortCSharpFile.txt"));
 					hasEnum = true;
 				}
 			}
@@ -226,8 +185,8 @@ namespace Sando.Parser.UnitTests
         [Test]
         public void CSharpStructParserTest()
         {
-            SrcMLCSharpParser parser = new SrcMLCSharpParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Struct1.cs.txt");
+            SrcMLCSharpParser parser = new SrcMLCSharpParser(generator);
+            var elements = parser.Parse("TestFiles\\Struct1.cs.txt");
             bool hasStruct = false;
             foreach (var programElement in elements)
             {
@@ -238,7 +197,7 @@ namespace Sando.Parser.UnitTests
                     Assert.AreEqual(structElem.DefinitionLineNumber, 6);
                     Assert.AreEqual(structElem.Namespace, "SimpleNamespace");
                     Assert.AreEqual(structElem.AccessLevel, AccessLevel.Internal);
-                    Assert.True(structElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Struct1.cs.txt"));
+                    Assert.True(structElem.FullFilePath.EndsWith("TestFiles\\Struct1.cs.txt"));
                     hasStruct = true;
                 }
             }
@@ -248,8 +207,8 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void CSharpRegionTest()
 		{
-			SrcMLCSharpParser parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\RegionTest.txt");
+			SrcMLCSharpParser parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\RegionTest.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Count == 2);
 			bool hasClass = false, hasMethod = false;
@@ -312,7 +271,7 @@ namespace Sando.Parser.UnitTests
 		public void CommentsTest()
 		{
 			
-		    string filePath = "..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt";
+		    string filePath = "TestFiles\\ImageCaptureCS.txt";
             var elements = ParserTestingUtils.ParseCsharpFile(filePath);
 		    MethodElement methodElement = null;
             ClassElement classElement = null;
@@ -358,7 +317,7 @@ namespace Sando.Parser.UnitTests
 						{
 							foundMethodComment = true;
 						}
-						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
+						Assert.True(comment.FullFilePath.EndsWith("TestFiles\\ImageCaptureCS.txt"));
 					}
                     else if(comment.DocumentedElementId == classElement.Id)
 					{
@@ -367,7 +326,7 @@ namespace Sando.Parser.UnitTests
 						{
 							foundClassComment = true;
 						}
-						Assert.True(comment.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\ImageCaptureCS.txt"));
+						Assert.True(comment.FullFilePath.EndsWith("TestFiles\\ImageCaptureCS.txt"));
 					}
 				}
 			}
@@ -379,8 +338,8 @@ namespace Sando.Parser.UnitTests
 		public void ParseConstructorTest()
 		{
 			bool hasConstructor = false;
-			var parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+			var parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			foreach(ProgramElement pe in elements)
 			{
@@ -403,8 +362,8 @@ namespace Sando.Parser.UnitTests
         [Test]
         public void GIVEN_file_with_readonly_and_static_elements_WHEN_parse_method_is_called_THEN_valid_access_levels_are_retrieved()
         {
-            var parser = new SrcMLCSharpParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortCSharpFile.txt");
+            var parser = new SrcMLCSharpParser(generator);
+            var elements = parser.Parse("TestFiles\\ShortCSharpFile.txt");
 
             var readonlyField = elements.OfType<FieldElement>().FirstOrDefault(f => f.Name == "Language");
             Assert.IsNotNull(readonlyField);
@@ -415,22 +374,13 @@ namespace Sando.Parser.UnitTests
             Assert.AreEqual(staticMethod.AccessLevel, AccessLevel.Public);
         }
 
-
-		[TearDown]
-		public static void CleanUp()
-		{
-			System.IO.File.Delete(HelloWorldFile);
-		}
-
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
 	}
 
     public class MySrcMLCSharpParser : SrcMLCSharpParser
     {
+        public MySrcMLCSharpParser(ABB.SrcML.SrcMLGenerator generator) {
+            this.Generator = generator;
+        }
 
         public override MethodElement ParseMethod(System.Xml.Linq.XElement method, List<ProgramElement> programElements, string fileName, Type mytype, bool isConstructor = false)
         {

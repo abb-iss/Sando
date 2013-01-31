@@ -25,8 +25,8 @@ namespace Sando.Recommender {
     public class SwumManager {
         private static SwumManager instance;
         
-        private const string SrcmlBinDir = "LIBS"; //relative to the PluginDirectory
-        private const string SrcmlCSharpBinDir = @"LIBS\srcML-Win-cSharp"; //relative to the PluginDirectory
+        private const string SrcmlBinDir = @"LIBS\SrcML"; //relative to the PluginDirectory
+        private const string SrcmlCSharpBinDir = @"LIBS\SrcML\CSharp"; //relative to the PluginDirectory
         private const string DefaultCacheFile = "swum-cache.txt";
 
         private readonly XName[] functionTypes = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };

@@ -9,20 +9,19 @@ namespace Sando.Parser.UnitTests
 	[TestFixture]
 	public class InheritanceParserTest
 	{
-		private static string CurrentDirectory;
+	    private ABB.SrcML.SrcMLGenerator generator;
 
-		[SetUp]
-		public static void Init()
-		{
-			//set up generator
-			CurrentDirectory = Environment.CurrentDirectory;
-		}
+        [TestFixtureSetUp]
+        public void FixtureSetUp() {
+            //TestUtils.InitializeDefaultExtensionPoints();
+            generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
+        }
 
 		[Test]
 		public void ParseProperties()
 		{
-			var parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\ShortInheritance.txt");
+            var parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\ShortInheritance.txt");
 			bool seenClass = false;
 			int countProperties = 0;
 			foreach (var programElement in elements)
@@ -39,8 +38,8 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void ParseMultipleParents()
 		{
-			var parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\MultiParentTest.txt");
+            var parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\MultiParentTest.txt");
 			bool seenClass = false;
 			foreach(var programElement in elements)
 			{
@@ -69,8 +68,8 @@ namespace Sando.Parser.UnitTests
 		public void ClassInheritanceTest()
 		{
 			bool seenClass = false;
-			var parser = new SrcMLCSharpParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\InheritanceCSharpFile.txt");
+            var parser = new SrcMLCSharpParser(generator);
+			var elements = parser.Parse("TestFiles\\InheritanceCSharpFile.txt");
 			Assert.IsNotNull(elements);
 			Assert.IsTrue(elements.Count > 0);
 			foreach(ProgramElement pe in elements)
@@ -91,12 +90,6 @@ namespace Sando.Parser.UnitTests
 				}
 			}
 			Assert.IsTrue(seenClass);
-		}
-
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
 		}
 
 	}

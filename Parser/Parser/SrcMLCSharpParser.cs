@@ -6,71 +6,52 @@ using System.Xml.Linq;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using ABB.SrcML;
 
 namespace Sando.Parser
 {
     public class SrcMLCSharpParser : IParser
     {
-        private readonly SrcMLGenerator Generator;
-        private static readonly int SnippetSize = 5;
-        private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
-        private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
+        private static readonly int snippetSize = 5;
 
-        public static readonly string StandardSrcMlLocation = Environment.CurrentDirectory + "\\..\\..\\LIBS\\srcML-Win";
+        public SrcMLArchive Archive { get; set; }
+        public ABB.SrcML.SrcMLGenerator Generator { get; set; }
 
-        public SrcMLCSharpParser()
-            : this(null)
-        {
 
+        public SrcMLCSharpParser() {}
+
+        public SrcMLCSharpParser(SrcMLArchive archive){
+            this.Archive = archive;
         }
 
-        public SrcMLCSharpParser(string pluginDirectory = null)
-        {
-            //try to set this up automatically			
-            Generator = new SrcMLGenerator(LanguageEnum.CSharp);
-            if (pluginDirectory != null)
-                Generator.SetSrcMLLocation(pluginDirectory);
-            else
-            {
-                try
-                {
-                    Generator.SetSrcMLLocation(StandardSrcMlLocation);
-                }
-                catch (Exception e)
-                {
-                    FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
-                }
-            }
+        public SrcMLCSharpParser(ABB.SrcML.SrcMLGenerator generator) {
+            this.Generator = generator;
         }
 
-        public void SetSrcMLPath(string getSrcMlDirectory)
-        {
-            if (getSrcMlDirectory.EndsWith("srcML-Win") || getSrcMlDirectory.EndsWith("srcML-Win\\"))
-                getSrcMlDirectory = getSrcMlDirectory.Replace("srcML-Win", "srcML-Win-cSharp");
-            if (getSrcMlDirectory.EndsWith("LIBS") || getSrcMlDirectory.EndsWith("LIBS\\"))
-                getSrcMlDirectory = Path.Combine(getSrcMlDirectory, "srcML-Win-cSharp");
-            Generator.SetSrcMLLocation(getSrcMlDirectory);
-        }
 
         public List<ProgramElement> Parse(string fileName)
         {
             var programElements = new List<ProgramElement>();
-            string srcml = Generator.GenerateSrcML(fileName);
-
-            if (srcml != String.Empty)
-            {
-                XElement sourceElements = XElement.Parse(srcml, LoadOptions.PreserveWhitespace);
-
-                //classes and structs have to be parsed first
-                ParseClasses(programElements, sourceElements, fileName);
-                ParseStructs(programElements, sourceElements, fileName);
-
-                ParseEnums(programElements, sourceElements, fileName, SnippetSize);
-                SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName);
-                ParseConstructors(programElements, sourceElements, fileName);
-                ParseMethods(programElements, sourceElements, fileName);
-                ParseProperties(programElements, sourceElements, fileName);
-                SrcMLParsingUtils.ParseComments(programElements, sourceElements, fileName);
+            XElement sourceElements;
+            if(Archive != null) {
+                sourceElements = Archive.GetXElementForSourceFile(fileName);
+                if(sourceElements != null) {
+                    programElements = Parse(fileName, sourceElements);
+                }
+            } else if(Generator != null) {
+                string outFile = Path.GetTempFileName();
+                try {
+                    //This is a CSharp parser, so we'll convert the input file as CSharp no matter what the file extension is
+                    var srcmlfile = Generator.GenerateSrcMLFromFile(fileName, outFile, Language.CSharp);
+                    sourceElements = srcmlfile.FileUnits.FirstOrDefault();
+                    if(sourceElements != null) {
+                        programElements = Parse(fileName, sourceElements);
+                    }
+                } finally {
+                    File.Delete(outFile);
+                }
+            } else {
+                throw new InvalidOperationException("Archive and Generator are both null");
             }
 
             return programElements;
@@ -92,7 +73,7 @@ namespace Sando.Parser
             ParseClasses(programElements, sourceElements, fileName);
             ParseStructs(programElements, sourceElements, fileName);
 
-            ParseEnums(programElements, sourceElements, fileName, SnippetSize);
+            ParseEnums(programElements, sourceElements, fileName, snippetSize);
             SrcMLParsingUtils.ParseFields(programElements, sourceElements, fileName);
             ParseConstructors(programElements, sourceElements, fileName);
             ParseMethods(programElements, sourceElements, fileName);
@@ -106,10 +87,10 @@ namespace Sando.Parser
         private void ParseProperties(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> props =
-                from el in elements.Descendants(SourceNamespace + "decl")
-                where el.Element(SourceNamespace + "name") != null &&
-                      el.Element(SourceNamespace + "type") != null &&
-                      el.Element(SourceNamespace + "block") != null &&
+                from el in elements.Descendants(SRC.Declaration)
+                where el.Element(SRC.Name) != null &&
+                      el.Element(SRC.Type) != null &&
+                      el.Element(SRC.Block) != null &&
                       el.Elements().Count() == 3
                 select el;
 
@@ -124,10 +105,10 @@ namespace Sando.Parser
                 string className = classElement != null ? classElement.Name : String.Empty;
 
                 //parse access level and type
-                XElement accessElement = prop.Element(SourceNamespace + "type");
+                XElement accessElement = prop.Element(SRC.Type);
                 AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(accessElement);
 
-                IEnumerable<XElement> types = prop.Element(SourceNamespace + "type").Elements(SourceNamespace + "name");
+                IEnumerable<XElement> types = prop.Element(SRC.Type).Elements(SRC.Name);
 
                 //oops, namespaces have the same structure in srcml so need this check
                 if (types.Count() == 0 || types.First().Value == "namespace") continue;
@@ -151,7 +132,7 @@ namespace Sando.Parser
         private void ParseClasses(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> classes =
-                from el in elements.Descendants(SourceNamespace + "class")
+                from el in elements.Descendants(SRC.Class)
                 select el;
             foreach (XElement cls in classes)
             {
@@ -162,7 +143,7 @@ namespace Sando.Parser
         private void ParseStructs(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> structs =
-                from el in elements.Descendants(SourceNamespace + "struct")
+                from el in elements.Descendants(SRC.Struct)
                 //where el.Element(SourceNamespace + "type") != null &&
                 //      el.Element(SourceNamespace + "type").Element(SourceNamespace + "name") != null &&
                 //      el.Element(SourceNamespace + "type").Element(SourceNamespace + "name").Value == "struct"
@@ -185,12 +166,12 @@ namespace Sando.Parser
             var x = anc;
             //parse namespace
             IEnumerable<XElement> ownerNamespaces =
-                from el in strct.Ancestors(SourceNamespace + "namespace")
+                from el in strct.Ancestors(SRC.Namespace)
                 select el;
             string namespaceName = String.Empty;
             foreach (XElement ownerNamespace in ownerNamespaces)
             {
-                foreach (XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+                foreach (XElement spc in ownerNamespace.Elements(SRC.Name))
                 {
                     namespaceName += spc.Value + " ";
                 }
@@ -217,12 +198,12 @@ namespace Sando.Parser
 
             //parse namespace
             IEnumerable<XElement> ownerNamespaces =
-                from el in cls.Ancestors(SourceNamespace + "namespace")
+                from el in cls.Ancestors(SRC.Namespace)
                 select el;
             string namespaceName = String.Empty;
             foreach (XElement ownerNamespace in ownerNamespaces)
             {
-                foreach (XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+                foreach (XElement spc in ownerNamespace.Elements(SRC.Name))
                 {
                     namespaceName += spc.Value + " ";
                 }
@@ -231,11 +212,11 @@ namespace Sando.Parser
 
             //parse extended classes and implemented interfaces (interfaces are treated as extended classes in SrcML for now)
             string extendedClasses = String.Empty;
-            XElement super = cls.Element(SourceNamespace + "super");
+            XElement super = cls.Element(SRC.Super);
             if (super != null)
             {
                 IEnumerable<XElement> impNames =
-                    from el in super.Descendants(SourceNamespace + "name")
+                    from el in super.Descendants(SRC.Name)
                     select el;
                 foreach (XElement impName in impNames)
                 {
@@ -256,7 +237,7 @@ namespace Sando.Parser
         private void ParseConstructors(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> constructors =
-                from el in elements.Descendants(SourceNamespace + "constructor")
+                from el in elements.Descendants(SRC.Constructor)
                 select el;
             foreach (XElement cons in constructors)
             {
@@ -267,8 +248,8 @@ namespace Sando.Parser
         private void ParseMethods(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> functions =
-                from el in elements.Descendants(SourceNamespace + "function")
-                where el.Element(SourceNamespace + "name") != null
+                from el in elements.Descendants(SRC.Function)
+                where el.Element(SRC.Name) != null
                 select el;
             foreach (XElement func in functions)
             {
@@ -290,12 +271,12 @@ namespace Sando.Parser
             SrcMLParsingUtils.ParseNameAndLineNumber(method, out name, out definitionLineNumber);
 
 			AccessLevel accessLevel;
-            XElement type = method.Element(SourceNamespace + "type");
+            XElement type = method.Element(SRC.Type);
             if (type != null)
             {
                 accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(type);
 
-                XElement typeName = type.Element(SourceNamespace + "name");
+                XElement typeName = type.Element(SRC.Name);
                 if (typeName != null)
                 {
                     returnType = typeName.Value;
@@ -317,8 +298,8 @@ namespace Sando.Parser
                     try
                     {
                         var myName =
-                            method.Ancestors(SourceNamespace + "decl_stmt").Descendants(SourceNamespace + "decl").
-                                Descendants(SourceNamespace + "type").Elements(SourceNamespace + "name");
+                            method.Ancestors(SRC.DeclarationStatement).Descendants(SRC.Declaration).
+                                Descendants(SRC.Type).Elements(SRC.Name);
                         returnType = myName.First().Value;
                     }
                     catch (NullReferenceException nre)
@@ -335,8 +316,7 @@ namespace Sando.Parser
                     try
                     {
                         var myName =
-                            method.Parent.Parent.Elements(SourceNamespace + "type").First().Elements(SourceNamespace +
-                                                                                                     "name").First();
+                            method.Parent.Parent.Elements(SRC.Type).First().Elements(SRC.Name).First();
                         returnType = myName.Value;
                     }
                     catch (NullReferenceException nre)
@@ -348,12 +328,12 @@ namespace Sando.Parser
 
 
             //parse arguments
-            XElement paramlist = method.Element(SourceNamespace + "parameter_list");
+            XElement paramlist = method.Element(SRC.ParameterList);
             string arguments = String.Empty;
             if (paramlist != null)
             {
                 IEnumerable<XElement> argumentElements =
-                    from el in paramlist.Descendants(SourceNamespace + "name")
+                    from el in paramlist.Descendants(SRC.Name)
                     select el;
 
                 foreach (XElement elem in argumentElements)
@@ -381,7 +361,7 @@ namespace Sando.Parser
         public static void ParseEnums(List<ProgramElement> programElements, XElement elements, string fileName, int snippetSize)
         {
             IEnumerable<XElement> enums =
-                from el in elements.Descendants(SourceNamespace + "enum")
+                from el in elements.Descendants(SRC.Enum)
                 select el;
 
             foreach (XElement enm in enums)
@@ -394,12 +374,12 @@ namespace Sando.Parser
 
                 //parse namespace
                 IEnumerable<XElement> ownerNamespaces =
-                    from el in enm.Ancestors(SourceNamespace + "namespace")
+                    from el in enm.Ancestors(SRC.Namespace)
                     select el;
                 string namespaceName = String.Empty;
                 foreach (XElement ownerNamespace in ownerNamespaces)
                 {
-                    foreach (XElement spc in ownerNamespace.Elements(SourceNamespace + "name"))
+                    foreach (XElement spc in ownerNamespace.Elements(SRC.Name))
                     {
                         namespaceName += spc.Value + " ";
                     }
@@ -407,16 +387,16 @@ namespace Sando.Parser
                 namespaceName = namespaceName.TrimEnd();
 
                 //parse values
-                XElement block = enm.Element(SourceNamespace + "block");
+                XElement block = enm.Element(SRC.Block);
                 string values = String.Empty;
                 if (block != null)
                 {
                     IEnumerable<XElement> exprs =
-                        from el in block.Descendants(SourceNamespace + "expr")
+                        from el in block.Descendants(SRC.Expression)
                         select el;
                     foreach (XElement expr in exprs)
                     {
-                        IEnumerable<XElement> enames = expr.Elements(SourceNamespace + "name");
+                        IEnumerable<XElement> enames = expr.Elements(SRC.Name);
                         foreach (XElement ename in enames)
                         {
                             values += ename.Value + " ";
