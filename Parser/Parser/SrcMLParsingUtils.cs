@@ -8,26 +8,27 @@ using System.Xml.Linq;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using ABB.SrcML;
 
 namespace Sando.Parser
 {
 	public static class SrcMLParsingUtils
 	{
-		private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
-		private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
+		//private static readonly XNamespace SourceNamespace = "http://www.sdml.info/srcML/src";
+		//private static readonly XNamespace PositionNamespace = "http://www.sdml.info/srcML/position";
 
         public static void ParseFields(List<ProgramElement> programElements, XElement elements, string fileName)
         {
             IEnumerable<XElement> fields =
-                from el in elements.Descendants(SourceNamespace + "class")
-                select el.Element(SourceNamespace + "block");
+                from el in elements.Descendants(SRC.Class)
+                select el.Element(SRC.Block);
 
             fields =
-                from el in fields.Elements(SourceNamespace + "decl_stmt").Elements(SourceNamespace + "decl")
-                where el.Element(SourceNamespace + "name") != null &&
-                        el.Element(SourceNamespace + "type") != null &&
+                from el in fields.Elements(SRC.DeclarationStatement).Elements(SRC.Declaration)
+                where el.Element(SRC.Name) != null &&
+                        el.Element(SRC.Type) != null &&
                         (
-                            (el.Element(SourceNamespace + "init") != null && el.Elements().Count() == 3) ||
+                            (el.Element(SRC.Init) != null && el.Elements().Count() == 3) ||
                             el.Elements().Count() == 2
                         )
                 select el;
@@ -43,10 +44,10 @@ namespace Sando.Parser
                 string className = classElement != null ? classElement.Name : String.Empty;
 
                 //parse access level and type
-                var typeElement = field.Element(SourceNamespace + "type");
+                var typeElement = field.Element(SRC.Type);
                 AccessLevel accessLevel = RetrieveAccessLevel(typeElement);
 
-                IEnumerable<XElement> types = typeElement.Elements(SourceNamespace + "name");
+                IEnumerable<XElement> types = typeElement.Elements(SRC.Name);
                 string fieldType = String.Empty;
                 foreach (XElement type in types)
                 {
@@ -55,9 +56,9 @@ namespace Sando.Parser
                 fieldType = fieldType.TrimEnd();
 
                 string initialValue = String.Empty;
-                XElement initialValueElement = field.Element(SourceNamespace + "init");
+                XElement initialValueElement = field.Element(SRC.Init);
                 if (initialValueElement != null)
-                    initialValue = initialValueElement.Element(SourceNamespace + "expr").Value;
+                    initialValue = initialValueElement.Element(SRC.Expression).Value;
 
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string snippet = RetrieveSource(field);
@@ -69,7 +70,7 @@ namespace Sando.Parser
 		public static void ParseComments(List<ProgramElement> programElements, XElement elements, string fileName)
 		{
 			IEnumerable<XElement> comments =
-				from el in elements.Descendants(SourceNamespace + "comment")
+				from el in elements.Descendants(SRC.Comment)
 				select el;
 
             List<List<XElement>> commentGroups = new List<List<XElement>>();
@@ -78,8 +79,8 @@ namespace Sando.Parser
 		    {
                   if(lastGroup!=null)
                   {
-                      int line = Int32.Parse(lastGroup.Last().Attribute(PositionNamespace + "line").Value);
-                      int linenext = Int32.Parse(aComment.Attribute(PositionNamespace + "line").Value);
+                      int line = Int32.Parse(lastGroup.Last().Attribute(POS.Line).Value);
+                      int linenext = Int32.Parse(aComment.Attribute(POS.Line).Value);
                       if(line+1==linenext)
                       {
                           lastGroup.Add(aComment);
@@ -105,7 +106,7 @@ namespace Sando.Parser
             {
                 var comment = oneGroup.First();
                 var commentText = GetCommentText(oneGroup);
-                int commentLine = Int32.Parse(comment.Attribute(PositionNamespace + "line").Value);				
+                int commentLine = Int32.Parse(comment.Attribute(POS.Line).Value);				
 				if(String.IsNullOrWhiteSpace(commentText)) continue;
 
 				//comment name doesn't contain non-word characters and is compact-er than its body
@@ -116,9 +117,9 @@ namespace Sando.Parser
                 //comments above method or class
                 var lastComment = oneGroup.Last() as XElement;
                 ProgramElement programElement=null;
-                if (lastComment !=null && lastComment.Attribute(PositionNamespace + "line") != null)
+                if(lastComment != null && lastComment.Attribute(POS.Line) != null)
                 {
-                    var definitionLineNumber = Int32.Parse(lastComment.Attribute(PositionNamespace + "line").Value);
+                    var definitionLineNumber = Int32.Parse(lastComment.Attribute(POS.Line).Value);
                     programElement =
                         programElements.Find(element => element.DefinitionLineNumber == definitionLineNumber + 1);
                 }
@@ -202,12 +203,12 @@ namespace Sando.Parser
 	    public static string ParseBody(XElement function)
 		{
 			string body = String.Empty;
-			XElement block = function.Element(SourceNamespace + "block");
+			XElement block = function.Element(SRC.Block);
 			if(block != null)
 			{
 
 				IEnumerable<XElement> comments =
-					from el in block.Descendants(SourceNamespace + "comment")
+					from el in block.Descendants(SRC.Comment)
 					select el;
 				foreach(XElement elem in comments)
 				{
@@ -216,7 +217,7 @@ namespace Sando.Parser
 
 				//Expressions should also include all names, but we need to verify this...
 				IEnumerable<XElement> expressions =
-						from el in block.Descendants(SourceNamespace + "expr")
+						from el in block.Descendants(SRC.Expression)
 						select el;
 				foreach(XElement elem in expressions)
 				{
@@ -224,11 +225,11 @@ namespace Sando.Parser
 				}
                 //need to also add a names from declarations
                 IEnumerable<XElement> declarations =
-                    from el in block.Descendants(SourceNamespace + "decl")
+                    from el in block.Descendants(SRC.Declaration)
                     select el;
 			    foreach (var declaration in declarations)
 			    {
-                    var declNames = from el in declaration.Descendants(SourceNamespace + "name")
+                    var declNames = from el in declaration.Descendants(SRC.Name)
                                     where (el.Parent.Name.LocalName.Equals("type")||
                                     el.Parent.Name.LocalName.Equals("decl"))
                                     select el;
@@ -246,13 +247,13 @@ namespace Sando.Parser
 		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber)
 		{
 			XElement nameElement;
-			nameElement = target.Element(SourceNamespace + "name");
+			nameElement = target.Element(SRC.Name);
 			if(nameElement == null && 
-				target.Element(SourceNamespace + "super") != null) 
+				target.Element(SRC.Super) != null) 
 			{
 				//case of anonymous inner class, should have a super
-				nameElement = target.Element(SourceNamespace + "super");
-				nameElement = nameElement.Element(SourceNamespace + "name");
+				nameElement = target.Element(SRC.Super);
+				nameElement = nameElement.Element(SRC.Name);
 				name = nameElement.Value;
 			}
 			else if(nameElement == null)
@@ -268,9 +269,9 @@ namespace Sando.Parser
 			}
 
 			////try to get line number
-			if(nameElement.Attribute(PositionNamespace + "line") != null)
+			if(nameElement.Attribute(POS.Line) != null)
 			{
-				definitionLineNumber = Int32.Parse(nameElement.Attribute(PositionNamespace + "line").Value);
+				definitionLineNumber = Int32.Parse(nameElement.Attribute(POS.Line).Value);
 			}
 			else
 			{
@@ -282,12 +283,12 @@ namespace Sando.Parser
 		public static ClassElement RetrieveClassElement(XElement field, List<ProgramElement> programElements)
 		{
 			IEnumerable<XElement> ownerClasses =
-				from el in field.Ancestors(SourceNamespace + "class")
+				from el in field.Ancestors(SRC.Class)
 				select el;
 			if(ownerClasses.Count() > 0)
 			{
 				//this ignores the possibility that a field may be part of an inner class
-				XElement name = ownerClasses.First().Element(SourceNamespace + "name");
+				XElement name = ownerClasses.First().Element(SRC.Name);
 			    string ownerClassName="";
                 if(name==null)
                     ownerClassName = "anonymous";
@@ -309,13 +310,13 @@ namespace Sando.Parser
 		public static MethodElement RetrieveMethodElement(XElement field, List<ProgramElement> programElements)
 		{
 			IEnumerable<XElement> ownerMethods =
-				from el in field.Ancestors(SourceNamespace + "function")
+				from el in field.Ancestors(SRC.Function)
 				select el;
-			ownerMethods.Union(from el in field.Ancestors(SourceNamespace + "constructor") select el);
+			ownerMethods.Union(from el in field.Ancestors(SRC.Constructor) select el);
 
 			if(ownerMethods.Count() > 0)
 			{
-				XElement name = ownerMethods.First().Element(SourceNamespace + "name");
+				XElement name = ownerMethods.First().Element(SRC.Name);
 				string ownerMethodName = name.Value;
 				//now find the MethodElement object corresponding to ownerMethodName, since those should have been gen'd by now
                 ProgramElement ownerMethod = programElements.Find(element => element is MethodElement && ((MethodElement)element).Name == ownerMethodName);
@@ -377,7 +378,7 @@ namespace Sando.Parser
 	        if (parent == null)
 	            return defautlAccessLevel;
 
-	        var specifierElements = parent.Elements(SourceNamespace + "specifier");
+	        var specifierElements = parent.Elements(SRC.Specifier);
             foreach (var element in specifierElements)
             {
                 AccessLevel accessLevel;

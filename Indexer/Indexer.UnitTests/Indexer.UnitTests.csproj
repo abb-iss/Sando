@@ -103,6 +103,10 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML, Version=2.0.39.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
+    </Reference>
     <Reference Include="Contrib.Regex">
       <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Contrib.Regex.dll</HintPath>
     </Reference>

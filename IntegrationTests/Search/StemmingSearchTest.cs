@@ -100,7 +100,7 @@ namespace Sando.IntegrationTests.Search
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
             extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser("..\\..\\LIBS\\srcML-Win"));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML")));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" },
                                                                    new SrcMLCppParser("..\\..\\LIBS\\srcML-Win"));
 

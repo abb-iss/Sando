@@ -156,7 +156,6 @@ namespace Sando.UI
                 SetUpLogger();
                 _viewManager = new ViewManager(this);
                 AddCommand();                
-                RegisterExtensionPoints();
                 SetUpLifeCycleEvents();
                 MyPackage = this;                
             }catch(Exception e)
@@ -283,9 +282,8 @@ namespace Sando.UI
         {
             var extensionPointsRepository = ExtensionPointsRepository.Instance;
 
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(GetSrcMLDirectory()));
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx", ".c" },
-                                                                   new SrcMLCppParser(GetSrcMLDirectory()));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(GetSrcMLDirectory()));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx"},
                                                                    new XMLFileParser());
 			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".txt" },
@@ -295,7 +293,7 @@ namespace Sando.UI
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
 
             
             var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
@@ -310,13 +308,11 @@ namespace Sando.UI
 			}
 
             var csParser = extensionPointsRepository.GetParserImplementation(".cs") as SrcMLCSharpParser;
-            if(csParser!=null)
-            {
-                csParser.SetSrcMLPath(GetSrcMLDirectory());
+            if(csParser != null) {
+                csParser.Archive = _srcMLArchive;
             }
             var cppParser = extensionPointsRepository.GetParserImplementation(".cpp") as SrcMLCppParser;
-            if (cppParser != null)
-            {
+            if(cppParser != null) {
                 cppParser.SetSrcMLPath(GetSrcMLDirectory());
             }
 
@@ -341,7 +337,8 @@ namespace Sando.UI
 
         private string GetSrcMLDirectory()
         {
-            return pluginDirectory + "\\LIBS";
+            //return pluginDirectory + "\\LIBS";
+            return Path.Combine(pluginDirectory, "LIBS", "SrcML");
         }
 
         private void SolutionAboutToClose()
@@ -430,21 +427,22 @@ namespace Sando.UI
 
                 // Create a new instance of SrcML.NET's solution monitor
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
-                //Create the default IndexFilterManager
-                //This must happen after calling CreateMonitor, because that sets the Solution Key, but before subscribing to file events
-                ExtensionPointsRepository.Instance.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
                 // Subscribe events from SrcML.NET's solution monitor
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
                 // Create a new instance of SrcML.NET's SrcMLArchive
-                string src2srcmlDir = Path.Combine(pluginDirectory, "LIBS");
+                string src2srcmlDir = GetSrcMLDirectory();
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
-                generator.RegisterExecutable(Path.Combine(src2srcmlDir, "srcML-Win-cSharp"), new[] {ABB.SrcML.Language.CSharp});
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), generator);
-                // Subscribe events from SrcML.NET's solution monitor
+                // Subscribe events from SrcML.NET's SrcMLArchive
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
                 _srcMLArchive.MonitoringStopped += RespondToMonitoringStoppedEvent;
+
+                //This is done here because some extension points require data that isn't set until the solution is opened, e.g. the solution key or the srcml archive
+                //However, registration must happen before file monitoring begins below.
+                RegisterExtensionPoints();
+
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
 

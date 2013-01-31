@@ -26,7 +26,7 @@ namespace UnitTestHelpers
 		public static void InitializeDefaultExtensionPoints()
 		{
 			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML")));
 			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
 
 			extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
