@@ -43,7 +43,7 @@ namespace LocalSearch.UnitTests
         [STAThread]
         public void ShowUIOfMethod()
         {
-            GraphBuilder gbuilder = new GraphBuilder(@"..\..\TestFiles\SrcMLCSharpParser.cs");
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.cs");
             var elements = gbuilder.GetMethodsAsMethodElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

@@ -23,6 +23,7 @@ namespace LocalSearch
         private XElement[] FieldDecs;
         private XElement[] Methods;
         private Dictionary<int, List<Tuple<XElement, int>>> Calls = new Dictionary<int, List<Tuple<XElement, int>>>();
+        private Dictionary<int, List<Tuple<XElement, int>>> Callers = new Dictionary<int, List<Tuple<XElement, int>>>();
 
         /// <summary>
         /// Constructing a new Graph Builder.
@@ -49,6 +50,7 @@ namespace LocalSearch
                 String tmpFile = Path.GetTempFileName();
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
             }
+
             CreateCallGraph();
         }
 
@@ -69,6 +71,13 @@ namespace LocalSearch
                             calls = new List<Tuple<XElement, int>>();
                         calls.Add(Tuple.Create(methodCallAsDeclaration,call.GetSrcLineNumber()));
                         Calls[method.GetSrcLineNumber()] = calls;
+
+                        List<Tuple<XElement, int>> callers = null;
+                        Callers.TryGetValue(methodCallAsDeclaration.GetSrcLineNumber(), out callers);
+                        if(callers == null)
+                            callers = new List<Tuple<XElement, int>>();
+                        callers.Add(Tuple.Create(method, call.GetSrcLineNumber()));
+                        Callers[methodCallAsDeclaration.GetSrcLineNumber()] = callers;
                     }
                 }
 
@@ -93,24 +102,47 @@ namespace LocalSearch
             return GetCallees( method);
         }
 
+        private List<ProgramElementWithRelation> GetCallers(CodeSearchResult codeSearchResult)
+        {
+
+            var method = GetMethod(codeSearchResult.Element as MethodElement);
+            return GetCallers(method);
+        }
+
         public List<ProgramElementWithRelation> GetCallees( XElement method)
         {
-            List<ProgramElementWithRelation> listFiledRelated = new List<ProgramElementWithRelation>();
+            List<ProgramElementWithRelation> listCallees = new List<ProgramElementWithRelation>();
             List<Tuple<XElement, int>> myCallees = null;
             Calls.TryGetValue(method.GetSrcLineNumber(), out myCallees);
             if (myCallees != null)
             {
                 foreach (var callee in myCallees)
                 {
-                    var fullmethod = callee;
-                    Contract.Requires((fullmethod != null), "Method " + method.Element(SRC.Name).Value + " does not belong to this local file.");
-                    var methodaselement = GetMethodElementWRelationFromXElement(fullmethod.Item1);
+                    var methodaselement = GetMethodElementWRelationFromXElement(callee.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
-                    listFiledRelated.Add(methodaselement);
-                    methodaselement.RelationLineNumber = fullmethod.Item2;
+                    methodaselement.RelationLineNumber = callee.Item2;
+                    listCallees.Add(methodaselement);                    
                 }
             }
-            return listFiledRelated;
+            return listCallees;
+        }
+
+        public List<ProgramElementWithRelation> GetCallers(XElement method)
+        {
+            List<ProgramElementWithRelation> listCallers = new List<ProgramElementWithRelation>();
+            List<Tuple<XElement, int>> myCallers = null;
+            Callers.TryGetValue(method.GetSrcLineNumber(), out myCallers);
+            if (myCallers != null)
+            {
+                foreach (var caller in myCallers)
+                {
+                    var methodaselement = GetMethodElementWRelationFromXElement(caller.Item1);
+                    methodaselement.ProgramElementRelation = ProgramElementRelation.Call;
+                    methodaselement.RelationLineNumber = caller.Item2;
+                    listCallers.Add(methodaselement);                    
+                }
+            }
+            return listCallers;
         }
 
         private XElement GetMethod(XElement call)
@@ -158,10 +190,23 @@ namespace LocalSearch
             
             var paramList = methodElement.Element(SRC.ParameterList);
             var elementArgCount = 0;
-            if(paramList!=null)
-                elementArgCount =   paramList.Elements(SRC.Parameter).Count();
+            var optParaCount = 0;
+            if (paramList != null)
+            {
+                elementArgCount = paramList.Elements(SRC.Parameter).Count();
+                var parameters = paramList.Elements(SRC.Parameter);
+                foreach (var para in parameters)
+                {
+                    if (para.Element(SRC.Declaration).Element(SRC.Init) != null)
+                        optParaCount++;
+                }
+            }
             var elementName = methodElement.Element(SRC.Name).Value;
-            if (name.Equals(elementName) && elementArgCount == argCount)
+            //if (name.Equals(elementName) && elementArgCount == argCount) //not applicable for optional paramter!!!
+            //    return true;
+            if (name.Equals(elementName)
+                && argCount <= elementArgCount
+                && argCount >= (elementArgCount - optParaCount))
                 return true;
             else
                 return false;
@@ -475,8 +520,10 @@ namespace LocalSearch
             List<ProgramElementWithRelation> listFiledRelated 
                 = new List<ProgramElementWithRelation>();
             String fieldname = codeSearchResult.Name;
-
-            if ((codeSearchResult as ProgramElementWithRelation) == null || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+            
+            //relation 0: get the decl of itself
+            if ((codeSearchResult as ProgramElementWithRelation) == null //direct search result (first column)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
@@ -484,10 +531,6 @@ namespace LocalSearch
                 var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
                 listFiledRelated.Add(GetFieldElementWRelationFromDecl(fieldDeclaration));
             }
-
-            //var methodDeclaration = getfie(codeSearchResult.Element as MethodElement);
-
-            //listMethodRelated.Add(GetMethodElementWRelationFromXElement(methodDeclaration));
 
             //relation 1: get methods that use this field
             listFiledRelated.AddRange(GetMethodElementsUseField(fieldname));
@@ -503,7 +546,10 @@ namespace LocalSearch
         {
             List<ProgramElementWithRelation> listMethodRelated
                 = new List<ProgramElementWithRelation>();
-            if ((codeSearchResult as ProgramElementWithRelation) == null || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+
+            //relation 0: get the decl of itself
+            if ((codeSearchResult as ProgramElementWithRelation) == null 
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
@@ -511,20 +557,21 @@ namespace LocalSearch
                 var methodDeclaration = GetMethod(codeSearchResult.Element as MethodElement);
                 listMethodRelated.Add(GetMethodElementWRelationFromXElement(methodDeclaration));
             }
+
             String methodname = codeSearchResult.Name;
             int srcLineNumber = codeSearchResult.Element.DefinitionLineNumber;
             var method = GetFullMethodFromName(methodname, srcLineNumber);
 
             Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
 
-            //relation 1: get methods that are called by this method
+            //relation 1: get methods that are called by this method (callees)
             listMethodRelated.AddRange(GetCallees(codeSearchResult));
 
             //relation 2: get fields that are used by this method
             listMethodRelated.AddRange(GetFieldElementsUsedinMethod(method));
 
-            //get other method related info. 
-            //todo
+            //relation 3: get methods that call this method (callers)
+            listMethodRelated.AddRange(GetCallers(codeSearchResult));
 
             return listMethodRelated;
         }
@@ -569,13 +616,25 @@ namespace LocalSearch
             var relation = ProgramElementRelation.Other; //by default
             
             AccessLevel accessLevel = AccessLevel.Internal; //by default
-            var specifier = fullmethod.Element(SRC.Specifier); //for constructor
+            var specifier = fullmethod.Elements(SRC.Specifier); //for constructor (no return type/value)
             try
             {
-                if (specifier == null)
-                    specifier = fullmethod.Element(SRC.Type).Element(SRC.Specifier); //for other functions
-                if (specifier != null)
-                    accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value, true);
+                if (specifier.Count() == 0)
+                    specifier = fullmethod.Element(SRC.Type).Elements(SRC.Specifier); //for other functions
+                if (specifier.Count() != 0)
+                {
+                    foreach (var temp in specifier)
+                    {
+                        try
+                        {
+                            accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), temp.Value, true);
+                        }
+                        catch(Exception e)
+                        {
+                            //do nothing
+                        }
+                    }
+                }
             }
             catch (NullReferenceException nre)
             {
