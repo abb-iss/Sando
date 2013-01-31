@@ -5,7 +5,6 @@
 		Class,
         Struct,
 		Comment,
-		DocComment,
 		Enum,
 		Field,
 		Method,

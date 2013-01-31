@@ -31,18 +31,6 @@ namespace Sando.UnitTestHelpers
 			return new CommentElement(name, definitionLineNumber, fullFilePath, snippet, body);
 		}
 
-		public static DocCommentElement GetSampleDocCommentElement(
-			string body = "Doc omment body",
-			int definitionLineNumber = 11,
-			string documentedElementId = "0f8fad5b-d9cb-469f-a165-70867728950e",
-			string fullFilePath = "C:/Projects/SimpleClass.cs",
-			string name = "SimpleComment",
-			string snippet = "/**Comment body**/"
-		)
-		{
-			return new DocCommentElement(name, definitionLineNumber, fullFilePath, snippet, body, new Guid(documentedElementId));
-		}
-
 		public static EnumElement GetSampleEnumElement(
 			AccessLevel accessLevel = AccessLevel.Public,
 			int definitionLineNumber = 11,

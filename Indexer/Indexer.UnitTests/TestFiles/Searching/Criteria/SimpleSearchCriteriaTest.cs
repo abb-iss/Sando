@@ -274,12 +274,11 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																				{
 																					ProgramElementType.Property,
 																					ProgramElementType.Class,
-																					ProgramElementType.Enum,
-																					ProgramElementType.DocComment
+																					ProgramElementType.Enum
 																				}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":Class* OR " + SandoField.ProgramElementType.ToString() + ":DocComment* OR " + SandoField.ProgramElementType.ToString() + ":Enum* OR " + SandoField.ProgramElementType.ToString() + ":Property*)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":Class* OR " + SandoField.ProgramElementType.ToString() + ":Enum* OR " + SandoField.ProgramElementType.ToString() + ":Property*)", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ProgramElementType.ToString(), new SimpleAnalyzer()).Parse(queryString);
@@ -459,8 +458,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																				{
 																					ProgramElementType.Property,
 																					ProgramElementType.Class,
-																					ProgramElementType.Enum,
-																					ProgramElementType.DocComment
+																					ProgramElementType.Enum
 																				},
 														SearchByUsageType = true,
 														UsageTypes = new SortedSet<UsageType>()
@@ -476,7 +474,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
 			Assert.AreEqual(queryString, "(" + SandoField.AccessLevel.ToString() + ":Protected OR " + SandoField.AccessLevel.ToString() + ":Public) AND " +
-										"(" + SandoField.ProgramElementType.ToString() + ":Class* OR " + SandoField.ProgramElementType.ToString() + ":DocComment* OR " + SandoField.ProgramElementType.ToString() + ":Enum* OR " + SandoField.ProgramElementType.ToString() + ":Property*) AND " +
+										"(" + SandoField.ProgramElementType.ToString() + ":Class* OR " + SandoField.ProgramElementType.ToString() + ":Enum* OR " + SandoField.ProgramElementType.ToString() + ":Property*) AND " +
                                         "(" + SandoField.FileExtension.ToString() + ":\".cs\" OR " + SandoField.FileExtension.ToString() + ":\".h\") AND " +
                                         "(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\") AND " +
 										"(" + SandoField.Name.ToString() + ":SimpleClass^4 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass OR " + SandoField.Namespace.ToString() + ":SimpleClass)", "Created query string is invalid!");

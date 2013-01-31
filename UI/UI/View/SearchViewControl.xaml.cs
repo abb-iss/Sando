@@ -205,7 +205,6 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Class));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Comment));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Custom));
-            ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.DocComment));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Enum));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Field));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Method));
@@ -569,7 +568,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
 
             ProgramElement element = value as ProgramElement;
             if (element == null) { return GetBitmapImage("../Resources/VS2010Icons/generic.png"); }
-            if(element as CommentElement !=null || element as DocCommentElement !=null)
+            if(element as CommentElement != null)
             {                
                 string resource = "../Resources/VS2010Icons/comment.png";
                 return GetBitmapImage(resource);   

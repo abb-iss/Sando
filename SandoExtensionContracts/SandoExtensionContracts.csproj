@@ -94,7 +94,6 @@
     <Compile Include="ProgramElementContracts\CustomIndexFieldAttribute..cs" />
     <Compile Include="ProgramElementContracts\StructElement.cs" />
     <Compile Include="ProgramElementContracts\CppUnresolvedMethodElement.cs" />
-    <Compile Include="ProgramElementContracts\DocCommentElement.cs" />
     <Compile Include="ProgramElementContracts\EnumElement.cs" />
     <Compile Include="ProgramElementContracts\FieldElement.cs" />
     <Compile Include="ParserContracts\IParser.cs" />

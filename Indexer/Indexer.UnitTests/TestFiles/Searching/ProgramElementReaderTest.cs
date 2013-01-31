@@ -47,24 +47,6 @@ namespace Sando.Indexer.UnitTests.Searching
 			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
 			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
 		}
-		
-		[Test]
-		public void ProgramElementReader_ReadProgramElementFromDocumentReturnValidDocCommentElementForValidDocument()
-		{
-			DocCommentElement element = SampleProgramElementFactory.GetSampleDocCommentElement();
-			Document document = DocumentFactory.Create(element).GetDocument();
-
-			DocCommentElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as DocCommentElement;
-
-			Assert.IsNotNull(returnedElement, "returned class element is null!");
-            Assert.True("not stored in index" == returnedElement.Body, "Body is different!");
-			Assert.True(element.DefinitionLineNumber == returnedElement.DefinitionLineNumber, "DefinitionLineNumber is different!");
-			Assert.True(element.DocumentedElementId == returnedElement.DocumentedElementId, "DocumentedElementId is different!");
-			Assert.True(StandardizeFilePath(element.FullFilePath) == returnedElement.FullFilePath, "FullFilePath is different!");
-			Assert.True(element.Name == returnedElement.Name, "Name is different!");
-			Assert.True(element.ProgramElementType == returnedElement.ProgramElementType, "ProgramElementType is different!");
-			Assert.True(element.RawSource == returnedElement.RawSource, "Snippet is different!");
-		}
 
 		[Test]
 		public void ProgramElementReader_ReadProgramElementFromDocumentReturnValidEnumElementForValidDocument()

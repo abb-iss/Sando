@@ -22,8 +22,6 @@ namespace Sando.Indexer.Searching
 					return new ClassDocument(document).ReadProgramElementFromDocument();
 				case ProgramElementType.Comment:
 					return new CommentDocument(document).ReadProgramElementFromDocument();
-				case ProgramElementType.DocComment:
-					return new DocCommentDocument(document).ReadProgramElementFromDocument();
 				case ProgramElementType.Enum:
 					return new EnumDocument(document).ReadProgramElementFromDocument();
 				case ProgramElementType.Field:

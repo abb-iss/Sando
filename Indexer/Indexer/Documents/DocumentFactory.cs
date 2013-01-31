@@ -18,10 +18,6 @@ namespace Sando.Indexer.Documents
 			{
 				return new CommentDocument(programElement as CommentElement);
 			}
-			if(programElement as DocCommentElement != null)
-			{
-				return new DocCommentDocument(programElement as DocCommentElement);
-			}
 			if(programElement as EnumElement != null)
 			{
 				return new EnumDocument(programElement as EnumElement);

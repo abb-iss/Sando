@@ -124,9 +124,7 @@ namespace Sando.Parser
                 }
                 if(programElement!=null)
                 {
-                    programElements.Add(new DocCommentElement(commentName, commentLine, programElement.FullFilePath,
-                                                                        RetrieveSource(commentText),
-                                                                        commentText, programElement.Id));                    
+                    programElements.Add(new CommentElement(commentName, commentLine, programElement.FullFilePath, RetrieveSource(commentText), commentText));                    
                     continue;                    
                 }
 
@@ -136,17 +134,13 @@ namespace Sando.Parser
 				MethodElement methodEl = RetrieveMethodElement(comment, programElements);
 				if(methodEl != null)
 				{
-					programElements.Add(new DocCommentElement(commentName, commentLine, methodEl.FullFilePath,
-																RetrieveSource(commentText),
-																commentText, methodEl.Id));
+					programElements.Add(new CommentElement(commentName, commentLine, methodEl.FullFilePath, RetrieveSource(commentText), commentText));
 					continue;
 				}
 				ClassElement classEl = RetrieveClassElement(comment, programElements);
 				if(classEl != null)
 				{
-					programElements.Add(new DocCommentElement(commentName, commentLine, classEl.FullFilePath,
-																RetrieveSource(commentText),
-																commentText, classEl.Id));
+					programElements.Add(new CommentElement(commentName, commentLine, classEl.FullFilePath, RetrieveSource(commentText), commentText));
 					continue;
 				}
 
