@@ -28,7 +28,7 @@
                                                 <MultiBinding StringFormat="{}{0} {3} ({2})">
                                                     <Binding Path="ProgramElementRelationString" />
                                                     <Binding Path="ProgramElementRelationSimple" />
-                                                    <Binding Path="RelationLineNumber" />
+                                                    <Binding Path="RelationLineNumberAsString" />
                                                     <Binding Path="Name" />
                                                 </MultiBinding>
                                             </TextBlock.Text>

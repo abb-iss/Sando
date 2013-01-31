@@ -120,7 +120,7 @@ namespace LocalSearch
                 {
                     var methodaselement = GetMethodElementWRelationFromXElement(callee.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
-                    methodaselement.RelationLineNumber = callee.Item2;
+                    methodaselement.RelationLineNumber[0] = callee.Item2;
                     listCallees.Add(methodaselement);                    
                 }
             }
@@ -138,7 +138,7 @@ namespace LocalSearch
                 {
                     var methodaselement = GetMethodElementWRelationFromXElement(caller.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.Call;
-                    methodaselement.RelationLineNumber = caller.Item2;
+                    methodaselement.RelationLineNumber[0] = caller.Item2;
                     listCallers.Add(methodaselement);                    
                 }
             }
@@ -356,7 +356,7 @@ namespace LocalSearch
         /// <param name="fieldname">field NAME in String</param>
         /// <returns>true if it is used.</returns>
         /// <retruns name="UsedLineNumber"> number of line on which the field is used </retruns>
-        public bool ifFieldUsedinMethod(XElement method, String fieldname, ref int UsedLineNumber)
+        public bool ifFieldUsedinMethod(XElement method, String fieldname, ref List<int> UsedLineNumber)
         {
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
@@ -385,17 +385,24 @@ namespace LocalSearch
             if (listNames.Contains(fieldname) &&
                 !(listLocalVars.Contains(fieldname)) &&
                 !(listParas.Contains(fieldname)))
-            {
-                //now just search for the first use for now [todo later]
-                int index = listNames.FindIndex(name => name == fieldname ); 
-                UsedLineNumber = listNameElements[index].GetSrcLineNumber();
+            {   
+                int index = 0;
+                while(index < listNames.Count())
+                {
+                    index = listNames.FindIndex(index, name => name == fieldname);
+                    if (index == -1)
+                        break;
+                    UsedLineNumber.Add(listNameElements[index].GetSrcLineNumber());
+                    index++;
+                }
+
                 return true;
             }
             else
                 return false;
         }
 
-        public bool ifFieldUsedinMethod(XElement method, XElement fieldname, ref int UsedLineNumber)
+        public bool ifFieldUsedinMethod(XElement method, XElement fieldname, ref List<int> UsedLineNumber)
         {
             return ifFieldUsedinMethod(method, fieldname.Value, ref UsedLineNumber);
 
@@ -413,7 +420,7 @@ namespace LocalSearch
             XElement[] allfields = GetFieldNames();
             foreach (var field in allfields)
             {
-                int useLineNum = 0;
+                List<int> useLineNum = new List<int>();
                 if (ifFieldUsedinMethod(method, field, ref useLineNum))
                 {
                     var fielddecl = GetFieldDeclFromName(field.Value);
@@ -441,7 +448,7 @@ namespace LocalSearch
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
             {
-                int useLineNum = 0;
+                List<int>  useLineNum = new List<int>();
                 if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
                 {
                     var methodaselement = GetMethodElementWRelationFromXElement(method);
@@ -685,7 +692,7 @@ namespace LocalSearch
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
             {
-                int useLineNum = 0;
+                List<int> useLineNum = new List<int>();
                 if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
                 {
                     listMethods.Add(method);
@@ -707,7 +714,7 @@ namespace LocalSearch
             XElement[] allfields = GetFieldNames();
             foreach (var field in allfields)
             {
-                int useLineNum = 0;
+                List<int> useLineNum = new List<int>();
                 if (ifFieldUsedinMethod(method, field, ref useLineNum))
                     listFieldsUsed.Add(field);
             }
@@ -727,7 +734,7 @@ namespace LocalSearch
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
             {
-                int useLineNum = 0;
+                List<int> useLineNum = new List<int>();
                 if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
                 {
                     var methodname = method.Element(SRC.Name);

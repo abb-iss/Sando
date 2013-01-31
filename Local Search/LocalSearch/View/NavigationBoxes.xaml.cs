@@ -234,11 +234,13 @@ namespace LocalSearch.View
             {
                 var relation = currentNavigationBox.SelectedItem as ProgramElementWithRelation;
                 if (relation!=null)
-                {
-                
-                    if (relation.RelationLineNumber != -1 && relation.RelationLineNumber != 0)
+                {   
+                    foreach (var linenumber in relation.RelationLineNumber)
                     {
-                        NavigationBoxes.SelectLine(relation.RelationLineNumber);
+                        if (linenumber > 0)
+                        {
+                            NavigationBoxes.SelectLine(linenumber);
+                        }
                     }
                 }
                 var selected = currentNavigationBox.SelectedItem as CodeSearchResult;

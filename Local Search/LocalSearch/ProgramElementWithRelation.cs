@@ -40,7 +40,21 @@ namespace LocalSearch
             }
         }
 
-        public int RelationLineNumber { get; set; }
+        public List<int> RelationLineNumber {get; set;}
+
+        public String RelationLineNumberAsString
+        {
+            get 
+            { 
+                String relationlinenumber = "";
+                foreach (var linenumber in RelationLineNumber)
+                {
+                    relationlinenumber += linenumber.ToString() + " ";
+                }
+
+                return relationlinenumber;
+            }
+        }
 
         public String ProgramElementRelationSimple 
         {
@@ -62,14 +76,16 @@ namespace LocalSearch
             base(element, score)
 	   {           
 		   this.ProgramElementRelation = relation;
-           this.RelationLineNumber = Convert.ToInt32(this.DefinitionLineNumber);
+           this.RelationLineNumber = new List<int>();
+           this.RelationLineNumber.Add(Convert.ToInt32(this.DefinitionLineNumber));
 	   }
 
         public ProgramElementWithRelation(ProgramElement element, double score) :
             base(element, score)
         {
             this.ProgramElementRelation = ProgramElementRelation.Other;
-            this.RelationLineNumber = Convert.ToInt32(this.DefinitionLineNumber);
+            this.RelationLineNumber = new List<int>();
+            this.RelationLineNumber.Add(Convert.ToInt32(this.DefinitionLineNumber));
         }
 
                
