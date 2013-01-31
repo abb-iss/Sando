@@ -6,12 +6,39 @@ using System.Threading.Tasks;
 using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using System.ComponentModel;
 
 namespace LocalSearch
 {
     public class ProgramElementWithRelation : CodeSearchResult
     {
         public ProgramElementRelation ProgramElementRelation { get; set; }
+
+        public String ProgramElementRelationString
+        {
+            get
+            {
+                if(ProgramElementRelation.Equals(ProgramElementRelation.Other))
+                    return "";
+                else
+                {
+                    //WHAT THE HECK!!?!?!  
+                    var Element = this;
+                    var type = typeof(ProgramElementRelation);
+                    if (Element as ProgramElementWithRelation != null)
+                    {
+                        var memInfo = type.GetMember(((Element as ProgramElementWithRelation)).ProgramElementRelation.ToString());
+                        var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
+                            false);
+                        var description = ((DescriptionAttribute)attributes[0]).Description;
+                        return description;
+                    }
+                    else
+                        return "";
+                    
+                }
+            }
+        }
 
         public int RelationLineNumber { get; set; }
 

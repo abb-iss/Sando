@@ -358,9 +358,11 @@ namespace LocalSearch.View
             InitDte2();
             try
             {
-                var selection = (EnvDTE.TextSelection)dte.ActiveDocument.Selection;
+                var selection = (EnvDTE.TextSelection)dte.ActiveDocument.Selection;                
                 selection.GotoLine(lineNumber);
-                selection.SelectLine();
+                selection.LineDown(false,70);
+                selection.GotoLine(lineNumber);
+                selection.SelectLine();                
             }
             catch (Exception)
             {
@@ -381,6 +383,46 @@ namespace LocalSearch.View
         private void TextBox_TextChanged_1(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
 
+        }
+
+        private void searchBox_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void FirstProgramElementsList_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ClearGetAndShow(FirstProgramElementsList, SecondProgramElements, 0);
+        }
+
+        private void SecondProgramElements_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ClearGetAndShow(SecondProgramElementsList, ThirdProgramElements, 1);
+        }
+
+        private void ThirdProgramElements_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ClearGetAndShow(ThirdProgramElementsList, FourthProgramElements, 2);
+        }
+
+        private void FourthProgramElements_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ClearGetAndShow(FourthProgramElementsList, FifthProgramElements, 3);
+        }
+
+        private void FifthProgramElements_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ClearGetAndShow(FifthProgramElementsList, SixthProgramElements, 4);
+        }
+
+        private void SixthProgramElements_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ClearGetAndShow(SixthProgramElementsList, SeventhProgramElements, 5);
+        }
+
+        private void SeventhProgramElements_MouseDown_1(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            RelationSequence = ShowSequenceOfSelects();
         }
     }
 }

@@ -23,10 +23,10 @@
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
                                 <Label Margin="0,0,0,0">
                                     <Label.Content>
-                                        <TextBlock Margin="0,0,0,0" FontFamily="Courier New" FontSize="12">
+                                        <TextBlock Margin="0,0,0,0" FontSize="12">
                                             <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}[{0}-{1}]({2}) {3}">
-                                                    <Binding Path="ProgramElementTypeSimple" />
+                                                <MultiBinding StringFormat="{}{0} {3} ({2})">
+                                                    <Binding Path="ProgramElementRelationString" />
                                                     <Binding Path="ProgramElementRelationSimple" />
                                                     <Binding Path="RelationLineNumber" />
                                                     <Binding Path="Name" />
@@ -61,29 +61,29 @@
     </UserControl.Resources>
     <DockPanel >
         <DockPanel DockPanel.Dock="Top" Width="1350">
-            <TextBox Margin="1,1,1,1" Name="searchBox" DockPanel.Dock="Left" Width="223" Text="{Binding Path=SearchString}" KeyDown="TextBox_KeyDown_1" TextChanged="TextBox_TextChanged_1" FontFamily="Segoe UI Semibold"/>
+            <TextBox Margin="1,1,1,1" Name="searchBox" DockPanel.Dock="Left" Width="223" Text="{Binding Path=SearchString}" KeyDown="TextBox_KeyDown_1"  TextChanged="TextBox_TextChanged_1" FontFamily="Segoe UI Semibold"/>
             <Label DockPanel.Dock="Right" Content="{Binding Path=RelationSequence}" />
         </DockPanel>   
         <DockPanel VerticalAlignment="Stretch" Height="Auto" Width="1350">
-            <ListView Name="FirstProgramElementsList" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" Width="225">
+            <ListView Name="FirstProgramElementsList" MouseDown="FirstProgramElementsList_MouseDown_1" SelectionChanged="FirstProgramElements_SelectionChanged" ItemsSource="{Binding Path=FirstProgramElements}" Width="225">
             </ListView>
 
-            <ListView Name="SecondProgramElementsList" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" Width="225">
+            <ListView Name="SecondProgramElementsList" MouseDown="SecondProgramElements_MouseDown_1" SelectionChanged="SecondProgramElements_SelectionChanged" ItemsSource="{Binding Path=SecondProgramElements}" Width="225">
             </ListView>
 
-            <ListView Name="ThirdProgramElementsList" SelectionChanged="ThirdProgramElements_SelectionChanged" ItemsSource="{Binding Path=ThirdProgramElements}" Width="225">
+            <ListView Name="ThirdProgramElementsList" MouseDown="ThirdProgramElements_MouseDown_1" SelectionChanged="ThirdProgramElements_SelectionChanged" ItemsSource="{Binding Path=ThirdProgramElements}" Width="225">
             </ListView>
 
-            <ListView Name="FourthProgramElementsList" SelectionChanged="FourthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FourthProgramElements}" Width="225">
+            <ListView Name="FourthProgramElementsList" MouseDown="FourthProgramElements_MouseDown_1" SelectionChanged="FourthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FourthProgramElements}" Width="225">
             </ListView>
 
-            <ListView Name="FifthProgramElementsList" SelectionChanged="FifthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FifthProgramElements}" Width="225">
+            <ListView Name="FifthProgramElementsList" MouseDown="FifthProgramElements_MouseDown_1" SelectionChanged="FifthProgramElements_SelectionChanged" ItemsSource="{Binding Path=FifthProgramElements}" Width="225">
             </ListView>
 
-            <ListView Name="SixthProgramElementsList" SelectionChanged="SixthProgramElements_SelectionChanged" ItemsSource="{Binding Path=SixthProgramElements}" Width="225">
+            <ListView Name="SixthProgramElementsList" MouseDown="SixthProgramElements_MouseDown_1" SelectionChanged="SixthProgramElements_SelectionChanged" ItemsSource="{Binding Path=SixthProgramElements}" Width="225">
             </ListView>
-            
-            <ListView Name="SeventhProgramElementsList" SelectionChanged="SeventhProgramElements_SelectionChanged" ItemsSource="{Binding Path=SeventhProgramElements}"
+
+            <ListView Name="SeventhProgramElementsList" MouseDown="SeventhProgramElements_MouseDown_1" SelectionChanged="SeventhProgramElements_SelectionChanged" ItemsSource="{Binding Path=SeventhProgramElements}"
  Width="225">
             </ListView>
         </DockPanel>        
