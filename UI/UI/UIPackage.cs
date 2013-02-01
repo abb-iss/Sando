@@ -31,6 +31,7 @@ using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
+using Sando.Recommender;
 
 // Code changed by JZ: solution monitor integration
 using System.Xml;
@@ -434,6 +435,8 @@ namespace Sando.UI
                 string src2srcmlDir = GetSrcMLDirectory();
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), generator);
+                //TODO: clear old srcml files if index recreation is required
+                int dummy = 0;
                 // Subscribe events from SrcML.NET's SrcMLArchive
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
@@ -442,6 +445,10 @@ namespace Sando.UI
                 //This is done here because some extension points require data that isn't set until the solution is opened, e.g. the solution key or the srcml archive
                 //However, registration must happen before file monitoring begins below.
                 RegisterExtensionPoints();
+
+                //Set up the SwumManager
+                SwumManager.Instance.Initialize(GetCurrentSolutionKey().GetIndexPath(), !isIndexRecreationRequired);
+                SwumManager.Instance.Archive = _srcMLArchive;
 
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
@@ -505,17 +512,21 @@ namespace Sando.UI
                         case ABB.SrcML.FileEventType.FileAdded:
                             SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
                             SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            SwumManager.Instance.AddSourceFile(sourceFilePath); 
                             break;
                         case ABB.SrcML.FileEventType.FileChanged:
                             SolutionMonitorFactory.DeleteIndex(sourceFilePath);
                             SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            SwumManager.Instance.UpdateSourceFile(sourceFilePath); 
                             break;
                         case ABB.SrcML.FileEventType.FileDeleted:
                             SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                            SwumManager.Instance.RemoveSourceFile(sourceFilePath);
                             break;
                         case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
                             SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
                             SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                            SwumManager.Instance.UpdateSourceFile(sourceFilePath);
                             break;
                     }
                     SolutionMonitorFactory.CommitIndexChanges();
@@ -532,6 +543,7 @@ namespace Sando.UI
         private void RespondToStartupCompletedEvent(object sender, EventArgs eventArgs)
         {
             SolutionMonitorFactory.StartupCompleted();
+            SwumManager.Instance.PrintSwumCache();
         }
 
         /// <summary>
@@ -543,6 +555,9 @@ namespace Sando.UI
         private void RespondToMonitoringStoppedEvent(object sender, EventArgs eventArgs)
         {
             SolutionMonitorFactory.MonitoringStopped();
+            if(SwumManager.Instance != null) {
+                SwumManager.Instance.PrintSwumCache();
+            }
         }
         
         /* //// Original implementation

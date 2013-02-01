@@ -13,8 +13,13 @@ namespace Sando.Recommender.UnitTests {
     class SwumManagerTests {
         readonly SwumManager manager = SwumManager.Instance;
 
-        [SetUp]
-        public void Setup() {
+        [TestFixtureSetUp]
+        public void FixtureSetup() {
+            manager.Generator = new SrcMLGenerator(@"LIBS\SrcML");
+        }
+
+        [TearDown]
+        public void Teardown() {
             manager.Clear();
         }
 

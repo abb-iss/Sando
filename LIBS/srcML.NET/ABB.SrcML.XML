@@ -1695,10 +1695,10 @@
         </member>
         <member name="M:ABB.SrcML.SrcMLArchive.GetXElementForSourceFile(System.String)">
             <summary>
-            Get the XElement for a specified source file.
+            Gets the XElement for the specified source file. If the SrcML does not already exist in the archive, it will be created.
             </summary>
-            <param name="sourceFilePath"></param>
-            <returns></returns>
+            <param name="sourceFilePath">The source file to get the root XElement for.</param>
+            <returns>The root XElement of the source file.</returns>
         </member>
         <member name="M:ABB.SrcML.SrcMLArchive.OnSourceFileChanged(ABB.SrcML.FileEventRaisedArgs)">
             <summary>
