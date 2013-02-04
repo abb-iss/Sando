@@ -204,7 +204,7 @@ namespace Sando.UI.Monitoring
                         SandoDocument document = CppHeaderElementResolver.GetDocumentForUnresolvedCppMethod(unresolvedElement, headerElements);
                         if (document != null)
                         {
-                            writeLog( "- DI.AddDocument()");
+                            //writeLog( "- DI.AddDocument()");
                             _currentIndexer.AddDocument(document);
                         }
                     }
@@ -217,7 +217,7 @@ namespace Sando.UI.Monitoring
                         var document = DocumentFactory.Create(programElement);
                         if (document != null)
                         {
-                            writeLog( "- DI.AddDocument()");
+                            //writeLog( "- DI.AddDocument()");
                             _currentIndexer.AddDocument(document);
                         }
                     }

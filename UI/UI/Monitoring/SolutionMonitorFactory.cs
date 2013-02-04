@@ -95,7 +95,7 @@ namespace Sando.UI.Monitoring
         /// <param name="sourceFilePath"></param>
         public static void DeleteIndex(string sourceFilePath)
         {
-            writeLog("- DI.DeleteDocuments()");
+            //writeLog("- DI.DeleteDocuments()");
             currentIndexer.DeleteDocuments(sourceFilePath);
         }
 
@@ -105,7 +105,7 @@ namespace Sando.UI.Monitoring
         /// </summary>
         public static void CommitIndexChanges()
         {
-            writeLog("- DI.CommitChanges()");
+            //writeLog("- DI.CommitChanges()");
             currentIndexer.CommitChanges();
         }
 
