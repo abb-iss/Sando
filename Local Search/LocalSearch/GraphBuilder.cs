@@ -425,11 +425,17 @@ namespace LocalSearch
                 {
                     var fielddecl = GetFieldDeclFromName(field.Value);
                     Contract.Requires((fielddecl != null), "Field " + field.Value + " does not belong to this local file.");
-                    var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
-                    fieldelement.RelationLineNumber = useLineNum;
-                    fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
-
-                    listFieldElementsUsed.Add(fieldelement);
+                    //var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
+                    //fieldelement.RelationLineNumber = useLineNum;
+                    //fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
+                    foreach (var linenumber in useLineNum)
+                    {
+                        var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
+                        fieldelement.RelationLineNumber.Clear();
+                        fieldelement.RelationLineNumber.Add(linenumber);
+                        fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
+                        listFieldElementsUsed.Add(fieldelement);
+                    }
                 }
             }
 
@@ -451,10 +457,15 @@ namespace LocalSearch
                 List<int>  useLineNum = new List<int>();
                 if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
                 {
-                    var methodaselement = GetMethodElementWRelationFromXElement(method);
-                    methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
-                    methodaselement.RelationLineNumber = useLineNum;
-                    listMethodElements.Add(methodaselement);
+                    foreach (var line in useLineNum)
+                    {
+                        var methodaselement = GetMethodElementWRelationFromXElement(method);
+                        methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+                        //methodaselement.RelationLineNumber = useLineNum;
+                        methodaselement.RelationLineNumber.Clear();
+                        methodaselement.RelationLineNumber.Add(line);
+                        listMethodElements.Add(methodaselement);
+                    }
                 }
             }
 
