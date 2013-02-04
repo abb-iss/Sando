@@ -180,9 +180,17 @@ namespace LocalSearch
         private bool Matches(XElement call, XElement methodElement)
         {
             var name = "";
+            
             try
             {
-                name = call.Elements(SRC.Name).Elements(SRC.Name).Last().Value;	                
+                name = call.Elements(SRC.Name).Elements(SRC.Name).Last().Value;
+                int count = call.Element(SRC.Name).Elements(SRC.Name).Count();
+                if(count > 1) //x.method but x is not "this"
+                {
+                    var dec = call.Element(SRC.Name).Elements(SRC.Name).ElementAt(count-2).Value;
+                    if (!dec.Equals("this"))
+                        return false;
+                }
             }catch(InvalidOperationException e){
                 name = call.Elements(SRC.Name).Last().Value;
             }
@@ -778,17 +786,18 @@ namespace LocalSearch
 
             foreach (XElement field in fields)
             {
-                var fieldname = field.Element(SRC.Declaration).Element(SRC.Name);
-                var definitionLineNumber = fieldname.GetSrcLineNumber();
-                var fullFilePath = srcmlFile.FileName;
-                var snippet = String.Empty;
-                var accessLevel = AccessLevel.Public;
-                var fieldType = String.Empty;
-                var classId = Guid.Empty;
-                var className = String.Empty;
-                var initialValue = String.Empty;
-                var element = new FieldElement(fieldname.Value, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
-                CodeSearchResult result = new CodeSearchResult(element, 1.0);
+                var fieldaselement = GetFieldElementWRelationFromDecl(field.Element(SRC.Declaration));
+                //var fieldname = field.Element(SRC.Declaration).Element(SRC.Name);
+                //var definitionLineNumber = fieldname.GetSrcLineNumber();
+                //var fullFilePath = srcmlFile.FileName;
+                //var snippet = String.Empty;
+                //var accessLevel = AccessLevel.Public;
+                //var fieldType = String.Empty;
+                //var classId = Guid.Empty;
+                //var className = String.Empty;
+                //var initialValue = String.Empty;
+                //var element = new FieldElement(fieldname.Value, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
+                CodeSearchResult result = fieldaselement as CodeSearchResult;
                 elements.Add(result);
             }
 
@@ -803,28 +812,30 @@ namespace LocalSearch
 
             foreach (XElement method in methods)
             {
-                var fieldname = "";
-                if (method.Element(SRC.Name) != null)
-                {
-                    fieldname = method.Element(SRC.Name).Value;
-                }
-                else
-                {
-                    fieldname = method.Value;
-                }
-                var definitionLineNumber = method.GetSrcLineNumber();
-                var fullFilePath = srcmlFile.FileName;
-                var snippet = String.Empty;
-                var accessLevel = AccessLevel.Public;
-                var fieldType = String.Empty;
-                var classId = Guid.Empty;
-                var className = String.Empty;
-                var initialValue = String.Empty;
-                bool isconstructor = false;
-                var args = String.Empty;
-                var body = string.Empty;
-                var element = new MethodElement(fieldname, definitionLineNumber, fullFilePath, snippet, accessLevel, args, fieldType, body, classId, className, String.Empty, isconstructor);
-                CodeSearchResult result = new CodeSearchResult(element, 1.0);
+                var fullmethod = GetFullMethodFromName(method);
+                var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
+                //var fieldname = "";
+                //if (method.Element(SRC.Name) != null)
+                //{
+                //    fieldname = method.Element(SRC.Name).Value;
+                //}
+                //else
+                //{
+                //    fieldname = method.Value;
+                //}
+                //var definitionLineNumber = method.GetSrcLineNumber();
+                //var fullFilePath = srcmlFile.FileName;
+                //var snippet = String.Empty;
+                //var accessLevel = AccessLevel.Public;
+                //var fieldType = String.Empty;
+                //var classId = Guid.Empty;
+                //var className = String.Empty;
+                //var initialValue = String.Empty;
+                //bool isconstructor = false;
+                //var args = String.Empty;
+                //var body = string.Empty;
+                //var element = new MethodElement(fieldname, definitionLineNumber, fullFilePath, snippet, accessLevel, args, fieldType, body, classId, className, String.Empty, isconstructor);
+                CodeSearchResult result = methodaselement as CodeSearchResult;
                 elements.Add(result);
             }
 
