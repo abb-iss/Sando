@@ -434,9 +434,7 @@ namespace Sando.UI
                 // Create a new instance of SrcML.NET's SrcMLArchive
                 string src2srcmlDir = GetSrcMLDirectory();
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
-                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), generator);
-                //TODO: clear old srcml files if index recreation is required
-                int dummy = 0;
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), !isIndexRecreationRequired, generator);
                 // Subscribe events from SrcML.NET's SrcMLArchive
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;

@@ -1615,6 +1615,38 @@
             <param name="outputFileName">Name of the output file.</param>
             <param name="unitIndex">Index of the unit.</param>
         </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,ABB.SrcML.SrcMLGenerator)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+        </member>
         <member name="M:ABB.SrcML.SrcMLArchive._runStartupInBackground_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
             <summary>
             Run in background when starting up the solution.
