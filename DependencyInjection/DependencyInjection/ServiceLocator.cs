@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using Microsoft.Practices.Unity;
@@ -9,17 +11,27 @@ namespace DependencyInjection
     {
         static ServiceLocator()
         {
-            UnityContainer = new UnityContainer();
+            UnityContainers = new Dictionary<int, IUnityContainer>();
         }
 
         public static IUnityContainer RegisterType<TFrom, TTo>(params InjectionMember[] injectionMembers) where TTo : TFrom
         {
-            return UnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new PerProcessLifetimeManager(), injectionMembers);
+            return CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new ContainerControlledLifetimeManager(), injectionMembers);
         }
 
-        public static IUnityContainer RegisterInstance<TInterface>(this IUnityContainer container, TInterface instance)
+        public static IUnityContainer RegisterType<TFrom, TTo>(string name, params InjectionMember[] injectionMembers) where TTo : TFrom
         {
-            return container.RegisterInstance(typeof(TInterface), null, instance, new PerProcessLifetimeManager());
+            return CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new ContainerControlledLifetimeManager(), injectionMembers);
+        }
+
+        public static IUnityContainer RegisterInstance<TInterface>(TInterface instance)
+        {
+            return CurrentUnityContainer.RegisterInstance(typeof(TInterface), null, instance, new ContainerControlledLifetimeManager());
+        }
+
+        public static IUnityContainer RegisterInstance<TInterface>(string name, TInterface instance)
+        {
+            return CurrentUnityContainer.RegisterInstance(typeof(TInterface), name, instance, new ContainerControlledLifetimeManager());
         }
 
         public static T Resolve<T>() where T : class
@@ -35,15 +47,34 @@ namespace DependencyInjection
             return service;
         }
 
+        public static T Resolve<T>(string name) where T : class
+        {
+            Contract.Ensures(Contract.Result<T>() != null);
+
+            T service;
+            var resolved = TryResolve(name, out service);
+
+            Contract.Assert(resolved, String.Format(CultureInfo.InvariantCulture, "Unable to resolve service of type {0} using current resolver.", typeof(T)));
+            Contract.Assert(service != null);
+
+            return service;
+        }
+
         public static T ResolveOptional<T>() where T : class
         {
             T service;
             return TryResolve(out service) ? service : null;
         }
 
+        public static T ResolveOptional<T>(string name) where T : class
+        {
+            T service;
+            return TryResolve(name, out service) ? service : null;
+        }
+
         private static bool TryResolve<T>(out T service) where T : class
         {
-            service = UnityContainer.Resolve<T>();
+            service = CurrentUnityContainer.Resolve<T>();
             
             if (service != null)
                 return true;
@@ -51,6 +82,28 @@ namespace DependencyInjection
             return false;
         }
 
-        private static readonly IUnityContainer UnityContainer;
+        private static bool TryResolve<T>(string name, out T service) where T : class
+        {
+            service = CurrentUnityContainer.Resolve<T>(name);
+
+            if (service != null)
+                return true;
+
+            return false;
+        }
+
+        private static IUnityContainer CurrentUnityContainer
+        {
+            get
+            {
+                var currentProcessId = Process.GetCurrentProcess().Id;
+                if (!UnityContainers.ContainsKey(currentProcessId))
+                    UnityContainers.Add(currentProcessId, new UnityContainer());
+
+                return UnityContainers[currentProcessId];
+            }
+        }
+
+        private static readonly Dictionary<int, IUnityContainer> UnityContainers;
     }
 }
