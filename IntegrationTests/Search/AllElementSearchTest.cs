@@ -11,6 +11,7 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
+using Sando.Recommender;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -118,21 +119,20 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
+		
 
-		[SetUp]
+		[TestFixtureSetUp]
 		public void Setup()
 		{
+            TestUtils.InitializeDefaultExtensionPoints();
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
 			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
 			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
+            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
 			foreach(var file in files)
 			{
 				string fullPath = Path.GetFullPath(file);
@@ -141,7 +141,7 @@ namespace Sando.IntegrationTests.Search
             monitor.UpdateAfterAdditions();
 		}
 
-		[TearDown]
+		[TestFixtureTearDown]
 		public void TearDown()
 		{
 			monitor.StopMonitoring(true);
