@@ -135,9 +135,15 @@ namespace Sando.Recommender {
             } else {
                 throw new InvalidOperationException("SwumManager - Archive and Generator are both null");
             }
-            
-            if(fileElement != null) {
-                AddSwumForMethodDefinitions(fileElement, sourcePath);
+
+            try {
+                if(fileElement != null) {
+                    AddSwumForMethodDefinitions(fileElement, sourcePath);
+                }
+            } catch(Exception e) {
+                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
+                FileLogger.DefaultLogger.Error(e.Message);
+                FileLogger.DefaultLogger.Error(e.StackTrace);
             }
         }
 
