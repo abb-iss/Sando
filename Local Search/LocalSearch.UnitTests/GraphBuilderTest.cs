@@ -13,9 +13,9 @@ namespace LocalSearch.UnitTests
     [TestFixture]
     public class GraphBuilderTest
     {
-        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.cs";
+        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SqlCeDbDoc.cs";
         private static String callsSrcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestingFile.cs";
-        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.XML";
+        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SqlCeDbDoc.XML";
 
         private static String singlemethodPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestMethod.cs";
 

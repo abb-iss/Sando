@@ -20,7 +20,7 @@ namespace LocalSearch.UnitTests
         [STAThread] 
         public void ShowUIOfField()
         {
-            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SrcMLCSharpParser.cs"); // ConfigManip
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SqlCeDbDoc.cs"); 
             var elements = gbuilder.GetFieldsAsFieldElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

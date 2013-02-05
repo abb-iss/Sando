@@ -80,18 +80,7 @@ namespace LocalSearch
                         Callers[methodCallAsDeclaration.GetSrcLineNumber()] = callers;
                     }
                 }
-
-                //foreach (var anotherMethod in allmethods)
-                //{
-                //    if (IfCalledByMe(anotherMethod, allCalls) != -1)
-                //    {
-                //        List<Tuple<XElement, int>> calls = null;
-                //        Calls.TryGetValue(method.GetSrcLineNumber(), out calls);
-                //        if (calls == null)
-                //            calls = new List<Tuple<XElement, int>>();
-                //        calls.Add(anotherMethod);
-                //    }
-                //}
+               
             }            
         }
 
@@ -181,19 +170,37 @@ namespace LocalSearch
         {
             var name = "";
             
-            try
+            //try
+            //{
+            //    name = call.Element(SRC.Name).Elements(SRC.Name).Last().Value;
+            //    int count = call.Element(SRC.Name).Elements(SRC.Name).Count();
+            //    if(count > 1) //x.method but x is not "this"
+            //    {
+            //        var dec = call.Element(SRC.Name).Elements(SRC.Name).ElementAt(count-2).Value;
+            //        if (!dec.Equals("this"))
+            //            return false;
+            //    }
+            //}catch(InvalidOperationException e){
+            //    name = call.Element(SRC.Name).Value;
+            //}
+
+            var names = call.Element(SRC.Name).Elements(SRC.Name);
+            if (names.Count() != 0)
             {
-                name = call.Elements(SRC.Name).Elements(SRC.Name).Last().Value;
-                int count = call.Element(SRC.Name).Elements(SRC.Name).Count();
-                if(count > 1) //x.method but x is not "this"
+                name = names.Last().Value;
+                int count = names.Count();
+                if (count > 1) //x.method but x is not "this"
                 {
-                    var dec = call.Element(SRC.Name).Elements(SRC.Name).ElementAt(count-2).Value;
+                    var dec = names.ElementAt(count - 2).Value;
                     if (!dec.Equals("this"))
                         return false;
                 }
-            }catch(InvalidOperationException e){
-                name = call.Elements(SRC.Name).Last().Value;
             }
+            else
+            {
+                name = call.Element(SRC.Name).Value;
+            }
+
             var argCount = call.Element(SRC.ArgumentList).Elements(SRC.Argument).Count();
             
             var paramList = methodElement.Element(SRC.ParameterList);
@@ -610,9 +617,21 @@ namespace LocalSearch
             var relation = ProgramElementRelation.Other; //by default
 
             AccessLevel accessLevel = AccessLevel.Internal; //by default
-            var specifier = fielddecl.Element(SRC.Type).Element(SRC.Specifier);
-            if (specifier != null) 
-                accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), specifier.Value,true); 
+            var specifier = fielddecl.Element(SRC.Type).Elements(SRC.Specifier);
+            if (specifier.Count() != 0)
+            {
+                foreach (var temp in specifier)
+                {
+                    try
+                    {
+                        accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), temp.Value, true);
+                    }
+                    catch (Exception e)
+                    {
+                        //do nothing, just becasue it's not a specifier of accesslevel, such as static
+                    }
+                }                
+            }
             
             var fieldType = fielddecl.Element(SRC.Type).Element(SRC.Name);
             var classId = Guid.Empty;
