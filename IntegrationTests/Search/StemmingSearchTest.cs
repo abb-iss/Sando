@@ -12,6 +12,8 @@ using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
+using Sando.Recommender;
+using UnitTestHelpers;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -93,9 +95,10 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(methodElement.RawSource), "Field snippet is invalid!");
 		}
 
-		[SetUp]
+		[TestFixtureSetUp]
 		public void Setup()
-		{              
+		{
+            TestUtils.InitializeDefaultExtensionPoints();
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
@@ -111,6 +114,10 @@ namespace Sando.IntegrationTests.Search
 			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
 			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles");
+
+            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
+
 			foreach(var file in files)
 			{
 				string fullPath = Path.GetFullPath(file);
@@ -119,7 +126,7 @@ namespace Sando.IntegrationTests.Search
             monitor.UpdateAfterAdditions();
 		}
 
-		[TearDown]
+		[TestFixtureTearDown]
 		public void TearDown()
 		{
             monitor.StopMonitoring(true);

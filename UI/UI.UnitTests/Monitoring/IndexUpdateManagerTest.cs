@@ -9,6 +9,7 @@ using Sando.Indexer;
 using Sando.Indexer.IndexState;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
+using Sando.Recommender;
 
 namespace Sando.UI.UnitTests.Monitoring
 {
@@ -71,20 +72,19 @@ namespace Sando.UI.UnitTests.Monitoring
 				workerFailed = true;
 			}
 		}
+		
 
 		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
-
-		[SetUp]
 		public void PrepareIndexUpdateManager()
 		{
+            TestUtils.InitializeDefaultExtensionPoints();
 			solutionPath = Path.Combine(Path.GetTempPath(), "solution");
 			indexPath = Path.Combine(solutionPath, "luceneindex");
 			PrepareFileSystemObjects();
 			solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath);
+            SwumManager.Instance.Initialize(solutionKey.GetIndexPath(), true);
+            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
+
 			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Default);
 			indexUpdateManager = new IndexUpdateManager(solutionKey, documentIndexer, false);
 			executionCounter = 0;
@@ -109,7 +109,7 @@ namespace Sando.UI.UnitTests.Monitoring
 			}
 		}
 
-		[TearDown]
+		[TestFixtureTearDown]
 		public void ClearResources()
 		{
             documentIndexer.Dispose(true);
