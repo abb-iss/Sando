@@ -126,6 +126,10 @@
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
       <Name>Parser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Recommender\Recommender\Recommender.csproj">
+      <Project>{6b68ca9f-e9b3-433e-880c-d94cacd08a0e}</Project>
+      <Name>Recommender</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
       <Name>SandoExtensionContracts</Name>

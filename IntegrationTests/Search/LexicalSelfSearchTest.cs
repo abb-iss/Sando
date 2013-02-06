@@ -11,6 +11,7 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
+using Sando.Recommender;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -113,30 +114,35 @@ namespace Sando.IntegrationTests.Search
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
+        [TestFixtureSetUp]
+        public void Setup()
+        {
+            TestUtils.InitializeDefaultExtensionPoints();
+            indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
+            Directory.CreateDirectory(indexPath);
+            key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath);
+            var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
+            monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
 
-		[SetUp]
-		public void Setup()
-		{
-			indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
-			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath);
-			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
+            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
 
-			//not an exaustive list, so it will be a bit of a messy parse
-			sandoDirsToAvoid = new List<String>() { "LIBS", ".hg", "bin", "obj" };
+            //not an exaustive list, so it will be a bit of a messy parse
+            sandoDirsToAvoid = new List<String>() { "LIBS", ".hg", "bin", "obj" };
 
-			string startingPath = "..\\..";
-			string[] dirs = Directory.GetDirectories(startingPath);
-			ProcessDirectoryForTesting(dirs);
+            string startingPath = "..\\..";
+            string[] dirs = Directory.GetDirectories(startingPath);
+            ProcessDirectoryForTesting(dirs);
 
-			monitor.UpdateAfterAdditions();
-		}
+            monitor.UpdateAfterAdditions();
+        }
+
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            monitor.StopMonitoring(true);
+            Directory.Delete(indexPath, true);
+        }
 
 		private void ProcessDirectoryForTesting(string[] dirs)
 		{
@@ -159,12 +165,7 @@ namespace Sando.IntegrationTests.Search
 			}
 		}
 
-		[TearDown]
-		public void TearDown()
-		{
-			monitor.StopMonitoring(true);
-			Directory.Delete(indexPath, true);
-		}
+	
 
         private static List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
