@@ -657,7 +657,10 @@ namespace LocalSearch
         {
             var definitionLineNumber = fullmethod.Element(SRC.Name).GetSrcLineNumber();
             var fullFilePath = srcmlFile.FileName;
-            var snippet = fullmethod.Element(SRC.Block).ToSource(); //todo: only show related lines  
+            var block = fullmethod.Element(SRC.Block);
+            var snippet = "";
+            if(block != null)
+                snippet = fullmethod.Element(SRC.Block).ToSource(); //todo: only show related lines  
             var relation = ProgramElementRelation.Other; //by default
             
             AccessLevel accessLevel = AccessLevel.Internal; //by default
@@ -701,7 +704,10 @@ namespace LocalSearch
             var args = "";
             if(myParams!=null)
                 args = myParams.ToSource();
-            var body = fullmethod.Element(SRC.Block).ToSource();
+
+            var body = "";
+            if(fullmethod.Element(SRC.Block) != null)
+                body = fullmethod.Element(SRC.Block).ToSource();
 
             var element = new MethodElement(fullmethod.Element(SRC.Name).Value,
                 definitionLineNumber, fullFilePath, snippet, 

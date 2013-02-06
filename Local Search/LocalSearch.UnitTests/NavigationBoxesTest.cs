@@ -20,7 +20,7 @@ namespace LocalSearch.UnitTests
         [STAThread] 
         public void ShowUIOfField()
         {
-            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SqlCeDbDoc.cs"); 
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.cs"); 
             var elements = gbuilder.GetFieldsAsFieldElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;
@@ -43,7 +43,7 @@ namespace LocalSearch.UnitTests
         [STAThread]
         public void ShowUIOfMethod()
         {
-            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ChatWindow.xaml.cs");
+            GraphBuilder gbuilder = new GraphBuilder(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.cs");
             var elements = gbuilder.GetMethodsAsMethodElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

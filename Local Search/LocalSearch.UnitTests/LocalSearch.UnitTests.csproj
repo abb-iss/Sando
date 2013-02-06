@@ -54,6 +54,10 @@
     <Compile Include="GraphBuilderTest.cs" />
     <Compile Include="NavigationBoxesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="TestFiles\DatabaseMenuCommands.cs" />
+    <None Include="TestFiles\DataConnectionHelper.cs" />
+    <None Include="TestFiles\TreeViewHelper.cs" />
+    <None Include="TestFiles\UserOptions.cs" />
     <None Include="TestFiles\SqlCeDbDoc.cs" />
     <None Include="TestFiles\Details.xaml.cs" />
     <None Include="TestFiles\ChatWindow.xaml.cs" />
