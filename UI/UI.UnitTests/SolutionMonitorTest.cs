@@ -10,6 +10,7 @@ using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
+using Sando.Recommender;
 
 namespace Sando.UI.UnitTests
 {
@@ -23,27 +24,26 @@ namespace Sando.UI.UnitTests
 
 
 
-        [TearDown]  // [TestCleanup] (TearDown for Unit Test)
+        [TestFixtureTearDown]  // [TestCleanup] (TearDown for Unit Test)
 		public void TearDown()
         {
             monitor.StopMonitoring(true);
 			Directory.Delete(_luceneTempIndexesDirectory + "/basic/", true);
         }
 
-        [TestFixtureSetUp]  // [ClassInitialize] (Setup for Class)
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
 
-        [SetUp] // [TestInitialize] (Setup for Unit Test)
+        [TestFixtureSetUp] // [TestInitialize] (Setup for Unit Test)
         public void Setup()
         {
+            TestUtils.InitializeDefaultExtensionPoints();
+		
 			Directory.CreateDirectory(_luceneTempIndexesDirectory + "/basic/");
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory + "/basic/");
             key = new SolutionKey(Guid.NewGuid(), ".\\TestFiles\\FourCSFiles", _luceneTempIndexesDirectory + "/basic/");
             var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-            monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);            
+            monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
+            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
             string[] files = Directory.GetFiles(".\\TestFiles\\FourCSFiles");
             foreach (var file in files)
             {
