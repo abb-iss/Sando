@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using Microsoft.Practices.Unity;
 
-namespace DependencyInjection
+namespace Sando.DependencyInjection
 {
     public static class ServiceLocator
     {

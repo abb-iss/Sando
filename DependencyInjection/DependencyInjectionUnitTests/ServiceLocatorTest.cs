@@ -1,9 +1,9 @@
 ﻿using System.Threading;
-using DependencyInjection;
+using Sando.DependencyInjection;
 using Microsoft.Practices.Unity;
 using NUnit.Framework;
 
-namespace DependencyInjectionUnitTests
+namespace Sando.DependencyInjectionUnitTests
 {
     [TestFixture]
     public class ServiceLocatorTest
