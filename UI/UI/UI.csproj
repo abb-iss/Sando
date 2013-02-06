@@ -187,7 +187,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\SearchResultUIItem.cs" />
-    <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
