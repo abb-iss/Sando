@@ -22,8 +22,8 @@ namespace LocalSearch
         private SrcMLFile srcmlFile;
         private XElement[] FieldDecs;
         private XElement[] Methods;
-        private Dictionary<int, List<Tuple<XElement, int>>> Calls = new Dictionary<int, List<Tuple<XElement, int>>>();
-        private Dictionary<int, List<Tuple<XElement, int>>> Callers = new Dictionary<int, List<Tuple<XElement, int>>>();
+        protected Dictionary<int, List<Tuple<XElement, int>>> Calls = new Dictionary<int, List<Tuple<XElement, int>>>();
+        protected Dictionary<int, List<Tuple<XElement, int>>> Callers = new Dictionary<int, List<Tuple<XElement, int>>>();
 
         /// <summary>
         /// Constructing a new Graph Builder.
@@ -84,14 +84,14 @@ namespace LocalSearch
             }            
         }
 
-        private List<ProgramElementWithRelation> GetCallees(CodeSearchResult codeSearchResult)
+        protected List<ProgramElementWithRelation> GetCallees(CodeSearchResult codeSearchResult)
         {         
             
             var method = GetMethod(codeSearchResult.Element as MethodElement);
             return GetCallees( method);
         }
 
-        private List<ProgramElementWithRelation> GetCallers(CodeSearchResult codeSearchResult)
+        protected List<ProgramElementWithRelation> GetCallers(CodeSearchResult codeSearchResult)
         {
 
             var method = GetMethod(codeSearchResult.Element as MethodElement);
@@ -134,7 +134,7 @@ namespace LocalSearch
             return listCallers;
         }
 
-        private XElement GetMethod(XElement call)
+        protected XElement GetMethod(XElement call)
         {
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)
@@ -145,7 +145,7 @@ namespace LocalSearch
             return null;
         }
 
-        private XElement GetMethod(MethodElement programElement)
+        protected XElement GetMethod(MethodElement programElement)
         {
             XElement[] allmethods = GetMethods();
             foreach (var method in allmethods)

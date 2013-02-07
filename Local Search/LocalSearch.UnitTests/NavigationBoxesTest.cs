@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Threading;
 
 
-
 namespace LocalSearch.UnitTests
 {
     [TestFixture]

@@ -20,7 +20,9 @@ namespace LocalSearch
         [Description("uses as parameter")]
         UseAsPara, //field used as method paramter
         [Description("defines")]
-        Other   
+        Other,
+        [Description("has no relation with")]
+        No
     }
     
 }

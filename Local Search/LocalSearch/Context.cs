@@ -4,26 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
+using ABB.SrcML;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace LocalSearch
 {
     public class Context : GraphBuilder
     {
-        private String query { set;  public get; }
-       
-        private List<ProgramElementWithRelation> path
+        public String query { set;  get; }
+
+        public List<ProgramElementWithRelation> path
         {
-            public get
-            {
-                return null;
-            }
+            set; //when the user makes a new selection in the UI, set it
+            get;
         }
-         
-        private IEnumerator<ProgramElementWithRelation> curPos
+
+        public int curPos
         {
-            public get
+            get
             {
-                return null;
+                return path.Count - 1;
             }
 
         }
@@ -39,6 +41,82 @@ namespace LocalSearch
             : base(srcPath, SrcMLForCSharp) 
         {
             query = search;
+        }
+
+        public ProgramElementRelation GetRelation(CodeSearchResult element1, CodeSearchResult element2, ref List<int> UsedLineNumber)
+        {
+            ProgramElementRelation relation = ProgramElementRelation.No;
+            ProgramElementType eletype1 = element1.ProgramElementType;
+            ProgramElementType eletype2 = element2.ProgramElementType;
+
+            if(eletype1.Equals(ProgramElementType.Field))
+            {
+                if(eletype2.Equals(ProgramElementType.Method))
+                {
+                    var methodDeclaration = GetMethod(element2.Element as MethodElement);
+                    if(ifFieldUsedinMethod(methodDeclaration, element1.Name, ref UsedLineNumber))
+                    {
+                        relation = ProgramElementRelation.UseBy;
+                        return relation;
+                    }
+                }
+            }            
+            else // eletype1.Equals(ProgramElementType.Method)
+            {
+                   if(eletype2.Equals(ProgramElementType.Method))
+                   {
+                       var methodDec1 = GetMethod(element1.Element as MethodElement);
+                       var methodDec2 = GetMethod(element2.Element as MethodElement);
+
+                       List<Tuple<XElement, int>> myCallers = null;
+                       List<Tuple<XElement, int>> myCallees = null;
+                       Callers.TryGetValue(methodDec1.GetSrcLineNumber(), out myCallers);
+                       Calls.TryGetValue(methodDec1.GetSrcLineNumber(), out myCallees);
+
+                       if (myCallers != null)
+                       {   
+                           foreach (var caller in myCallers)
+                           {
+                               if ((caller.Item1.GetSrcLineNumber() == methodDec2.GetSrcLineNumber())
+                               && (caller.Item1.Element(SRC.Name).Value == methodDec2.Element(SRC.Name).Value))
+                               {
+                                   relation = ProgramElementRelation.CallBy;
+                                   UsedLineNumber.Add(caller.Item2);
+                               }                               
+                           }
+
+                           return relation;
+                       }
+
+                       if (myCallees != null)
+                       {
+                           foreach (var callee in myCallees)
+                           {
+                               if ((callee.Item1.GetSrcLineNumber() == methodDec2.GetSrcLineNumber())
+                               && (callee.Item1.Element(SRC.Name).Value == methodDec2.Element(SRC.Name).Value))
+                               {
+                                   relation = ProgramElementRelation.Call;
+                                   UsedLineNumber.Add(callee.Item2);
+                               }
+                           }
+
+                           return relation;                           
+                       }
+
+                   }
+                   else //eletype2.Equals(ProgramElementType.Field)
+                   {
+                       var methodDeclaration = GetMethod(element1.Element as MethodElement);
+                       if(ifFieldUsedinMethod(methodDeclaration, element2.Name, ref UsedLineNumber))
+                       {
+                            relation = ProgramElementRelation.Use;
+                            return relation;
+                       }
+                   }
+            }
+
+            return relation;
+                
         }
 
 

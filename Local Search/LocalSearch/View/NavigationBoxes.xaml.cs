@@ -71,6 +71,7 @@ namespace LocalSearch.View
                 var sp = new ServiceProvider(dte as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
                 var container = sp.GetService(typeof(Microsoft.VisualStudio.ComponentModelHost.SComponentModel)) as Microsoft.VisualStudio.ComponentModelHost.IComponentModel;
                 container.DefaultCompositionService.SatisfyImportsOnce(this);
+                InformationSource.query = s; //set context
                 var results = searcher.Search(s);
                 FirstProgramElements.Clear();
                 foreach (var result in results)
@@ -260,7 +261,11 @@ namespace LocalSearch.View
         {
             int SelectedNum = SelectedElements.Count;
             if (SelectedNum > currentPos)
-                SelectedElements.RemoveRange(currentPos, SelectedNum-currentPos);
+            {
+                SelectedElements.RemoveRange(currentPos, SelectedNum - currentPos);
+
+                InformationSource.path.RemoveRange(currentPos, SelectedNum - currentPos); // set context
+            }
         }
 
         private String ShowSequenceOfSelects()
@@ -276,6 +281,9 @@ namespace LocalSearch.View
             String TypeOfElement = firstElement.ProgramElementType.ToString();
             strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
 
+            if (firstElement as ProgramElementWithRelation != null) //set context
+                InformationSource.path.Add(firstElement as ProgramElementWithRelation);
+
             int i = 1;
             while (i < count)
             {
@@ -287,6 +295,8 @@ namespace LocalSearch.View
 
                 if (Element as ProgramElementWithRelation != null)
                 {
+                    InformationSource.path.Add(Element as ProgramElementWithRelation); //set context
+
                     var memInfo = type.GetMember(((Element as ProgramElementWithRelation)).ProgramElementRelation.ToString());
                     var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
                         false);

@@ -97,7 +97,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProgramElementPairRelation.cs" />
+    <Compile Include="Context.cs" />
     <Compile Include="ProgramElementWithRelation.cs" />
     <Compile Include="ProgramElementRelation.cs" />
     <Compile Include="GraphBuilder.cs" />
