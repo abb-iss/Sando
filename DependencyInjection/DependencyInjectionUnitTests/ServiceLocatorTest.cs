@@ -46,16 +46,17 @@ namespace Sando.DependencyInjectionUnitTests
         }
 
         [Test]
-        public void GIVEN_RegisteredTypeWasCalledWithDifferentNames_WHEN_ResolveMethodIsCalledWithDifferentNames_THEN_DifferentObjectIsReturnedForEachCall()
+        public void GIVEN_RegisteredInstanceWasCalledWithDifferentNames_WHEN_ResolveMethodIsCalledWithDifferentNames_THEN_DifferentObjectIsReturnedForEachCall()
         {
             ServiceLocator.RegisterInstance<IInterf>("name1", new InterfImpl1());
             ServiceLocator.RegisterInstance<IInterf>("name2", new InterfImpl2());
             ServiceLocator.RegisterInstance<IUnityContainer>("name3", new UnityContainer());
             _instance1 = ServiceLocator.Resolve<IInterf>("name1");
             _instance2 = ServiceLocator.Resolve<IInterf>("name2");
-            var instance3 = ServiceLocator.Resolve<IUnityContainer>("name3");
+            _instance3 = ServiceLocator.Resolve<IUnityContainer>("name3");
             Assert.IsTrue(_instance1 is InterfImpl1);
             Assert.IsTrue(_instance2 is InterfImpl2);
+            Assert.IsTrue(_instance3 is IUnityContainer);
             Assert.IsFalse(ReferenceEquals(_instance1, _instance2));
         }
 
@@ -66,6 +67,7 @@ namespace Sando.DependencyInjectionUnitTests
 
         private object _instance1;
         private object _instance2;
+        private object _instance3;
     }
 
     internal interface IInterf
