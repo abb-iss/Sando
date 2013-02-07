@@ -339,7 +339,7 @@ namespace LocalSearch.View
             RelationSequence = ShowSequenceOfSelects();
         }
 
-        public GraphBuilder InformationSource = null;
+        public Context InformationSource = null;
         private static DTE2 dte;
 
         public void Connect(int connectionId, object target)
