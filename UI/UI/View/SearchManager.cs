@@ -48,7 +48,7 @@ namespace Sando.UI.View
                 var returnString = "";
                 if (!string.IsNullOrEmpty(searchString))
                 {
-                    var myPackage = UIPackage.GetInstance();
+                    var uiPackage = ServiceLocator.Resolve<UIPackage>();
                     var solutionKey = ServiceLocator.Resolve<SolutionKey>();
                     if (!String.IsNullOrWhiteSpace(solutionKey.IndexPath))
                     {
@@ -66,7 +66,7 @@ namespace Sando.UI.View
                             _myDaddy.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
                             return null;
                         }
-                        if (myPackage.IsPerformingInitialIndexing())
+                        if (uiPackage.IsPerformingInitialIndexing())
                         {
                             returnString += "Sando is still performing its initial index of this project, results may be incomplete.";
                         }
@@ -129,7 +129,8 @@ namespace Sando.UI.View
             if (searchCriteria == null)
                 searchCriteria = new SimpleSearchCriteria();
             var criteria = searchCriteria;
-            criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(UIPackage.GetInstance()).NumberOfSearchResultsReturned;
+            var uiPackage = ServiceLocator.Resolve<UIPackage>();
+            criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(uiPackage).NumberOfSearchResultsReturned;
             searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
             searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
             List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);

@@ -151,7 +151,7 @@ namespace Sando.UI
                 SetupDependencyInjectionObjects();
 
                 SetUpLogger();
-                _viewManager = new ViewManager(this);
+                _viewManager = ServiceLocator.Resolve<ViewManager>();
                 AddCommand();                
                 SetUpLifeCycleEvents();
                 MyPackage = this;                
@@ -584,24 +584,11 @@ namespace Sando.UI
             });
         }
 
-
-        public static UIPackage GetInstance()
-		{
-			return MyPackage;
-		}
-
-
-
     	#endregion
 
         public bool IsPerformingInitialIndexing()
         {
             return SolutionMonitorFactory.PerformingInitialIndexing();
-        }
-
-        public void EnsureViewExists()
-        {
-            _viewManager.EnsureViewExists();
         }
 
 
@@ -623,6 +610,8 @@ namespace Sando.UI
         private void SetupDependencyInjectionObjects()
         {
             ServiceLocator.RegisterInstance(GetService(typeof (DTE)) as DTE2);
+            ServiceLocator.RegisterInstance(this);
+            ServiceLocator.RegisterInstance(new ViewManager(this));
         }
     }
 }
