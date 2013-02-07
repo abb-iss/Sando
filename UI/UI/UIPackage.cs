@@ -223,7 +223,7 @@ namespace Sando.UI
             if (active != null)
             {
                 var fileName = Path.Combine(active.Path, active.Name);
-                GraphBuilder gbuilder = new GraphBuilder(fileName,  Path.Combine(GetSrcMLDirectory(), "srcML-Win-cSharp")); // ConfigManip
+                Context gbuilder = new Context(fileName,  Path.Combine(GetSrcMLDirectory(), "srcML-Win-cSharp")); 
                 var elements = gbuilder.GetMethodsAsMethodElements();
                 elements.AddRange(gbuilder.GetFieldsAsFieldElements());
                 
