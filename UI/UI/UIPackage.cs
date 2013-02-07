@@ -594,55 +594,10 @@ namespace Sando.UI
 
     	#endregion
 
-        // Code changed by JZ: solution monitor integration
-        public string GetCurrentDirectory()
-        {
-            return SolutionMonitorFactory.GetCurrentDirectory();
-        }
-
         public bool IsPerformingInitialIndexing()
         {
             return SolutionMonitorFactory.PerformingInitialIndexing();
         }
-
-        /* //// original implementation
-        public string GetCurrentDirectory()
-        {
-            if (_currentMonitor != null)
-                return _currentMonitor.GetCurrentDirectory();
-            else
-                return null;
-        }
-
-        public SolutionKey GetCurrentSolutionKey()
-        {
-            if (_currentMonitor != null)
-                return _currentMonitor.GetSolutionKey();
-            else
-                return null;
-        }
-
-        public bool IsPerformingInitialIndexing()
-        {
-            if(_currentMonitor!=null)
-            {
-                return _currentMonitor.PerformingInitialIndexing();
-            }else
-            {
-                return false;
-            }
-        }
-        */
-        // End of code changes
-
-    	#region Implementation of IIndexUpdateListener
-
-    	public void NotifyAboutIndexUpdate()
-    	{
-    		throw new NotImplementedException();
-    	}
-
-    	#endregion
 
         public void EnsureViewExists()
         {

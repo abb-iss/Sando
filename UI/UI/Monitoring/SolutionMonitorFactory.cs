@@ -27,8 +27,7 @@ namespace Sando.UI.Monitoring
 	    public static string LuceneDirectory { get; set; }
 
         // Code changed by JZ: solution monitor integration
-        // These 3 variables are moved from Sando's SolutionMonitor
-        private static string _currentPath;
+        // These variables are moved from Sando's SolutionMonitor
         private static bool _initialIndexDone;
         // Use the IndexUpdateManager class as a (temporary) bridge between SolutionMonitorFactory and DocumentIndexer.
         private static IndexUpdateManager _indexUpdateManager;
@@ -76,8 +75,6 @@ namespace Sando.UI.Monitoring
             // Use the IndexUpdateManager class as a (temporary) bridge between SolutionMonitorFactory and DocumentIndexer.
             _indexUpdateManager = new IndexUpdateManager(currentIndexer);
 
-            // These variables are moved from Sando's SolutionMonitor
-            _currentPath = solutionKey.IndexPath;
             _initialIndexDone = false;
 
 			return currentMonitor;
@@ -152,12 +149,6 @@ namespace Sando.UI.Monitoring
         public static void RemoveUpdateListener(IIndexUpdateListener listener)
         {
             currentIndexer.RemoveIndexUpdateListener(listener);
-        }
-
-        // From SolutionMonitor.cs
-        public static string GetCurrentDirectory()
-        {
-            return _currentPath;
         }
 
         // From SolutionMonitor.cs
