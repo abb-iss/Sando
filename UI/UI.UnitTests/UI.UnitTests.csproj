@@ -79,8 +79,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SolutionMonitorIntegrationTest.cs" />
-    <Compile Include="SolutionMonitorTest.cs" />
     <None Include="TestFiles\FourCSFiles\FileNameTemplate.cs" />
     <None Include="TestFiles\FourCSFiles\HotKeySelection.cs" />
     <None Include="TestFiles\FourCSFiles\ImageCapture.cs" />
