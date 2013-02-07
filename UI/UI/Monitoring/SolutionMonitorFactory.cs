@@ -5,10 +5,11 @@ using EnvDTE;
 using EnvDTE80;
 using Sando.Core;
 using Sando.Core.Extensions.Logging;
+using Sando.DependencyInjection;
 using Sando.Indexer;
 // Code changed by JZ: solution monitor integration
 using System.Xml.Linq;
-using Sando.Core.Extensions.Logging;
+
 // TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
 // End of code changes
@@ -40,7 +41,7 @@ namespace Sando.UI.Monitoring
         /// <returns></returns>
         public static ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor CreateMonitor(bool isIndexRecreationRequired)
 		{
-			var openSolution = UIPackage.GetInstance().GetOpenSolution();
+			var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
 			return CreateMonitor(openSolution, isIndexRecreationRequired);
 		}
 

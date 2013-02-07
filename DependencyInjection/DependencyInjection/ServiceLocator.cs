@@ -14,24 +14,24 @@ namespace Sando.DependencyInjection
             UnityContainers = new Dictionary<int, IUnityContainer>();
         }
 
-        public static IUnityContainer RegisterType<TFrom, TTo>(params InjectionMember[] injectionMembers) where TTo : TFrom
+        public static void RegisterType<TFrom, TTo>(params InjectionMember[] injectionMembers) where TTo : TFrom
         {
-            return CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new ContainerControlledLifetimeManager(), injectionMembers);
+            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new ContainerControlledLifetimeManager(), injectionMembers);
         }
 
-        public static IUnityContainer RegisterType<TFrom, TTo>(string name, params InjectionMember[] injectionMembers) where TTo : TFrom
+        public static void RegisterType<TFrom, TTo>(string name, params InjectionMember[] injectionMembers) where TTo : TFrom
         {
-            return CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new ContainerControlledLifetimeManager(), injectionMembers);
+            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new ContainerControlledLifetimeManager(), injectionMembers);
         }
 
-        public static IUnityContainer RegisterInstance<TInterface>(TInterface instance)
+        public static void RegisterInstance<TInterface>(TInterface instance)
         {
-            return CurrentUnityContainer.RegisterInstance(typeof(TInterface), null, instance, new ContainerControlledLifetimeManager());
+            CurrentUnityContainer.RegisterInstance(typeof(TInterface), null, instance, new ContainerControlledLifetimeManager());
         }
 
-        public static IUnityContainer RegisterInstance<TInterface>(string name, TInterface instance)
+        public static void RegisterInstance<TInterface>(string name, TInterface instance)
         {
-            return CurrentUnityContainer.RegisterInstance(typeof(TInterface), name, instance, new ContainerControlledLifetimeManager());
+            CurrentUnityContainer.RegisterInstance(typeof(TInterface), name, instance, new ContainerControlledLifetimeManager());
         }
 
         public static T Resolve<T>() where T : class

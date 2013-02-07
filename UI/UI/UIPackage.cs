@@ -7,12 +7,10 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.CommandBars;
+using Sando.DependencyInjection;
 using Sando.Indexer.IndexFiltering;
 using log4net; 
 using Microsoft.VisualStudio.Shell;
@@ -22,19 +20,15 @@ using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
 using Sando.Core.Extensions.Logging;
 using Sando.Core.Tools;
-using Sando.ExtensionContracts.ProgramElementContracts;
-using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
-using Sando.Translation;
 using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
 
 // Code changed by JZ: solution monitor integration
-using System.Xml;
 using System.Xml.Linq;
 // TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
@@ -154,6 +148,9 @@ namespace Sando.UI
                                               this.ToString()));
                 FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
+
+                SetupDependencyInjectionObjects();
+
                 SetUpLogger();
                 _viewManager = new ViewManager(this);
                 AddCommand();                
@@ -167,7 +164,7 @@ namespace Sando.UI
 
         private void SetUpLifeCycleEvents()
         {
-            var dte = GetDte();
+            var dte = ServiceLocator.Resolve<DTE2>();
             _dteEvents = dte.Events.DTEEvents;
             _dteEvents.OnBeginShutdown += DteEventsOnOnBeginShutdown;
             _dteEvents.OnStartupComplete += StartupCompleted;
@@ -222,10 +219,10 @@ namespace Sando.UI
         		_viewManager.ShowToolbar();
         	}
 
-        	if (GetDte().Version.StartsWith("10"))
+            if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
         	{
 				//only need to do this in VS2010, and it breaks things in VS2012
-        		Solution openSolution = GetOpenSolution();
+        		Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
         		if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
         		{
         			SolutionHasBeenOpened();
@@ -380,20 +377,6 @@ namespace Sando.UI
 			}
 		}
 
-        public Solution GetOpenSolution()
-        {
-        	var dte = GetDte();
-            if (dte != null)
-            {
-                var openSolution = dte.Solution;
-                return openSolution;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
 		private void SolutionHasBeenOpened()
 		{
             BackgroundWorker bw = new BackgroundWorker();
@@ -434,7 +417,8 @@ namespace Sando.UI
                 // Create a new instance of SrcML.NET's SrcMLArchive
                 string src2srcmlDir = GetSrcMLDirectory();
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
-                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(GetOpenSolution()), !isIndexRecreationRequired, generator);
+                var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(openSolution), !isIndexRecreationRequired, generator);
                 // Subscribe events from SrcML.NET's SrcMLArchive
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
@@ -676,11 +660,6 @@ namespace Sando.UI
             return pluginDirectory;
         }
 
-        public DTE2 GetDte()
-        {
-            return GetService(typeof(DTE)) as DTE2;
-        }
-
         public void EnsureViewExists()
         {
             _viewManager.EnsureViewExists();
@@ -699,5 +678,12 @@ namespace Sando.UI
         }
         // End of code changes
 
+
+
+
+        private void SetupDependencyInjectionObjects()
+        {
+            ServiceLocator.RegisterInstance(GetService(typeof (DTE)) as DTE2);
+        }
     }
 }
