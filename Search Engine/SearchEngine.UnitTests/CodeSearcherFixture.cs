@@ -4,6 +4,7 @@ using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -27,7 +28,7 @@ namespace Sando.SearchEngine.UnitTests
         public void TestCreateCodeSearcher()
         {
             SimpleAnalyzer analyzer = new SimpleAnalyzer();
-    		var indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
+    		var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Standard);
 			//TODO - How do we get an instance of IIndexerSearcher?
 			//FYI - use this IndexerSearcherFactory.CreateSearcher
             Assert.DoesNotThrow(() => new CodeSearcher( null ));            
@@ -36,7 +37,7 @@ namespace Sando.SearchEngine.UnitTests
         [Test]     
         public void PerformBasicSearch()
         {
-			var indexerSearcher = IndexerSearcherFactory.CreateSearcher(solutionKey);
+			var indexerSearcher = IndexerSearcherFactory.CreateSearcher();
         	CodeSearcher cs = new CodeSearcher(indexerSearcher);            
             List<CodeSearchResult> result = cs.Search("SimpleName");
             Assert.True(result.Count > 0);                                 
@@ -47,10 +48,11 @@ namespace Sando.SearchEngine.UnitTests
 		{
 			TestUtils.InitializeDefaultExtensionPoints();
 
-			IndexerPath = System.IO.Path.GetTempPath() + "luceneindexer";
+			IndexerPath = Path.GetTempPath() + "luceneindexer";
 		    Directory.CreateDirectory(IndexerPath);
-			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath);
-			Indexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Standard);
+			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath, Path.GetTempPath());
+            ServiceLocator.RegisterInstance(solutionKey);
+			Indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Standard);
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
 				accessLevel: AccessLevel.Public,
 				definitionLineNumber: 11,

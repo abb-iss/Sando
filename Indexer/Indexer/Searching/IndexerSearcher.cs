@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Lucene.Net.Search;
-using Sando.Core;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
 
@@ -9,9 +8,9 @@ namespace Sando.Indexer.Searching
 {
 	public class IndexerSearcher: IIndexerSearcher
 	{
-		public IndexerSearcher(SolutionKey solutionKey)
+		public IndexerSearcher()
 		{
-			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Snowball);
+			documentIndexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
 		}
 
 		public List<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria)
@@ -41,9 +40,9 @@ namespace Sando.Indexer.Searching
 
 	public class IndexerSearcherFactory
 	{
-		public static IIndexerSearcher CreateSearcher(SolutionKey solutionKey)
+		public static IIndexerSearcher CreateSearcher()
 		{
-			return new IndexerSearcher(solutionKey);	
+			return new IndexerSearcher();	
 		}
 	}
 }

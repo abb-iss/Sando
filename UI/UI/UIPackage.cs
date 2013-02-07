@@ -291,7 +291,8 @@ namespace Sando.UI
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(solutionKey.IndexPath));
 
             
             var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
@@ -429,7 +430,8 @@ namespace Sando.UI
                 RegisterExtensionPoints();
 
                 //Set up the SwumManager
-                SwumManager.Instance.Initialize(GetCurrentSolutionKey().GetIndexPath(), !isIndexRecreationRequired);
+                var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+                SwumManager.Instance.Initialize(solutionKey.IndexPath, !isIndexRecreationRequired);
                 SwumManager.Instance.Archive = _srcMLArchive;
 
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
@@ -604,11 +606,6 @@ namespace Sando.UI
         public string GetCurrentDirectory()
         {
             return SolutionMonitorFactory.GetCurrentDirectory();
-        }
-
-        public SolutionKey GetCurrentSolutionKey()
-        {
-            return SolutionMonitorFactory.GetSolutionKey();
         }
 
         public bool IsPerformingInitialIndexing()

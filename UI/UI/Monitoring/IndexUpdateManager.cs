@@ -9,11 +9,11 @@ using System.Xml.Linq;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.IndexerContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
-using Sando.Indexer.IndexFiltering;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
 
@@ -28,13 +28,14 @@ namespace Sando.UI.Monitoring
 		private DocumentIndexer _currentIndexer;
 
 
-		public IndexUpdateManager(SolutionKey solutionKey, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
+		public IndexUpdateManager(DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
 		{
+		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
 			_currentIndexer = currentIndexer;
 
             _indexFilterManager = ExtensionPointsRepository.Instance.GetIndexFilterManagerImplementation();
 
-			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.GetIndexPath(), isIndexRecreationRequired);
+			_indexFilesStatesManager = new IndexFilesStatesManager(solutionKey.IndexPath, isIndexRecreationRequired);
 			_indexFilesStatesManager.ReadIndexFilesStates();
 
 			_physicalFilesStatesManager = new PhysicalFilesStatesManager();

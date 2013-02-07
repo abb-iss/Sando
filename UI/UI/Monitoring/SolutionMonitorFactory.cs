@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Reflection;
 using EnvDTE;
 using EnvDTE80;
 using Sando.Core;
@@ -26,8 +27,7 @@ namespace Sando.UI.Monitoring
 	    public static string LuceneDirectory { get; set; }
 
         // Code changed by JZ: solution monitor integration
-        // These four variables are moved from Sando's SolutionMonitor
-        private static SolutionKey _solutionKey;
+        // These 3 variables are moved from Sando's SolutionMonitor
         private static string _currentPath;
         private static bool _initialIndexDone;
         // Use the IndexUpdateManager class as a (temporary) bridge between SolutionMonitorFactory and DocumentIndexer.
@@ -57,8 +57,14 @@ namespace Sando.UI.Monitoring
 			Contract.Requires(openSolution != null, "A solution must be open");
 
 			//TODO if solution is reopen - the guid should be read from file - future change
-			SolutionKey sk = new SolutionKey(Guid.NewGuid(), openSolution.FileName, GetLuceneDirectoryForSolution(openSolution));
-            currentIndexer = DocumentIndexerFactory.CreateIndexer(sk, AnalyzerType.Snowball);
+            var solutionId = Guid.NewGuid();
+            var solutionPath = openSolution.FileName;
+            var luceneDirectoryForSolution = GetLuceneDirectoryForSolution(openSolution);
+            var sandoAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var solutionKey = new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution, sandoAssemblyDirectoryPath);
+            ServiceLocator.RegisterInstance(solutionKey);
+
+            currentIndexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
 			if(isIndexRecreationRequired)
 			{
 				currentIndexer.DeleteDocuments("*");
@@ -71,8 +77,7 @@ namespace Sando.UI.Monitoring
             _indexUpdateManager = new IndexUpdateManager(currentIndexer);
 
             // These variables are moved from Sando's SolutionMonitor
-            _solutionKey = sk;
-            _currentPath = sk.GetIndexPath();
+            _currentPath = solutionKey.IndexPath;
             _initialIndexDone = false;
 
 			return currentMonitor;
@@ -153,12 +158,6 @@ namespace Sando.UI.Monitoring
         public static string GetCurrentDirectory()
         {
             return _currentPath;
-        }
-
-        // From SolutionMonitor.cs
-        public static SolutionKey GetSolutionKey()
-        {
-            return _solutionKey;
         }
 
         // From SolutionMonitor.cs

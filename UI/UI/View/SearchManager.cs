@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Sando.Core;
 using Sando.Core.Extensions;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
@@ -34,7 +36,7 @@ public  class SearchManager
 				{
 					_invalidated = false;
 					_currentDirectory = myPackage.GetCurrentDirectory();
-					codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(myPackage.GetCurrentSolutionKey()));
+					codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
 				}
 				return codeSearcher;
 			}
@@ -105,7 +107,8 @@ public  class SearchManager
     {
         try
         {
-            return Path.GetFileNameWithoutExtension(myPackage.GetCurrentSolutionKey().GetSolutionPath());
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            return Path.GetFileNameWithoutExtension(solutionKey.SolutionPath);
         }catch(Exception e)
         {
             return "";
