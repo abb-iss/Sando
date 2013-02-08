@@ -5,6 +5,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Configuration.OptionsPages;
 using EnvDTE;
@@ -128,6 +129,7 @@ namespace Sando.UI
 
                 SetupDependencyInjectionObjects();
 
+                SetUpLogger();
                 _viewManager = ServiceLocator.Resolve<ViewManager>();
                 AddCommand();                
                 SetUpLifeCycleEvents();
@@ -240,6 +242,15 @@ namespace Sando.UI
             //TODO - kill file processing threads
         }
 
+
+        private void SetUpLogger()
+        {
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            var logFilePath = Path.Combine(solutionKey.SandoAssemblyDirectoryPath, "UIPackage.log");
+            logger = FileLogger.CreateFileLogger("UIPackageLogger", logFilePath);
+            FileLogger.DefaultLogger.Info("pluginDir: " + solutionKey.SandoAssemblyDirectoryPath);
+        }
+
         private void RegisterExtensionPoints()
         {
             var extensionPointsRepository = ExtensionPointsRepository.Instance;
@@ -281,20 +292,40 @@ namespace Sando.UI
 
         private void SolutionAboutToClose()
 		{
-			try
-            {
-                if (_srcMLArchive != null)
+		
+			if(_currentMonitor != null)
+			{
+                try
                 {
-                    // SolutionMonitor.StopWatching() is called in SrcMLArchive.StopWatching()
-                    _srcMLArchive.StopWatching();
-                    _srcMLArchive = null;
+                    // Code changed by JZ: solution monitor integration
+                    // Don't know if the update listener is still useful. 
+                    // The following statement would cause an exception in ViewManager.cs (Line 42).
+                    //SolutionMonitorFactory.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    ////_currentMonitor.RemoveUpdateListener(SearchViewControl.GetInstance());
+                    // End of code changes
                 }
-            }
-            catch (Exception e)
-            {
-                FileLogger.DefaultLogger.Error(e);
-            }
-		}
+                finally
+                {
+                    try
+                    {
+                        // Code changed by JZ: solution monitor integration
+                        // Use SrcML.NET's StopMonitoring()
+                        if (_srcMLArchive != null)
+                        {
+                            // SolutionMonitor.StopWatching() is called in SrcMLArchive.StopWatching()
+                            _srcMLArchive.StopWatching();
+                            _srcMLArchive = null;
+                        }
+                        ////_currentMonitor.Dispose();
+                        ////_currentMonitor = null;
+                        // End of code changes
+                    }
+                    catch (Exception e)
+                    {
+                        FileLogger.DefaultLogger.Error(e);
+                    }
+                }
+			}
             RegisterEmptySolutionKey();
 		}
 
