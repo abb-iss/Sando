@@ -86,7 +86,7 @@ namespace LocalSearch.UnitTests
             { "pos", "configListFile", "line", "configuration" }; 
                 
             GraphBuilder gbuilder = new GraphBuilder(singlemethodPath);
-            var methods = gbuilder.GetMethods();
+            var methods = gbuilder.GetFullMethods();
             
             var method = methods.First(); //should be only one method
             var localvars = gbuilder.GetAllLocalVarsinMethod(method);
@@ -106,7 +106,7 @@ namespace LocalSearch.UnitTests
             List<String> listParameters = new List<String>() { "configListFileName"};
 
             GraphBuilder gbuilder = new GraphBuilder(singlemethodPath);
-            var methods = gbuilder.GetMethods();
+            var methods = gbuilder.GetFullMethods();
             var method = methods.First(); //should be only one method
 
             var parameters = gbuilder.GetAllParametersinMethod(method);
@@ -127,7 +127,7 @@ namespace LocalSearch.UnitTests
             { "configCnt", "configWorkspaceRoot","configList"};
 
             GraphBuilder gbuilder = new GraphBuilder(singlemethodPath);
-            var methods = gbuilder.GetMethods();
+            var methods = gbuilder.GetFullMethods();
             var method = methods.First(); //should be only one method
 
             var fieldsused = gbuilder.GetFieldsUsedinMethod(method);
@@ -211,7 +211,7 @@ namespace LocalSearch.UnitTests
 
 
             GraphBuilder gbuilder = new GraphBuilder(callsSrcPath);
-            var methods = gbuilder.GetMethods();
+            var methods = gbuilder.GetFullMethods();
             var updateMethod = methods.Where(x => x.Element(SRC.Name).Value.Equals("UpdateFile"));
             var callees = gbuilder.GetCallees(updateMethod.First());
             Assert.IsTrue(callees.Count() > 0);

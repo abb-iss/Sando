@@ -20,8 +20,8 @@ namespace LocalSearch
         private String SrcmlLibSharp = @"..\..\LIBS\srcML-Win-cSharp";
         private const String SrcmlLib = @"..\..\LIBS\srcML-Win";
         private SrcMLFile srcmlFile;
-        private XElement[] FieldDecs;
-        private XElement[] Methods;
+        protected XElement[] FieldDecs;
+        protected XElement[] FullMethods;
         protected Dictionary<int, List<Tuple<XElement, int>>> Calls = new Dictionary<int, List<Tuple<XElement, int>>>();
         protected Dictionary<int, List<Tuple<XElement, int>>> Callers = new Dictionary<int, List<Tuple<XElement, int>>>();
 
@@ -51,12 +51,18 @@ namespace LocalSearch
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
             }
 
+            FullMethods = GetFullMethods();
+
+            FieldDecs = GetFieldDecs();
+
             CreateCallGraph();
         }
 
         private void CreateCallGraph()
         {
-            XElement[] allmethods = GetMethods();
+            //XElement[] allmethods = GetFullMethods();
+            XElement[] allmethods = FullMethods;
+            
             foreach (var method in allmethods)
             {
                 var allCalls = SrcMLHelper.GetCallsFromFunction(method);
@@ -136,7 +142,9 @@ namespace LocalSearch
 
         protected XElement GetMethod(XElement call)
         {
-            XElement[] allmethods = GetMethods();
+            //XElement[] allmethods = GetFullMethods();
+            XElement[] allmethods = FullMethods;
+
             foreach (var method in allmethods)
             {
                 if (Matches(call,method))
@@ -147,7 +155,9 @@ namespace LocalSearch
 
         protected XElement GetMethod(MethodElement programElement)
         {
-            XElement[] allmethods = GetMethods();
+            //XElement[] allmethods = GetFullMethods();
+            XElement[] allmethods = FullMethods;
+            
             foreach (var method in allmethods)
             {
                 if (programElement.DefinitionLineNumber == method.GetSrcLineNumber())
@@ -156,34 +166,12 @@ namespace LocalSearch
             return null;
         }
 
-        private int IfCalledByMe(XElement method,  IEnumerable<XElement> allCalls)
-        {            
-            foreach (var call in allCalls)
-            {
-                if(Matches(call,method))
-                    return call.GetSrcLineNumber();
-            }
-            return -1;
-        }
+        
 
         private bool Matches(XElement call, XElement methodElement)
         {
             var name = "";
             
-            //try
-            //{
-            //    name = call.Element(SRC.Name).Elements(SRC.Name).Last().Value;
-            //    int count = call.Element(SRC.Name).Elements(SRC.Name).Count();
-            //    if(count > 1) //x.method but x is not "this"
-            //    {
-            //        var dec = call.Element(SRC.Name).Elements(SRC.Name).ElementAt(count-2).Value;
-            //        if (!dec.Equals("this"))
-            //            return false;
-            //    }
-            //}catch(InvalidOperationException e){
-            //    name = call.Element(SRC.Name).Value;
-            //}
-
             var names = call.Element(SRC.Name).Elements(SRC.Name);
             if (names.Count() != 0)
             {
@@ -216,9 +204,8 @@ namespace LocalSearch
                         optParaCount++;
                 }
             }
+            
             var elementName = methodElement.Element(SRC.Name).Value;
-            //if (name.Equals(elementName) && elementArgCount == argCount) //not applicable for optional paramter!!!
-            //    return true;
             if (name.Equals(elementName)
                 && argCount <= elementArgCount
                 && argCount >= (elementArgCount - optParaCount))
@@ -248,8 +235,27 @@ namespace LocalSearch
                     listAllFields.AddRange(fields);
             }
 
-            //FieldDecs = AllFields.ToArray();
             return listAllFields.ToArray();
+        }
+
+        /// <summary>
+        /// Get all field declarations in the source file.
+        /// </summary>
+        /// <returns>An array of all field declarations in XElement.</returns>
+        public XElement[] GetFieldDecs()
+        {
+            List<XElement> listAllFieldDecs = new List<XElement>();
+
+            var fields = GetFieldDeclStatements();
+
+            foreach (XElement field in fields)
+            {
+                var fielddec = field.Element(SRC.Declaration);
+                if (fielddec != null)
+                    listAllFieldDecs.Add(fielddec);
+            }
+
+            return listAllFieldDecs.ToArray();
         }
 
         /// <summary>
@@ -276,7 +282,7 @@ namespace LocalSearch
         /// Get all methods (including constructor and destructor) in the source file.
         /// </summary>
         /// <returns>An array of all the FULL methods/constructors/destructors in XElement.</returns>
-        public XElement[] GetMethods()
+        public XElement[] GetFullMethods()
         {
             List<XElement> listAllmethods = new List<XElement>();
 
@@ -292,7 +298,6 @@ namespace LocalSearch
                     listAllmethods.AddRange(methods);
             }
 
-            //Methods = listAllmethods.ToArray();
             return listAllmethods.ToArray();
         }
 
@@ -304,7 +309,7 @@ namespace LocalSearch
         {
             List<XElement> listAllMethodNames = new List<XElement>();
 
-            var methods = GetMethods();
+            var methods = GetFullMethods();
 
             foreach (XElement method in methods)
             {
@@ -407,7 +412,9 @@ namespace LocalSearch
                     index = listNames.FindIndex(index, name => name == fieldname);
                     if (index == -1)
                         break;
-                    UsedLineNumber.Add(listNameElements[index].GetSrcLineNumber());
+                    int line = listNameElements[index].GetSrcLineNumber();
+                    if(!UsedLineNumber.Contains(line)) //avoid adding field uses that happen on the same line
+                        UsedLineNumber.Add(line);
                     index++;
                 }
 
@@ -440,9 +447,7 @@ namespace LocalSearch
                 {
                     var fielddecl = GetFieldDeclFromName(field.Value);
                     Contract.Requires((fielddecl != null), "Field " + field.Value + " does not belong to this local file.");
-                    //var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
-                    //fieldelement.RelationLineNumber = useLineNum;
-                    //fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
+
                     foreach (var linenumber in useLineNum)
                     {
                         var fieldelement = GetFieldElementWRelationFromDecl(fielddecl);
@@ -466,7 +471,9 @@ namespace LocalSearch
         {
             List<ProgramElementWithRelation> listMethodElements = new List<ProgramElementWithRelation>();
 
-            XElement[] allmethods = GetMethods();
+            //XElement[] allmethods = GetFullMethods();
+            XElement[] allmethods = FullMethods;
+
             foreach (var method in allmethods)
             {
                 List<int>  useLineNum = new List<int>();
@@ -476,7 +483,6 @@ namespace LocalSearch
                     {
                         var methodaselement = GetMethodElementWRelationFromXElement(method);
                         methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
-                        //methodaselement.RelationLineNumber = useLineNum;
                         methodaselement.RelationLineNumber.Clear();
                         methodaselement.RelationLineNumber.Add(line);
                         listMethodElements.Add(methodaselement);
@@ -511,7 +517,8 @@ namespace LocalSearch
 
         public XElement GetFullMethodFromName(String methodname, int srclinenum)
         {
-            var methods = GetMethods();
+            //var methods = GetFullMethods();
+            var methods = FullMethods;
             foreach (XElement method in methods)
             {
                 if ( (methodname.Equals(method.Element(SRC.Name).Value))
@@ -529,11 +536,13 @@ namespace LocalSearch
         /// <returns>field declaration in XElement</returns>
         public XElement GetFieldDeclFromName(String fieldname)
         {
-            var fields = GetFieldDeclStatements();
+            //var fields = GetFieldDecs();
+            var fields = FieldDecs;
+
             foreach (XElement field in fields)
             {
-                if (fieldname.Equals(field.Element(SRC.Declaration).Element(SRC.Name).Value))
-                    return field.Element(SRC.Declaration);
+                if (fieldname.Equals(field.Element(SRC.Name).Value))
+                    return field;
             }
 
             return null;
@@ -645,12 +654,7 @@ namespace LocalSearch
             var elementwrelation = new ProgramElementWithRelation(element, 1.0, relation);
 
             return elementwrelation;
-
-            //var element = new FieldElementWithRelation(fielddecl.Element(SRC.Name).Value, 
-            //    definitionLineNumber, fullFilePath, snippet, relation,
-            //    accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
-
-            //return element;
+                        
         }
 
         private ProgramElementWithRelation GetMethodElementWRelationFromXElement(XElement fullmethod)
@@ -733,7 +737,9 @@ namespace LocalSearch
         {
             List<XElement> listMethods = new List<XElement>();
 
-            XElement[] allmethods = GetMethods();
+            //XElement[] allmethods = GetFullMethods();
+            XElement[] allmethods = FullMethods;
+
             foreach (var method in allmethods)
             {
                 List<int> useLineNum = new List<int>();
@@ -775,7 +781,8 @@ namespace LocalSearch
         {
             List<XElement> listMethods = new List<XElement>();
 
-            XElement[] allmethods = GetMethods();
+            //XElement[] allmethods = GetFullMethods();
+            XElement[] allmethods = FullMethods;
             foreach (var method in allmethods)
             {
                 List<int> useLineNum = new List<int>();
@@ -794,6 +801,16 @@ namespace LocalSearch
             return GetMethodNamesUseField(fieldname.Value);
         }
 
+        private int IfCalledByMe(XElement method, IEnumerable<XElement> allCalls)
+        {
+            foreach (var call in allCalls)
+            {
+                if (Matches(call, method))
+                    return call.GetSrcLineNumber();
+            }
+            return -1;
+        }
+
         #endregion
 
         #region testzone
@@ -807,21 +824,13 @@ namespace LocalSearch
         {
             var elements = new List<CodeSearchResult>();
 
-            var fields = GetFieldDeclStatements();
+            //var fields = GetFieldDecs();
+            var fields = FieldDecs;            
 
             foreach (XElement field in fields)
             {
-                var fieldaselement = GetFieldElementWRelationFromDecl(field.Element(SRC.Declaration));
-                //var fieldname = field.Element(SRC.Declaration).Element(SRC.Name);
-                //var definitionLineNumber = fieldname.GetSrcLineNumber();
-                //var fullFilePath = srcmlFile.FileName;
-                //var snippet = String.Empty;
-                //var accessLevel = AccessLevel.Public;
-                //var fieldType = String.Empty;
-                //var classId = Guid.Empty;
-                //var className = String.Empty;
-                //var initialValue = String.Empty;
-                //var element = new FieldElement(fieldname.Value, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
+                var fieldaselement = GetFieldElementWRelationFromDecl(field);
+                
                 CodeSearchResult result = fieldaselement as CodeSearchResult;
                 elements.Add(result);
             }
@@ -839,27 +848,6 @@ namespace LocalSearch
             {
                 var fullmethod = GetFullMethodFromName(method);
                 var methodaselement = GetMethodElementWRelationFromXElement(fullmethod);
-                //var fieldname = "";
-                //if (method.Element(SRC.Name) != null)
-                //{
-                //    fieldname = method.Element(SRC.Name).Value;
-                //}
-                //else
-                //{
-                //    fieldname = method.Value;
-                //}
-                //var definitionLineNumber = method.GetSrcLineNumber();
-                //var fullFilePath = srcmlFile.FileName;
-                //var snippet = String.Empty;
-                //var accessLevel = AccessLevel.Public;
-                //var fieldType = String.Empty;
-                //var classId = Guid.Empty;
-                //var className = String.Empty;
-                //var initialValue = String.Empty;
-                //bool isconstructor = false;
-                //var args = String.Empty;
-                //var body = string.Empty;
-                //var element = new MethodElement(fieldname, definitionLineNumber, fullFilePath, snippet, accessLevel, args, fieldType, body, classId, className, String.Empty, isconstructor);
                 CodeSearchResult result = methodaselement as CodeSearchResult;
                 elements.Add(result);
             }

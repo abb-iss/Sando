@@ -84,7 +84,6 @@ namespace LocalSearch
                                    UsedLineNumber.Add(caller.Item2);
                                }                               
                            }
-
                            return relation;
                        }
 
