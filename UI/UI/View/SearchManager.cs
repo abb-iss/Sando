@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
+using Configuration.OptionsPages;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.DependencyInjection;
@@ -12,6 +13,7 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using Sando.Core.Extensions.Logging;
+using Sando.UI.Options;
 
 namespace Sando.UI.View
 {
@@ -129,8 +131,8 @@ namespace Sando.UI.View
             if (searchCriteria == null)
                 searchCriteria = new SimpleSearchCriteria();
             var criteria = searchCriteria;
-            var uiPackage = ServiceLocator.Resolve<UIPackage>();
-            criteria.NumberOfSearchResultsReturned = UIPackage.GetSandoOptions(uiPackage).NumberOfSearchResultsReturned;
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+            criteria.NumberOfSearchResultsReturned = sandoOptions.NumberOfSearchResultsReturned;
             searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
             searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
             List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);

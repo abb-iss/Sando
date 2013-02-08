@@ -4,7 +4,9 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using Sando.Core;
 using Sando.Core.Extensions.Logging;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.IndexerContracts;
 using System.Linq;
 using log4net;
@@ -20,22 +22,12 @@ namespace Sando.Indexer.IndexFiltering
         private const string IndexFilterSettingsFileName = ".sandoignore.xml";
         private const string IndexFilterSettingsLogFileName = ".sandoignore.log";
 
-        public IndexFilterManager(string indexFilterSettingsDirectoryPath)
+        public IndexFilterManager()
         {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexFilterSettingsDirectoryPath), "IndexFilterManager:Constructor - index filter settings directory path cannot be null or an empty string!");
-            
-            var indexFilterSettingsFilePath = Path.Combine(indexFilterSettingsDirectoryPath, IndexFilterSettingsFileName);
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            var indexFilterSettingsFilePath = Path.Combine(solutionKey.IndexPath, IndexFilterSettingsFileName);
             IndexFilterSettings = File.Exists(indexFilterSettingsFilePath) ? GetIndexFilterSettingsFromFile(indexFilterSettingsFilePath) : GetDefaultIndexFilterSettings();
-            Logger = FileLogger.CreateFileLogger("IndexFilterManagerLogger", Path.Combine(indexFilterSettingsDirectoryPath, IndexFilterSettingsLogFileName));
-        }
-
-        public IndexFilterManager(string indexFilterSettingsDirectoryPath, IndexFilterSettings indexFilterSettings)
-        {
-            Contract.Requires(!String.IsNullOrWhiteSpace(indexFilterSettingsDirectoryPath), "IndexFilterManager:Constructor - index filter settings directory path cannot be null or an empty string!");
-            Contract.Requires(indexFilterSettings != null, "IndexFilterManager:Constructor - index filter settings cannot be null!");
-
-            IndexFilterSettings = indexFilterSettings;
-            Logger = FileLogger.CreateFileLogger("IndexFilterManagerLogger", Path.Combine(indexFilterSettingsDirectoryPath, IndexFilterSettingsLogFileName));
+            Logger = FileLogger.CreateFileLogger("IndexFilterManagerLogger", Path.Combine(solutionKey.IndexPath, IndexFilterSettingsLogFileName));
         }
 
         public IndexFilterManager(IndexFilterSettings indexFilterSettings, ILog logger)

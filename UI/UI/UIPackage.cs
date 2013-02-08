@@ -12,6 +12,7 @@ using EnvDTE;
 using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.Indexer.IndexFiltering;
+using Sando.UI.Options;
 using log4net; 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -104,32 +105,10 @@ namespace Sando.UI
 
 
 
-
-   
-
-        public static SandoOptions GetSandoOptions(UIPackage package)
+        public SandoDialogPage GetSandoDialogPage()
         {
-            return GetSandoOptions(null, 20,package);
+            return GetDialogPage(typeof (SandoDialogPage)) as SandoDialogPage;
         }
-
-        public static SandoOptions GetSandoOptions(string defaultPluginDirectory, int defaultToReturn, UIPackage package)
-		{
-			SandoDialogPage sandoDialogPage = package.GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
-            if(sandoDialogPage.ExtensionPointsPluginDirectoryPath==null&& defaultPluginDirectory!=null)
-            {
-                sandoDialogPage.ExtensionPointsPluginDirectoryPath = defaultPluginDirectory;
-            }
-            if(sandoDialogPage.NumberOfSearchResultsReturned==null)
-            {
-                sandoDialogPage.NumberOfSearchResultsReturned = defaultToReturn+"";
-            }
-            if (Directory.Exists(sandoDialogPage.ExtensionPointsPluginDirectoryPath) == false && defaultPluginDirectory != null)
-		    {
-		        sandoDialogPage.ExtensionPointsPluginDirectoryPath = defaultPluginDirectory;
-		    }
-			SandoOptions sandoOptions = new SandoOptions(sandoDialogPage.ExtensionPointsPluginDirectoryPath, sandoDialogPage.NumberOfSearchResultsReturned);
-			return sandoOptions;
-		}
 
         /////////////////////////////////////////////////////////////////////////////
         // Overriden Package Implementation
@@ -256,9 +235,9 @@ namespace Sando.UI
         {
             if (extensionPointsConfiguration != null)
             {                                
-                ExtensionPointsConfigurationFileReader.WriteConfiguration(GetExtensionPointsConfigurationFilePath(GetExtensionPointsConfigurationDirectory()), extensionPointsConfiguration);
+                ExtensionPointsConfigurationFileReader.WriteConfiguration(extensionPointsConfiguration);
                 //After writing the extension points configuration file, the index state file on disk is out of date; so it needs to be rewritten
-                IndexStateManager.SaveCurrentIndexState(GetExtensionPointsConfigurationDirectory());
+                IndexStateManager.SaveCurrentIndexState();
             }
             //TODO - kill file processing threads
         }
@@ -290,18 +269,16 @@ namespace Sando.UI
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(solutionKey.IndexPath));
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager());
 
-            
-            var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
-            string extensionPointsConfigurationFilePath = GetExtensionPointsConfigurationFilePath(extensionPointsConfigurationDirectoryPath);
 
-            extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(extensionPointsConfigurationFilePath, logger);
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+
+            extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(logger);
 
             if(extensionPointsConfiguration != null)
 			{
-                extensionPointsConfiguration.PluginDirectoryPath = extensionPointsConfigurationDirectoryPath;
+                extensionPointsConfiguration.PluginDirectoryPath = sandoOptions.ExtensionPointsPluginDirectoryPath;
 				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 			}
 
@@ -314,22 +291,6 @@ namespace Sando.UI
                 cppParser.Archive = _srcMLArchive;
             }
 
-        }
-
-        private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
-        {
-            return Path.Combine(extensionPointsConfigurationDirectoryPath, "ExtensionPointsConfiguration.xml");
-        }
-
-        private string GetExtensionPointsConfigurationDirectory()
-        {
-            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-            string extensionPointsConfigurationDirectory = GetSandoOptions(solutionKey.SandoAssemblyDirectoryPath, 20, this).ExtensionPointsPluginDirectoryPath;
-            if (extensionPointsConfigurationDirectory == null)
-            {
-                extensionPointsConfigurationDirectory = solutionKey.SandoAssemblyDirectoryPath;
-            }
-            return extensionPointsConfigurationDirectory;
         }
 
         private void SolutionAboutToClose()
@@ -392,16 +353,9 @@ namespace Sando.UI
             {
                 var solutionKey = ServiceLocator.Resolve<SolutionKey>();
                 SolutionMonitorFactory.LuceneDirectory = solutionKey.SandoAssemblyDirectoryPath;
-                string extensionPointsConfigurationDirectory =
-                    GetSandoOptions(solutionKey.SandoAssemblyDirectoryPath, 20, this).ExtensionPointsPluginDirectoryPath;
-                if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory) == false)
-                {
-                    extensionPointsConfigurationDirectory = solutionKey.SandoAssemblyDirectoryPath;
-                }
-
-                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
-                bool isIndexRecreationRequired =
-                    IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
+                var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
+                bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
 
                 // Create a new instance of SrcML.NET's solution monitor
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
@@ -535,54 +489,6 @@ namespace Sando.UI
                 SwumManager.Instance.PrintSwumCache();
             }
         }
-        
-        /* //// Original implementation
-        private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
-        {
-            try
-            {
-                SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
-                string extensionPointsConfigurationDirectory =
-                    GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
-                if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory) == false)
-                {
-                    extensionPointsConfigurationDirectory = pluginDirectory;
-                }
-
-                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
-                bool isIndexRecreationRequired =
-                    IndexStateManager.IsIndexRecreationRequired(extensionPointsConfigurationDirectory);
-                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired, GetOpenSolution());
-                //SwumManager needs to be initialized after the current solution key is set, but before monitoring/indexing begins
-                Recommender.SwumManager.Instance.Initialize(PluginDirectory(), this.GetCurrentSolutionKey().GetIndexPath(), !isIndexRecreationRequired);
-                _currentMonitor.StartMonitoring();
-                _currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
-            }
-            catch (Exception e)
-            {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
-            }
-        }
-        */
-        // End of code changes
-
-        public void AddNewParser(string qualifiedClassName, string dllName, List<string> supportedFileExtensions)
-        {            
-            extensionPointsConfiguration.ParsersConfiguration.Add(new ParserExtensionPointsConfiguration()
-            {
-                FullClassName = qualifiedClassName,
-                LibraryFileRelativePath = dllName,
-                SupportedFileExtensions = supportedFileExtensions,
-                ProgramElementsConfiguration = new List<BaseExtensionPointConfiguration>()
-							{
-								new BaseExtensionPointConfiguration()
-								{
-									FullClassName = qualifiedClassName,
-									LibraryFileRelativePath = dllName
-								}
-							}
-            });
-        }
 
     	#endregion
 
@@ -612,6 +518,7 @@ namespace Sando.UI
             ServiceLocator.RegisterInstance(GetService(typeof (DTE)) as DTE2);
             ServiceLocator.RegisterInstance(this);
             ServiceLocator.RegisterInstance(new ViewManager(this));
+            ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
         }
     }
 }

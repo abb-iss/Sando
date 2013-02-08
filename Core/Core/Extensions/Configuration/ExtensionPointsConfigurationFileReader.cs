@@ -2,13 +2,15 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Xml.Serialization;
+using Configuration.OptionsPages;
+using Sando.DependencyInjection;
 using log4net;
 
 namespace Sando.Core.Extensions.Configuration
 {
 	public static class ExtensionPointsConfigurationFileReader
 	{
-		public static ExtensionPointsConfiguration ReadAndValidate(string extensionPointsConfigurationFilePath, ILog logger)
+		public static ExtensionPointsConfiguration ReadAndValidate(ILog logger)
 		{
 			Contract.Requires(logger != null, "ExtensionPointsConfigurationValidator:Validate - logger cannot be null!");
 
@@ -16,7 +18,7 @@ namespace Sando.Core.Extensions.Configuration
 			ExtensionPointsConfiguration extensionPointsConfiguration = null;
 			try
 			{
-				extensionPointsConfiguration = TryRetrieveConfigurationObject(extensionPointsConfigurationFilePath);
+			    extensionPointsConfiguration = TryRetrieveConfigurationObject();
 			}
 			catch(Exception ex)
 			{
@@ -27,12 +29,13 @@ namespace Sando.Core.Extensions.Configuration
 			return extensionPointsConfiguration;
 		}
 
-        public static void WriteConfiguration(string extensionPointsConfigurationFilePath, ExtensionPointsConfiguration configuration)
+        public static void WriteConfiguration(ExtensionPointsConfiguration configuration)
         {
             StreamWriter writer = null;
             try
             {
-                writer = new StreamWriter(extensionPointsConfigurationFilePath);
+                var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions(); ;
+			    writer = new StreamWriter(sandoOptions.ExtensionPointsConfigurationFilePath);
                 new XmlSerializer(typeof(ExtensionPointsConfiguration)).Serialize(writer,configuration);
             }
             catch (Exception ex)
@@ -46,18 +49,19 @@ namespace Sando.Core.Extensions.Configuration
 
         }
 
-		private static ExtensionPointsConfiguration TryRetrieveConfigurationObject(string extensionPointsConfigurationFilePath)
+		private static ExtensionPointsConfiguration TryRetrieveConfigurationObject()
 		{
-			if(String.IsNullOrWhiteSpace(extensionPointsConfigurationFilePath))
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+			if(String.IsNullOrWhiteSpace(sandoOptions.ExtensionPointsConfigurationFilePath))
 				throw new Exception("Extension points configuration file path cannot be null or an empty string!");
-			if(!File.Exists(extensionPointsConfigurationFilePath))
+			if(!File.Exists(sandoOptions.ExtensionPointsConfigurationFilePath))
 				throw new Exception("Extension points configuration file wasn't found!");
 
 			ExtensionPointsConfiguration extensionPointsConfiguration = null;
 		    TextReader textReader = null;
 			try
 			{
-				textReader = new StreamReader(extensionPointsConfigurationFilePath);
+				textReader = new StreamReader(sandoOptions.ExtensionPointsConfigurationFilePath);
 				extensionPointsConfiguration = (ExtensionPointsConfiguration)new XmlSerializer(typeof(ExtensionPointsConfiguration)).Deserialize(textReader);
 			}
 			catch(Exception ex)

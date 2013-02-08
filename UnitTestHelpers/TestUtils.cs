@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.DependencyInjection;
 using Sando.Indexer.IndexFiltering;
 using Sando.Indexer.Searching;
 using Sando.Parser;
@@ -38,7 +41,10 @@ namespace UnitTestHelpers
 
 			extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 
-            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(Path.GetTempPath()));
+		    var solutionKey = new SolutionKey(Guid.NewGuid(), Path.GetTempPath(), Path.GetTempPath(), Path.GetTempPath());
+            ServiceLocator.RegisterInstance(solutionKey);
+
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager());
 		}
     }
 }

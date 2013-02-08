@@ -146,12 +146,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="PaiceStemmer\ExtensionPointsConfiguration.xml" />
-    <Content Include="SpellChecking\Hunspellx64.dll">
+    <None Include="Hunspellx64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpellChecking\Hunspellx86.dll">
+    </None>
+    <None Include="Hunspellx86.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

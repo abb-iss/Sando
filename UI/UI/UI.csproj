@@ -190,6 +190,7 @@
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
+    <Compile Include="Options\SandoOptionsProvider.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />
     <Compile Include="View\FileOpener.cs" />

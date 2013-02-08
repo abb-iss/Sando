@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -8,31 +7,13 @@ using NUnit.Framework;
 using Sando.ExtensionContracts.IndexerContracts;
 using Sando.Indexer.IndexFiltering;
 using log4net;
-using log4net.Appender;
 using log4net.Config;
-using log4net.Core;
-using log4net.Repository.Hierarchy;
-using System.Linq;
 
 namespace Sando.Indexer.UnitTests.IndexFiltering
 {
     [TestFixture]
     public class IndexFilterManagerTest
     {
-        [Test]
-        public void IndexFilterManager_ConstructorThrowsWhenindexFilterSettingsDirectoryPathIsNull()
-        {
-            try
-            {
-                new IndexFilterManager(null);
-            }
-            catch
-            {
-                //contract exception catched here
-            }
-            Assert.True(contractFailed, "Contract should fail!");
-        }
-
         [Test]
         public void IndexFilterManager_ShouldFileBeIndexedReturnsFalseIfExtensionRuleMatches()
         {
