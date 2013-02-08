@@ -96,7 +96,8 @@ namespace Sando.ExperimentalExtensions.RelevanceFeedbackExtension
 			Assert.AreEqual(rerankedResults.ElementAt(2), four);
 		}
 
-		[Test]
+		//[Test]
+        //Test removed due to missing .exe
 		public void RFTheWholeShabangTest()
 		{
 			RelevanceFeedbackExtension rfe = new RelevanceFeedbackExtension(1);
