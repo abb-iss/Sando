@@ -134,7 +134,7 @@ namespace Sando.IntegrationTests.Search
 		{
             monitor.StopMonitoring(true);
 			Directory.Delete(indexPath, true);
-            Directory.Delete(assemblyPath, true);
+            //Directory.Delete(assemblyPath, true);
 		}
 
 		private string indexPath;
