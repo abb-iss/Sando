@@ -73,8 +73,7 @@ namespace Sando.Indexer.IndexState
 		private static IndexState readCurrentIndexState(string indexDirectoryPath, string extensionPointsConfigurationPath)
 		{
 			IndexState currentIndexState = new IndexState();
-			findAndAddRelevantFilesToIndexState(indexDirectoryPath, currentIndexState);
-			findAndAddRelevantFilesToIndexState(extensionPointsConfigurationPath, currentIndexState);
+			findAndAddRelevantFilesToIndexState(indexDirectoryPath, currentIndexState);			
 			string extensionPointsConfigurationFilePath = Path.Combine(extensionPointsConfigurationPath, "ExtensionPointsConfiguration.xml");
 			FileInfo configFileInfo = new FileInfo(extensionPointsConfigurationFilePath);
 			currentIndexState.RelevantFilesInfo.Add(new RelevantFileInfo() { FullName = configFileInfo.FullName, LastWriteTime = configFileInfo.LastWriteTime });

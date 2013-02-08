@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Indexer", "..\Indexer\Indexer\Indexer.csproj", "{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "..\Parser\Parser\Parser.csproj", "{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}"
@@ -36,8 +36,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandoExtensionContracts", "..\SandoExtensionContracts\SandoExtensionContracts.csproj", "{17AA2B71-C4F9-4397-9D05-6119763D07A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestExtensionPoints", "..\TestExtensionPoints\TestExtensionPoints.csproj", "{720CF03C-A31E-4CB0-9C31-4FC7CB555A69}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExperimentalExtensions", "..\ExperimentalExtensions\ExperimentalExtensions.csproj", "{F01758D8-81DD-46AC-9632-BBEA96C4272E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Recommender", "..\Recommender\Recommender\Recommender.csproj", "{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}"
 EndProject
@@ -240,16 +238,6 @@ Global
 		{720CF03C-A31E-4CB0-9C31-4FC7CB555A69}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{720CF03C-A31E-4CB0-9C31-4FC7CB555A69}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{720CF03C-A31E-4CB0-9C31-4FC7CB555A69}.Release|x86.ActiveCfg = Release|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F01758D8-81DD-46AC-9632-BBEA96C4272E}.Release|x86.ActiveCfg = Release|Any CPU
 		{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
