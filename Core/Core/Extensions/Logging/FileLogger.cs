@@ -62,7 +62,7 @@ namespace Sando.Core.Extensions.Logging
         static FileLogger()
         {
             var fileInfo = new FileInfo(Assembly.GetCallingAssembly().Location);
-            var defaultLogPath = Path.Combine(fileInfo.DirectoryName, "Sando" + Guid.NewGuid() + ".log");
+            var defaultLogPath = Path.Combine(fileInfo.DirectoryName, "Sando " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ".log");
             CreateDefaultLogger(defaultLogPath);
         }
 
