@@ -85,13 +85,7 @@ namespace Sando.UI
 		private IVsUIShellDocumentWindowMgr winmgr;
         private WindowEvents _windowEvents;
 
-        private static UIPackage MyPackage
-		{
-			get;
-			set;
-		}
-
-    	/// <summary>
+        /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
         /// any Visual Studio service because at this point the package object is created but 
@@ -132,8 +126,8 @@ namespace Sando.UI
                 _viewManager = ServiceLocator.Resolve<ViewManager>();
                 AddCommand();                
                 SetUpLifeCycleEvents();
-                MyPackage = this;                
-            }catch(Exception e)
+            }
+            catch(Exception e)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
