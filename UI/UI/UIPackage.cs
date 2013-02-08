@@ -30,6 +30,7 @@ using Sando.Recommender;
 
 // Code changed by JZ: solution monitor integration
 using System.Xml.Linq;
+using System.Reflection;
 // TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
 // End of code changes
@@ -293,8 +294,7 @@ namespace Sando.UI
             catch (Exception e)
             {
                 FileLogger.DefaultLogger.Error(e);
-            }
-		}
+            }		
             RegisterEmptySolutionKey();
 		}
 
