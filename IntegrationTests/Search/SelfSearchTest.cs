@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -44,7 +45,7 @@ namespace Sando.IntegrationTests.Search
             string keywords = "-test sando search";
             var expectedLowestRank = 10;
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SelfSearchTest");
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult != null)
@@ -115,11 +116,12 @@ namespace Sando.IntegrationTests.Search
             TestUtils.InitializeDefaultExtensionPoints();
 			indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath);
-			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
+			key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath, indexPath);
+            ServiceLocator.RegisterInstance(key);
+			var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
 
-            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Initialize(key.IndexPath, true);
             SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
 
 			//not an exaustive list, so it will be a bit of a messy parse
@@ -164,7 +166,7 @@ namespace Sando.IntegrationTests.Search
 
         private static void EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult == null)

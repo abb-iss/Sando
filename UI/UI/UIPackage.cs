@@ -77,7 +77,6 @@ namespace Sando.UI
 
     	private SolutionEvents _solutionEvents;
 		private ILog logger;
-        private string pluginDirectory;        
         private ExtensionPointsConfiguration extensionPointsConfiguration;
         private DTEEvents _dteEvents;
         private ViewManager _viewManager;
@@ -152,7 +151,7 @@ namespace Sando.UI
                 SetupDependencyInjectionObjects();
 
                 SetUpLogger();
-                _viewManager = new ViewManager(this);
+                _viewManager = ServiceLocator.Resolve<ViewManager>();
                 AddCommand();                
                 SetUpLifeCycleEvents();
                 MyPackage = this;                
@@ -270,10 +269,10 @@ namespace Sando.UI
             //IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
             //var directoryProvider = new ExtensionDirectoryProvider(extensionManager);
             //pluginDirectory = directoryProvider.GetExtensionDirectory();
-        	pluginDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-            var logFilePath = Path.Combine(pluginDirectory, "UIPackage.log");
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+        	var logFilePath = Path.Combine(solutionKey.SandoAssemblyDirectoryPath, "UIPackage.log");
             logger = FileLogger.CreateFileLogger("UIPackageLogger", logFilePath);
-            FileLogger.DefaultLogger.Info("pluginDir: "+pluginDirectory);
+            FileLogger.DefaultLogger.Info("pluginDir: " + solutionKey.SandoAssemblyDirectoryPath);
         }
 
         private void RegisterExtensionPoints()
@@ -291,7 +290,8 @@ namespace Sando.UI
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
  	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
  	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(GetCurrentSolutionKey().GetIndexPath()));
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager(solutionKey.IndexPath));
 
             
             var extensionPointsConfigurationDirectoryPath = GetExtensionPointsConfigurationDirectory();
@@ -318,25 +318,18 @@ namespace Sando.UI
 
         private static string GetExtensionPointsConfigurationFilePath(string extensionPointsConfigurationDirectoryPath)
         {
-            return Path.Combine(extensionPointsConfigurationDirectoryPath,
-                                "ExtensionPointsConfiguration.xml");
+            return Path.Combine(extensionPointsConfigurationDirectoryPath, "ExtensionPointsConfiguration.xml");
         }
 
         private string GetExtensionPointsConfigurationDirectory()
         {
-            string extensionPointsConfigurationDirectory =
-                GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            string extensionPointsConfigurationDirectory = GetSandoOptions(solutionKey.SandoAssemblyDirectoryPath, 20, this).ExtensionPointsPluginDirectoryPath;
             if (extensionPointsConfigurationDirectory == null)
             {
-                extensionPointsConfigurationDirectory = pluginDirectory;
+                extensionPointsConfigurationDirectory = solutionKey.SandoAssemblyDirectoryPath;
             }
             return extensionPointsConfigurationDirectory;
-        }
-
-        private string GetSrcMLDirectory()
-        {
-            //return pluginDirectory + "\\LIBS";
-            return Path.Combine(pluginDirectory, "LIBS", "SrcML");
         }
 
         private void SolutionAboutToClose()
@@ -397,12 +390,13 @@ namespace Sando.UI
         {
             try
             {
-                SolutionMonitorFactory.LuceneDirectory = pluginDirectory;
+                var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+                SolutionMonitorFactory.LuceneDirectory = solutionKey.SandoAssemblyDirectoryPath;
                 string extensionPointsConfigurationDirectory =
-                    GetSandoOptions(pluginDirectory, 20, this).ExtensionPointsPluginDirectoryPath;
+                    GetSandoOptions(solutionKey.SandoAssemblyDirectoryPath, 20, this).ExtensionPointsPluginDirectoryPath;
                 if (extensionPointsConfigurationDirectory == null || Directory.Exists(extensionPointsConfigurationDirectory) == false)
                 {
-                    extensionPointsConfigurationDirectory = pluginDirectory;
+                    extensionPointsConfigurationDirectory = solutionKey.SandoAssemblyDirectoryPath;
                 }
 
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + extensionPointsConfigurationDirectory);
@@ -415,7 +409,7 @@ namespace Sando.UI
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
                 // Create a new instance of SrcML.NET's SrcMLArchive
-                string src2srcmlDir = GetSrcMLDirectory();
+                string src2srcmlDir = Path.Combine(solutionKey.SandoAssemblyDirectoryPath, "LIBS", "SrcML");
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(openSolution), !isIndexRecreationRequired, generator);
@@ -429,7 +423,7 @@ namespace Sando.UI
                 RegisterExtensionPoints();
 
                 //Set up the SwumManager
-                SwumManager.Instance.Initialize(GetCurrentSolutionKey().GetIndexPath(), !isIndexRecreationRequired);
+                SwumManager.Instance.Initialize(solutionKey.IndexPath, !isIndexRecreationRequired);
                 SwumManager.Instance.Archive = _srcMLArchive;
 
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
@@ -590,79 +584,11 @@ namespace Sando.UI
             });
         }
 
-
-        public static UIPackage GetInstance()
-		{
-			return MyPackage;
-		}
-
-
-
     	#endregion
-
-        // Code changed by JZ: solution monitor integration
-        public string GetCurrentDirectory()
-        {
-            return SolutionMonitorFactory.GetCurrentDirectory();
-        }
-
-        public SolutionKey GetCurrentSolutionKey()
-        {
-            return SolutionMonitorFactory.GetSolutionKey();
-        }
 
         public bool IsPerformingInitialIndexing()
         {
             return SolutionMonitorFactory.PerformingInitialIndexing();
-        }
-
-        /* //// original implementation
-        public string GetCurrentDirectory()
-        {
-            if (_currentMonitor != null)
-                return _currentMonitor.GetCurrentDirectory();
-            else
-                return null;
-        }
-
-        public SolutionKey GetCurrentSolutionKey()
-        {
-            if (_currentMonitor != null)
-                return _currentMonitor.GetSolutionKey();
-            else
-                return null;
-        }
-
-        public bool IsPerformingInitialIndexing()
-        {
-            if(_currentMonitor!=null)
-            {
-                return _currentMonitor.PerformingInitialIndexing();
-            }else
-            {
-                return false;
-            }
-        }
-        */
-        // End of code changes
-
-    	#region Implementation of IIndexUpdateListener
-
-    	public void NotifyAboutIndexUpdate()
-    	{
-    		throw new NotImplementedException();
-    	}
-
-    	#endregion
-
-        public string PluginDirectory()
-        {
-            return pluginDirectory;
-        }
-
-        public void EnsureViewExists()
-        {
-            _viewManager.EnsureViewExists();
         }
 
 
@@ -684,6 +610,8 @@ namespace Sando.UI
         private void SetupDependencyInjectionObjects()
         {
             ServiceLocator.RegisterInstance(GetService(typeof (DTE)) as DTE2);
+            ServiceLocator.RegisterInstance(this);
+            ServiceLocator.RegisterInstance(new ViewManager(this));
         }
     }
 }

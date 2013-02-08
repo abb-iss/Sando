@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -21,7 +22,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void SearchRespectsAccessLevelCriteria()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
 			string keywords = "usage type";
 			SearchCriteria searchCriteria = new SimpleSearchCriteria()
 			{
@@ -77,7 +78,7 @@ namespace Sando.IntegrationTests.Search
 		{
 			try
 			{
-				var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+				var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
 				string keywords = "  usage ";
 				List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			}
@@ -90,7 +91,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void SearchReturnsElementsUsingCrossFieldMatching()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
 			string keywords = "fetch output argument";
 			SearchCriteria searchCriteria = new SimpleSearchCriteria()
 			{
@@ -127,11 +128,12 @@ namespace Sando.IntegrationTests.Search
             TestUtils.InitializeDefaultExtensionPoints();
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
-			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
+			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath, indexPath);
+            ServiceLocator.RegisterInstance(key);
+			var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
-            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Initialize(key.IndexPath, true);
             SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
 			foreach(var file in files)
 			{

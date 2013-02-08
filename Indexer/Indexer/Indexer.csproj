@@ -148,6 +148,10 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\DependencyInjection\DependencyInjection\DependencyInjection.csproj">
+      <Project>{c4332491-cd26-408e-8e80-7d1c7a5c6abe}</Project>
+      <Name>DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
       <Name>SandoExtensionContracts</Name>

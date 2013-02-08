@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Sando.Core.Extensions.Logging;
 using Sando.Core.Extensions;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -337,7 +338,8 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         {
             if(_instance==null)
             {
-                UIPackage.GetInstance().EnsureViewExists();
+                var viewManager = ServiceLocator.Resolve<ViewManager>();
+                viewManager.EnsureViewExists();
             }
             return _instance;
         }

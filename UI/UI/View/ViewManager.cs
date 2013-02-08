@@ -4,6 +4,7 @@ using EnvDTE80;
 using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Sando.Core;
 using Sando.Core.Extensions.Logging;
 using Sando.DependencyInjection;
 
@@ -12,8 +13,8 @@ namespace Sando.UI.View
     public class ViewManager
     {
 
-        private IToolWindowFinder _toolWindowFinder;
-        private const string _introducesandoflag = "IntroduceSandoFlag";
+        private readonly IToolWindowFinder _toolWindowFinder;
+        private const string Introducesandoflag = "IntroduceSandoFlag";
 
 
 
@@ -45,7 +46,7 @@ namespace Sando.UI.View
             return windowFrame;
         }
 
-        private bool isRunning = false;
+        private bool _isRunning;
 
         public ViewManager(IToolWindowFinder finder)
         {
@@ -54,10 +55,10 @@ namespace Sando.UI.View
 
         public void EnsureViewExists()
         {
-            if (!isRunning)
+            if (!_isRunning)
             {
-                var windowFrame = GetWindowFrame();
-                isRunning = true;
+                GetWindowFrame();
+                _isRunning = true;
             }
         }
 
@@ -70,7 +71,7 @@ namespace Sando.UI.View
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
             try
             {
-                File.Create(_toolWindowFinder.PluginDirectory() + "\\" + _introducesandoflag);
+                File.Create(GetFullIntroduceSandoFlagPath());
             }
             catch (IOException e)
             {
@@ -80,12 +81,7 @@ namespace Sando.UI.View
 
         public bool ShouldShow()
         {
-            if (!String.IsNullOrEmpty(_toolWindowFinder.PluginDirectory()))
-            {
-                bool shouldShow = !File.Exists(_toolWindowFinder.PluginDirectory() + "\\" + _introducesandoflag);
-                return shouldShow;
-            }
-            return true;
+            return !File.Exists(GetFullIntroduceSandoFlagPath());
         }
 
         public void ShowToolbar()
@@ -101,12 +97,16 @@ namespace Sando.UI.View
                 FileLogger.DefaultLogger.Error(e);
             }
         }
+
+        private string GetFullIntroduceSandoFlagPath()
+        {
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+            return Path.Combine(solutionKey.SandoAssemblyDirectoryPath, Introducesandoflag);
+        }
     }
 
     public  interface IToolWindowFinder
     {
         ToolWindowPane FindToolWindow(Type type, int i, bool b);
-
-        string PluginDirectory();
     }
 }

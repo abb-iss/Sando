@@ -11,6 +11,7 @@ using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Sando.Core;
 using Sando.Core.Extensions.Logging;
+using Sando.DependencyInjection;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
@@ -27,13 +28,13 @@ namespace Sando.Indexer
 
 			try
 			{
-				System.IO.DirectoryInfo directoryInfo = new System.IO.DirectoryInfo(luceneTempIndexesDirectory);
+				var directoryInfo = new System.IO.DirectoryInfo(luceneTempIndexesDirectory);
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = analyzer;
 				IndexWriter = new IndexWriter(LuceneIndexesDirectory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
 				IndexSearcher = new IndexSearcher(LuceneIndexesDirectory, true);
 				QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), analyzer);
-				indexUpdateListeners = new List<IIndexUpdateListener>();
+				_indexUpdateListeners = new List<IIndexUpdateListener>();
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -99,17 +100,17 @@ namespace Sando.Indexer
 
 		public void AddIndexUpdateListener(IIndexUpdateListener indexUpdateListener)
 		{
-			this.indexUpdateListeners.Add(indexUpdateListener);
+			_indexUpdateListeners.Add(indexUpdateListener);
 		}
 
 		public void RemoveIndexUpdateListener(IIndexUpdateListener indexUpdateListener)
 		{
-			this.indexUpdateListeners.Remove(indexUpdateListener);
+			_indexUpdateListeners.Remove(indexUpdateListener);
 		}
 
 		private void NotifyIndexUpdateListeners()
 		{
-			foreach(IIndexUpdateListener listener in this.indexUpdateListeners)
+			foreach(var listener in _indexUpdateListeners)
 			{
 				listener.NotifyAboutIndexUpdate();
 			}
@@ -118,11 +119,11 @@ namespace Sando.Indexer
 
 		public bool IsUsable()
 		{
-            if (this.disposed)
+            if (_disposed)
                 return false;
             try
             {
-                this.IndexSearcher.Search(new TermQuery(new Term("asdf")));
+                IndexSearcher.Search(new TermQuery(new Term("asdf")), 1);
             }catch(AlreadyClosedException)
             {
                 return false;
@@ -144,7 +145,7 @@ namespace Sando.Indexer
 		
 		protected virtual void Dispose(bool disposing, bool killReaders)
         {
-            if(!this.disposed)
+            if(!_disposed)
             {
                 if(disposing)
                 {
@@ -156,7 +157,7 @@ namespace Sando.Indexer
 					LuceneIndexesDirectory.Close();
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 
@@ -165,14 +166,14 @@ namespace Sando.Indexer
             Dispose(false);
         }
 
-		public virtual Directory LuceneIndexesDirectory { get; set; }
-		public virtual IndexSearcher IndexSearcher { get; protected set; }
-		public virtual QueryParser QueryParser { get; protected set; }
-		protected virtual Analyzer Analyzer { get; set; }
-		protected virtual IndexWriter IndexWriter { get; set; }
+		public Directory LuceneIndexesDirectory { get; set; }
+		public IndexSearcher IndexSearcher { get; protected set; }
+		public QueryParser QueryParser { get; protected set; }
+		protected Analyzer Analyzer { get; set; }
+		protected IndexWriter IndexWriter { get; set; }
 
-		private List<IIndexUpdateListener> indexUpdateListeners;
-		private bool disposed = false;
+		private readonly List<IIndexUpdateListener> _indexUpdateListeners;
+		private bool _disposed;
     }
 
 	public enum AnalyzerType
@@ -182,22 +183,22 @@ namespace Sando.Indexer
 
 	public class DocumentIndexerFactory
 	{
-		public static DocumentIndexer CreateIndexer(SolutionKey solutionKey, AnalyzerType analyzerType)
+		public static DocumentIndexer CreateIndexer(AnalyzerType analyzerType)
 		{
-			Guid solutionId = solutionKey.GetSolutionId();
-			if(documentIndexers.ContainsKey(solutionId))
+		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+			if(DocumentIndexers.ContainsKey(solutionKey.SolutionId))
 			{
-				if(!documentIndexers[solutionId].IsUsable())
+                if (!DocumentIndexers[solutionKey.SolutionId].IsUsable())
 				{
-					documentIndexers[solutionId] = CreateInstance(solutionKey.GetIndexPath(), analyzerType);
+                    DocumentIndexers[solutionKey.SolutionId] = CreateInstance(solutionKey.IndexPath, analyzerType);
 				}
 			}
 			else
 			{
-			    DocumentIndexer documentIndexer = CreateInstance(solutionKey.GetIndexPath(), analyzerType);
-			    documentIndexers.Add(solutionId, documentIndexer);
+			    DocumentIndexer documentIndexer = CreateInstance(solutionKey.IndexPath, analyzerType);
+                DocumentIndexers.Add(solutionKey.SolutionId, documentIndexer);
 			}
-		    return documentIndexers[solutionId];
+            return DocumentIndexers[solutionKey.SolutionId];
 		}
 
 		private static DocumentIndexer CreateInstance(string luceneIndex, AnalyzerType analyzerType)
@@ -210,12 +211,11 @@ namespace Sando.Indexer
 					return new DocumentIndexer(luceneIndex, new SnowballAnalyzer("English"));
 				case AnalyzerType.Standard:
 					return new DocumentIndexer(luceneIndex, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
-				case AnalyzerType.Default:
-				default:
+			    default:
 					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
 			}			
 		}
 
-		private static Dictionary<Guid, DocumentIndexer> documentIndexers = new Dictionary<Guid, DocumentIndexer>();
+		private static readonly Dictionary<Guid, DocumentIndexer> DocumentIndexers = new Dictionary<Guid, DocumentIndexer>();
     }
 }

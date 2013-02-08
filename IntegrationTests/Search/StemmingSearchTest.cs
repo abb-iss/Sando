@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -23,7 +24,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void SearchIsUsingStemming()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
 			string keywords = "name";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 4, "Invalid results number");
@@ -109,13 +110,15 @@ namespace Sando.IntegrationTests.Search
 
 
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
+            assemblyPath = Path.Combine(Path.GetTempPath(), "assembly");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath);
-			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
+            key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath, assemblyPath);
+            ServiceLocator.RegisterInstance(key);
+			var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles");
 
-            SwumManager.Instance.Initialize(key.GetIndexPath(), true);
+            SwumManager.Instance.Initialize(key.IndexPath, true);
             SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
 
 			foreach(var file in files)
@@ -131,9 +134,11 @@ namespace Sando.IntegrationTests.Search
 		{
             monitor.StopMonitoring(true);
 			Directory.Delete(indexPath, true);
+            Directory.Delete(assemblyPath, true);
 		}
 
 		private string indexPath;
+        private string assemblyPath;
 		private static SolutionMonitor monitor;
 		private static SolutionKey key;
 	}

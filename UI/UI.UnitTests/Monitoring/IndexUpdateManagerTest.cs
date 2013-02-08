@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.Indexer;
 using Sando.Indexer.IndexState;
 using Sando.UI.Monitoring;
@@ -79,14 +80,16 @@ namespace Sando.UI.UnitTests.Monitoring
 		{
             TestUtils.InitializeDefaultExtensionPoints();
 			solutionPath = Path.Combine(Path.GetTempPath(), "solution");
+            assemblyPath = Path.Combine(Path.GetTempPath(), "assembly");
 			indexPath = Path.Combine(solutionPath, "luceneindex");
 			PrepareFileSystemObjects();
-			solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath);
-            SwumManager.Instance.Initialize(solutionKey.GetIndexPath(), true);
-            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
+            solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath, assemblyPath);
+            ServiceLocator.RegisterInstance(solutionKey);
+            SwumManager.Instance.Initialize(solutionKey.IndexPath, true);
+		    SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML");
 
-			documentIndexer = DocumentIndexerFactory.CreateIndexer(solutionKey, AnalyzerType.Default);
-			indexUpdateManager = new IndexUpdateManager(solutionKey, documentIndexer, false);
+			documentIndexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Default);
+			indexUpdateManager = new IndexUpdateManager(documentIndexer, false);
 			executionCounter = 0;
 		}
 
@@ -119,6 +122,7 @@ namespace Sando.UI.UnitTests.Monitoring
 
 		private int executionCounter;
 		private string solutionPath;
+        private string assemblyPath;
 		private string indexPath;
 		private SolutionKey solutionKey;
 		private DocumentIndexer documentIndexer;

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -15,21 +14,20 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
+using Sando.DependencyInjection;
 using Sando.Indexer;
-using Thread = System.Threading.Thread;
 
 namespace Sando.UI.Monitoring
 {
 	public class SolutionMonitor : IVsRunningDocTableEvents
 	{
-	    private const string StartupThreadName = "Sando: Initial Index of Project";
 	    private readonly SolutionWrapper _openSolution;
 		private DocumentIndexer _currentIndexer;
 		private IVsRunningDocumentTable _documentTable;
 		private uint _documentTableItemId;
 		
 		private readonly string _currentPath;		
-		private readonly System.ComponentModel.BackgroundWorker _processFileInBackground;
+		private readonly BackgroundWorker _processFileInBackground;
 		private readonly SolutionKey _solutionKey;		
 	    public volatile bool ShouldStop = false;
 
@@ -39,19 +37,19 @@ namespace Sando.UI.Monitoring
         }
 
 		private readonly IndexUpdateManager _indexUpdateManager;
-	    private bool _initialIndexDone = false;
+	    private bool _initialIndexDone;
 
-		public SolutionMonitor(SolutionWrapper openSolution, SolutionKey solutionKey, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
+		public SolutionMonitor(SolutionWrapper openSolution, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
 		{
+            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
 			_openSolution = openSolution;
 			_currentIndexer = currentIndexer;
-			_currentPath = solutionKey.GetIndexPath();			
+			_currentPath = solutionKey.IndexPath;			
 			_solutionKey = solutionKey;
-			_indexUpdateManager = new IndexUpdateManager(solutionKey, _currentIndexer, isIndexRecreationRequired);
+			_indexUpdateManager = new IndexUpdateManager(_currentIndexer, isIndexRecreationRequired);
 
-			_processFileInBackground = new System.ComponentModel.BackgroundWorker();
-			_processFileInBackground.DoWork +=
-				new DoWorkEventHandler(_processFileInBackground_DoWork);		
+			_processFileInBackground = new BackgroundWorker();
+			_processFileInBackground.DoWork += _processFileInBackground_DoWork;		
 		}
 
 		private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
@@ -116,8 +114,7 @@ namespace Sando.UI.Monitoring
 		{
             startupWorker = new BackgroundWorker();
             startupWorker.WorkerSupportsCancellation = true;
-            startupWorker.DoWork +=
-                    new DoWorkEventHandler(_runStartupInBackground_DoWork);
+            startupWorker.DoWork += _runStartupInBackground_DoWork;
             startupWorker.RunWorkerAsync();
 
 			// Register events for doc table

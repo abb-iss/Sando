@@ -5,6 +5,7 @@ using System.Linq;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
@@ -16,21 +17,21 @@ namespace Sando.Indexer.UnitTests.Searching.Results
 {
     public class SearchTester
     {
-        private  string _currentDirectory;
-        private  SrcMLCSharpParser _parser;
-        private  string _luceneTempIndexesDirectory = "C:/Windows/Temp/basic";
-        
+        private readonly SrcMLCSharpParser _parser;
+        private readonly string _luceneTempIndexesDirectory;
+        private readonly string _sandoAssemblyDirectoryPath;
+
         public SearchTester()
         {
-                //set up generator
-                _currentDirectory = Environment.CurrentDirectory;
-                _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML"));
-                Directory.CreateDirectory(_luceneTempIndexesDirectory);
-                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-         
+            //set up generator
+            _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML"));
+            _luceneTempIndexesDirectory = Path.Combine(Path.GetTempPath(), "basic");
+            _sandoAssemblyDirectoryPath = _luceneTempIndexesDirectory;
+            Directory.CreateDirectory(_luceneTempIndexesDirectory);
+            TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
         }
 
-  
+
 
         public  bool HasResults(string methodNameToFind, List<Tuple<ProgramElement, float>> results)
         {
@@ -50,7 +51,7 @@ namespace Sando.Indexer.UnitTests.Searching.Results
 
         public  List<Tuple<ProgramElement, float>> GetResults(string searchString, SolutionKey key)
         {
-                var searcher = IndexerSearcherFactory.CreateSearcher(key);
+                var searcher = IndexerSearcherFactory.CreateSearcher();
                 var criteria = new SimpleSearchCriteria();
                 criteria.SearchTerms = new SortedSet<string>(searchString.Split(' ').ToList());
                 var results = searcher.Search(criteria);
@@ -60,9 +61,10 @@ namespace Sando.Indexer.UnitTests.Searching.Results
 
         public  SolutionKey IndexFilesInDirectory(string solutionPath, out DocumentIndexer indexer)
         {
-            
-            var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory);
-            indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
+
+            var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory, _sandoAssemblyDirectoryPath);
+            ServiceLocator.RegisterInstance(key);
+            indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
 
             string[] files = Directory.GetFiles(solutionPath);
             foreach (var file in files)
