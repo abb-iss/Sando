@@ -3,6 +3,8 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
+using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
@@ -21,7 +23,7 @@ namespace Sando.Indexer.UnitTests
 			Analyzer analyzer = new SimpleAnalyzer();
 			try
 			{
-				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+				documentIndexer = new DocumentIndexer(analyzer);
 			}
 			catch(Exception ex)
 			{
@@ -30,26 +32,11 @@ namespace Sando.Indexer.UnitTests
 		}
 
 		[Test]
-		public void DocumentIndexer_ConstructorThrowsWhenInvalidDirectoryPath()
-		{
-			Analyzer analyzer = new SimpleAnalyzer();
-			try
-			{
-				documentIndexer = new DocumentIndexer(null, analyzer);
-			}
-			catch 
-			{
-				//contract exception catched here
-			}
-			Assert.True(contractFailed, "Contract should fail!");
-		}
-
-		[Test]
 		public void DocumentIndexer_ConstructorThrowsWhenAnalyzerIsNull()
 		{
 			try
 			{
-				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, null);
+				documentIndexer = new DocumentIndexer(null);
 			}
 			catch
 			{
@@ -63,8 +50,8 @@ namespace Sando.Indexer.UnitTests
 		{
 			try
 			{
-				Analyzer analyzer = new SimpleAnalyzer();
-				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+                Analyzer analyzer = new SimpleAnalyzer();
+				documentIndexer = new DocumentIndexer(analyzer);
 				ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement();
 				SandoDocument sandoDocument = DocumentFactory.Create(classElement);
 				Assert.NotNull(sandoDocument);
@@ -82,7 +69,7 @@ namespace Sando.Indexer.UnitTests
 		public void DocumentIndexer_AddDocumentThrowsWhenProgramElementIsNull()
 		{
 			Analyzer analyzer = new SimpleAnalyzer();
-			documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+			documentIndexer = new DocumentIndexer(analyzer);
 			try
 			{
 				documentIndexer.AddDocument(null);
@@ -100,7 +87,7 @@ namespace Sando.Indexer.UnitTests
 			Analyzer analyzer = new SimpleAnalyzer();
 			try
 			{
-				documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+				documentIndexer = new DocumentIndexer(analyzer);
 				TestIndexUpdateListener testIndexUpdateListener = new TestIndexUpdateListener();
 				documentIndexer.AddIndexUpdateListener(testIndexUpdateListener);
 				Assert.True(testIndexUpdateListener.NotifyCalled == false, "Notify flag set without NotifyAboutIndexUpdate call!");
@@ -120,7 +107,7 @@ namespace Sando.Indexer.UnitTests
             try
             {                                
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                documentIndexer = new DocumentIndexer(_luceneTempIndexesDirectory, analyzer);
+                documentIndexer = new DocumentIndexer(analyzer);
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 documentIndexer.CommitChanges();
@@ -156,6 +143,9 @@ namespace Sando.Indexer.UnitTests
 		public void SetUp()
 		{
 			TestUtils.InitializeDefaultExtensionPoints();
+		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+		    var newSolutionKey = new SolutionKey(solutionKey.SolutionId, solutionKey.SolutionPath, _luceneTempIndexesDirectory, solutionKey.SandoAssemblyDirectoryPath);
+		    ServiceLocator.RegisterInstance(newSolutionKey);
 		}
 
 		[TearDown]

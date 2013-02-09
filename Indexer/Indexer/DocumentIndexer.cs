@@ -20,15 +20,15 @@ namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-		public DocumentIndexer(string luceneTempIndexesDirectory, Analyzer analyzer)
+		public DocumentIndexer(Analyzer analyzer)
 		{
-			Contract.Requires(!String.IsNullOrWhiteSpace(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory cannot be null or an empty string!");
-			Contract.Requires(System.IO.Directory.Exists(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory does not point to a valid directory!");
 			Contract.Requires(analyzer != null, "DocumentIndexer:Constructor - analyzer cannot be null!");
 
 			try
 			{
-				var directoryInfo = new System.IO.DirectoryInfo(luceneTempIndexesDirectory);
+                var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+			
+                var directoryInfo = new System.IO.DirectoryInfo(solutionKey.IndexPath);
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = analyzer;
 				IndexWriter = new IndexWriter(LuceneIndexesDirectory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
@@ -190,29 +190,29 @@ namespace Sando.Indexer
 			{
                 if (!DocumentIndexers[solutionKey.SolutionId].IsUsable())
 				{
-                    DocumentIndexers[solutionKey.SolutionId] = CreateInstance(solutionKey.IndexPath, analyzerType);
+                    DocumentIndexers[solutionKey.SolutionId] = CreateInstance(analyzerType);
 				}
 			}
 			else
 			{
-			    DocumentIndexer documentIndexer = CreateInstance(solutionKey.IndexPath, analyzerType);
+			    DocumentIndexer documentIndexer = CreateInstance(analyzerType);
                 DocumentIndexers.Add(solutionKey.SolutionId, documentIndexer);
 			}
             return DocumentIndexers[solutionKey.SolutionId];
 		}
 
-		private static DocumentIndexer CreateInstance(string luceneIndex, AnalyzerType analyzerType)
+		private static DocumentIndexer CreateInstance(AnalyzerType analyzerType)
 		{
 			switch(analyzerType)
 			{
 				case AnalyzerType.Simple:
-					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
+					return new DocumentIndexer(new SimpleAnalyzer());
 				case AnalyzerType.Snowball:
-					return new DocumentIndexer(luceneIndex, new SnowballAnalyzer("English"));
+					return new DocumentIndexer(new SnowballAnalyzer("English"));
 				case AnalyzerType.Standard:
-					return new DocumentIndexer(luceneIndex, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
+					return new DocumentIndexer(new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
 			    default:
-					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
+					return new DocumentIndexer(new SimpleAnalyzer());
 			}			
 		}
 

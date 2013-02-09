@@ -116,8 +116,6 @@ namespace Sando.UI
         {
             try
             {
-                Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}",
-                                              this.ToString()));
                 FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
 
@@ -205,7 +203,7 @@ namespace Sando.UI
 
         private void RegisterSolutionEvents()
         {
-            var dte = Package.GetGlobalService(typeof(DTE)) as DTE2;
+            var dte = ServiceLocator.Resolve<DTE2>();
             if (dte != null)
             {
                 _solutionEvents = dte.Events.SolutionEvents;                
@@ -288,21 +286,13 @@ namespace Sando.UI
             catch (Exception e)
             {
                 FileLogger.DefaultLogger.Error(e);
-            }		
-            RegisterEmptySolutionKey();
+            }
 		}
-
-        private void RegisterEmptySolutionKey()
-        {
-            ServiceLocator.RegisterInstance(new SolutionKey(Guid.NewGuid(),"x","x",Path.GetDirectoryName(Assembly.GetCallingAssembly().Location)));            
-        }
 
 		private void SolutionHasBeenOpened()
 		{
-            BackgroundWorker bw = new BackgroundWorker();
-            bw.WorkerReportsProgress = false;
-            bw.WorkerSupportsCancellation = false;
-            bw.DoWork += new DoWorkEventHandler(RespondToSolutionOpened);
+            var bw = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
+		    bw.DoWork += RespondToSolutionOpened;
 		    bw.RunWorkerAsync();
 		}
 
@@ -317,9 +307,16 @@ namespace Sando.UI
         {
             try
             {
-                var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+                //TODO if solution is reopen - the guid should be read from file - future change
+                var solutionId = Guid.NewGuid();
+                var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
+                var solutionPath = openSolution.FileName;
+                var sandoAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+                var luceneDirectoryForSolution = LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(openSolution.FullName, sandoAssemblyDirectoryPath);
+                var solutionKey = new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution, sandoAssemblyDirectoryPath);
                 ServiceLocator.RegisterInstance(solutionKey);
-                SolutionMonitorFactory.LuceneDirectory = solutionKey.SandoAssemblyDirectoryPath;
+
+
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
@@ -332,8 +329,8 @@ namespace Sando.UI
                 // Create a new instance of SrcML.NET's SrcMLArchive
                 string src2srcmlDir = Path.Combine(solutionKey.SandoAssemblyDirectoryPath, "LIBS", "SrcML");
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
-                var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
-                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, SolutionMonitorFactory.GetSrcMlArchiveFolder(openSolution), !isIndexRecreationRequired, generator);
+                var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, sandoAssemblyDirectoryPath);
+                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
                 // Subscribe events from SrcML.NET's SrcMLArchive
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
@@ -485,7 +482,6 @@ namespace Sando.UI
             ServiceLocator.RegisterInstance(GetService(typeof (DTE)) as DTE2);
             ServiceLocator.RegisterInstance(this);
             ServiceLocator.RegisterInstance(new ViewManager(this));
-            RegisterEmptySolutionKey();
             ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
         }
     }

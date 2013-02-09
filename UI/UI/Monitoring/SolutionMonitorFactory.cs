@@ -21,11 +21,6 @@ namespace Sando.UI.Monitoring
 	{
         private static DocumentIndexer currentIndexer;
 
-		private const string Lucene = "\\lucene";
-        private const string srcML = "\\srcMlArchives";
-
-	    public static string LuceneDirectory { get; set; }
-
         // Code changed by JZ: solution monitor integration
         // These variables are moved from Sando's SolutionMonitor
         private static bool _initialIndexDone;
@@ -55,13 +50,7 @@ namespace Sando.UI.Monitoring
 		{
 			Contract.Requires(openSolution != null, "A solution must be open");
 
-			//TODO if solution is reopen - the guid should be read from file - future change
-            var solutionId = Guid.NewGuid();
-            var solutionPath = openSolution.FileName;
-            var luceneDirectoryForSolution = GetLuceneDirectoryForSolution(openSolution);
-            var sandoAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-            var solutionKey = new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution, sandoAssemblyDirectoryPath);
-            ServiceLocator.RegisterInstance(solutionKey);
+			var solutionKey = ServiceLocator.Resolve<SolutionKey>();
 
             currentIndexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
 			if(isIndexRecreationRequired)
@@ -183,50 +172,6 @@ namespace Sando.UI.Monitoring
         // End of code changes
 
 
-
-		private static string CreateFolder(string folderName, string parentDirectory)
-		{
-			if (!File.Exists(parentDirectory + folderName))
-			{
-				var directoryInfo = Directory.CreateDirectory(parentDirectory + folderName);
-				return directoryInfo.FullName;
-			}
-			else
-			{
-                return parentDirectory + folderName;
-			}
-		}
-
-		private static string GetName(Solution openSolution)
-		{
-			var fullName = openSolution.FullName;
-			var split = fullName.Split('\\');
-			return split[split.Length - 1]+fullName.GetHashCode();
-		}
-
-
-
-		private static string GetLuceneDirectoryForSolution(Solution openSolution)
-		{            
-            return CreateNamedFolder(openSolution, Lucene);
-		}
-
-        private static string CreateNamedFolder(Solution openSolution, string x)
-        {
-            var luceneFolder = CreateFolder(x, LuceneDirectory);
-            CreateFolder(GetName(openSolution), luceneFolder + "\\");
-            return luceneFolder + "\\" + GetName(openSolution);
-        }
-
-        public static string GetSrcMlArchiveFolder(Solution openSolution)
-        {
-            return CreateNamedFolder(openSolution, srcML);
-        }
-
-
-
-
-
         // Code changed by JZ: solution monitor integration
         /// <summary>
         /// For debugging.
@@ -238,8 +183,5 @@ namespace Sando.UI.Monitoring
             FileLogger.DefaultLogger.Info(str);
         }
         // End of code changes
-
-
-
     }
 }
