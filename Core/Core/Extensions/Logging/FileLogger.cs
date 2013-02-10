@@ -11,7 +11,14 @@ using log4net.Repository.Hierarchy;
 namespace Sando.Core.Extensions.Logging
 {
 	public class FileLogger
-	{
+    {
+        public static void SetupDefautlFileLogger(string directoryPath)
+        {
+            var defaultLogPath = Path.Combine(directoryPath, "Sando " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ".log");
+            CreateDefaultLogger(defaultLogPath);
+            _isDefaultLoggerInitialized = true;
+        }
+
         public static ILog CreateFileLogger(string loggerName, string filePath)
         {
             var appender = CreateFileAppender(loggerName + "Appender", filePath);
@@ -23,7 +30,9 @@ namespace Sando.Core.Extensions.Logging
         {
             get
             {
-                return LogManager.GetLogger("DefaultLogger");
+                if (_isDefaultLoggerInitialized)
+                    return LogManager.GetLogger("DefaultLogger");
+                return LogManager.GetLogger(Assembly.GetCallingAssembly(), "Logger");
             }
         }
 
@@ -58,13 +67,6 @@ namespace Sando.Core.Extensions.Logging
 
             return appender;
         }
-        
-        static FileLogger()
-        {
-            var fileInfo = new FileInfo(Assembly.GetCallingAssembly().Location);
-            var defaultLogPath = Path.Combine(fileInfo.DirectoryName, "Sando " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ".log");
-            CreateDefaultLogger(defaultLogPath);
-        }
 
 	    private static void CreateDefaultLogger(string defaultLoggerLogFile)
 		{
@@ -93,5 +95,7 @@ namespace Sando.Core.Extensions.Logging
 				</log4net>";
 			XmlConfigurator.Configure(new MemoryStream(Encoding.Default.GetBytes(configurationContent)));
 		}
-	}
+
+	    private static bool _isDefaultLoggerInitialized;
+    }
 }

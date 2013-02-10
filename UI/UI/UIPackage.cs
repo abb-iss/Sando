@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -12,7 +11,6 @@ using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.Indexer.IndexFiltering;
 using Sando.UI.Options;
-using log4net; 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
@@ -77,12 +75,10 @@ namespace Sando.UI
         // End of code changes
 
     	private SolutionEvents _solutionEvents;
-		private ILog logger;
-        private ExtensionPointsConfiguration extensionPointsConfiguration;
+		private ExtensionPointsConfiguration extensionPointsConfiguration;
         private DTEEvents _dteEvents;
         private ViewManager _viewManager;
 		private SolutionReloadEventListener listener;
-		private IVsUIShellDocumentWindowMgr winmgr;
         private WindowEvents _windowEvents;
 
         /// <summary>
@@ -94,7 +90,9 @@ namespace Sando.UI
         /// </summary>
         public UIPackage()
         {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));    		
+            var directoryPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            FileLogger.SetupDefautlFileLogger(directoryPath);
+            FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }
 
 
@@ -212,7 +210,6 @@ namespace Sando.UI
             }
 
 			listener = new SolutionReloadEventListener();
-			winmgr = Package.GetGlobalService(typeof(IVsUIShellDocumentWindowMgr)) as IVsUIShellDocumentWindowMgr;
 			listener.OnQueryUnloadProject += () =>
 			{
 				SolutionAboutToClose();
@@ -253,6 +250,8 @@ namespace Sando.UI
 
             var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
 
+            var loggerPath = Path.Combine(sandoOptions.ExtensionPointsPluginDirectoryPath, "ExtensionPointsLogger.log");
+            var logger = FileLogger.CreateFileLogger("ExtensionPointsLogger", loggerPath);
             extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(logger);
 
             if(extensionPointsConfiguration != null)
