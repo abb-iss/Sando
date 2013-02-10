@@ -364,7 +364,7 @@ namespace Sando.UI
         /// <param name="eventArgs"></param>
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
-            writeLog("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            FileLogger.DefaultLogger.Info("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             // Current design decision: 
             // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
             if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
@@ -380,7 +380,7 @@ namespace Sando.UI
         /// <param name="eventArgs"></param>
         private void RespondToSourceFileChangedEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
-            writeLog( "Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            FileLogger.DefaultLogger.Info("Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             HandleSrcMLDOTNETEvents(eventArgs);
         }
 
@@ -460,19 +460,6 @@ namespace Sando.UI
         {
             return SolutionMonitorFactory.PerformingInitialIndexing();
         }
-
-
-        // Code changed by JZ: solution monitor integration
-        /// <summary>
-        /// For debugging.
-        /// </summary>
-        /// <param name="logFile"></param>
-        /// <param name="str"></param>
-        private static void writeLog(string str)
-        {
-            FileLogger.DefaultLogger.Info(str);
-        }
-        // End of code changes
 
 
 
