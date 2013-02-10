@@ -14,7 +14,7 @@ namespace Sando.Core.Extensions.Logging
     {
         public static void SetupDefautlFileLogger(string directoryPath)
         {
-            var defaultLogPath = Path.Combine(directoryPath, "Sando " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + ".log");
+            var defaultLogPath = Path.Combine(directoryPath, "Sando " + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
             CreateDefaultLogger(defaultLogPath);
             _isDefaultLoggerInitialized = true;
         }
