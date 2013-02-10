@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.DependencyInjection;
@@ -22,7 +24,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void MethodElementReturnedFromSearchContainsAllFields()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
 			string keywords = "fetch output stream";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 5, "Invalid results number");
@@ -48,7 +50,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void MethodSearchRespectsAccessLevelCriteria()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
 			string keywords = "to string";
 			SearchCriteria searchCriteria = new SimpleSearchCriteria()
 			{ 
@@ -80,7 +82,7 @@ namespace Sando.IntegrationTests.Search
         [Test]
         public void MethodSearchRespectsFileExtensionsCriteria()
         {
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
             var keywords = "main";
             var searchCriteria = new SimpleSearchCriteria()
                 {
@@ -117,8 +119,11 @@ namespace Sando.IntegrationTests.Search
 			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath, indexPath);
-            ServiceLocator.RegisterInstance(key);
-			var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+            ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+            var indexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(indexer);
+
 			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
             SwumManager.Instance.Initialize(key.IndexPath, true);
             SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;

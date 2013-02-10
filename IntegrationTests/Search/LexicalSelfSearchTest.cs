@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.DependencyInjection;
@@ -123,7 +125,12 @@ namespace Sando.IntegrationTests.Search
             Directory.CreateDirectory(indexPath);
             key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath, indexPath);
             ServiceLocator.RegisterInstance(key);
-            var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+
+            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+            var indexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(indexer);
+
             monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
 
             SwumManager.Instance.Initialize(key.IndexPath, true);
@@ -171,7 +178,7 @@ namespace Sando.IntegrationTests.Search
 
         private static List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult == null)

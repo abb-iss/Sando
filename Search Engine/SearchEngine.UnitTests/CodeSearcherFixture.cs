@@ -19,25 +19,21 @@ namespace Sando.SearchEngine.UnitTests
     [TestFixture]
     public class CodeSearcherFixture
     {
-		private DocumentIndexer Indexer;
-    	private string IndexerPath;
-		private SolutionKey solutionKey;
+		private DocumentIndexer _indexer;
+    	private string _indexerPath;
+		private SolutionKey _solutionKey;
 
 
     	[Test]
         public void TestCreateCodeSearcher()
         {
-            SimpleAnalyzer analyzer = new SimpleAnalyzer();
-    		var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Standard);
-			//TODO - How do we get an instance of IIndexerSearcher?
-			//FYI - use this IndexerSearcherFactory.CreateSearcher
             Assert.DoesNotThrow(() => new CodeSearcher( null ));            
         }
 
         [Test]     
         public void PerformBasicSearch()
         {
-			var indexerSearcher = IndexerSearcherFactory.CreateSearcher();
+			var indexerSearcher = new IndexerSearcher();
         	CodeSearcher cs = new CodeSearcher(indexerSearcher);            
             List<CodeSearchResult> result = cs.Search("SimpleName");
             Assert.True(result.Count > 0);                                 
@@ -48,11 +44,14 @@ namespace Sando.SearchEngine.UnitTests
 		{
 			TestUtils.InitializeDefaultExtensionPoints();
 
-			IndexerPath = Path.GetTempPath() + "luceneindexer";
-		    Directory.CreateDirectory(IndexerPath);
-			solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", IndexerPath, Path.GetTempPath());
-            ServiceLocator.RegisterInstance(solutionKey);
-			Indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Standard);
+			_indexerPath = Path.GetTempPath() + "luceneindexer";
+		    Directory.CreateDirectory(_indexerPath);
+			_solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", _indexerPath, Path.GetTempPath());
+            ServiceLocator.RegisterInstance(_solutionKey);
+            ServiceLocator.RegisterInstance<Analyzer>(new SimpleAnalyzer());
+            _indexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(_indexer);
+
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
 				accessLevel: AccessLevel.Public,
 				definitionLineNumber: 11,
@@ -63,7 +62,7 @@ namespace Sando.SearchEngine.UnitTests
 				namespaceName: "Sanod.Indexer.UnitTests"
     		);
     		SandoDocument sandoDocument = DocumentFactory.Create(classElement);
-    		Indexer.AddDocument(sandoDocument);
+    		_indexer.AddDocument(sandoDocument);
 			MethodElement methodElement = SampleProgramElementFactory.GetSampleMethodElement(
 				accessLevel: AccessLevel.Protected,
     		    name: "SimpleName",
@@ -71,16 +70,16 @@ namespace Sando.SearchEngine.UnitTests
 				fullFilePath: "C:/stuff"
 			);
     		sandoDocument = DocumentFactory.Create(methodElement);
-    		Indexer.AddDocument(sandoDocument);
-    		Indexer.CommitChanges();
+    		_indexer.AddDocument(sandoDocument);
+    		_indexer.CommitChanges();
     	}
 
 		[TestFixtureTearDown]
     	public void ShutdownIndexer()
     	{
-			Indexer.ClearIndex();
-			Indexer.CommitChanges();
-			Indexer.Dispose(true);   
+			_indexer.ClearIndex();
+			_indexer.CommitChanges();
+			_indexer.Dispose(true);   
     	}
     }
 }

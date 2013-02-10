@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.DependencyInjection;
@@ -85,10 +87,14 @@ namespace Sando.UI.UnitTests.Monitoring
 			PrepareFileSystemObjects();
             solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath, assemblyPath);
             ServiceLocator.RegisterInstance(solutionKey);
+
+            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+            documentIndexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(documentIndexer);
+
             SwumManager.Instance.Initialize(solutionKey.IndexPath, true);
 		    SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML");
-
-			documentIndexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Default);
 			indexUpdateManager = new IndexUpdateManager(documentIndexer, false);
 			executionCounter = 0;
 		}

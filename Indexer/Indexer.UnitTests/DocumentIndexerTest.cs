@@ -15,15 +15,12 @@ namespace Sando.Indexer.UnitTests
     [TestFixture]
 	public class DocumentIndexerTest
 	{
-    	private const string _luceneTempIndexesDirectory = "C:/Windows/Temp/basic";
-
     	[Test]
 		public void DocumentIndexer_ConstructorDoesNotThrowWhenValidData()
 		{
-			Analyzer analyzer = new SimpleAnalyzer();
 			try
 			{
-				documentIndexer = new DocumentIndexer(analyzer);
+				_documentIndexer = new DocumentIndexer();
 			}
 			catch(Exception ex)
 			{
@@ -32,32 +29,17 @@ namespace Sando.Indexer.UnitTests
 		}
 
 		[Test]
-		public void DocumentIndexer_ConstructorThrowsWhenAnalyzerIsNull()
-		{
-			try
-			{
-				documentIndexer = new DocumentIndexer(null);
-			}
-			catch
-			{
-				//contract exception catched here
-			}
-			Assert.True(contractFailed, "Contract should fail!");
-		}
-
-		[Test]
 		public void DocumentIndexer_AddDocumentDoesNotThrowWhenValidData()
 		{
 			try
 			{
-                Analyzer analyzer = new SimpleAnalyzer();
-				documentIndexer = new DocumentIndexer(analyzer);
+                _documentIndexer = new DocumentIndexer();
 				ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement();
 				SandoDocument sandoDocument = DocumentFactory.Create(classElement);
 				Assert.NotNull(sandoDocument);
 				Assert.NotNull(sandoDocument.GetDocument());
-				documentIndexer.AddDocument(sandoDocument);
-				documentIndexer.CommitChanges();
+				_documentIndexer.AddDocument(sandoDocument);
+				_documentIndexer.CommitChanges();
 			}
 			catch(Exception ex)
 			{
@@ -68,30 +50,28 @@ namespace Sando.Indexer.UnitTests
 		[Test]
 		public void DocumentIndexer_AddDocumentThrowsWhenProgramElementIsNull()
 		{
-			Analyzer analyzer = new SimpleAnalyzer();
-			documentIndexer = new DocumentIndexer(analyzer);
+			_documentIndexer = new DocumentIndexer();
 			try
 			{
-				documentIndexer.AddDocument(null);
+				_documentIndexer.AddDocument(null);
 			}
 			catch
 			{
 				//contract exception catched here
 			}
-			Assert.True(contractFailed, "Contract should fail!");
+			Assert.True(_contractFailed, "Contract should fail!");
 		}
 
 		[Test]
 		public void DocumentIndexer_CommitChangesTriggersNotifyAboutIndexUpdateOnIndexUpdateListeners()
 		{
-			Analyzer analyzer = new SimpleAnalyzer();
 			try
 			{
-				documentIndexer = new DocumentIndexer(analyzer);
+				_documentIndexer = new DocumentIndexer();
 				TestIndexUpdateListener testIndexUpdateListener = new TestIndexUpdateListener();
-				documentIndexer.AddIndexUpdateListener(testIndexUpdateListener);
+				_documentIndexer.AddIndexUpdateListener(testIndexUpdateListener);
 				Assert.True(testIndexUpdateListener.NotifyCalled == false, "Notify flag set without NotifyAboutIndexUpdate call!");
-				documentIndexer.CommitChanges();
+				_documentIndexer.CommitChanges();
 				Assert.True(testIndexUpdateListener.NotifyCalled == true, "NotifyAboutIndexUpdate wasn't called!");
 			}
 			catch(Exception ex)
@@ -103,19 +83,18 @@ namespace Sando.Indexer.UnitTests
         [Test]
         public void DocumentIndexer_DeleteDocuments()
         {
-            Analyzer analyzer = new SimpleAnalyzer();
             try
             {                                
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                documentIndexer = new DocumentIndexer(analyzer);
+                _documentIndexer = new DocumentIndexer();
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
-                documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
-                documentIndexer.CommitChanges();
-                int numDocs = documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
+                _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
+                _documentIndexer.CommitChanges();
+                int numDocs = _documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
                 Assert.IsTrue(numDocs == 1);
-                documentIndexer.DeleteDocuments(sampleMethodElement.FullFilePath);
-                documentIndexer.CommitChanges();
-                int docs = documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
+                _documentIndexer.DeleteDocuments(sampleMethodElement.FullFilePath);
+                _documentIndexer.CommitChanges();
+                int docs = _documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
                 Assert.IsTrue(docs == 0);
             }
             catch (Exception ex)
@@ -124,38 +103,47 @@ namespace Sando.Indexer.UnitTests
             }
         }
 
- 
-
         [SetUp]
         public void ResetContract()
         {
-            Directory.CreateDirectory(_luceneTempIndexesDirectory);
-            contractFailed = false;
+            _contractFailed = false;
             Contract.ContractFailed += (sender, e) =>
             {
                 e.SetHandled();
                 e.SetUnwind();
-                contractFailed = true;
+                _contractFailed = true;
             };
         }
 
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			TestUtils.InitializeDefaultExtensionPoints();
+		    _luceneTempIndexesDirectory = Path.Combine(Path.GetTempPath(), "basic");
+		    if (!Directory.Exists(_luceneTempIndexesDirectory))
+		        Directory.CreateDirectory(_luceneTempIndexesDirectory);
+            TestUtils.InitializeDefaultExtensionPoints();
 		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
 		    var newSolutionKey = new SolutionKey(solutionKey.SolutionId, solutionKey.SolutionPath, _luceneTempIndexesDirectory, solutionKey.SandoAssemblyDirectoryPath);
 		    ServiceLocator.RegisterInstance(newSolutionKey);
+		    ServiceLocator.RegisterType<Analyzer, SimpleAnalyzer>();
 		}
 
 		[TearDown]
 		public void CloseDocumentIndexer()
 		{
-			if(documentIndexer != null)
-                documentIndexer.Dispose(true);
+			if(_documentIndexer != null)
+                _documentIndexer.Dispose(true);
 		}
 
-		private bool contractFailed;
-		private DocumentIndexer documentIndexer;
+        [TestFixtureTearDown]
+        public void TearDown()
+        {
+            if (Directory.Exists(_luceneTempIndexesDirectory))
+                Directory.Delete(_luceneTempIndexesDirectory, true);
+        }
+        
+        private string _luceneTempIndexesDirectory;
+        private bool _contractFailed;
+		private DocumentIndexer _documentIndexer;
 	}
 }

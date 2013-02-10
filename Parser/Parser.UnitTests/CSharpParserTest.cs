@@ -12,12 +12,12 @@ namespace Sando.Parser.UnitTests
 	public class CSharpParserTest
 	{
 		
-		private ABB.SrcML.SrcMLGenerator generator;
+		private SrcMLGenerator generator;
 
         [TestFixtureSetUp]
         public void FixtureSetUp() {
             TestUtils.InitializeDefaultExtensionPoints();
-            generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
+            generator = new SrcMLGenerator(@"LIBS\SrcML");
         }
 
 		[Test]

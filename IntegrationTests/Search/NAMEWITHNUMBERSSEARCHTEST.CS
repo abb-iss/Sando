@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.DependencyInjection;
@@ -21,7 +23,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void SearchReturnsElementsWithNumbersInNames()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
 			string keywords = "problem";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
@@ -67,8 +69,11 @@ namespace Sando.IntegrationTests.Search
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath, indexPath);
-            ServiceLocator.RegisterInstance(key);
-			var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+            ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+            var indexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(indexer);
+
 			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
 			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles");
             SwumManager.Instance.Initialize(key.IndexPath, true);

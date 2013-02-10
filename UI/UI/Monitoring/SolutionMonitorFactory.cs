@@ -1,9 +1,8 @@
-using System;
 using System.Diagnostics.Contracts;
-using System.IO;
-using System.Reflection;
 using EnvDTE;
 using EnvDTE80;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using Sando.Core;
 using Sando.Core.Extensions.Logging;
 using Sando.DependencyInjection;
@@ -19,7 +18,7 @@ namespace Sando.UI.Monitoring
 {
 	class SolutionMonitorFactory
 	{
-        private static DocumentIndexer currentIndexer;
+        private static DocumentIndexer _currentIndexer;
 
         // Code changed by JZ: solution monitor integration
         // These variables are moved from Sando's SolutionMonitor
@@ -50,19 +49,21 @@ namespace Sando.UI.Monitoring
 		{
 			Contract.Requires(openSolution != null, "A solution must be open");
 
-			var solutionKey = ServiceLocator.Resolve<SolutionKey>();
+			ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
-            currentIndexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+            _currentIndexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(_currentIndexer);
+
 			if(isIndexRecreationRequired)
 			{
-				currentIndexer.DeleteDocuments("*");
-				currentIndexer.CommitChanges();
+				_currentIndexer.ClearIndex();
+				_currentIndexer.CommitChanges();
 			}
 
             // Create a new instance of SrcML.NET's solution monitor
             var currentMonitor = new ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor(ABB.SrcML.VisualStudio.SolutionMonitor.SolutionWrapper.Create(openSolution));
             // Use the IndexUpdateManager class as a (temporary) bridge between SolutionMonitorFactory and DocumentIndexer.
-            _indexUpdateManager = new IndexUpdateManager(currentIndexer);
+            _indexUpdateManager = new IndexUpdateManager(_currentIndexer);
 
             _initialIndexDone = false;
 
@@ -88,7 +89,7 @@ namespace Sando.UI.Monitoring
         public static void DeleteIndex(string sourceFilePath)
         {
             //writeLog("- DI.DeleteDocuments()");
-            currentIndexer.DeleteDocuments(sourceFilePath);
+            _currentIndexer.DeleteDocuments(sourceFilePath);
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace Sando.UI.Monitoring
         public static void CommitIndexChanges()
         {
             //writeLog("- DI.CommitChanges()");
-            currentIndexer.CommitChanges();
+            _currentIndexer.CommitChanges();
         }
 
         /// <summary>
@@ -111,7 +112,7 @@ namespace Sando.UI.Monitoring
         {
             writeLog("Sando: StartupCompleted()");
             _initialIndexDone = true;
-            currentIndexer.CommitChanges();
+            _currentIndexer.CommitChanges();
         }
 
         // From Sando's SolutionMonitor
@@ -119,25 +120,25 @@ namespace Sando.UI.Monitoring
         public static void MonitoringStopped()
         {
             writeLog("Sando: MonitoringStopped()");
-            if (currentIndexer != null)
+            if (_currentIndexer != null)
             {
-                currentIndexer.CommitChanges();
+                _currentIndexer.CommitChanges();
                 ////_indexUpdateManager.SaveFileStates();
-                currentIndexer.Dispose(false);  // Because in SolutionMonitor: public void StopMonitoring(bool killReaders = false)
-                currentIndexer = null;
+                _currentIndexer.Dispose(false);  // Because in SolutionMonitor: public void StopMonitoring(bool killReaders = false)
+                _currentIndexer = null;
             }
         }
 
         // From SolutionMonitor.cs, don't know if it is still useful
         public static void AddUpdateListener(IIndexUpdateListener listener)
         {
-            currentIndexer.AddIndexUpdateListener(listener);
+            _currentIndexer.AddIndexUpdateListener(listener);
         }
 
         // From SolutionMonitor.cs, don't know if it is still useful
         public static void RemoveUpdateListener(IIndexUpdateListener listener)
         {
-            currentIndexer.RemoveIndexUpdateListener(listener);
+            _currentIndexer.RemoveIndexUpdateListener(listener);
         }
 
         // From SolutionMonitor.cs

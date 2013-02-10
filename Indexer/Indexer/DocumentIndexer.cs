@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Snowball;
-using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
@@ -20,20 +18,18 @@ namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-		public DocumentIndexer(Analyzer analyzer)
+		public DocumentIndexer()
 		{
-			Contract.Requires(analyzer != null, "DocumentIndexer:Constructor - analyzer cannot be null!");
-
 			try
 			{
                 var solutionKey = ServiceLocator.Resolve<SolutionKey>();
 			
                 var directoryInfo = new System.IO.DirectoryInfo(solutionKey.IndexPath);
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
-				Analyzer = analyzer;
-				IndexWriter = new IndexWriter(LuceneIndexesDirectory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
+				Analyzer = ServiceLocator.Resolve<Analyzer>();
+                IndexWriter = new IndexWriter(LuceneIndexesDirectory, Analyzer, IndexWriter.MaxFieldLength.LIMITED);
 				IndexSearcher = new IndexSearcher(LuceneIndexesDirectory, true);
-				QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), analyzer);
+                QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 				_indexUpdateListeners = new List<IIndexUpdateListener>();
 			}
 			catch(CorruptIndexException corruptIndexEx)
@@ -180,42 +176,4 @@ namespace Sando.Indexer
 	{
 		Simple, Snowball, Standard, Default
 	}
-
-	public class DocumentIndexerFactory
-	{
-		public static DocumentIndexer CreateIndexer(AnalyzerType analyzerType)
-		{
-		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-			if(DocumentIndexers.ContainsKey(solutionKey.SolutionId))
-			{
-                if (!DocumentIndexers[solutionKey.SolutionId].IsUsable())
-				{
-                    DocumentIndexers[solutionKey.SolutionId] = CreateInstance(analyzerType);
-				}
-			}
-			else
-			{
-			    DocumentIndexer documentIndexer = CreateInstance(analyzerType);
-                DocumentIndexers.Add(solutionKey.SolutionId, documentIndexer);
-			}
-            return DocumentIndexers[solutionKey.SolutionId];
-		}
-
-		private static DocumentIndexer CreateInstance(AnalyzerType analyzerType)
-		{
-			switch(analyzerType)
-			{
-				case AnalyzerType.Simple:
-					return new DocumentIndexer(new SimpleAnalyzer());
-				case AnalyzerType.Snowball:
-					return new DocumentIndexer(new SnowballAnalyzer("English"));
-				case AnalyzerType.Standard:
-					return new DocumentIndexer(new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
-			    default:
-					return new DocumentIndexer(new SimpleAnalyzer());
-			}			
-		}
-
-		private static readonly Dictionary<Guid, DocumentIndexer> DocumentIndexers = new Dictionary<Guid, DocumentIndexer>();
-    }
 }

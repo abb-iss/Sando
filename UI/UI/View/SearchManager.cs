@@ -38,7 +38,7 @@ namespace Sando.UI.View
             {
                 _invalidated = false;
                 _currentDirectory = solutionKey.IndexPath;
-                codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+                codeSearcher = new CodeSearcher(new IndexerSearcher());
             }
             return codeSearcher;
         }

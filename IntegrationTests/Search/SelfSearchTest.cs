@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.DependencyInjection;
@@ -45,7 +47,7 @@ namespace Sando.IntegrationTests.Search
             string keywords = "-test sando search";
             var expectedLowestRank = 10;
             Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SelfSearchTest");
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult != null)
@@ -117,8 +119,13 @@ namespace Sando.IntegrationTests.Search
 			indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
 			Directory.CreateDirectory(indexPath);
 			key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath, indexPath);
-            ServiceLocator.RegisterInstance(key);
-			var indexer = DocumentIndexerFactory.CreateIndexer(AnalyzerType.Snowball);
+            ServiceLocator.RegisterInstance(key); 
+            
+            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+            var indexer = new DocumentIndexer();
+            ServiceLocator.RegisterInstance(indexer);
+
 			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
 
             SwumManager.Instance.Initialize(key.IndexPath, true);
@@ -166,7 +173,7 @@ namespace Sando.IntegrationTests.Search
 
         private static void EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
-            var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher());
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             var methodSearchResult = codeSearchResults.Find(predicate);
             if (methodSearchResult == null)

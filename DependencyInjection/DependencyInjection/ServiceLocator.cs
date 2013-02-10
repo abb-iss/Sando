@@ -14,14 +14,14 @@ namespace Sando.DependencyInjection
             UnityContainers = new Dictionary<int, IUnityContainer>();
         }
 
-        public static void RegisterType<TFrom, TTo>(params InjectionMember[] injectionMembers) where TTo : TFrom
+        public static void RegisterType<TFrom, TTo>() where TTo : TFrom
         {
-            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new ContainerControlledLifetimeManager(), injectionMembers);
+            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new ContainerControlledLifetimeManager());
         }
 
-        public static void RegisterType<TFrom, TTo>(string name, params InjectionMember[] injectionMembers) where TTo : TFrom
+        public static void RegisterType<TFrom, TTo>(string name) where TTo : TFrom
         {
-            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new ContainerControlledLifetimeManager(), injectionMembers);
+            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new ContainerControlledLifetimeManager());
         }
 
         public static void RegisterInstance<TInterface>(TInterface instance)
