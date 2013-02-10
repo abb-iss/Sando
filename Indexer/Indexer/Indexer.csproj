@@ -125,11 +125,7 @@
     <Compile Include="IIndexUpdateListener.cs" />
     <Compile Include="Searching\Criteria\CriteriaBuilder.cs" />
     <Compile Include="Searching\DefaultQueryRewriter.cs" />
-    <Compile Include="Searching\Criteria\AndSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\ParenthesisSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\OrSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\SimpleSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\NotSearchCriteria.cs" />
     <Compile Include="Searching\IIndexerSearcher.cs" />
     <Compile Include="Searching\Criteria\SearchCriteria.cs" />
     <Compile Include="Searching\IndexerSearcher.cs" />

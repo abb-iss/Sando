@@ -150,10 +150,6 @@
     <Compile Include="IndexState\IndexFilesStatesManagerTest.cs" />
     <Compile Include="IndexState\PhysicalFilesStatesManagerTest.cs" />
     <Compile Include="IndexState\FileOperationResolverTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\AndSearchCriteriaTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\ParenthesisSearchCriteriaTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\NotSearchCriteriaTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\OrSearchCriteriaTest.cs" />
     <Compile Include="TestFiles\Searching\Criteria\SimpleSearchCriteriaTest.cs" />
     <Compile Include="TestFiles\Searching\ProgramElementReaderTest.cs" />
     <Compile Include="TestFiles\Searching\Results\CsSimpleTest.cs" />
