@@ -40,7 +40,6 @@ namespace Sando.UI
         {
             try
             {
-
                  IVsExtensionManager extensionManager = ServiceProvider.GlobalProvider.GetService(typeof(SVsExtensionManager)) as IVsExtensionManager;
                  var pathToExtensionRoot = extensionManager.GetInstalledExtension("7e03caf3-06ed-4ff5-962a-effa1fb2f383").InstallPath;
                 return new PathManager(pathToExtensionRoot);

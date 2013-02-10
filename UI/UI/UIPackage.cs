@@ -90,8 +90,7 @@ namespace Sando.UI
         /// </summary>
         public UIPackage()
         {
-            var directoryPath = PathManager.Instance.GetExtensionRoot();
-            FileLogger.SetupDefautlFileLogger(directoryPath);
+            FileLogger.SetupDefautlFileLogger(PathManager.Instance.GetExtensionRoot());
             FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }
 
