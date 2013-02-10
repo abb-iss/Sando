@@ -37,5 +37,26 @@ namespace Sando.Indexer.Searching.Criteria
         {
             return _searchCriteria;
         }
+
+        public CriteriaBuilder AddCriteria(SimpleSearchCriteria searchCriteria)
+        {
+            Initialze(searchCriteria);
+            return this;
+        }
+
+        public CriteriaBuilder NumResults(int numResults, SimpleSearchCriteria searchCriteria = null)
+        {
+            Initialze(searchCriteria);
+            _searchCriteria.NumberOfSearchResultsReturned = numResults;
+            return this;
+        }
+
+        public CriteriaBuilder Ext(string searchString, SimpleSearchCriteria searchCriteria = null)
+        {
+            Initialze(searchCriteria);
+            _searchCriteria.FileExtensions = WordSplitter.GetFileExtensions(searchString);
+            _searchCriteria.SearchByFileExtension = _searchCriteria.FileExtensions.Count() > 0;
+            return this;
+        }
     }
 }

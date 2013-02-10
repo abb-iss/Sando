@@ -127,19 +127,15 @@ namespace Sando.UI.View
         }
 
         private SearchCriteria GetCriteria(string searchString, out bool searchStringContainedInvalidCharacters, SimpleSearchCriteria searchCriteria = null)
-        {
-            if (searchCriteria == null)
-                searchCriteria = new SimpleSearchCriteria();
-            var criteria = searchCriteria;
-            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
-            criteria.NumberOfSearchResultsReturned = sandoOptions.NumberOfSearchResultsReturned;
+        {            
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                       
             searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
             searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
-            List<string> searchTerms = WordSplitter.ExtractSearchTerms(searchString);
-            criteria.SearchTerms = new SortedSet<string>(searchTerms);
-            criteria.FileExtensions = WordSplitter.GetFileExtensions(searchString);
-            criteria.SearchByFileExtension = criteria.FileExtensions.Count() > 0;
-            return criteria;
+            return CriteriaBuilder.GetBuilder().
+                AddCriteria(searchCriteria).
+                AddSearchString(searchString).
+                NumResults(sandoOptions.NumberOfSearchResultsReturned).
+                Ext(searchString).GetCriteria();                        
         }
     }
 
