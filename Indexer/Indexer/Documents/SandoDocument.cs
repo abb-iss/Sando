@@ -21,50 +21,32 @@ namespace Sando.Indexer.Documents
 		{
 			if(document == null)
 			{
-				document = new Document();
-				document.Add(new Field(SandoField.Id.ToString(), programElement.Id.ToString(), Field.Store.YES, Field.Index.NO));
-				document.Add(new Field(SandoField.Name.ToString(), programElement.Name.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-				document.Add(new Field(SandoField.ProgramElementType.ToString(), programElement.ProgramElementType.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-				document.Add(new Field(SandoField.FullFilePath.ToString(), StandardizeFilePath(programElement.FullFilePath), Field.Store.YES, Field.Index.NOT_ANALYZED));
-                document.Add(new Field(SandoField.FileExtension.ToString(), programElement.FileExtension, Field.Store.NO, Field.Index.ANALYZED));
-				document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), programElement.DefinitionLineNumber.ToString(), Field.Store.YES, Field.Index.NO));
-				document.Add(new Field(SandoField.Source.ToString(), programElement.RawSource, Field.Store.YES, Field.Index.ANALYZED));
-                document.Add(new Field(ProgramElement.CustomTypeTag, programElement.GetType().AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
-				AddDocumentFields();
-			    AddCustomFields();
+                document = ProgramElementToDocumentConverter.Create(programElement,this).Convert();	
 			}
 			return document;
 		}
 
-	    private void AddCustomFields()
+	    public void AddCustomFields(Document luceneDocument)
 	    {
 	        var customProperties = programElement.GetCustomProperties();
 	        foreach (var customProperty in customProperties)
 	        {
-                document.Add(new Field(customProperty.Name, customProperty.GetValue(programElement,null) as string, Field.Store.YES, Field.Index.ANALYZED));
+                luceneDocument.Add(new Field(customProperty.Name, customProperty.GetValue(programElement, null) as string, Field.Store.YES, Field.Index.ANALYZED));
 	        }
 	    }
 
 	    public ProgramElement ReadProgramElementFromDocument()
 		{
-
-			//Guid id = new Guid(document.GetField(SandoField.Id.ToString()).StringValue());
-			string name = document.GetField(SandoField.Name.ToString()).StringValue().ToSandoDisplayable();
-			ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue(), true);
-			string fullFilePath = document.GetField(SandoField.FullFilePath.ToString()).StringValue();
-			int definitionLineNumber = int.Parse(document.GetField(SandoField.DefinitionLineNumber.ToString()).StringValue());
-			string snippet = document.GetField(SandoField.Source.ToString()).StringValue();		    
-			programElement = ReadProgramElementFromDocument(name, type, fullFilePath, definitionLineNumber, snippet, document);
-			return programElement;
+            return HitToDocumentConverter.Create(this, document).Convert();
 		}
 
-		protected virtual void AddDocumentFields()
+        public virtual void AddDocumentFields(Document luceneDocument)
 		{
 		    //none
 		}
 
 
-		protected virtual ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+		public virtual ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
             var parameters = new object[] { name, definitionLineNumber, fullFilePath, snippet };
             var myElement = Activator.CreateInstance(GetMyType(), parameters);
@@ -99,10 +81,10 @@ namespace Sando.Indexer.Documents
 	        
         }
 
-		protected ProgramElement programElement;
+		internal ProgramElement programElement;
 		protected Document document;
 
-        internal static string StandardizeFilePath(string fullFilePath)
+        public static string StandardizeFilePath(string fullFilePath)
         {
             if (fullFilePath.Contains("/"))
             {

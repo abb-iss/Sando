@@ -16,18 +16,18 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		protected override void AddDocumentFields()
+		public override void AddDocumentFields(Document luceneDocument)
 		{
 			ClassElement classElement = (ClassElement) programElement;
-			document.Add(new Field(SandoField.Namespace.ToString(), classElement.Namespace.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-            document.Add(new Field(SandoField.Body.ToString(), classElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.AccessLevel.ToString(), classElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			document.Add(new Field(SandoField.ExtendedClasses.ToString(), classElement.ExtendedClasses.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.ImplementedInterfaces.ToString(), classElement.ImplementedInterfaces.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.Modifiers.ToString(), classElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.Namespace.ToString(), classElement.Namespace.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.Body.ToString(), classElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.AccessLevel.ToString(), classElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            luceneDocument.Add(new Field(SandoField.ExtendedClasses.ToString(), classElement.ExtendedClasses.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.ImplementedInterfaces.ToString(), classElement.ImplementedInterfaces.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.Modifiers.ToString(), classElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
 		}
 
-		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
 			string namespaceName = document.GetField(SandoField.Namespace.ToString()).StringValue().ToSandoDisplayable();
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);

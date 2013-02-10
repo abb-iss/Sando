@@ -16,16 +16,16 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		protected override void AddDocumentFields()
+		public override void AddDocumentFields(Document luceneDocument)
 		{
 			MethodPrototypeElement methodPrototypeElement = (MethodPrototypeElement)programElement;
-			document.Add(new Field(SandoField.AccessLevel.ToString(), methodPrototypeElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			document.Add(new Field(SandoField.Arguments.ToString(), methodPrototypeElement.Arguments.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.ReturnType.ToString(), methodPrototypeElement.ReturnType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-			document.Add(new Field(SandoField.IsConstructor.ToString(), methodPrototypeElement.IsConstructor.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            luceneDocument.Add(new Field(SandoField.AccessLevel.ToString(), methodPrototypeElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            luceneDocument.Add(new Field(SandoField.Arguments.ToString(), methodPrototypeElement.Arguments.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.ReturnType.ToString(), methodPrototypeElement.ReturnType.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.IsConstructor.ToString(), methodPrototypeElement.IsConstructor.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 
-		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string arguments = document.GetField(SandoField.Arguments.ToString()).StringValue().ToSandoDisplayable();

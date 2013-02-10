@@ -16,13 +16,13 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		protected override void AddDocumentFields()
+		public override void AddDocumentFields(Document luceneDocument)
 		{
 			var textLineElement = (TextLineElement) programElement;
-			document.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            luceneDocument.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.NO, Field.Index.ANALYZED));
 		}
 
-		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
             string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue();
 			return new TextLineElement(name, definitionLineNumber, fullFilePath, snippet, body);
