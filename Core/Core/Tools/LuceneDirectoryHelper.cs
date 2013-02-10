@@ -14,24 +14,24 @@ namespace Sando.Core.Tools
             var solutionName = Path.GetFileName(solutionFullName) ?? Guid.NewGuid().ToString();
             var solutionNameHash = solutionName.GetHashCode();
 
-            var luceneFolderPath = Path.Combine(luceneDirectoryParentPath, LuceneDirectoryName, solutionNameHash.ToString(CultureInfo.InvariantCulture));
-            if (!Directory.Exists(luceneFolderPath)) 
-                Directory.CreateDirectory(luceneFolderPath);
-            return luceneFolderPath;
+            var luceneDirectoryPath = Path.Combine(luceneDirectoryParentPath, LuceneDirectoryName, solutionNameHash.ToString(CultureInfo.InvariantCulture));
+            if (!Directory.Exists(luceneDirectoryPath)) 
+                Directory.CreateDirectory(luceneDirectoryPath);
+            return luceneDirectoryPath;
         }
 
         public static string GetOrCreateSrcMlArchivesDirectoryForSolution(string solutionFullName, string luceneDirectoryParentPath)
         {
-            if (!File.Exists(solutionFullName) || String.IsNullOrWhiteSpace(luceneDirectoryParentPath))
+            if (String.IsNullOrWhiteSpace(solutionFullName) || String.IsNullOrWhiteSpace(luceneDirectoryParentPath) || !File.Exists(solutionFullName) || !Directory.Exists(luceneDirectoryParentPath))
                 return String.Empty;
 
             var solutionName = Path.GetFileName(solutionFullName) ?? Guid.NewGuid().ToString();
             var solutionNameHash = solutionName.GetHashCode();
 
-            var luceneFolderPath = Path.Combine(luceneDirectoryParentPath, SrcMlDirectoryName, solutionNameHash.ToString(CultureInfo.InvariantCulture));
-            if (!Directory.Exists(luceneFolderPath))
-                Directory.CreateDirectory(luceneFolderPath);
-            return luceneFolderPath;
+            var srvMlDirectoryPath = Path.Combine(luceneDirectoryParentPath, SrcMlDirectoryName, solutionNameHash.ToString(CultureInfo.InvariantCulture));
+            if (!Directory.Exists(srvMlDirectoryPath))
+                Directory.CreateDirectory(srvMlDirectoryPath);
+            return srvMlDirectoryPath;
         }
 
         private const string LuceneDirectoryName = "lucene";
