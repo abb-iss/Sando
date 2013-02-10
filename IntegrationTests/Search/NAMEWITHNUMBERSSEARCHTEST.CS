@@ -68,7 +68,7 @@ namespace Sando.IntegrationTests.Search
             TestUtils.InitializeDefaultExtensionPoints();
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
 			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath, indexPath);
+			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);
             ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
             var indexer = new DocumentIndexer();

@@ -90,7 +90,7 @@ namespace Sando.UI
         /// </summary>
         public UIPackage()
         {
-            var directoryPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var directoryPath = PathManager.Instance.GetExtensionRoot();
             FileLogger.SetupDefautlFileLogger(directoryPath);
             FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }
@@ -309,10 +309,9 @@ namespace Sando.UI
                 //TODO if solution is reopen - the guid should be read from file - future change
                 var solutionId = Guid.NewGuid();
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
-                var solutionPath = openSolution.FileName;
-                var sandoAssemblyDirectoryPath = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
-                var luceneDirectoryForSolution = LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(openSolution.FullName, sandoAssemblyDirectoryPath);
-                var solutionKey = new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution, sandoAssemblyDirectoryPath);
+                var solutionPath = openSolution.FileName;                
+                var luceneDirectoryForSolution = LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
+                var solutionKey = new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution);
                 ServiceLocator.RegisterInstance(solutionKey);
 
 
@@ -326,9 +325,9 @@ namespace Sando.UI
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
                 // Create a new instance of SrcML.NET's SrcMLArchive
-                string src2srcmlDir = Path.Combine(solutionKey.SandoAssemblyDirectoryPath, "LIBS", "SrcML");
+                string src2srcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
                 var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
-                var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, sandoAssemblyDirectoryPath);
+                var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
                 // Subscribe events from SrcML.NET's SrcMLArchive
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;

@@ -41,7 +41,7 @@ namespace UnitTestHelpers
 
 			extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
 
-		    var solutionKey = new SolutionKey(Guid.NewGuid(), Path.GetTempPath(), Path.GetTempPath(), Path.GetTempPath());
+		    var solutionKey = new SolutionKey(Guid.NewGuid(), Path.GetTempPath(), Path.GetTempPath());
             ServiceLocator.RegisterInstance(solutionKey);
 
             extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager());

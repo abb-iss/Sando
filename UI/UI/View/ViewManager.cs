@@ -99,9 +99,8 @@ namespace Sando.UI.View
         }
 
         private string GetFullIntroduceSandoFlagPath()
-        {
-            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-            return Path.Combine(solutionKey.SandoAssemblyDirectoryPath, Introducesandoflag);
+        {            
+            return Path.Combine(PathManager.Instance.GetExtensionRoot(), Introducesandoflag);
         }
     }
 

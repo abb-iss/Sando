@@ -85,7 +85,7 @@ namespace Sando.UI.UnitTests.Monitoring
             assemblyPath = Path.Combine(Path.GetTempPath(), "assembly");
 			indexPath = Path.Combine(solutionPath, "luceneindex");
 			PrepareFileSystemObjects();
-            solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath, assemblyPath);
+            solutionKey = new SolutionKey(Guid.NewGuid(), solutionPath, indexPath);
             ServiceLocator.RegisterInstance(solutionKey);
 
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));

@@ -114,7 +114,7 @@ namespace Sando.IntegrationTests.Search
 			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
             assemblyPath = Path.Combine(Path.GetTempPath(), "assembly");
 			Directory.CreateDirectory(indexPath);
-            key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath, assemblyPath);
+            key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath);
             ServiceLocator.RegisterInstance(key);
 
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));

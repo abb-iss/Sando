@@ -123,7 +123,7 @@ namespace Sando.Indexer.UnitTests
 		        Directory.CreateDirectory(_luceneTempIndexesDirectory);
             TestUtils.InitializeDefaultExtensionPoints();
 		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-		    var newSolutionKey = new SolutionKey(solutionKey.SolutionId, solutionKey.SolutionPath, _luceneTempIndexesDirectory, solutionKey.SandoAssemblyDirectoryPath);
+		    var newSolutionKey = new SolutionKey(solutionKey.SolutionId, solutionKey.SolutionPath, _luceneTempIndexesDirectory);
 		    ServiceLocator.RegisterInstance(newSolutionKey);
 		    ServiceLocator.RegisterType<Analyzer, SimpleAnalyzer>();
 		}

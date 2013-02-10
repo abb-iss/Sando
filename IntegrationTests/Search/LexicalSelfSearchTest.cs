@@ -123,7 +123,7 @@ namespace Sando.IntegrationTests.Search
             TestUtils.InitializeDefaultExtensionPoints();
             indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
             Directory.CreateDirectory(indexPath);
-            key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath, indexPath);
+            key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath);
             ServiceLocator.RegisterInstance(key);
 
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
