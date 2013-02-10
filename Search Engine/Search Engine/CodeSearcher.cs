@@ -51,7 +51,7 @@ namespace Sando.SearchEngine
 		{
 			Contract.Requires(String.IsNullOrWhiteSpace(searchString), "CodeSearcher:Search - searchString cannot be null or an empty string!");
 
-			SearchCriteria searchCrit = this.GetCriteria(searchString);
+            SearchCriteria searchCrit = CriteriaBuilder.GetBuilder().AddSearchString(searchString).GetCriteria();
 			//test cache hits
 			bool indexingChanged = false;//TODO: need API to get the status of the indexing
             List<CodeSearchResult> res = this.searcher.Search(searchCrit).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
@@ -122,20 +122,7 @@ namespace Sando.SearchEngine
 
         #endregion
 
-		#region Private Mthods
-		/// <summary>
-		/// Gets the criteria.
-		/// </summary>
-		/// <param name="searchString">Search string.</param>
-		/// <returns>search criteria</returns>
-		private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
-		{
-			if (searchCriteria == null)
-				searchCriteria = new SimpleSearchCriteria();
-			var criteria = searchCriteria;
-			criteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
-			return criteria;
-		}
-		#endregion
+
+		
 	}
 }
