@@ -7,7 +7,6 @@ namespace Sando.Indexer.Searching
 {
 	public interface IIndexerSearcher
 	{
-		List<Tuple<ProgramElement,float>> Search(SearchCriteria searchCriteria);
-
+        IEnumerable<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria);
     }
 }

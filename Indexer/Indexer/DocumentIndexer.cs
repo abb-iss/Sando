@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Lucene.Net.Analysis;
+using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
@@ -13,6 +16,7 @@ using Sando.DependencyInjection;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
+using System.Linq;
 
 namespace Sando.Indexer
 {
@@ -28,9 +32,13 @@ namespace Sando.Indexer
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = ServiceLocator.Resolve<Analyzer>();
                 IndexWriter = new IndexWriter(LuceneIndexesDirectory, Analyzer, IndexWriter.MaxFieldLength.LIMITED);
-				IndexSearcher = new IndexSearcher(LuceneIndexesDirectory, true);
+			    var indexReader = IndexWriter.GetReader();
+				_indexSearcher = new IndexSearcher(indexReader);
                 QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 				_indexUpdateListeners = new List<IIndexUpdateListener>();
+			    var backgroundWorker = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
+                backgroundWorker.DoWork += PeriodicallyRefreshIndexSearcherIfNeeded;
+                backgroundWorker.RunWorkerAsync();
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -70,7 +78,7 @@ namespace Sando.Indexer
 		public void CommitChanges()
 		{
             IndexWriter.Commit();
-			UpdateReader();
+			UpdateSearcher();
 			NotifyIndexUpdateListeners();
 		}
 
@@ -81,15 +89,33 @@ namespace Sando.Indexer
 			IndexWriter.DeleteAll();
 		}
 
-		private void UpdateReader()
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public List<Tuple<Document, float>> Search(Query query, TopScoreDocCollector collector)
+        {
+            lock (_lock)
+            {
+                _indexSearcher.Search(query, collector);
+
+                var hits = collector.TopDocs().ScoreDocs;
+                var documents = hits.AsEnumerable().Select(h => new Tuple<Document, float>(_indexSearcher.Doc(h.doc), h.score)).ToList();
+                return documents;
+            }
+        }
+
+        public int GetNumberOfIndexedDocuments()
+        {
+            return _indexSearcher.GetIndexReader().NumDocs();
+        }
+
+		private void UpdateSearcher()
 		{
-			//TODO - please check this out and see if you agree tha we need this
-			var oldReader = IndexSearcher.GetIndexReader();
-			IndexReader newReader = oldReader.Reopen(true);
-			if (newReader != IndexSearcher.GetIndexReader())
+            var oldReader = _indexSearcher.GetIndexReader();
+			var newReader = oldReader.Reopen(true);
+			if (newReader != oldReader)
 			{
+                //_indexSearcher.Close(); - don't need this, because we create IndexSearcher by passing the IndexReader to it, so Close do nothing
 				oldReader.Close();
-				IndexSearcher = new IndexSearcher(newReader);
+				_indexSearcher = new IndexSearcher(newReader);
 			}
 		}
 
@@ -110,22 +136,35 @@ namespace Sando.Indexer
 			{
 				listener.NotifyAboutIndexUpdate();
 			}
-		}
+        }
 
+        private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
+        {
+            while (!_disposed)
+            {
+                lock (_lock)
+                {
+                    if (!IsUsable())
+                    {
+                        UpdateSearcher();
+                    }
+                }
+                Thread.Sleep(10000);
+            }
+        }
 
-		public bool IsUsable()
-		{
-            if (_disposed)
-                return false;
+        private bool IsUsable()
+        {
             try
             {
-                IndexSearcher.Search(new TermQuery(new Term("asdf")), 1);
-            }catch(AlreadyClosedException)
+                _indexSearcher.Search(new TermQuery(new Term("asdf")), 1);
+            }
+            catch (AlreadyClosedException)
             {
                 return false;
             }
-		    return true;
-		}
+            return true;
+        }
 
         public void Dispose()
         {
@@ -146,10 +185,10 @@ namespace Sando.Indexer
                 if(disposing)
                 {
 					IndexWriter.Close();
-					IndexReader indexReader = IndexSearcher.GetIndexReader();
+					IndexReader indexReader = _indexSearcher.GetIndexReader();
                     if(indexReader != null && killReaders)
                         indexReader.Close();
-					IndexSearcher.Close();
+					_indexSearcher.Close();
 					LuceneIndexesDirectory.Close();
                 }
 
@@ -163,14 +202,15 @@ namespace Sando.Indexer
         }
 
 		public Directory LuceneIndexesDirectory { get; set; }
-		public IndexSearcher IndexSearcher { get; protected set; }
 		public QueryParser QueryParser { get; protected set; }
 		protected Analyzer Analyzer { get; set; }
 		protected IndexWriter IndexWriter { get; set; }
 
-		private readonly List<IIndexUpdateListener> _indexUpdateListeners;
+	    private IndexSearcher _indexSearcher;
+        private readonly List<IIndexUpdateListener> _indexUpdateListeners;
 		private bool _disposed;
-    }
+	    private readonly object _lock = new object();
+	}
 
 	public enum AnalyzerType
 	{

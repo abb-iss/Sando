@@ -90,11 +90,11 @@ namespace Sando.Indexer.UnitTests
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 _documentIndexer.CommitChanges();
-                int numDocs = _documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
+                int numDocs = _documentIndexer.GetNumberOfIndexedDocuments();
                 Assert.IsTrue(numDocs == 1);
                 _documentIndexer.DeleteDocuments(sampleMethodElement.FullFilePath);
                 _documentIndexer.CommitChanges();
-                int docs = _documentIndexer.IndexSearcher.reader_ForNUnit.NumDocs();
+                int docs = _documentIndexer.GetNumberOfIndexedDocuments();
                 Assert.IsTrue(docs == 0);
             }
             catch (Exception ex)

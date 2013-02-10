@@ -4,6 +4,7 @@ using Lucene.Net.Search;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
+using System.Linq;
 
 namespace Sando.Indexer.Searching
 {
@@ -14,25 +15,17 @@ namespace Sando.Indexer.Searching
 			_documentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
 		}
 
-		public List<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria)
+        public IEnumerable<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria)
 		{
 			string searchQueryString = searchCriteria.ToQueryString();
 			Query query = _documentIndexer.QueryParser.Parse(searchQueryString);
 			int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
 			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
-			_documentIndexer.IndexSearcher.Search(query, collector);
-
-			ScoreDoc[] hits = collector.TopDocs().ScoreDocs;
-
-			var searchResults = new List<Tuple<ProgramElement, float>>();
-
-			for(int i = 0; i < hits.Length; i++)
-			{
-				var hitDocument = _documentIndexer.IndexSearcher.Doc(hits[i].doc);
-				var score = hits[i].score;
-				ProgramElement programElement = ProgramElementReader.ReadProgramElementFromDocument(hitDocument);
-				searchResults.Add(Tuple.Create(programElement, score));
-			}
+			var documentTuples = _documentIndexer.Search(query, collector);
+		    var searchResults =
+		        documentTuples.Select(
+		            d =>
+		            new Tuple<ProgramElement, float>(ProgramElementReader.ReadProgramElementFromDocument(d.Item1), d.Item2));
 			return searchResults;
 		}
 
