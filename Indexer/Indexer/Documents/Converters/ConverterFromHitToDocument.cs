@@ -4,22 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Sando.Indexer.Documents
+namespace Sando.Indexer.Documents.Converters
 {
-    public class HitToDocumentConverter
+    public class ConverterFromHitToDocument
     {
         private SandoDocument sandoDocument;
         private Lucene.Net.Documents.Document luceneDocument;
 
-        public HitToDocumentConverter(SandoDocument sandoDocument, Lucene.Net.Documents.Document document)
+        public ConverterFromHitToDocument(SandoDocument sandoDocument, Lucene.Net.Documents.Document document)
         {
             this.sandoDocument = sandoDocument;
             this.luceneDocument = document;
         }
 
-        public static HitToDocumentConverter Create(SandoDocument sandoDocument, Lucene.Net.Documents.Document document)
+        public static ConverterFromHitToDocument Create(SandoDocument sandoDocument, Lucene.Net.Documents.Document document)
         {
-            return new HitToDocumentConverter(sandoDocument, document);
+            return new ConverterFromHitToDocument(sandoDocument, document);
         }
 
         internal ExtensionContracts.ProgramElementContracts.ProgramElement Convert()
