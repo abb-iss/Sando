@@ -42,7 +42,7 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
             var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory);
             ServiceLocator.RegisterInstance(key);
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-            _indexer = new DocumentIndexer(500, 0); //0 means synchronous commits
+            _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
             ServiceLocator.RegisterInstance(_indexer);
 
             try

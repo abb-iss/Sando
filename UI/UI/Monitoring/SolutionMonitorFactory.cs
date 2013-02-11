@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Contracts;
 using EnvDTE;
 using EnvDTE80;
@@ -51,7 +52,7 @@ namespace Sando.UI.Monitoring
 
 			ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
-            _currentIndexer = new DocumentIndexer();
+            _currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(4));
             ServiceLocator.RegisterInstance(_currentIndexer);
 
 			if(isIndexRecreationRequired)

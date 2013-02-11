@@ -22,7 +22,7 @@ namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-        public DocumentIndexer(int refreshIndexSearcherThreadInterval = 10000, int commitChangesThreadInterval = 4000)
+        public DocumentIndexer(TimeSpan? refreshIndexSearcherThreadInterval = null, TimeSpan? commitChangesThreadInterval = null)
 		{
 			try
 			{
@@ -37,11 +37,13 @@ namespace Sando.Indexer
                 QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 				_indexUpdateListeners = new List<IIndexUpdateListener>();
 
+			    if (!refreshIndexSearcherThreadInterval.HasValue) 
+                    refreshIndexSearcherThreadInterval = TimeSpan.FromSeconds(10);
 			    var refreshIndexSearcherBackgroundWorker = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
                 refreshIndexSearcherBackgroundWorker.DoWork += PeriodicallyRefreshIndexSearcherIfNeeded;
                 refreshIndexSearcherBackgroundWorker.RunWorkerAsync(refreshIndexSearcherThreadInterval);
 
-                if (commitChangesThreadInterval > 0)
+                if (commitChangesThreadInterval.HasValue)
 			    {
 			        var commitChangesBackgroundWorker = new BackgroundWorker
 			            {

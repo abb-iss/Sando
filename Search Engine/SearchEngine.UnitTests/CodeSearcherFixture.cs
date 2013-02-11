@@ -49,7 +49,7 @@ namespace Sando.SearchEngine.UnitTests
 			_solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", _indexerPath);
             ServiceLocator.RegisterInstance(_solutionKey);
             ServiceLocator.RegisterInstance<Analyzer>(new SimpleAnalyzer());
-            _indexer = new DocumentIndexer(1000, 0); //0 means synchronous commits
+            _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
             ServiceLocator.RegisterInstance(_indexer);
 
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(

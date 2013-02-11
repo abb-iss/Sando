@@ -69,7 +69,7 @@ namespace Sando.Indexer.UnitTests
             try
             {                                
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                _documentIndexer = new DocumentIndexer(500, 0); //0 means synchronous commits
+                _documentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 int numDocs = _documentIndexer.GetNumberOfIndexedDocuments();
@@ -90,7 +90,7 @@ namespace Sando.Indexer.UnitTests
             try
             {
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                _documentIndexer = new DocumentIndexer(500, 0); //0 means synchronous commits
+                _documentIndexer = new DocumentIndexer(TimeSpan.FromMilliseconds(500));
                 var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 const string searchQueryString = "body: sth";
@@ -112,7 +112,7 @@ namespace Sando.Indexer.UnitTests
             try
             {
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                _documentIndexer = new DocumentIndexer(100, 0); //0 means synchronous commits
+                _documentIndexer = new DocumentIndexer(TimeSpan.FromMilliseconds(100));
                 var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 const string searchQueryString = "body: sth";
