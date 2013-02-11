@@ -121,7 +121,7 @@ namespace Sando.IntegrationTests.Search
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
             ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
-            var indexer = new DocumentIndexer();
+            var indexer = new DocumentIndexer(1000, 0); //0 means synchronous commits
             ServiceLocator.RegisterInstance(indexer);
 
 			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);

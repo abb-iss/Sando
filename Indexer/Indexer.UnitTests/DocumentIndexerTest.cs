@@ -41,7 +41,6 @@ namespace Sando.Indexer.UnitTests
 				Assert.NotNull(sandoDocument);
 				Assert.NotNull(sandoDocument.GetDocument());
 				_documentIndexer.AddDocument(sandoDocument);
-				_documentIndexer.CommitChanges();
 			}
 			catch(Exception ex)
 			{
@@ -64,38 +63,18 @@ namespace Sando.Indexer.UnitTests
 			Assert.True(_contractFailed, "Contract should fail!");
 		}
 
-		[Test]
-		public void DocumentIndexer_CommitChangesTriggersNotifyAboutIndexUpdateOnIndexUpdateListeners()
-		{
-			try
-			{
-				_documentIndexer = new DocumentIndexer();
-				TestIndexUpdateListener testIndexUpdateListener = new TestIndexUpdateListener();
-				_documentIndexer.AddIndexUpdateListener(testIndexUpdateListener);
-				Assert.True(testIndexUpdateListener.NotifyCalled == false, "Notify flag set without NotifyAboutIndexUpdate call!");
-				_documentIndexer.CommitChanges();
-				Assert.True(testIndexUpdateListener.NotifyCalled == true, "NotifyAboutIndexUpdate wasn't called!");
-			}
-			catch(Exception ex)
-			{
-				Assert.Fail(ex.Message + ". " + ex.StackTrace);
-			}
-		}
-
         [Test]
         public void DocumentIndexer_DeleteDocuments()
         {
             try
             {                                
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                _documentIndexer = new DocumentIndexer();
+                _documentIndexer = new DocumentIndexer(500, 0); //0 means synchronous commits
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
-                _documentIndexer.CommitChanges();
                 int numDocs = _documentIndexer.GetNumberOfIndexedDocuments();
                 Assert.IsTrue(numDocs == 1);
                 _documentIndexer.DeleteDocuments(sampleMethodElement.FullFilePath);
-                _documentIndexer.CommitChanges();
                 int docs = _documentIndexer.GetNumberOfIndexedDocuments();
                 Assert.IsTrue(docs == 0);
             }
@@ -111,10 +90,9 @@ namespace Sando.Indexer.UnitTests
             try
             {
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                _documentIndexer = new DocumentIndexer();
+                _documentIndexer = new DocumentIndexer(500, 0); //0 means synchronous commits
                 var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
-                _documentIndexer.CommitChanges();
                 const string searchQueryString = "body: sth";
 			    var query = _documentIndexer.QueryParser.Parse(searchQueryString);
 			    const int hitsPerPage = 20;
@@ -134,10 +112,9 @@ namespace Sando.Indexer.UnitTests
             try
             {
                 TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-                _documentIndexer = new DocumentIndexer(100);
+                _documentIndexer = new DocumentIndexer(100, 0); //0 means synchronous commits
                 var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
-                _documentIndexer.CommitChanges();
                 const string searchQueryString = "body: sth";
                 var query = _documentIndexer.QueryParser.Parse(searchQueryString);
                 const int hitsPerPage = 20;

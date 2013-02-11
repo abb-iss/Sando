@@ -102,7 +102,6 @@ namespace Sando.UI.Monitoring
 
 	    public void UpdateAfterAdditions()
 	    {
-	        _currentIndexer.CommitChanges();
 	        _indexUpdateManager.SaveFileStates();
 	        Recommender.SwumManager.Instance.PrintSwumCache();
 	    }
@@ -247,7 +246,6 @@ namespace Sando.UI.Monitoring
                 if (_currentIndexer != null)
                 {
                     //cleanup 
-                    _currentIndexer.CommitChanges();
                     _indexUpdateManager.SaveFileStates();
                     //dispose
                     _currentIndexer.Dispose(killReaders);

@@ -421,7 +421,6 @@ namespace Sando.UI
                             SwumManager.Instance.UpdateSourceFile(sourceFilePath);
                             break;
                     }
-                    SolutionMonitorFactory.CommitIndexChanges();
                 }
             }
         }

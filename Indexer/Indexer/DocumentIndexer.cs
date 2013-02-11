@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Lucene.Net.Analysis;
 using Lucene.Net.Documents;
@@ -23,7 +22,7 @@ namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-		public DocumentIndexer(int backgroundThreadInterval = 10000)
+        public DocumentIndexer(int refreshIndexSearcherThreadInterval = 10000, int commitChangesThreadInterval = 4000)
 		{
 			try
 			{
@@ -38,9 +37,24 @@ namespace Sando.Indexer
                 QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 				_indexUpdateListeners = new List<IIndexUpdateListener>();
 
-			    var backgroundWorker = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
-                backgroundWorker.DoWork += PeriodicallyRefreshIndexSearcherIfNeeded;
-                backgroundWorker.RunWorkerAsync(backgroundThreadInterval);
+			    var refreshIndexSearcherBackgroundWorker = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
+                refreshIndexSearcherBackgroundWorker.DoWork += PeriodicallyRefreshIndexSearcherIfNeeded;
+                refreshIndexSearcherBackgroundWorker.RunWorkerAsync(refreshIndexSearcherThreadInterval);
+
+                if (commitChangesThreadInterval > 0)
+			    {
+			        var commitChangesBackgroundWorker = new BackgroundWorker
+			            {
+			                WorkerReportsProgress = false,
+			                WorkerSupportsCancellation = false
+			            };
+			        commitChangesBackgroundWorker.DoWork += PeriodicallyCommitChangesIfNeeded;
+			        commitChangesBackgroundWorker.RunWorkerAsync(commitChangesThreadInterval);
+			    }
+                else
+                {
+                    _synchronousCommits = true;
+                }
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -59,39 +73,45 @@ namespace Sando.Indexer
 			}
 		}
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual void AddDocument(SandoDocument sandoDocument)
+        public virtual void AddDocument(SandoDocument sandoDocument)
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
 
-            IndexWriter.AddDocument(sandoDocument.GetDocument());
+            lock (_lock)
+            {
+                IndexWriter.AddDocument(sandoDocument.GetDocument());
+                if(_synchronousCommits)
+                    CommitChanges();
+                else
+                    _hasIndexChanged = true;
+            }
 		}
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void DeleteDocuments(string fullFilePath)
         {
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
             var term = new Term("FullFilePath", ConverterFromHitToProgramElement.StandardizeFilePath(fullFilePath));
-            IndexWriter.DeleteDocuments(new TermQuery(term));
+            lock (_lock)
+            {
+                IndexWriter.DeleteDocuments(new TermQuery(term));
+                if (_synchronousCommits)
+                    CommitChanges();
+                else
+                    _hasIndexChanged = true;
+            }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-		public void CommitChanges()
-		{
-            IndexWriter.Commit();
-			UpdateSearcher();
-			NotifyIndexUpdateListeners();
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void ClearIndex()
 		{
-            IndexWriter.GetDirectory().EnsureOpen();
-			IndexWriter.DeleteAll();
+		    lock (_lock)
+		    {
+		        IndexWriter.GetDirectory().EnsureOpen();
+		        IndexWriter.DeleteAll();
+                CommitChanges();
+		    }
 		}
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public List<Tuple<Document, float>> Search(Query query, TopScoreDocCollector collector)
         {
             lock (_lock)
@@ -108,6 +128,11 @@ namespace Sando.Indexer
             }
         }
 
+        public int GetNumberOfIndexedDocuments()
+        {
+            return _indexSearcher.GetIndexReader().NumDocs();
+        }
+
 	    private List<Tuple<Document, float>> RunSearch(Query query, TopScoreDocCollector collector)
 	    {
 	        _indexSearcher.Search(query, collector);
@@ -118,9 +143,12 @@ namespace Sando.Indexer
 	        return documents;
 	    }
 
-	    public int GetNumberOfIndexedDocuments()
+        private void CommitChanges()
         {
-            return _indexSearcher.GetIndexReader().NumDocs();
+            IndexWriter.Commit();
+            UpdateSearcher();
+            NotifyIndexUpdateListeners();
+            _hasIndexChanged = false;
         }
 
 		private void UpdateSearcher()
@@ -160,6 +188,20 @@ namespace Sando.Indexer
 			{
 				listener.NotifyAboutIndexUpdate();
 			}
+        }
+
+        private void PeriodicallyCommitChangesIfNeeded(object sender, DoWorkEventArgs args)
+        {
+            var backgroundThreadInterval = (int)args.Argument;
+            while (!_disposed)
+            {
+                lock (_lock)
+                {
+                    if (_hasIndexChanged)
+                        CommitChanges();
+                }
+                Thread.Sleep(backgroundThreadInterval);
+            }
         }
 
 	    private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
@@ -204,8 +246,12 @@ namespace Sando.Indexer
 
 		public void Dispose(bool killReaders)
         {
-            Dispose(true, killReaders);
-            GC.SuppressFinalize(this);
+		    lock (_lock)
+		    {
+		        CommitChanges();
+		        Dispose(true, killReaders);
+		        GC.SuppressFinalize(this);
+		    }
         }
 		
 		protected virtual void Dispose(bool disposing, bool killReaders)
@@ -238,6 +284,8 @@ namespace Sando.Indexer
 
 	    private IndexSearcher _indexSearcher;
         private readonly List<IIndexUpdateListener> _indexUpdateListeners;
+        private bool _hasIndexChanged;
+        private bool _synchronousCommits;
 		private bool _disposed;
 	    private readonly object _lock = new object();
 	}

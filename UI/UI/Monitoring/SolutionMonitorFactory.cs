@@ -57,7 +57,6 @@ namespace Sando.UI.Monitoring
 			if(isIndexRecreationRequired)
 			{
 				_currentIndexer.ClearIndex();
-				_currentIndexer.CommitChanges();
 			}
 
             // Create a new instance of SrcML.NET's solution monitor
@@ -93,16 +92,6 @@ namespace Sando.UI.Monitoring
         }
 
         /// <summary>
-        /// Commit index changes.
-        /// TODO: This method might be refactored to another class.
-        /// </summary>
-        public static void CommitIndexChanges()
-        {
-            //writeLog("- DI.CommitChanges()");
-            _currentIndexer.CommitChanges();
-        }
-
-        /// <summary>
         /// Respond to the StartupCompleted event from SrcML.NET
         /// From Sando's SolutionMonitor
         /// TODO: This method might be refactored to another class.
@@ -112,7 +101,6 @@ namespace Sando.UI.Monitoring
         {
             writeLog("Sando: StartupCompleted()");
             _initialIndexDone = true;
-            _currentIndexer.CommitChanges();
         }
 
         // From Sando's SolutionMonitor
@@ -122,7 +110,6 @@ namespace Sando.UI.Monitoring
             writeLog("Sando: MonitoringStopped()");
             if (_currentIndexer != null)
             {
-                _currentIndexer.CommitChanges();
                 ////_indexUpdateManager.SaveFileStates();
                 _currentIndexer.Dispose(false);  // Because in SolutionMonitor: public void StopMonitoring(bool killReaders = false)
                 _currentIndexer = null;

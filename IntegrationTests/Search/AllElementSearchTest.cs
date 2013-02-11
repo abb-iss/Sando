@@ -33,7 +33,7 @@ namespace Sando.IntegrationTests.Search
 				SearchTerms = new SortedSet<string>(keywords.Split(' '))
 			};
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
-			Assert.AreEqual(codeSearchResults.Count, 3, "Invalid results number");
+			Assert.AreEqual(3, codeSearchResults.Count, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el =>
 																el.Element.ProgramElementType == ProgramElementType.Method &&
 																(el.Element.Name == "UsageTypeCriteriaToString"));
@@ -133,7 +133,7 @@ namespace Sando.IntegrationTests.Search
 			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
             ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
-            var indexer = new DocumentIndexer();
+            var indexer = new DocumentIndexer(1000, 0); //0 means synchronous commits
             ServiceLocator.RegisterInstance(indexer);
 
 			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);

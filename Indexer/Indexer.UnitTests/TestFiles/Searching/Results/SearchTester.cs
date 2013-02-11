@@ -42,7 +42,7 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
             var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory);
             ServiceLocator.RegisterInstance(key);
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-            _indexer = new DocumentIndexer();
+            _indexer = new DocumentIndexer(500, 0); //0 means synchronous commits
             ServiceLocator.RegisterInstance(_indexer);
 
             try
@@ -75,7 +75,6 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
                     _indexer.AddDocument(DocumentFactory.Create(programElement));
                 }
             }
-            _indexer.CommitChanges();
         }
 
         private IEnumerable<Tuple<ProgramElement, float>> GetResults(string searchString, SolutionKey key)

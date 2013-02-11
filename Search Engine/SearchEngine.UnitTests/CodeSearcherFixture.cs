@@ -49,7 +49,7 @@ namespace Sando.SearchEngine.UnitTests
 			_solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", _indexerPath);
             ServiceLocator.RegisterInstance(_solutionKey);
             ServiceLocator.RegisterInstance<Analyzer>(new SimpleAnalyzer());
-            _indexer = new DocumentIndexer();
+            _indexer = new DocumentIndexer(1000, 0); //0 means synchronous commits
             ServiceLocator.RegisterInstance(_indexer);
 
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
@@ -71,14 +71,12 @@ namespace Sando.SearchEngine.UnitTests
 			);
     		sandoDocument = DocumentFactory.Create(methodElement);
     		_indexer.AddDocument(sandoDocument);
-    		_indexer.CommitChanges();
     	}
 
 		[TestFixtureTearDown]
     	public void ShutdownIndexer()
     	{
 			_indexer.ClearIndex();
-			_indexer.CommitChanges();
 			_indexer.Dispose(true);   
     	}
     }
