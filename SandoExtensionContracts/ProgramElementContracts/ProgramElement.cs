@@ -15,6 +15,12 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
             get { return GetType().AssemblyQualifiedName; }
         }
 
+        public ProgramElement(object[] parameters)
+            : this(parameters[0] as string, (int)parameters[0], parameters[0] as string, parameters[0] as string)
+        {
+
+        }
+
         public ProgramElement(string name, int definitionLineNumber, string fullFilePath, string snippet)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(name),

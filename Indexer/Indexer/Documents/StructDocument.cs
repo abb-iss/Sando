@@ -19,7 +19,7 @@ namespace Sando.Indexer.Documents
             
         }
 
-        public override void AddDocumentFields(Document luceneDocument)
+        public override void AddFieldsToDocument(Document luceneDocument)
         {
             StructElement structElement = (StructElement)programElement;
             luceneDocument.Add(new Field(SandoField.Namespace.ToString(), structElement.Namespace.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
@@ -29,14 +29,14 @@ namespace Sando.Indexer.Documents
             luceneDocument.Add(new Field(SandoField.Modifiers.ToString(), structElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
         }
 
-        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
         {
             string namespaceName = document.GetField(SandoField.Namespace.ToString()).StringValue().ToSandoDisplayable();
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
             string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue().ToSandoDisplayable();
             string extendedClasses = document.GetField(SandoField.ExtendedClasses.ToString()).StringValue().ToSandoDisplayable();            
             string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
-            return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body, extendedClasses, modifiers);
+            return new object[]{name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body, extendedClasses, modifiers};
         }
     }
 }

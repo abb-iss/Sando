@@ -16,7 +16,7 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		public override void AddDocumentFields(Document luceneDocument)
+		public override void AddFieldsToDocument(Document luceneDocument)
 		{
 			MethodPrototypeElement methodPrototypeElement = (MethodPrototypeElement)programElement;
             luceneDocument.Add(new Field(SandoField.AccessLevel.ToString(), methodPrototypeElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -25,13 +25,13 @@ namespace Sando.Indexer.Documents
             luceneDocument.Add(new Field(SandoField.IsConstructor.ToString(), methodPrototypeElement.IsConstructor.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 
-        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string arguments = document.GetField(SandoField.Arguments.ToString()).StringValue().ToSandoDisplayable();
 			string returnType = document.GetField(SandoField.ReturnType.ToString()).StringValue().ToSandoDisplayable();
 			bool isConstructor = bool.Parse(document.GetField(SandoField.IsConstructor.ToString()).StringValue().ToSandoDisplayable());
-			return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor);
+            return new object[] { name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor };			
 		}
 	}
 }

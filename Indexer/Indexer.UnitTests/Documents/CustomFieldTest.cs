@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
+using Sando.Indexer.Documents.Converters;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
@@ -17,8 +18,8 @@ namespace Sando.Indexer.UnitTests.Documents
         public void LuceneDocToCustomProgramElementForMethod()
         {
             //test ReadProgramElementFromDocument  
-            var document = new MethodDocument(MyCustomMethodElementForTesting.GetLuceneDocument());
-            var customProgramElement = document.ReadProgramElementFromDocument();
+            var document = MyCustomMethodElementForTesting.GetLuceneDocument();
+            var customProgramElement = ConverterFromHitToProgramElement.ReadProgramElementFromDocument(document);
             var myCustomProgramElementForTesting = customProgramElement as MyCustomMethodElementForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.Boom.Equals("Ba dow"));
@@ -41,8 +42,8 @@ namespace Sando.Indexer.UnitTests.Documents
         public void LuceneDocToCustomProgramElementForClass()
         {
             //test ReadProgramElementFromDocument  
-            var document = new ClassDocument(MyCustomClassForTesting.GetLuceneDocument());
-            var customProgramElement = document.ReadProgramElementFromDocument();
+            var document = MyCustomClassForTesting.GetLuceneDocument();
+            var customProgramElement = ConverterFromHitToProgramElement.ReadProgramElementFromDocument(document);
             var myCustomProgramElementForTesting = customProgramElement as MyCustomClassForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.Bam.Equals("Zaow"));
@@ -114,6 +115,8 @@ namespace Sando.Indexer.UnitTests.Documents
             : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor) 
         {
         }
+
+    
 
         [CustomIndexFieldAttribute()]
         public string Boom { get; set; }
