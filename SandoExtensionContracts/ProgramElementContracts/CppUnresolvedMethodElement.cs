@@ -11,8 +11,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			: base(name, definitionLineNumber, fullFilePath, snippet, AccessLevel.Protected, arguments, returnType, body, 
 					Guid.NewGuid(), className, String.Empty, isConstructor)
 		{
-			Contract.Requires(className != null, "CppSplitMethodElement:Constructor - class name cannot be null!");
-			Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
+            Contract.Requires(className != null, "CppUnresolvedMethodElement:Constructor - class name cannot be null!");
+            //Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
+            Contract.Requires(headerFiles != null, "CppUnresolvedMethodElement:Constructor - headerFiles cannot be null!");
 
 			IncludeFileNames = headerFiles;
 			IsResolved = false;
