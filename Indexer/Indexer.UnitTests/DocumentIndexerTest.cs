@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Threading;
 using Lucene.Net.Analysis;
+using Lucene.Net.Search;
 using NUnit.Framework;
 using Sando.Core;
 using Sando.DependencyInjection;
@@ -96,6 +98,53 @@ namespace Sando.Indexer.UnitTests
                 _documentIndexer.CommitChanges();
                 int docs = _documentIndexer.GetNumberOfIndexedDocuments();
                 Assert.IsTrue(docs == 0);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message + ". " + ex.StackTrace);
+            }
+        }
+
+        [Test]
+        public void GIVEN_DocumentIndexer_WHEN_IndexSearcherIsClosed_AND_SearchFailed_THEN_IndexSearcherIsRecreated_AND_SearchReturnsResults()
+        {
+            try
+            {
+                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
+                _documentIndexer = new DocumentIndexer();
+                var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
+                _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
+                _documentIndexer.CommitChanges();
+                const string searchQueryString = "body: sth";
+			    var query = _documentIndexer.QueryParser.Parse(searchQueryString);
+			    const int hitsPerPage = 20;
+                var collector = TopScoreDocCollector.create(hitsPerPage, true);
+                _documentIndexer.NUnit_CloseIndexSearcher();
+                _documentIndexer.Search(query, collector);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message + ". " + ex.StackTrace);
+            }
+        }
+
+        [Test]
+        public void GIVEN_DocumentIndexer_WHEN_IndexSearcherIsClosed_THEN_IndexSearcherIsRecreatedInBackgroundThread_AND_SearchReturnsResults()
+        {
+            try
+            {
+                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
+                _documentIndexer = new DocumentIndexer(100);
+                var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
+                _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
+                _documentIndexer.CommitChanges();
+                const string searchQueryString = "body: sth";
+                var query = _documentIndexer.QueryParser.Parse(searchQueryString);
+                const int hitsPerPage = 20;
+                var collector = TopScoreDocCollector.create(hitsPerPage, true);
+                _documentIndexer.NUnit_CloseIndexSearcher();
+                Thread.Sleep(600);
+                _documentIndexer.Search(query, collector);
             }
             catch (Exception ex)
             {
