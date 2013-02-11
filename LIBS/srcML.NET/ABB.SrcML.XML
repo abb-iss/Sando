@@ -186,6 +186,90 @@
             Event data of SrcML.NET events.
             </summary>
         </member>
+        <member name="T:ABB.SrcML.ShortXmlFileNameMapping">
+            <summary>
+            Maintains a mapping between source file paths and the paths where XML versions are stored.
+            The names of the XML files are relatively short to avoid exceeding the Windows file path character limit.
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.XmlFileNameMapping">
+            <summary>
+            Maintains a mapping between source file paths and the paths where XML versions are stored.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.XmlFileNameMapping.#ctor(System.String)">
+            <summary>
+            Creates a new XmlFileNameMapping.
+            </summary>
+            <param name="xmlDirectory">The directory for the XML files.</param>
+        </member>
+        <member name="M:ABB.SrcML.XmlFileNameMapping.GetXMLPath(System.String)">
+            <summary>
+            Returns the path for the XML file mapped to <paramref name="sourcePath"/>.
+            </summary>
+            <param name="sourcePath">The path for the source file.</param>
+            <returns>The full path for an XML file based on <paramref name="sourcePath"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.XmlFileNameMapping.GetSourcePath(System.String)">
+            <summary>
+            Returns the path where the source file for <paramref name="xmlPath"/> is located.
+            </summary>
+            <param name="xmlPath">The path for the XML file.</param>
+            <returns>The full path for the source file that <paramref name="xmlPath"/> is based on.</returns>
+        </member>
+        <member name="M:ABB.SrcML.XmlFileNameMapping.SaveMapping">
+            <summary>
+            Saves the file name mapping to the XmlDirectory.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.XmlFileNameMapping.XmlDirectory">
+            <summary>
+            The directory where the XML files should be located.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.#ctor(System.String)">
+            <summary>
+            Creates a new ShortXmlFileNameMapping.
+            </summary>
+            <param name="xmlDirectory">The directory for the XML files.</param>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.GetXMLPath(System.String)">
+            <summary>
+            Returns the path for the XML file mapped to <paramref name="sourcePath"/>.
+            </summary>
+            <param name="sourcePath">The path for the source file.</param>
+            <returns>The full path for an XML file based on <paramref name="sourcePath"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.GetSourcePath(System.String)">
+            <summary>
+            Returns the path where the source file for <paramref name="xmlPath"/> is located.
+            </summary>
+            <param name="xmlPath">The path for the XML file.</param>
+            <returns>The full path for the source file that <paramref name="xmlPath"/> is based on.</returns>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.SaveMapping">
+            <summary>
+            Saves the file name mapping to the XmlDirectory.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.Dispose">
+            <summary>
+            Disposes of the object. This will write the mapping file to disk.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.ReadMapping">
+            <summary>
+            Reads the mapping file in XmlDirectory. 
+            If this doesn't exist, it constructs a mapping from any existing SrcML files in the directory.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.ShortXmlFileNameMapping.ProcessMapFileEntry(System.String,System.String)">
+            <summary>
+            Updates the mapping data structures with the info from a single map file entry.
+            </summary>
+            <param name="sourcePath"></param>
+            <param name="xmlPath"></param>
+        </member>
         <member name="M:ABB.SrcML.SrcMLGenerator.#ctor">
             <summary>
             Creates a new SrcMLGenerator.
@@ -1647,6 +1731,16 @@
             <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
             <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
         </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator,ABB.SrcML.XmlFileNameMapping)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+            <param name="xmlMapping">The XmlFileNameMapping to use to map source paths to xml file paths.</param>
+        </member>
         <member name="M:ABB.SrcML.SrcMLArchive._runStartupInBackground_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
             <summary>
             Run in background when starting up the solution.
@@ -1711,8 +1805,7 @@
         </member>
         <member name="M:ABB.SrcML.SrcMLArchive.GetXmlPathForSourcePath(System.String)">
             <summary>
-            Get the corresponding srcML file path for a specific source file.
-            For single folder storage algorithm
+            Returns the corresponding srcML file path for the given source file.
             </summary>
             <param name="sourcePath"></param>
             <returns></returns>
@@ -1720,7 +1813,6 @@
         <member name="M:ABB.SrcML.SrcMLArchive.GetSourcePathForXmlPath(System.String)">
             <summary>
             Get the corresponding source file path for a specific srcML file.
-            For single folder storage algorithm
             </summary>
             <param name="xmlPath"></param>
             <returns></returns>
@@ -1758,6 +1850,13 @@
             </summary>
             <param name="fileUnit">The file unit to get the language for</param>
             <returns>The language</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLElement.GetFileNameForUnit(System.Xml.Linq.XElement)">
+            <summary>
+            Returns the filename attribute in the given unit element.
+            </summary>
+            <param name="fileUnit"></param>
+            <returns></returns>
         </member>
         <member name="T:ABB.SrcML.SrcMLException">
             <summary>

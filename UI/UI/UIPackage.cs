@@ -277,7 +277,8 @@ namespace Sando.UI
                 if (_srcMLArchive != null)
                 {
                     // SolutionMonitor.StopWatching() is called in SrcMLArchive.StopWatching()
-                    _srcMLArchive.StopWatching();
+                    //_srcMLArchive.StopWatching();
+                    _srcMLArchive.Dispose();
                     _srcMLArchive = null;
                 }
             }
