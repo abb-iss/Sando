@@ -13,7 +13,12 @@ namespace Sando.Indexer.Documents.Converters
         private SandoDocument sandoDocument;
         private Lucene.Net.Documents.Document luceneDocument;
 
-        public ConverterFromHitToProgramElement(SandoDocument sandoDocument, Lucene.Net.Documents.Document document)
+        private ConverterFromHitToProgramElement()
+        {
+            throw new NotImplementedException();//don't call this, use Create
+        }
+
+        private ConverterFromHitToProgramElement(SandoDocument sandoDocument, Lucene.Net.Documents.Document document)
         {
             this.sandoDocument = sandoDocument;
             this.luceneDocument = document;
@@ -21,6 +26,7 @@ namespace Sando.Indexer.Documents.Converters
 
         public static ConverterFromHitToProgramElement Create(Lucene.Net.Documents.Document document)
         {
+            Contract.Requires(document != null, "ConverterFromHitToProgramElement:ReadProgramElementFromDocument - document cannot be null!");            
             return new ConverterFromHitToProgramElement(GetSandoDocument(document), document);
         }
 
@@ -29,7 +35,6 @@ namespace Sando.Indexer.Documents.Converters
             ProgramElementType programElementType = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), document.GetField(SandoField.ProgramElementType.ToString()).StringValue(), true);
             switch (programElementType)
             {
-
                 case ProgramElementType.Class:
                     return new ClassDocument(document);
                 case ProgramElementType.Comment:
@@ -51,33 +56,37 @@ namespace Sando.Indexer.Documents.Converters
                 case ProgramElementType.Custom:
                     var type = GetMyType(document);
                     if(type.BaseType.Equals(typeof(MethodElement)))
-                        return new MethodDocument(document);
+                        return new MethodDocument(document);                    
                     return new SandoDocument(document);
                 default:
                     return null;
             }
         }
 
-        internal ProgramElement Convert()
+        public ProgramElement Convert()
         {
-            //Guid id = new Guid(document.GetField(SandoField.Id.ToString()).StringValue());
+            Contract.Ensures(Contract.Result<ProgramElement>() != null, "ConverterFromHitToProgramElement:ReadProgramElementFromDocument - an object must be returned from this method!");			
+
+            //Get standard field values
             string name = luceneDocument.GetField(SandoField.Name.ToString()).StringValue().ToSandoDisplayable();
             ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), luceneDocument.GetField(SandoField.ProgramElementType.ToString()).StringValue(), true);
             string fullFilePath = luceneDocument.GetField(SandoField.FullFilePath.ToString()).StringValue();
             int definitionLineNumber = int.Parse(luceneDocument.GetField(SandoField.DefinitionLineNumber.ToString()).StringValue());
             string snippet = luceneDocument.GetField(SandoField.Source.ToString()).StringValue();
-            sandoDocument.programElement = ReadProgramElementFromDocument(name, type, fullFilePath, definitionLineNumber, snippet, luceneDocument);
-            return sandoDocument.programElement;
-        }
-
-        private ProgramElement ReadProgramElementFromDocument(string name, ExtensionContracts.ProgramElementContracts.ProgramElementType type, string fullFilePath, int definitionLineNumber, string snippet, Document luceneDocument)
-        {
+            
+            //Add values that vary according to element type (e.g., a textline doesn't have a parent class whereas a method often does)
+            //Note: Parameters must match the parameter list for corresponding program element.  See MethodDocument.GetParametersForConstructor and the MethodElement constructor
             var parameters = sandoDocument.GetParametersForConstructor(name, type, fullFilePath, definitionLineNumber, snippet, luceneDocument);
+            
+            //Create type from the collected values
             var myClassType = GetMyType(luceneDocument);
             var myElement = Activator.CreateInstance(myClassType, parameters);
+
+            //Populate any custom fields from user-defined types, only happens when a third party extends Sando
             SetCustomFields(myElement, luceneDocument);
             return myElement as ProgramElement;
         }
+
 
         internal static void SetCustomFields(object myElement, Lucene.Net.Documents.Document luceneDocument)
         {            
@@ -116,11 +125,6 @@ namespace Sando.Indexer.Documents.Converters
             }
             return fullFilePath;
         }
-
-    
-        public static ProgramElement ReadProgramElementFromDocument(Document document)
-        {
-            return ConverterFromHitToProgramElement.Create( document).Convert();
-        }
+   
     }
 }

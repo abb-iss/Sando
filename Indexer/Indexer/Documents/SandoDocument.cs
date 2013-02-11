@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using Lucene.Net.Documents;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents.Converters;
+using System.Collections.Generic;
 
 namespace Sando.Indexer.Documents
 {
@@ -28,18 +29,10 @@ namespace Sando.Indexer.Documents
 		}
 
 
-
-	
-
-        public virtual void AddFieldsToDocument(Document luceneDocument)
+        public virtual List<Field> GetFieldsForLucene()
 		{
-		    //none
+            return new List<Field>();
 		}
-
-        public bool StandardProgramElement()
-        {
-            return true;
-        }
 
         public virtual object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
         {

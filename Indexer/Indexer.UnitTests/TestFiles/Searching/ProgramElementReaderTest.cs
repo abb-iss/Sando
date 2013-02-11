@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
+using Sando.Indexer.Documents.Converters;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
@@ -17,7 +18,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			ClassElement element = SampleProgramElementFactory.GetSampleClassElement();
 			Document document = DocumentFactory.Create(element).GetDocument();
 
-			ClassElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as ClassElement;
+            ClassElement returnedElement = ConverterFromHitToProgramElement.Create(document).Convert() as ClassElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");
@@ -37,7 +38,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			CommentElement element = SampleProgramElementFactory.GetSampleCommentElement();
 			Document document = DocumentFactory.Create(element).GetDocument();
 
-			CommentElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as CommentElement;
+            CommentElement returnedElement = ConverterFromHitToProgramElement.Create(document).Convert() as CommentElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
             Assert.True("not stored in index" == returnedElement.Body, "AccessLevel is different!");
@@ -54,7 +55,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			EnumElement element = SampleProgramElementFactory.GetSampleEnumElement();
 			Document document = DocumentFactory.Create(element).GetDocument();
 
-			EnumElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as EnumElement;
+            EnumElement returnedElement = ConverterFromHitToProgramElement.Create(document).Convert() as EnumElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");
@@ -73,7 +74,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			FieldElement element = SampleProgramElementFactory.GetSampleFieldElement();
 			Document document = DocumentFactory.Create(element).GetDocument();
 
-			FieldElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as FieldElement;
+            FieldElement returnedElement = ConverterFromHitToProgramElement.Create(document).Convert() as FieldElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");
@@ -93,7 +94,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			MethodElement element = SampleProgramElementFactory.GetSampleMethodElement();
 			Document document = DocumentFactory.Create(element).GetDocument();
 
-			MethodElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as MethodElement;
+            MethodElement returnedElement = ConverterFromHitToProgramElement.Create(document).Convert() as MethodElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");
@@ -115,7 +116,7 @@ namespace Sando.Indexer.UnitTests.Searching
 			PropertyElement element = SampleProgramElementFactory.GetSamplePropertyElement();
 			Document document = DocumentFactory.Create(element).GetDocument();
 
-			PropertyElement returnedElement = ProgramElementReader.ReadProgramElementFromDocument(document) as PropertyElement;
+            PropertyElement returnedElement = ConverterFromHitToProgramElement.Create(document).Convert() as PropertyElement;
 
 			Assert.IsNotNull(returnedElement, "returned class element is null!");
 			Assert.True(element.AccessLevel == returnedElement.AccessLevel, "AccessLevel is different!");

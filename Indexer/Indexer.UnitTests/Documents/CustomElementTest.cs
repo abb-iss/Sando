@@ -23,7 +23,7 @@ namespace Sando.Indexer.UnitTests.Documents
         {
             //test ReadProgramElementFromDocument            
             var customSandoDocument = MyCustomProgramElementForTesting.GetLuceneDocument();
-            var customProgramElement = ConverterFromHitToProgramElement.ReadProgramElementFromDocument(customSandoDocument);
+            var customProgramElement = ConverterFromHitToProgramElement.Create(customSandoDocument).Convert();
             var myCustomProgramElementForTesting = customProgramElement as MyCustomProgramElementForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.A.Equals("A's value"));

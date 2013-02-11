@@ -1,6 +1,7 @@
 ﻿using System;
 using Lucene.Net.Documents;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using System.Collections.Generic;
 
 namespace Sando.Indexer.Documents
 {
@@ -16,10 +17,12 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		public override void AddFieldsToDocument(Document luceneDocument)
-		{
+        public override List<Field> GetFieldsForLucene()
+        {
+            List<Field> fields = new List<Field>();
 			CommentElement commentElement = (CommentElement) programElement;
-            luceneDocument.Add(new Field(SandoField.Body.ToString(), commentElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            fields.Add(new Field(SandoField.Body.ToString(), commentElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            return fields;
 		}
 
         public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)

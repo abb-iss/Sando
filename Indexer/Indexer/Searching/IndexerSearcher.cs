@@ -5,6 +5,7 @@ using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Searching.Criteria;
 using System.Linq;
+using Sando.Indexer.Documents.Converters;
 
 namespace Sando.Indexer.Searching
 {
@@ -25,7 +26,7 @@ namespace Sando.Indexer.Searching
 		    var searchResults =
 		        documentTuples.Select(
 		            d =>
-		            new Tuple<ProgramElement, float>(ProgramElementReader.ReadProgramElementFromDocument(d.Item1), d.Item2));
+		            new Tuple<ProgramElement, float>(ConverterFromHitToProgramElement.Create(d.Item1).Convert(), d.Item2));
 			return searchResults;
 		}
 

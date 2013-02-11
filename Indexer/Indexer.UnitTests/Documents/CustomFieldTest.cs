@@ -17,9 +17,9 @@ namespace Sando.Indexer.UnitTests.Documents
         [Test]
         public void LuceneDocToCustomProgramElementForMethod()
         {
-            //test ReadProgramElementFromDocument  
+            //test Create  
             var document = MyCustomMethodElementForTesting.GetLuceneDocument();
-            var customProgramElement = ConverterFromHitToProgramElement.ReadProgramElementFromDocument(document);
+            var customProgramElement = ConverterFromHitToProgramElement.Create(document).Convert();
             var myCustomProgramElementForTesting = customProgramElement as MyCustomMethodElementForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.Boom.Equals("Ba dow"));
@@ -41,9 +41,9 @@ namespace Sando.Indexer.UnitTests.Documents
         [Test]
         public void LuceneDocToCustomProgramElementForClass()
         {
-            //test ReadProgramElementFromDocument  
+            //test Create  
             var document = MyCustomClassForTesting.GetLuceneDocument();
-            var customProgramElement = ConverterFromHitToProgramElement.ReadProgramElementFromDocument(document);
+            var customProgramElement = ConverterFromHitToProgramElement.Create(document).Convert();
             var myCustomProgramElementForTesting = customProgramElement as MyCustomClassForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.Bam.Equals("Zaow"));
