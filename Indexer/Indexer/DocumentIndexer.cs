@@ -23,7 +23,7 @@ namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-		public DocumentIndexer()
+		public DocumentIndexer(int backgroundThreadInterval = 10000)
 		{
 			try
 			{
@@ -37,9 +37,10 @@ namespace Sando.Indexer
 				_indexSearcher = new IndexSearcher(indexReader);
                 QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 				_indexUpdateListeners = new List<IIndexUpdateListener>();
+
 			    var backgroundWorker = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
                 backgroundWorker.DoWork += PeriodicallyRefreshIndexSearcherIfNeeded;
-                backgroundWorker.RunWorkerAsync();
+                backgroundWorker.RunWorkerAsync(backgroundThreadInterval);
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -95,29 +96,51 @@ namespace Sando.Indexer
         {
             lock (_lock)
             {
-                _indexSearcher.Search(query, collector);
-
-                var hits = collector.TopDocs().ScoreDocs;
-                var documents = hits.AsEnumerable().Select(h => new Tuple<Document, float>(_indexSearcher.Doc(h.doc), h.score)).ToList();
-                return documents;
+                try
+                {
+                    return RunSearch(query, collector);
+                }
+                catch (AlreadyClosedException)
+                {
+                    UpdateSearcher();
+                    return RunSearch(query, collector);
+                }
             }
         }
 
-        public int GetNumberOfIndexedDocuments()
+	    private List<Tuple<Document, float>> RunSearch(Query query, TopScoreDocCollector collector)
+	    {
+	        _indexSearcher.Search(query, collector);
+
+	        var hits = collector.TopDocs().ScoreDocs;
+	        var documents =
+	            hits.AsEnumerable().Select(h => new Tuple<Document, float>(_indexSearcher.Doc(h.doc), h.score)).ToList();
+	        return documents;
+	    }
+
+	    public int GetNumberOfIndexedDocuments()
         {
             return _indexSearcher.GetIndexReader().NumDocs();
         }
 
 		private void UpdateSearcher()
 		{
-            var oldReader = _indexSearcher.GetIndexReader();
-			var newReader = oldReader.Reopen(true);
-			if (newReader != oldReader)
-			{
-                //_indexSearcher.Close(); - don't need this, because we create IndexSearcher by passing the IndexReader to it, so Close do nothing
-				oldReader.Close();
-				_indexSearcher = new IndexSearcher(newReader);
-			}
+		    try
+		    {
+		        var oldReader = _indexSearcher.GetIndexReader();
+		        var newReader = oldReader.Reopen(true);
+		        if (newReader != oldReader)
+		        {
+		            //_indexSearcher.Close(); - don't need this, because we create IndexSearcher by passing the IndexReader to it, so Close do nothing
+		            oldReader.Close();
+		            _indexSearcher = new IndexSearcher(newReader);
+		        }
+		    }
+            catch (AlreadyClosedException)
+		    {
+		        var indexReader = IndexWriter.GetReader();
+                _indexSearcher = new IndexSearcher(indexReader);
+		    }
 		}
 
 
@@ -139,22 +162,23 @@ namespace Sando.Indexer
 			}
         }
 
-        private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
-        {
-            while (!_disposed)
-            {
-                lock (_lock)
-                {
-                    if (!IsUsable())
-                    {
-                        UpdateSearcher();
-                    }
-                }
-                Thread.Sleep(10000);
-            }
-        }
+	    private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
+	    {
+	        var backgroundThreadInterval = (int) args.Argument;
+	        while (!_disposed)
+	        {
+	            lock (_lock)
+	            {
+	                if (!IsUsable())
+	                {
+	                    UpdateSearcher();
+	                }
+	            }
+	            Thread.Sleep(backgroundThreadInterval);
+	        }
+	    }
 
-        private bool IsUsable()
+	    private bool IsUsable()
         {
             try
             {
@@ -165,6 +189,11 @@ namespace Sando.Indexer
                 return false;
             }
             return true;
+        }
+
+        public void NUnit_CloseIndexSearcher()
+        {
+            _indexSearcher.GetIndexReader().Close();
         }
 
         public void Dispose()
