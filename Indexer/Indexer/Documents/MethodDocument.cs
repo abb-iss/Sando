@@ -16,7 +16,7 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		public override void AddDocumentFields(Document luceneDocument)
+		public override void AddFieldsToDocument(Document luceneDocument)
 		{
 			MethodElement methodElement = (MethodElement)programElement;
             luceneDocument.Add(new Field(SandoField.AccessLevel.ToString(), methodElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.ANALYZED));
@@ -29,7 +29,7 @@ namespace Sando.Indexer.Documents
             luceneDocument.Add(new Field(SandoField.IsConstructor.ToString(), methodElement.IsConstructor.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 
-        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string arguments = document.GetField(SandoField.Arguments.ToString()).StringValue().ToSandoDisplayable();
@@ -39,7 +39,7 @@ namespace Sando.Indexer.Documents
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue().ToSandoDisplayable();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
 			bool isConstructor = bool.Parse(document.GetField(SandoField.IsConstructor.ToString()).StringValue());
-            return base.ReadProgramElementFromDocument(GetMyType(document), new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor },document);
+            return new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor };
 		}
 	}
 }

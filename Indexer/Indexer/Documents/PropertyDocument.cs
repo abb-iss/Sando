@@ -16,7 +16,7 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		public override void AddDocumentFields(Document luceneDocument)
+		public override void AddFieldsToDocument(Document luceneDocument)
 		{
 			PropertyElement propertyElement = (PropertyElement) programElement;
             luceneDocument.Add(new Field(SandoField.AccessLevel.ToString(), propertyElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -27,7 +27,7 @@ namespace Sando.Indexer.Documents
             luceneDocument.Add(new Field(SandoField.Modifiers.ToString(), propertyElement.Modifiers, Field.Store.YES, Field.Index.ANALYZED));
 		}
 
-        public override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string propertyType = document.GetField(SandoField.DataType.ToString()).StringValue().ToSandoDisplayable();
@@ -35,7 +35,7 @@ namespace Sando.Indexer.Documents
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue().ToSandoDisplayable();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
-            return base.ReadProgramElementFromDocument(GetMyType(document), new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, modifiers },document);
+            return new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, modifiers };
 		}
 	}
 }

@@ -17,6 +17,7 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
 using System.Linq;
+using Sando.Indexer.Documents.Converters;
 
 namespace Sando.Indexer
 {
@@ -70,7 +71,7 @@ namespace Sando.Indexer
         {
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
-            var term = new Term("FullFilePath", SandoDocument.StandardizeFilePath(fullFilePath));
+            var term = new Term("FullFilePath", ConverterFromHitToProgramElement.StandardizeFilePath(fullFilePath));
             IndexWriter.DeleteDocuments(new TermQuery(term));
         }
 

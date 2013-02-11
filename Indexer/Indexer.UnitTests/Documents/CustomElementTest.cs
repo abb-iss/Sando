@@ -10,6 +10,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Parser;
+using Sando.Indexer.Documents.Converters;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
@@ -21,8 +22,8 @@ namespace Sando.Indexer.UnitTests.Documents
         public void LuceneDocToCustomProgramElement()
         {
             //test ReadProgramElementFromDocument            
-            var customSandoDocument = new SandoDocument(MyCustomProgramElementForTesting.GetLuceneDocument());
-            var customProgramElement = customSandoDocument.ReadProgramElementFromDocument();
+            var customSandoDocument = MyCustomProgramElementForTesting.GetLuceneDocument();
+            var customProgramElement = ConverterFromHitToProgramElement.ReadProgramElementFromDocument(customSandoDocument);
             var myCustomProgramElementForTesting = customProgramElement as MyCustomProgramElementForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.A.Equals("A's value"));
