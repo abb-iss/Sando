@@ -34,7 +34,7 @@ namespace Sando.Indexer.Documents
 			string extendedClasses = document.GetField(SandoField.ExtendedClasses.ToString()).StringValue().ToSandoDisplayable();
 			string implementedInterfaces = document.GetField(SandoField.ImplementedInterfaces.ToString()).StringValue().ToSandoDisplayable();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
-            return base.ReadProgramElementFromDocument(GetMyType(), new object[]{name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, ""});
+            return base.ReadProgramElementFromDocument(GetMyType(document), new object[]{name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, ""},document);
 		}
 	}
 }
