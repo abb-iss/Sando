@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 using Microsoft.Practices.Unity;
 
 namespace Sando.DependencyInjection
@@ -16,32 +14,30 @@ namespace Sando.DependencyInjection
 
         public static void RegisterType<TFrom, TTo>() where TTo : TFrom
         {
-            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new ContainerControlledLifetimeManager());
+            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), null, new HierarchicalLifetimeManager());
         }
 
         public static void RegisterType<TFrom, TTo>(string name) where TTo : TFrom
         {
-            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new ContainerControlledLifetimeManager());
+            CurrentUnityContainer.RegisterType(typeof(TFrom), typeof(TTo), name, new HierarchicalLifetimeManager());
         }
 
         public static void RegisterInstance<TInterface>(TInterface instance)
         {
-            CurrentUnityContainer.RegisterInstance(typeof(TInterface), null, instance, new ContainerControlledLifetimeManager());
+            CurrentUnityContainer.RegisterInstance(typeof(TInterface), null, instance, new HierarchicalLifetimeManager());
         }
 
         public static void RegisterInstance<TInterface>(string name, TInterface instance)
         {
-            CurrentUnityContainer.RegisterInstance(typeof(TInterface), name, instance, new ContainerControlledLifetimeManager());
+            CurrentUnityContainer.RegisterInstance(typeof(TInterface), name, instance, new HierarchicalLifetimeManager());
         }
 
         public static T Resolve<T>() where T : class
         {
             Contract.Ensures(Contract.Result<T>() != null);
             
-            T service;
-            var resolved = TryResolve(out service);
+            T service = CurrentUnityContainer.Resolve<T>();
 
-            Contract.Assert(resolved, String.Format(CultureInfo.InvariantCulture, "Unable to resolve service of type {0} using current resolver.", typeof(T)));
             Contract.Assert(service != null);
 
             return service;
@@ -51,10 +47,8 @@ namespace Sando.DependencyInjection
         {
             Contract.Ensures(Contract.Result<T>() != null);
 
-            T service;
-            var resolved = TryResolve(name, out service);
+            T service = CurrentUnityContainer.Resolve<T>(name);
 
-            Contract.Assert(resolved, String.Format(CultureInfo.InvariantCulture, "Unable to resolve service of type {0} using current resolver.", typeof(T)));
             Contract.Assert(service != null);
 
             return service;
@@ -62,34 +56,19 @@ namespace Sando.DependencyInjection
 
         public static T ResolveOptional<T>() where T : class
         {
-            T service;
-            return TryResolve(out service) ? service : null;
+            return CurrentUnityContainer.IsRegistered<T>() ? CurrentUnityContainer.Resolve<T>() : null;
         }
 
         public static T ResolveOptional<T>(string name) where T : class
         {
-            T service;
-            return TryResolve(name, out service) ? service : null;
+            return CurrentUnityContainer.IsRegistered<T>(name) ? CurrentUnityContainer.Resolve<T>(name) : null;
         }
 
-        private static bool TryResolve<T>(out T service) where T : class
+        public static void ClearAllRegistrations()
         {
-            service = CurrentUnityContainer.Resolve<T>();
-            
-            if (service != null)
-                return true;
-
-            return false;
-        }
-
-        private static bool TryResolve<T>(string name, out T service) where T : class
-        {
-            service = CurrentUnityContainer.Resolve<T>(name);
-
-            if (service != null)
-                return true;
-
-            return false;
+            var currentProcessId = Process.GetCurrentProcess().Id;
+            if (UnityContainers.ContainsKey(currentProcessId))
+                UnityContainers[currentProcessId] = new UnityContainer();
         }
 
         private static IUnityContainer CurrentUnityContainer

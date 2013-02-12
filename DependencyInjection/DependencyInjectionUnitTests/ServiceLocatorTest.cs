@@ -11,17 +11,17 @@ namespace Sando.DependencyInjectionUnitTests
         [Test]
         public void GIVEN_RegisteredType_WHEN_ResolveMethodIsCalledTwiceWithinTheSameThread_THEN_TheSameObjectIsReturnedForEachCall()
         {
-            ServiceLocator.RegisterType<IUnityContainer, UnityContainer>();
-            _instance1 = ServiceLocator.Resolve<IUnityContainer>();
-            _instance2 = ServiceLocator.Resolve<IUnityContainer>();
+            ServiceLocator.RegisterType<IInterf, InterfImpl2>();
+            _instance1 = ServiceLocator.Resolve<IInterf>();
+            _instance2 = ServiceLocator.Resolve<IInterf>();
             Assert.IsTrue(ReferenceEquals(_instance1, _instance2));
         }
 
         [Test]
         public void GIVEN_RegisteredType_WHEN_ResolveMethodIsCalledTwiceOnceInDifferentThread_THEN_TheSameObjectIsReturnedForEachCall()
         {
-            ServiceLocator.RegisterType<IUnityContainer, UnityContainer>();
-            _instance1 = ServiceLocator.Resolve<IUnityContainer>();
+            ServiceLocator.RegisterType<IInterf, InterfImpl1>();
+            _instance1 = ServiceLocator.Resolve<IInterf>();
             
             var thread = new Thread(() => Resolve(out _instance2));
             thread.Start();
@@ -32,7 +32,7 @@ namespace Sando.DependencyInjectionUnitTests
         [Test]
         public void GIVEN_RegisteredType_WHEN_ResolveMethodIsCalledTwiceFromDifferentThreads_THEN_TheSameObjectIsReturnedForEachCall()
         {
-            ServiceLocator.RegisterType<IUnityContainer, UnityContainer>();
+            ServiceLocator.RegisterType<IInterf, InterfImpl1>();
 
             var thread1 = new Thread(() => Resolve(out _instance1));
             thread1.Start();
@@ -50,24 +50,41 @@ namespace Sando.DependencyInjectionUnitTests
         {
             ServiceLocator.RegisterInstance<IInterf>("name1", new InterfImpl1());
             ServiceLocator.RegisterInstance<IInterf>("name2", new InterfImpl2());
-            ServiceLocator.RegisterInstance<IUnityContainer>("name3", new UnityContainer());
             _instance1 = ServiceLocator.Resolve<IInterf>("name1");
             _instance2 = ServiceLocator.Resolve<IInterf>("name2");
-            _instance3 = ServiceLocator.Resolve<IUnityContainer>("name3");
             Assert.IsTrue(_instance1 is InterfImpl1);
             Assert.IsTrue(_instance2 is InterfImpl2);
-            Assert.IsTrue(_instance3 is IUnityContainer);
             Assert.IsFalse(ReferenceEquals(_instance1, _instance2));
+        }
+
+        [Test]
+        public void GIVEN_NoInstanceRegisterForGivenType_WHEN_ResolveOptionalMethodIsCalled_THEN_NullIsReturned()
+        {
+            _instance1 = ServiceLocator.ResolveOptional<IInterf>();
+            Assert.IsNull(_instance1);
+        }
+
+        [Test]
+        public void GIVEN_RegisteredInstanceForGivenType_WHEN_ResolveOptionalMethodIsCalled_THEN_ObjectIsReturned()
+        {
+            ServiceLocator.RegisterType<IInterf, InterfImpl1>();
+            _instance1 = ServiceLocator.ResolveOptional<IInterf>();
+            Assert.IsNotNull(_instance1);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            ServiceLocator.ClearAllRegistrations();
         }
 
         private void Resolve(out object instance)
         {
-            instance = ServiceLocator.Resolve<IUnityContainer>();
+            instance = ServiceLocator.Resolve<IInterf>();
         }
 
         private object _instance1;
         private object _instance2;
-        private object _instance3;
     }
 
     internal interface IInterf
