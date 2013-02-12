@@ -51,7 +51,7 @@ namespace Sando.Indexer
 			                WorkerSupportsCancellation = false
 			            };
 			        commitChangesBackgroundWorker.DoWork += PeriodicallyCommitChangesIfNeeded;
-			        commitChangesBackgroundWorker.RunWorkerAsync(commitChangesThreadInterval);
+			        commitChangesBackgroundWorker.RunWorkerAsync(commitChangesThreadInterval.GetValueOrDefault().Milliseconds);
 			    }
                 else
                 {
