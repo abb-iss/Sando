@@ -5,14 +5,17 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using Sando.DependencyInjection;
+using Sando.Indexer;
 using Sando.Indexer.IndexFiltering;
 using Sando.UI.Options;
 using Microsoft.VisualStudio.Shell;
-using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
 using Sando.Core.Extensions.Logging;
@@ -24,6 +27,7 @@ using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
+using SolutionKey = Sando.Core.SolutionKey;
 
 namespace Sando.UI
 {
@@ -300,7 +304,21 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
 
-                _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
+                ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+                var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(4));
+                ServiceLocator.RegisterInstance(currentIndexer);
+
+                ServiceLocator.RegisterInstance(new IndexUpdateManager());
+
+                if (isIndexRecreationRequired)
+                {
+                    currentIndexer.ClearIndex();
+                }
+
+                ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
+
+                _currentMonitor = SolutionMonitorFactory.CreateMonitor();
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
                 string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
@@ -324,7 +342,7 @@ namespace Sando.UI
                 _srcMLArchive.StartWatching();
 
                 // Don't know if AddUpdateListener() is still useful.
-                SolutionMonitorFactory.AddUpdateListener(SearchViewControl.GetInstance());
+                currentIndexer.AddIndexUpdateListener(SearchViewControl.GetInstance());
             }
             catch (Exception e)
             {
@@ -355,6 +373,7 @@ namespace Sando.UI
             ServiceLocator.RegisterInstance(new ViewManager(this));
             ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
             ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
+            ServiceLocator.RegisterInstance(new InitialIndexingWatcher());
         }
     }
 }

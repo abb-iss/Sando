@@ -4,6 +4,7 @@ using ABB.SrcML;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Logging;
 using Sando.DependencyInjection;
+using Sando.Indexer;
 using Sando.Indexer.IndexFiltering;
 using Sando.Recommender;
 
@@ -20,32 +21,34 @@ namespace Sando.UI.Monitoring
             {
                 string sourceFilePath = args.SourceFilePath;
                 string oldSourceFilePath = args.OldSourceFilePath;
+                var documentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
                 if (ServiceLocator.Resolve<IndexFilterManager>().ShouldFileBeIndexed(args.SourceFilePath))
                 {
                     if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
                     {
                         var xelement = args.SrcMLXElement;
+                        var indexUpdateManager = ServiceLocator.Resolve<IndexUpdateManager>();
 
                         switch (args.EventType)
                         {
                             case FileEventType.FileAdded:
-                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                                documentIndexer.DeleteDocuments(sourceFilePath);
                                     //"just to be safe!" from IndexUpdateManager.UpdateFile()
-                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                indexUpdateManager.Update(sourceFilePath, xelement);
                                 SwumManager.Instance.AddSourceFile(sourceFilePath);
                                 break;
                             case FileEventType.FileChanged:
-                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                documentIndexer.DeleteDocuments(sourceFilePath);
+                                indexUpdateManager.Update(sourceFilePath, xelement);
                                 SwumManager.Instance.UpdateSourceFile(sourceFilePath);
                                 break;
                             case FileEventType.FileDeleted:
-                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                                documentIndexer.DeleteDocuments(sourceFilePath);
                                 SwumManager.Instance.RemoveSourceFile(sourceFilePath);
                                 break;
                             case FileEventType.FileRenamed: // FileRenamed is actually never raised.
-                                SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
-                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                documentIndexer.DeleteDocuments(oldSourceFilePath);
+                                indexUpdateManager.Update(sourceFilePath, xelement);
                                 SwumManager.Instance.UpdateSourceFile(sourceFilePath);
                                 break;
                         }
@@ -53,20 +56,25 @@ namespace Sando.UI.Monitoring
                 }
                 else
                 {
-                    SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                    documentIndexer.DeleteDocuments(sourceFilePath);
                 }
             }
         }
 
         public void StartupCompleted(object sender, EventArgs args)
         {
-            SolutionMonitorFactory.StartupCompleted();
+            ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
             SwumManager.Instance.PrintSwumCache();
         }
 
         public void MonitoringStopped(object sender, EventArgs args)
         {
-            SolutionMonitorFactory.MonitoringStopped();
+            FileLogger.DefaultLogger.Info("Sando: MonitoringStopped()");
+            var currentIndexer = ServiceLocator.ResolveOptional<DocumentIndexer>();
+            if (currentIndexer != null)
+            {
+                currentIndexer.Dispose(false);  // Because in SolutionMonitor: public void StopMonitoring(bool killReaders = false)
+            }
             if (SwumManager.Instance != null)
             {
                 SwumManager.Instance.PrintSwumCache();

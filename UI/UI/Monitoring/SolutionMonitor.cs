@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections;
-// Code changed by JZ: Added the Delete case (obsolete)
-using System.Collections.Generic;
-// End of code changes
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -36,7 +33,6 @@ namespace Sando.UI.Monitoring
             return !_initialIndexDone;
         }
 
-		private readonly IndexUpdateManager _indexUpdateManager;
 	    private bool _initialIndexDone;
 
 		public SolutionMonitor(SolutionWrapper openSolution, DocumentIndexer currentIndexer, bool isIndexRecreationRequired)
@@ -46,7 +42,6 @@ namespace Sando.UI.Monitoring
 			_currentIndexer = currentIndexer;
 			_currentPath = solutionKey.IndexPath;			
 			_solutionKey = solutionKey;
-			_indexUpdateManager = new IndexUpdateManager(_currentIndexer, isIndexRecreationRequired);
 
 			_processFileInBackground = new BackgroundWorker();
 			_processFileInBackground.DoWork += _processFileInBackground_DoWork;		
@@ -76,18 +71,6 @@ namespace Sando.UI.Monitoring
                     }                     
                     
                 }
-
-                // Code changed by JZ: To complete the Delete case (obsolete)
-                List<string> allIndexedFileNames = _indexUpdateManager.GetAllIndexedFileNames();
-                foreach (string filename in allIndexedFileNames)
-                {
-                    if (!File.Exists(filename))
-                    {
-                        Console.WriteLine("Delete index for: " + filename);
-                        _indexUpdateManager.UpdateFile(filename);
-                    }
-                }
-                // End of code changes
             } 
             catch(Exception e)
             {
@@ -102,7 +85,6 @@ namespace Sando.UI.Monitoring
 
 	    public void UpdateAfterAdditions()
 	    {
-	        _indexUpdateManager.SaveFileStates();
 	        Recommender.SwumManager.Instance.PrintSwumCache();
 	    }
 
@@ -217,7 +199,7 @@ namespace Sando.UI.Monitoring
 
 	    public void ProcessFileForTesting(string path)
 	    {
-	        _indexUpdateManager.UpdateFile(path);
+	        
 	    }
 
         public void StopMonitoring(bool killReaders=false)
@@ -245,8 +227,6 @@ namespace Sando.UI.Monitoring
                 //shut down the current indexer
                 if (_currentIndexer != null)
                 {
-                    //cleanup 
-                    _indexUpdateManager.SaveFileStates();
                     //dispose
                     _currentIndexer.Dispose(killReaders);
                     _currentIndexer = null;

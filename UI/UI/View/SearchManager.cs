@@ -68,7 +68,7 @@ namespace Sando.UI.View
                             _myDaddy.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
                             return null;
                         }
-                        if (SolutionMonitorFactory.PerformingInitialIndexing())
+                        if (ServiceLocator.Resolve<InitialIndexingWatcher>().IsInitialIndexingInProgress())
                         {
                             returnString += "Sando is still performing its initial index of this project, results may be incomplete.";
                         }

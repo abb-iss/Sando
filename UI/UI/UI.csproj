@@ -200,6 +200,7 @@
   <ItemGroup>
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
+    <Compile Include="Monitoring\InitialIndexingWatcher.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
     <Compile Include="Monitoring\SrcMLArchiveEventsHandlers.cs" />
@@ -223,7 +224,6 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Monitoring\SolutionMonitor.cs" />
-    <Compile Include="Monitoring\SolutionMonitorFactory.cs" />
     <Compile Include="UIPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
