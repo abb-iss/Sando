@@ -21,13 +21,19 @@ namespace Sando.Indexer.IndexFiltering
 
         private const string IndexFilterSettingsFileName = ".sandoignore.xml";
         private const string IndexFilterSettingsLogFileName = ".sandoignore.log";
+        private string IndexFilterSettingsFilePath;
 
         public IndexFilterManager()
         {
             var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-            var indexFilterSettingsFilePath = Path.Combine(solutionKey.IndexPath, IndexFilterSettingsFileName);
-            IndexFilterSettings = File.Exists(indexFilterSettingsFilePath) ? GetIndexFilterSettingsFromFile(indexFilterSettingsFilePath) : GetDefaultIndexFilterSettings();
+            IndexFilterSettingsFilePath = Path.Combine(solutionKey.IndexPath, IndexFilterSettingsFileName);
+            IndexFilterSettings = File.Exists(IndexFilterSettingsFilePath) ? GetIndexFilterSettingsFromFile(IndexFilterSettingsFilePath) : GetDefaultIndexFilterSettings();
             Logger = FileLogger.CreateFileLogger("IndexFilterManagerLogger", Path.Combine(solutionKey.IndexPath, IndexFilterSettingsLogFileName));
+        }
+
+        public void Dispose()
+        {
+            SaveIndexFilterSettingsToFile(IndexFilterSettings, IndexFilterSettingsFilePath);
         }
 
         public IndexFilterManager(IndexFilterSettings indexFilterSettings, ILog logger)
@@ -119,6 +125,26 @@ namespace Sando.Indexer.IndexFiltering
             {
                 if (textReader != null)
                     textReader.Close();
+            }
+        }
+
+        private static void SaveIndexFilterSettingsToFile(IndexFilterSettings currentFilterSettings, string indexStatePath)
+        {
+            if (currentFilterSettings == null)
+                return;
+
+            XmlSerializer xmlSerializer = null;
+            TextWriter textWriter = null;
+            try
+            {
+                xmlSerializer = new XmlSerializer(typeof(IndexFilterSettings));
+                textWriter = new StreamWriter(indexStatePath);
+                xmlSerializer.Serialize(textWriter, currentFilterSettings);
+            }
+            finally
+            {
+                if (textWriter != null)
+                    textWriter.Close();
             }
         }
 

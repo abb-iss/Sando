@@ -280,6 +280,7 @@ namespace Sando.UI
                     //_srcMLArchive.StopWatching();
                     _srcMLArchive.Dispose();
                     _srcMLArchive = null;
+                    ServiceLocator.Resolve<IndexFilterManager>().Dispose();
                 }
             }
             catch (Exception e)
@@ -310,10 +311,9 @@ namespace Sando.UI
                 var solutionId = Guid.NewGuid();
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
                 var solutionPath = openSolution.FileName;                
-                var luceneDirectoryForSolution = LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
-                var solutionKey = new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution);
-                ServiceLocator.RegisterInstance(solutionKey);
-
+                var luceneDirectoryForSolution = LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());                
+                ServiceLocator.RegisterInstance(new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution));
+                ServiceLocator.RegisterInstance(new IndexFilterManager());                
 
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
@@ -339,9 +339,9 @@ namespace Sando.UI
                 RegisterExtensionPoints();
 
                 //Set up the SwumManager
-                SwumManager.Instance.Initialize(solutionKey.IndexPath, !isIndexRecreationRequired);
+                SwumManager.Instance.Initialize(ServiceLocator.Resolve<SolutionKey>().IndexPath, !isIndexRecreationRequired);
                 SwumManager.Instance.Archive = _srcMLArchive;
-
+                
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
 
@@ -378,7 +378,7 @@ namespace Sando.UI
         /// <param name="eventArgs"></param>
         private void RespondToSourceFileChangedEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
-            FileLogger.DefaultLogger.Info("Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            FileLogger.DefaultLogger.Info("Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);            
             HandleSrcMLDOTNETEvents(eventArgs);
         }
 
@@ -393,34 +393,41 @@ namespace Sando.UI
 		    string fileExtension = Path.GetExtension(eventArgs.SourceFilePath);
             if (fileExtension != null && !fileExtension.Equals(String.Empty))
             {
-                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
+                string sourceFilePath = eventArgs.SourceFilePath;
+                string oldSourceFilePath = eventArgs.OldSourceFilePath;
+                if (ServiceLocator.Resolve<IndexFilterManager>().ShouldFileBeIndexed(eventArgs.SourceFilePath))
                 {
-                    string sourceFilePath = eventArgs.SourceFilePath;
-                    string oldSourceFilePath = eventArgs.OldSourceFilePath;
-                    XElement xelement = eventArgs.SrcMLXElement;
+                    if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
+                    {                       
+                        XElement xelement = eventArgs.SrcMLXElement;
 
-                    switch (eventArgs.EventType)
-                    {
-                        case ABB.SrcML.FileEventType.FileAdded:
-                            SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
-                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                            SwumManager.Instance.AddSourceFile(sourceFilePath); 
-                            break;
-                        case ABB.SrcML.FileEventType.FileChanged:
-                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                            SwumManager.Instance.UpdateSourceFile(sourceFilePath); 
-                            break;
-                        case ABB.SrcML.FileEventType.FileDeleted:
-                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                            SwumManager.Instance.RemoveSourceFile(sourceFilePath);
-                            break;
-                        case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
-                            SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
-                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                            SwumManager.Instance.UpdateSourceFile(sourceFilePath);
-                            break;
+                        switch (eventArgs.EventType)
+                        {
+                            case ABB.SrcML.FileEventType.FileAdded:
+                                SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
+                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                SwumManager.Instance.AddSourceFile(sourceFilePath);
+                                break;
+                            case ABB.SrcML.FileEventType.FileChanged:
+                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                SwumManager.Instance.UpdateSourceFile(sourceFilePath);
+                                break;
+                            case ABB.SrcML.FileEventType.FileDeleted:
+                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                                SwumManager.Instance.RemoveSourceFile(sourceFilePath);
+                                break;
+                            case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
+                                SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
+                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                SwumManager.Instance.UpdateSourceFile(sourceFilePath);
+                                break;
+                        }
                     }
+                }
+                else
+                {
+                    SolutionMonitorFactory.DeleteIndex(sourceFilePath);                    
                 }
             }
         }
