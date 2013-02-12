@@ -19,7 +19,7 @@ namespace LocalSearch.UnitTests
         [STAThread] 
         public void ShowUIOfField()
         {
-            Context gbuilder = new Context(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.cs"); 
+            Context gbuilder = new Context(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.cs"); 
             var elements = gbuilder.GetFieldsAsFieldElements();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

@@ -21,6 +21,12 @@ namespace LocalSearch
             get;
         }
 
+        public List<List<ProgramElementWithRelation>> droppedPaths
+        {
+            set; //when the user drop a path (by returning to an ealier state), set it
+            get;
+        }
+
         public int curPos
         {
             get
@@ -34,13 +40,16 @@ namespace LocalSearch
 
         public Context(String srcPath, string SrcMLForCSharp = null):base(srcPath, SrcMLForCSharp) 
         {
-
+            path = new List<ProgramElementWithRelation>();
+            droppedPaths = new List<List<ProgramElementWithRelation>>(); 
         }
 
         public Context(String srcPath, String search, string SrcMLForCSharp = null)
             : base(srcPath, SrcMLForCSharp) 
         {
             query = search;
+            path = new List<ProgramElementWithRelation>();
+            droppedPaths = new List<List<ProgramElementWithRelation>>(); 
         }
 
         public ProgramElementRelation GetRelation(CodeSearchResult element1, CodeSearchResult element2, ref List<int> UsedLineNumber)
@@ -118,6 +127,59 @@ namespace LocalSearch
                 
         }
 
+        public void RankRelatedInfo(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
+        {
+            //score setting
+            switch (heuristic)
+            {
+                case 1:
+                    {
+                        BasicHeuristic(target, ref listRelatedInfo);
+                        break;
+                    }
+                default:
+                    break;
+            }
 
+            //bubble ranking
+            for (int i = 0; i < listRelatedInfo.Count()-1; i++)
+                for(int j=i+1; j< listRelatedInfo.Count(); j++)
+            {
+                if (listRelatedInfo[j].Score > listRelatedInfo[i].Score)
+                {
+                    ProgramElementWithRelation temp = listRelatedInfo[j];
+                    listRelatedInfo[j] = listRelatedInfo[i];
+                    listRelatedInfo[i] = temp;
+                }
+            }
+        }
+
+        private void BasicHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
+        {
+            //avoid redundancy
+            foreach (var related in listRelatedInfo)
+            {
+                if (path.Count() != 0)
+                {
+                    if (isExisting(path, related))
+                    {
+                        related.Score = related.Score - 0.1;
+                    }
+                }
+            }            
+        }
+
+        private bool isExisting(List<ProgramElementWithRelation> showbefore, ProgramElementWithRelation target)
+        {
+            foreach (var ele in showbefore)
+            {
+                if (ele.Name.Equals(target.Name)
+                && ele.ProgramElementType.Equals(target.ProgramElementType)
+                && ele.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -616,7 +616,7 @@ namespace LocalSearch
             listMethodRelated.AddRange(GetCallers(codeSearchResult));
 
             return listMethodRelated;
-        }
+        }        
 
         private ProgramElementWithRelation GetFieldElementWRelationFromDecl(XElement fielddecl)
         {

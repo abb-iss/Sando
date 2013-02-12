@@ -247,6 +247,7 @@ namespace LocalSearch.View
                 var selected = currentNavigationBox.SelectedItem as CodeSearchResult;
                 SelectedElements.Add(selected);
                 var relatedmembers = InformationSource.GetRelatedInfo(selected);
+                InformationSource.RankRelatedInfo(selected, ref relatedmembers); // ranking
 
                 foreach (var member in relatedmembers)
                 {

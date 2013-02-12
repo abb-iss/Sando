@@ -56,6 +56,14 @@ namespace LocalSearch
             }
         }
 
+        public String ScoreAsString
+        {
+            get
+            {
+                return Score.ToString();
+            }
+        }
+
         public String ProgramElementRelationSimple 
         {
             get

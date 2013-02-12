@@ -25,11 +25,12 @@
                                     <Label.Content>
                                         <TextBlock Margin="0,0,0,0" FontSize="12">
                                             <TextBlock.Text>
-                                                <MultiBinding StringFormat="{}{0} {3} ({2})">
+                                                <MultiBinding StringFormat="{}{0} {3} ({2}, {4})">
                                                     <Binding Path="ProgramElementRelationString" />
                                                     <Binding Path="ProgramElementRelationSimple" />
                                                     <Binding Path="RelationLineNumberAsString" />
                                                     <Binding Path="Name" />
+                                                    <Binding Path="ScoreAsString" />
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
