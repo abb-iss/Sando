@@ -51,7 +51,7 @@ namespace Sando.Indexer
 			                WorkerSupportsCancellation = false
 			            };
 			        commitChangesBackgroundWorker.DoWork += PeriodicallyCommitChangesIfNeeded;
-			        commitChangesBackgroundWorker.RunWorkerAsync(commitChangesThreadInterval.GetValueOrDefault().Milliseconds);
+			        commitChangesBackgroundWorker.RunWorkerAsync(commitChangesThreadInterval);
 			    }
                 else
                 {
@@ -194,7 +194,7 @@ namespace Sando.Indexer
 
         private void PeriodicallyCommitChangesIfNeeded(object sender, DoWorkEventArgs args)
         {
-            var backgroundThreadInterval = (int)args.Argument;
+            var backgroundThreadInterval = args.Argument;	        
             while (!_disposed)
             {
                 lock (_lock)
@@ -202,13 +202,13 @@ namespace Sando.Indexer
                     if (_hasIndexChanged)
                         CommitChanges();
                 }
-                Thread.Sleep(backgroundThreadInterval);
+                Thread.Sleep(Convert.ToInt32(((System.TimeSpan)backgroundThreadInterval).TotalMilliseconds));
             }
         }
 
 	    private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
 	    {
-	        var backgroundThreadInterval = (int) args.Argument;
+            var backgroundThreadInterval = args.Argument;	        
 	        while (!_disposed)
 	        {
 	            lock (_lock)
@@ -218,7 +218,7 @@ namespace Sando.Indexer
 	                    UpdateSearcher();
 	                }
 	            }
-	            Thread.Sleep(backgroundThreadInterval);
+                Thread.Sleep(Convert.ToInt32(((System.TimeSpan)backgroundThreadInterval).TotalMilliseconds));
 	        }
 	    }
 
@@ -288,7 +288,7 @@ namespace Sando.Indexer
         private readonly List<IIndexUpdateListener> _indexUpdateListeners;
         private bool _hasIndexChanged;
         private bool _synchronousCommits;
-		private bool _disposed;
+		private bool _disposed=false;
 	    private readonly object _lock = new object();
 	}
 
