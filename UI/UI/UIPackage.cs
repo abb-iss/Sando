@@ -12,7 +12,6 @@ using Sando.DependencyInjection;
 using Sando.Indexer.IndexFiltering;
 using Sando.UI.Options;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
@@ -25,13 +24,6 @@ using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
-
-// Code changed by JZ: solution monitor integration
-using System.Xml.Linq;
-using System.Reflection;
-// TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
-//using ABB.SrcML.VisualStudio.SolutionMonitor;
-// End of code changes
 
 namespace Sando.UI
 {
@@ -65,20 +57,14 @@ namespace Sando.UI
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
     public sealed class UIPackage : Package, IToolWindowFinder
     {
-        // Code changed by JZ: solution monitor integration
-        /// <summary>
-        /// Use SrcML.NET's SolutionMonitor, instead of Sando's SolutionMonitor
-        /// </summary>
         private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
         private ABB.SrcML.SrcMLArchive _srcMLArchive;
-        ////private SolutionMonitor _currentMonitor;
-        // End of code changes
 
     	private SolutionEvents _solutionEvents;
-		private ExtensionPointsConfiguration extensionPointsConfiguration;
+		private ExtensionPointsConfiguration _extensionPointsConfiguration;
         private DTEEvents _dteEvents;
         private ViewManager _viewManager;
-		private SolutionReloadEventListener listener;
+		private SolutionReloadEventListener _listener;
         private WindowEvents _windowEvents;
 
         /// <summary>
@@ -139,13 +125,13 @@ namespace Sando.UI
             
         }
 
-        private void SandoWindowActivated(Window GotFocus, Window LostFocus)
+        private void SandoWindowActivated(Window gotFocus, Window lostFocus)
         {
             try
             {
-                if (GotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
+                if (gotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
                 {
-                    var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
+                    var window = FindToolWindow(typeof(SearchToolWindow), 0, true);
                     if ((null == window) || (null == window.Frame))
                     {
                         throw new NotSupportedException(Resources.CanNotCreateWindow);
@@ -208,8 +194,8 @@ namespace Sando.UI
                 _solutionEvents.BeforeClosing += SolutionAboutToClose;
             }
 
-			listener = new SolutionReloadEventListener();
-			listener.OnQueryUnloadProject += () =>
+			_listener = new SolutionReloadEventListener();
+			_listener.OnQueryUnloadProject += () =>
 			{
 				SolutionAboutToClose();
 				SolutionHasBeenOpened();
@@ -220,9 +206,9 @@ namespace Sando.UI
 
         private void DteEventsOnOnBeginShutdown()
         {
-            if (extensionPointsConfiguration != null)
+            if (_extensionPointsConfiguration != null)
             {                                
-                ExtensionPointsConfigurationFileReader.WriteConfiguration(extensionPointsConfiguration);
+                ExtensionPointsConfigurationFileReader.WriteConfiguration(_extensionPointsConfiguration);
                 //After writing the extension points configuration file, the index state file on disk is out of date; so it needs to be rewritten
                 IndexStateManager.SaveCurrentIndexState();
             }
@@ -251,12 +237,12 @@ namespace Sando.UI
 
             var loggerPath = Path.Combine(sandoOptions.ExtensionPointsPluginDirectoryPath, "ExtensionPointsLogger.log");
             var logger = FileLogger.CreateFileLogger("ExtensionPointsLogger", loggerPath);
-            extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(logger);
+            _extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(logger);
 
-            if(extensionPointsConfiguration != null)
+            if(_extensionPointsConfiguration != null)
 			{
-                extensionPointsConfiguration.PluginDirectoryPath = sandoOptions.ExtensionPointsPluginDirectoryPath;
-				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
+                _extensionPointsConfiguration.PluginDirectoryPath = sandoOptions.ExtensionPointsPluginDirectoryPath;
+				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(_extensionPointsConfiguration, logger);
 			}
 
             var csParser = extensionPointsRepository.GetParserImplementation(".cs") as SrcMLCSharpParser;
@@ -276,8 +262,6 @@ namespace Sando.UI
             {
                 if (_srcMLArchive != null)
                 {
-                    // SolutionMonitor.StopWatching() is called in SrcMLArchive.StopWatching()
-                    //_srcMLArchive.StopWatching();
                     _srcMLArchive.Dispose();
                     _srcMLArchive = null;
                     ServiceLocator.Resolve<IndexFilterManager>().Dispose();
@@ -296,13 +280,10 @@ namespace Sando.UI
 		    bw.RunWorkerAsync();
 		}
 
-        // Code changed by JZ: solution monitor integration
         /// <summary>
         /// Respond to solution opening.
         /// Still use Sando's SolutionMonitorFactory because Sando's SolutionMonitorFactory has too much indexer code which is specific with Sando.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="ee"></param>
         private void RespondToSolutionOpened(object sender, DoWorkEventArgs ee)
         {
             try
@@ -319,18 +300,14 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
 
-                // Create a new instance of SrcML.NET's solution monitor
                 _currentMonitor = SolutionMonitorFactory.CreateMonitor(isIndexRecreationRequired);
-                // Subscribe events from SrcML.NET's solution monitor
                 _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
 
-                // Create a new instance of SrcML.NET's SrcMLArchive
-                string src2srcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
-                var generator = new ABB.SrcML.SrcMLGenerator(src2srcmlDir);
+                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
+                var generator = new ABB.SrcML.SrcMLGenerator(src2SrcmlDir);
                 var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
-                // Subscribe events from SrcML.NET's SrcMLArchive
-
+                
                 var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
                 _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
                 _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
@@ -340,7 +317,6 @@ namespace Sando.UI
                 //However, registration must happen before file monitoring begins below.
                 RegisterExtensionPoints();
 
-                //Set up the SwumManager
                 SwumManager.Instance.Initialize(ServiceLocator.Resolve<SolutionKey>().IndexPath, !isIndexRecreationRequired);
                 SwumManager.Instance.Archive = _srcMLArchive;
                 
@@ -349,7 +325,6 @@ namespace Sando.UI
 
                 // Don't know if AddUpdateListener() is still useful.
                 SolutionMonitorFactory.AddUpdateListener(SearchViewControl.GetInstance());
-                ////_currentMonitor.AddUpdateListener(SearchViewControl.GetInstance());
             }
             catch (Exception e)
             {
@@ -360,7 +335,6 @@ namespace Sando.UI
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
             FileLogger.DefaultLogger.Info("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
-            // Current design decision: 
             // Ignore files that can be parsed by SrcML.NET. Those files are processed by _srcMLArchive.SourceFileChanged event handler.
             if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
             {
