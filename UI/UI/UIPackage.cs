@@ -233,11 +233,11 @@ namespace Sando.UI
         {
             var extensionPointsRepository = ExtensionPointsRepository.Instance;
 
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx"},
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx"},
                                                                    new XMLFileParser());
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".txt" },
+			extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
 																   new TextFileParser());
 
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
@@ -330,9 +330,11 @@ namespace Sando.UI
                 var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
                 // Subscribe events from SrcML.NET's SrcMLArchive
-                _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
-                _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
-                _srcMLArchive.MonitoringStopped += RespondToMonitoringStoppedEvent;
+
+                var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
+                _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
+                _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
+                _srcMLArchive.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
 
                 //This is done here because some extension points require data that isn't set until the solution is opened, e.g. the solution key or the srcml archive
                 //However, registration must happen before file monitoring begins below.
@@ -355,115 +357,19 @@ namespace Sando.UI
             }    
         }
 
-        /// <summary>
-        /// Respond to the SourceFileChanged event from SrcML.NET's Solution Monitor.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
             FileLogger.DefaultLogger.Info("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             // Current design decision: 
-            // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
+            // Ignore files that can be parsed by SrcML.NET. Those files are processed by _srcMLArchive.SourceFileChanged event handler.
             if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
             {
-                HandleSrcMLDOTNETEvents(eventArgs);
-            }
-        }
-
-        /// <summary>
-        /// Respond to the SourceFileChanged event from SrcMLArchive.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        private void RespondToSourceFileChangedEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
-        {
-            FileLogger.DefaultLogger.Info("Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);            
-            HandleSrcMLDOTNETEvents(eventArgs);
-        }
-
-        /// <summary>
-        /// Handle SrcML.NET events, either from SrcMLArchive or from SolutionMonitor.
-        /// TODO: UpdateIndex(), DeleteIndex(), and CommitIndexChanges() might be refactored to another class.
-        /// </summary>
-        /// <param name="eventArgs"></param>
-        private void HandleSrcMLDOTNETEvents(ABB.SrcML.FileEventRaisedArgs eventArgs)
-        {
-            // Ignore files that can not be indexed by Sando.
-		    string fileExtension = Path.GetExtension(eventArgs.SourceFilePath);
-            if (fileExtension != null && !fileExtension.Equals(String.Empty))
-            {
-                string sourceFilePath = eventArgs.SourceFilePath;
-                string oldSourceFilePath = eventArgs.OldSourceFilePath;
-                if (ServiceLocator.Resolve<IndexFilterManager>().ShouldFileBeIndexed(eventArgs.SourceFilePath))
-                {
-                    if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
-                    {                       
-                        XElement xelement = eventArgs.SrcMLXElement;
-
-                        switch (eventArgs.EventType)
-                        {
-                            case ABB.SrcML.FileEventType.FileAdded:
-                                SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
-                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                                SwumManager.Instance.AddSourceFile(sourceFilePath);
-                                break;
-                            case ABB.SrcML.FileEventType.FileChanged:
-                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                                SwumManager.Instance.UpdateSourceFile(sourceFilePath);
-                                break;
-                            case ABB.SrcML.FileEventType.FileDeleted:
-                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                                SwumManager.Instance.RemoveSourceFile(sourceFilePath);
-                                break;
-                            case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
-                                SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
-                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                                SwumManager.Instance.UpdateSourceFile(sourceFilePath);
-                                break;
-                        }
-                    }
-                }
-                else
-                {
-                    SolutionMonitorFactory.DeleteIndex(sourceFilePath);                    
-                }
-            }
-        }
-
-        /// <summary>
-        /// Respond to the StartupCompleted event from SrcMLArchive.
-        /// TODO: StartupCompleted() might be refactored to another class.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        private void RespondToStartupCompletedEvent(object sender, EventArgs eventArgs)
-        {
-            SolutionMonitorFactory.StartupCompleted();
-            SwumManager.Instance.PrintSwumCache();
-        }
-
-        /// <summary>
-        /// Respond to the MonitorStopped event from SrcMLArchive.
-        /// TODO: MonitoringStopped() might be refactored to another class.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        private void RespondToMonitoringStoppedEvent(object sender, EventArgs eventArgs)
-        {
-            SolutionMonitorFactory.MonitoringStopped();
-            if(SwumManager.Instance != null) {
-                SwumManager.Instance.PrintSwumCache();
+                var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
+                srcMLArchiveEventsHandlers.SourceFileChanged(null, eventArgs);
             }
         }
 
     	#endregion
-
-        public bool IsPerformingInitialIndexing()
-        {
-            return SolutionMonitorFactory.PerformingInitialIndexing();
-        }
 
 
 
@@ -474,6 +380,7 @@ namespace Sando.UI
             ServiceLocator.RegisterInstance(this);
             ServiceLocator.RegisterInstance(new ViewManager(this));
             ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
+            ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
         }
     }
 }

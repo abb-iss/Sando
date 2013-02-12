@@ -202,6 +202,7 @@
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
+    <Compile Include="Monitoring\SrcMLArchiveEventsHandlers.cs" />
     <Compile Include="Options\SandoOptionsProvider.cs" />
     <Compile Include="PathManager.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />

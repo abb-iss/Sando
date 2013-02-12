@@ -13,6 +13,7 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using Sando.Core.Extensions.Logging;
+using Sando.UI.Monitoring;
 using Sando.UI.Options;
 
 namespace Sando.UI.View
@@ -50,7 +51,6 @@ namespace Sando.UI.View
                 var returnString = "";
                 if (!string.IsNullOrEmpty(searchString))
                 {
-                    var uiPackage = ServiceLocator.Resolve<UIPackage>();
                     var solutionKey = ServiceLocator.Resolve<SolutionKey>();
                     if (!String.IsNullOrWhiteSpace(solutionKey.IndexPath))
                     {
@@ -68,7 +68,7 @@ namespace Sando.UI.View
                             _myDaddy.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
                             return null;
                         }
-                        if (uiPackage.IsPerformingInitialIndexing())
+                        if (SolutionMonitorFactory.PerformingInitialIndexing())
                         {
                             returnString += "Sando is still performing its initial index of this project, results may be incomplete.";
                         }
