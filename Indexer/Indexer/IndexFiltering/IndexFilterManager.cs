@@ -160,7 +160,8 @@ namespace Sando.Indexer.IndexFiltering
                     IgnoredDirectories = new List<string>
                         {
                             "bin",
-                            "obj"
+                            "obj",
+                            ".hg"
                         }
                 };
             return indexFilterSettings;

@@ -17,6 +17,7 @@ using Sando.Indexer.Exceptions;
 using Sando.Translation;
 using System.Linq;
 using Sando.Indexer.Documents.Converters;
+using System.Diagnostics;
 
 namespace Sando.Indexer
 {
@@ -250,7 +251,14 @@ namespace Sando.Indexer
         {
 		    lock (_lock)
 		    {
-		        CommitChanges();
+                try
+                {
+                    CommitChanges();
+                }
+                catch (AlreadyClosedException e)
+                {
+                    //This is expected in some cases
+                }
 		        Dispose(true, killReaders);
 		        GC.SuppressFinalize(this);
 		    }
@@ -262,12 +270,14 @@ namespace Sando.Indexer
             {
                 if(disposing)
                 {
-					IndexWriter.Close();
+                    IndexWriter.Close();
 					IndexReader indexReader = _indexSearcher.GetIndexReader();
-                    if(indexReader != null && killReaders)
+                    if(indexReader != null)
                         indexReader.Close();
 					_indexSearcher.Close();
 					LuceneIndexesDirectory.Close();
+                    if (Analyzer != null)
+                        Analyzer.Close();
                 }
 
                 _disposed = true;
