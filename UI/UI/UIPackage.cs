@@ -374,6 +374,7 @@ namespace Sando.UI
             ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
             ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
             ServiceLocator.RegisterInstance(new InitialIndexingWatcher());
+            ServiceLocator.RegisterType<IIndexerSearcher, IndexerSearcher>();
         }
     }
 }
