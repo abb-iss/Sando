@@ -76,7 +76,7 @@ namespace LocalSearch.View
                 FirstProgramElements.Clear();
                 foreach (var result in results)
                 {
-                    //var element = new ProgramElementWithRelation(result.Element, result.Score);                    
+                    InformationSource.searchres.Add(result); //set context
                     FirstProgramElements.Add(new ProgramElementWithRelation(result.Element, result.Score));
                 }
             }

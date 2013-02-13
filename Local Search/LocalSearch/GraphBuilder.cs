@@ -222,7 +222,7 @@ namespace LocalSearch
              
         #endregion callgraph related
 
-        #region fielduse related
+        #region field use related
         private void CreateFieldUseGraph() 
         {
             foreach (var field in FieldDecs)
@@ -315,8 +315,10 @@ namespace LocalSearch
             return null;
         }
 
-        #endregion fielduse related
+        #endregion field use related
 
+
+        #region basic information collection
         /// <summary>
         /// Get all field "declaration statements" in the source file.
         /// </summary>
@@ -527,63 +529,10 @@ namespace LocalSearch
                 return false;
         }
 
-        
+        #endregion basic information collection
 
-        /// <summary>
-        /// Get full method XElement from a given method name.
-        /// </summary>
-        /// <param name="methodname">method NAME in XElement</param>
-        /// <returns>Full method in XElement</returns>
-        public XElement GetFullMethodFromName(XElement methodname)
-        {
-            //var methods = GetMethods();
 
-            //foreach (XElement method in methods)
-            //{
-            //    if (methodname.Equals(method.Element(SRC.Name)))
-            //        return method;
-            //}
-
-            //return null;
-            int srcLineNum = methodname.GetSrcLineNumber();
-            String methodName = methodname.Value;
-
-            return GetFullMethodFromName(methodName, srcLineNum);
-        }
-
-        public XElement GetFullMethodFromName(String methodname, int srclinenum)
-        {
-            //var methods = GetFullMethods();
-            var methods = FullMethods;
-            foreach (XElement method in methods)
-            {
-                if ( (methodname.Equals(method.Element(SRC.Name).Value))
-                    && (srclinenum == method.Element(SRC.Name).GetSrcLineNumber() ))
-                    return method;
-            }
-
-            return null; 
-        }
-
-        /// <summary>
-        /// Get field declaration XElement from a given field name.
-        /// </summary>
-        /// <param name="fieldname">field NAME in String</param>
-        /// <returns>field declaration in XElement</returns>
-        public XElement GetFieldDeclFromName(String fieldname)
-        {
-            //var fields = GetFieldDecs();
-            var fields = FieldDecs;
-
-            foreach (XElement field in fields)
-            {
-                if (fieldname.Equals(field.Element(SRC.Name).Value))
-                    return field;
-            }
-
-            return null;
-        }
-        
+        #region core functionality
         public List<ProgramElementWithRelation> GetRelatedInfo(CodeSearchResult codeSearchResult)
         {            
             ProgramElementType elementtype = codeSearchResult.ProgramElementType;
@@ -606,7 +555,8 @@ namespace LocalSearch
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
             {
-                var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
+                //var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
+                var fieldDeclaration = GetField(codeSearchResult.Element as FieldElement);
                 listFiledRelated.Add(GetFieldElementWRelationFromDecl(fieldDeclaration));
             }
 
@@ -639,9 +589,9 @@ namespace LocalSearch
 
             String methodname = codeSearchResult.Name;
             int srcLineNumber = codeSearchResult.Element.DefinitionLineNumber;
-            var method = GetFullMethodFromName(methodname, srcLineNumber);
 
-            Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
+            //var method = GetFullMethodFromName(methodname, srcLineNumber);
+            //Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
 
             //relation 1: get methods that are called by this method (callees)
             listMethodRelated.AddRange(GetCallees(codeSearchResult));
@@ -764,8 +714,65 @@ namespace LocalSearch
             //return element;
         }
 
+        #endregion core functionality
+
 
         #region maybe obsoleted
+
+        /// <summary>
+        /// Get full method XElement from a given method name.
+        /// </summary>
+        /// <param name="methodname">method NAME in XElement</param>
+        /// <returns>Full method in XElement</returns>
+        public XElement GetFullMethodFromName(XElement methodname)
+        {
+            //var methods = GetMethods();
+
+            //foreach (XElement method in methods)
+            //{
+            //    if (methodname.Equals(method.Element(SRC.Name)))
+            //        return method;
+            //}
+
+            //return null;
+            int srcLineNum = methodname.GetSrcLineNumber();
+            String methodName = methodname.Value;
+
+            return GetFullMethodFromName(methodName, srcLineNum);
+        }
+
+        public XElement GetFullMethodFromName(String methodname, int srclinenum)
+        {
+            //var methods = GetFullMethods();
+            var methods = FullMethods;
+            foreach (XElement method in methods)
+            {
+                if ((methodname.Equals(method.Element(SRC.Name).Value))
+                    && (srclinenum == method.Element(SRC.Name).GetSrcLineNumber()))
+                    return method;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get field declaration XElement from a given field name.
+        /// </summary>
+        /// <param name="fieldname">field NAME in String</param>
+        /// <returns>field declaration in XElement</returns>
+        public XElement GetFieldDeclFromName(String fieldname)
+        {
+            //var fields = GetFieldDecs();
+            var fields = FieldDecs;
+
+            foreach (XElement field in fields)
+            {
+                if (fieldname.Equals(field.Element(SRC.Name).Value))
+                    return field;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Get fields that are used in a given method.
@@ -913,8 +920,6 @@ namespace LocalSearch
             return -1;
         }
 
-        #endregion
-
         #region testzone
 
         public List<CodeSearchResult> GetRelatedMethods(CodeSearchResult codeSearchResult)
@@ -927,12 +932,12 @@ namespace LocalSearch
             var elements = new List<CodeSearchResult>();
 
             //var fields = GetFieldDecs();
-            var fields = FieldDecs;            
+            var fields = FieldDecs;
 
             foreach (XElement field in fields)
             {
                 var fieldaselement = GetFieldElementWRelationFromDecl(field);
-                
+
                 CodeSearchResult result = fieldaselement as CodeSearchResult;
                 elements.Add(result);
             }
@@ -957,6 +962,10 @@ namespace LocalSearch
             return elements;
         }
 
+        #endregion testzone
+
         #endregion
+
+      
     }
 }

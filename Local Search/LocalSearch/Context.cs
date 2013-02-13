@@ -15,6 +15,8 @@ namespace LocalSearch
     {
         public String query { set;  get; }
 
+        public List<CodeSearchResult> searchres { set; get; }
+
         public List<ProgramElementWithRelation> path
         {
             set; //when the user makes a new selection in the UI, set it
@@ -36,12 +38,11 @@ namespace LocalSearch
 
         }
         
-        //private relationDB;
-
         public Context(String srcPath, string SrcMLForCSharp = null):base(srcPath, SrcMLForCSharp) 
         {
             path = new List<ProgramElementWithRelation>();
-            droppedPaths = new List<List<ProgramElementWithRelation>>(); 
+            droppedPaths = new List<List<ProgramElementWithRelation>>();
+            searchres = new List<CodeSearchResult>();
         }
 
         public Context(String srcPath, String search, string SrcMLForCSharp = null)
@@ -49,7 +50,8 @@ namespace LocalSearch
         {
             query = search;
             path = new List<ProgramElementWithRelation>();
-            droppedPaths = new List<List<ProgramElementWithRelation>>(); 
+            droppedPaths = new List<List<ProgramElementWithRelation>>();
+            searchres = new List<CodeSearchResult>();
         }
 
         public ProgramElementRelation GetRelation(CodeSearchResult element1, CodeSearchResult element2, ref List<int> UsedLineNumber)
@@ -155,23 +157,33 @@ namespace LocalSearch
         }
 
         private void BasicHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
-        {
-            //avoid redundancy
+        {            
             foreach (var related in listRelatedInfo)
             {
                 if (path.Count() != 0)
                 {
+                    //what has shown before is set lower score
                     if (isExisting(path, related))
                     {
                         related.Score = related.Score - 0.1;
                     }
                 }
+
+                if (searchres.Count() != 0)
+                {
+                    //what is more closer related to search result is set higher score
+                    if (isExisting(searchres, related))
+                    {
+                        related.Score = related.Score + 0.1;
+                    }
+                }
+
             }            
         }
 
-        private bool isExisting(List<ProgramElementWithRelation> showbefore, ProgramElementWithRelation target)
-        {
-            foreach (var ele in showbefore)
+        private bool isExisting(List<ProgramElementWithRelation> source, ProgramElementWithRelation target)
+        {   
+            foreach (var ele in source)
             {
                 if (ele.Name.Equals(target.Name)
                 && ele.ProgramElementType.Equals(target.ProgramElementType)
@@ -181,5 +193,20 @@ namespace LocalSearch
 
             return false;
         }
+
+        private bool isExisting(List<CodeSearchResult> source, ProgramElementWithRelation target)
+        {
+            foreach (var ele in source)
+            {
+                if(ele.Name.Equals(target.Name)
+                  && ele.ProgramElementType.Equals(target.ProgramElementType)
+                  && ele.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
+                    return true;
+            }
+
+            return false;  
+        }
+           
+        
     }
 }
