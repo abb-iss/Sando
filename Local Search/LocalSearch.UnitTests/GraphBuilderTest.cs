@@ -194,7 +194,7 @@ namespace LocalSearch.UnitTests
         }
 
         [Test]
-        public void GetFieldDeclFromNametest() 
+        public void GetFieldDeclFromNameTest() 
         {
             GraphBuilder gbuilder = new GraphBuilder(xmlPath);
             String fieldname = "fileImpacted";
@@ -205,17 +205,16 @@ namespace LocalSearch.UnitTests
             Assert.IsTrue(fielddecl.ToSource().Equals(strDecl));
         }
 
-        [Test]
-        public void GetMethodCallsMethodTest()
-        {
+        //[Test]
+        //public void GetMethodCallsMethodTest()
+        //{
 
-
-            GraphBuilder gbuilder = new GraphBuilder(callsSrcPath);
-            var methods = gbuilder.GetFullMethods();
-            var updateMethod = methods.Where(x => x.Element(SRC.Name).Value.Equals("UpdateFile"));
-            var callees = gbuilder.GetCallees(updateMethod.First());
-            Assert.IsTrue(callees.Count() > 0);
-        }
+        //    GraphBuilder gbuilder = new GraphBuilder(callsSrcPath);
+        //    var methods = gbuilder.GetFullMethods();
+        //    var updateMethod = methods.Where(x => x.Element(SRC.Name).Value.Equals("UpdateFile"));
+        //    var callees = gbuilder.GetCallees(updateMethod.First());
+        //    Assert.IsTrue(callees.Count() > 0);
+        //}
     }
     
 }
