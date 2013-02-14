@@ -1,68 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Text;
 using Sando.Core.Extensions;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
+using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
 
 namespace Sando.Indexer.Searching
 {
     public class LuceneQueryStringBuilder
     {
-        private Criteria.SimpleSearchCriteria criteria;
-        private System.Collections.Generic.Dictionary<string, float> queryWeights;
+        private readonly SimpleSearchCriteria _criteria;
+        private System.Collections.Generic.Dictionary<string, float> _queryWeights;
 
-        public LuceneQueryStringBuilder(Criteria.SimpleSearchCriteria simpleSearchCriteria)
+        public LuceneQueryStringBuilder(SimpleSearchCriteria simpleSearchCriteria)
         {            
-            this.criteria = simpleSearchCriteria;
+            _criteria = simpleSearchCriteria;
         }
 
 
         public string Build()
         {
-            queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
-            StringBuilder stringBuilder = new StringBuilder();
-            if (criteria.SearchByAccessLevel)
+            _queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
+            var stringBuilder = new StringBuilder();
+            if (_criteria.SearchByAccessLevel)
             {
                 AccessLevelCriteriaToString(stringBuilder);
             }
-            if (criteria.SearchByProgramElementType)
+            if (_criteria.SearchByProgramElementType)
             {
                 if (stringBuilder.Length > 0)
                     stringBuilder.Append(" AND ");
                 ProgramElementTypeCriteriaToString(stringBuilder);
             }
-            if (criteria.SearchByFileExtension)
+            if (_criteria.SearchByFileExtension)
             {
                 if (stringBuilder.Length > 0)
                     stringBuilder.Append(" AND ");
                 FileExtensionsCriteriaToString(stringBuilder);
             }
-            if (criteria.SearchByLocation)
+            if (_criteria.SearchByLocation)
             {
                 if (stringBuilder.Length > 0)
                     stringBuilder.Append(" AND ");
                 LocationCriteriaToString(stringBuilder);
             }
-            UsageTypeCriteriaToString(stringBuilder, criteria.SearchByUsageType);
+            UsageTypeCriteriaToString(stringBuilder);
             return stringBuilder.ToString();
         }
 
         private void AccessLevelCriteriaToString(StringBuilder stringBuilder)
         {
-            Contract.Requires(criteria.AccessLevels != null, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be null!");
-            Contract.Requires(criteria.AccessLevels.Count > 0, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be empty!");
+            Contract.Requires(_criteria.AccessLevels != null, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be null!");
+            Contract.Requires(_criteria.AccessLevels.Count > 0, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be empty!");
 
             stringBuilder.Append("(");
-            int collectionSize = criteria.AccessLevels.Count;
-            foreach (AccessLevel accessLevel in criteria.AccessLevels)
+            int collectionSize = _criteria.AccessLevels.Count;
+            foreach (AccessLevel accessLevel in _criteria.AccessLevels)
             {
                 stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
                 stringBuilder.Append(accessLevel.ToString());
@@ -78,12 +74,12 @@ namespace Sando.Indexer.Searching
 
         private void ProgramElementTypeCriteriaToString(StringBuilder stringBuilder)
         {
-            Contract.Requires(criteria.ProgramElementTypes != null, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be null!");
-            Contract.Requires(criteria.ProgramElementTypes.Count > 0, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be empty!");
+            Contract.Requires(_criteria.ProgramElementTypes != null, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be null!");
+            Contract.Requires(_criteria.ProgramElementTypes.Count > 0, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be empty!");
 
             stringBuilder.Append("(");
-            int collectionSize = criteria.ProgramElementTypes.Count;
-            foreach (ProgramElementType programElementType in criteria.ProgramElementTypes)
+            int collectionSize = _criteria.ProgramElementTypes.Count;
+            foreach (ProgramElementType programElementType in _criteria.ProgramElementTypes)
             {
                 stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
                 string value = programElementType.ToString();
@@ -104,12 +100,12 @@ namespace Sando.Indexer.Searching
 
         private void LocationCriteriaToString(StringBuilder stringBuilder)
         {
-            Contract.Requires(criteria.Locations != null, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be null!");
-            Contract.Requires(criteria.Locations.Count > 0, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be empty!");
+            Contract.Requires(_criteria.Locations != null, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be null!");
+            Contract.Requires(_criteria.Locations.Count > 0, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be empty!");
 
             stringBuilder.Append("(");
-            int collectionSize = criteria.Locations.Count;
-            foreach (string location in criteria.Locations)
+            int collectionSize = _criteria.Locations.Count;
+            foreach (string location in _criteria.Locations)
             {
                 stringBuilder.Append(SandoField.FullFilePath.ToString() + ":");
                 stringBuilder.Append(String.IsNullOrWhiteSpace(location) ? "*" : '\"' + location + '\"');
@@ -125,12 +121,12 @@ namespace Sando.Indexer.Searching
 
         private void FileExtensionsCriteriaToString(StringBuilder stringBuilder)
         {
-            Contract.Requires(criteria.FileExtensions != null, "SimpleSearchCriteria:LFileExtensionsCriteriaToString - FileExtensions cannot be null!");
-            Contract.Requires(criteria.FileExtensions.Count > 0, "SimpleSearchCriteria:FileExtensionsCriteriaToString - FileExtensions cannot be empty!");
+            Contract.Requires(_criteria.FileExtensions != null, "SimpleSearchCriteria:LFileExtensionsCriteriaToString - FileExtensions cannot be null!");
+            Contract.Requires(_criteria.FileExtensions.Count > 0, "SimpleSearchCriteria:FileExtensionsCriteriaToString - FileExtensions cannot be empty!");
 
             stringBuilder.Append("(");
-            int collectionSize = criteria.FileExtensions.Count;
-            foreach (var fileExtension in criteria.FileExtensions)
+            int collectionSize = _criteria.FileExtensions.Count;
+            foreach (var fileExtension in _criteria.FileExtensions)
             {
                 stringBuilder.Append(SandoField.FileExtension.ToString() + ":");
                 stringBuilder.Append('\"' + fileExtension + '\"');
@@ -144,27 +140,27 @@ namespace Sando.Indexer.Searching
             stringBuilder.Append(")");
         }
 
-        private void UsageTypeCriteriaToString(StringBuilder stringBuilder, bool searchByUsageType)
+        private void UsageTypeCriteriaToString(StringBuilder stringBuilder)
         {
-            Contract.Requires(criteria.UsageTypes != null, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be null!");
-            Contract.Requires(!criteria.SearchByUsageType || criteria.UsageTypes.Count > 0, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be empty!");
+            Contract.Requires(_criteria.UsageTypes != null, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be null!");
+            Contract.Requires(!_criteria.SearchByUsageType || _criteria.UsageTypes.Count > 0, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be empty!");
 
-            if (criteria.SearchTerms.Count == 0)
+            if (_criteria.SearchTerms.Count == 0)
                 return;
 
             if (stringBuilder.Length > 0)
                 stringBuilder.Append(" AND ");
 
             stringBuilder.Append("(");
-            if (!criteria.SearchByUsageType)
+            if (!_criteria.SearchByUsageType)
             {
                 foreach (UsageType usageType in Enum.GetValues(typeof(UsageType)))
                 {
-                    criteria.UsageTypes.Add(usageType);
+                    _criteria.UsageTypes.Add(usageType);
                 }
             }
-            int searchTermsLeft = criteria.SearchTerms.Count;
-            foreach (string searchTerm in criteria.SearchTerms)
+            int searchTermsLeft = _criteria.SearchTerms.Count;
+            foreach (string searchTerm in _criteria.SearchTerms)
             {
                 //stringBuilder.Append("(");
                 bool notCondition = false;
@@ -175,8 +171,8 @@ namespace Sando.Indexer.Searching
                     searchTermEscaped = searchTerm.Substring(1);
                 }
                 searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
-                int usageTypesLeft = criteria.UsageTypes.Count;
-                foreach (UsageType usageType in criteria.UsageTypes)
+                int usageTypesLeft = _criteria.UsageTypes.Count;
+                foreach (UsageType usageType in _criteria.UsageTypes)
                 {
                     if (notCondition)
                         stringBuilder.Append(" NOT ");
@@ -198,7 +194,7 @@ namespace Sando.Indexer.Searching
 
         private string EscapeSpecialCharacters(string searchTerm)
         {
-            StringBuilder escapedSearchTermBuilder = new StringBuilder(searchTerm);
+            var escapedSearchTermBuilder = new StringBuilder(searchTerm);
             //escapedSearchTermBuilder.Replace("\\", "\\\\");
             escapedSearchTermBuilder.Replace("+", "\\+");
             escapedSearchTermBuilder.Replace("-", "\\-");
@@ -274,10 +270,10 @@ namespace Sando.Indexer.Searching
 
         private void AppendBoostFactor(StringBuilder stringBuilder, string fieldName)
         {
-            if (this.queryWeights.ContainsKey(fieldName) && this.queryWeights[fieldName] != 1)
+            if (_queryWeights.ContainsKey(fieldName) && _queryWeights[fieldName] != 1)
             {
                 stringBuilder.Append("^");
-                stringBuilder.Append(this.queryWeights[fieldName]);
+                stringBuilder.Append(_queryWeights[fieldName]);
             }
         }
     }
