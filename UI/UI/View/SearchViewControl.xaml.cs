@@ -218,9 +218,8 @@ namespace Sando.UI.View
       
         void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var searchParams = (WorkerSearchParameters)e.Argument;
-            var searchStatus = _searchManager.Search(searchParams.Query, searchParams.Criteria);
-            e.Result = searchStatus;
+            var searchParams = (WorkerSearchParameters) e.Argument;
+            _searchManager.Search(searchParams.Query, searchParams.Criteria);
         }
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
