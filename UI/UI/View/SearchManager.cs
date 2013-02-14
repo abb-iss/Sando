@@ -48,8 +48,7 @@ namespace Sando.UI.View
                 }
 
                 var criteria = GetCriteria(searchString, searchCriteria);
-                var solutionName = GetSolutionName();
-                var results = codeSearcher.Search(criteria, solutionName).AsQueryable();
+                var results = codeSearcher.Search(criteria, true).AsQueryable();
                 var resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                 results = resultsReorderer.ReorderSearchResults(results);
 
@@ -74,12 +73,6 @@ namespace Sando.UI.View
                 _searchResultListener.UpdateMessage("Sando is experiencing difficulties. See log file for details.");
                 FileLogger.DefaultLogger.Error(e.Message, e);
             }
-        }
-
-        private static string GetSolutionName()
-        {
-            var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-            return Path.GetFileNameWithoutExtension(solutionKey.SolutionPath);
         }
 
         private static SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
