@@ -276,8 +276,14 @@ namespace Sando.Indexer
                         indexReader.Close();
 					_indexSearcher.Close();
 					LuceneIndexesDirectory.Close();
-                    if (Analyzer != null)
+                    try
+                    {
                         Analyzer.Close();
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        //already closed, ignore
+                    }
                 }
 
                 _disposed = true;
@@ -286,7 +292,7 @@ namespace Sando.Indexer
 
         ~DocumentIndexer()
         {
-            Dispose(false);
+            //Dispose(false);
         }
 
 		public Directory LuceneIndexesDirectory { get; set; }
