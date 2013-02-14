@@ -204,7 +204,7 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
         {
             ProgramElements = new ObservableCollection<ProgramElementWrapper>();
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Class));
-            ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Comment));
+            ProgramElements.Add(new ProgramElementWrapper(false, ProgramElementType.Comment));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Custom));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Enum));
             ProgramElements.Add(new ProgramElementWrapper(true, ProgramElementType.Field));
