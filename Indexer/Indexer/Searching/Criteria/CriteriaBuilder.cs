@@ -1,14 +1,12 @@
 ﻿using Sando.Core.Tools;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Sando.Indexer.Searching.Criteria
 {
     public class CriteriaBuilder
     {
-        SimpleSearchCriteria _searchCriteria = null;
+        SimpleSearchCriteria _searchCriteria;
 
         public static CriteriaBuilder GetBuilder()
         {
@@ -26,10 +24,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             if (_searchCriteria == null)
             {
-                if (searchCriteria == null)
-                    _searchCriteria = new SimpleSearchCriteria();
-                else
-                    _searchCriteria = searchCriteria;
+                _searchCriteria = searchCriteria ?? new SimpleSearchCriteria();
             }   
         }
 
@@ -55,7 +50,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             Initialze(searchCriteria);
             _searchCriteria.FileExtensions = WordSplitter.GetFileExtensions(searchString);
-            _searchCriteria.SearchByFileExtension = _searchCriteria.FileExtensions.Count() > 0;
+            _searchCriteria.SearchByFileExtension = _searchCriteria.FileExtensions.Any();
             return this;
         }
     }

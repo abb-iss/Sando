@@ -14,7 +14,7 @@ namespace Sando.Core.Tools
             word = Regex.Replace(word, @"([A-Z][a-z]+)", "_$1");
             word = Regex.Replace(word, @"([A-Z]+|[0-9]+)", "_$1");
             word = word.Replace(" _", "_");
-            char[] delimiters = new char[] { '_', ':' };
+            var delimiters = new[] { '_', ':' };
             return word.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
         }
 
@@ -24,8 +24,8 @@ namespace Sando.Core.Tools
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
 
 			//1.handle quotes
-            MatchCollection matchCollection = Regex.Matches(searchTerms, quotesPattern);
-            List<string> matches = new List<string>();
+            var matchCollection = Regex.Matches(searchTerms, QuotesPattern);
+            var matches = new List<string>();
             foreach (Match match in matchCollection)
             {
                 string currentMatch = match.Value;//.Trim('"', ' ');
@@ -35,7 +35,7 @@ namespace Sando.Core.Tools
             }
 
 			//2.add unsplit terms
-			string[] splitTerms = searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			foreach(string term in splitTerms)
 			{
 				if(term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c)))
@@ -45,12 +45,12 @@ namespace Sando.Core.Tools
 			}
 
 			//3.do rest...
-            searchTerms = Regex.Replace(searchTerms, pattern, " ");
+            searchTerms = Regex.Replace(searchTerms, Pattern, " ");
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z][a-z]+)", " $1$2");
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");
 
             searchTerms = searchTerms.Replace("\"", " ");
-            matches.AddRange(searchTerms.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+            matches.AddRange(searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
             for(int i = 0; i < matches.Count; ++i)
             {
                 string lower = matches[i].Trim().ToLower();
@@ -62,8 +62,8 @@ namespace Sando.Core.Tools
         public static SortedSet<string> GetFileExtensions(string searchTerms)
         {
             //2a.add filetype extensions
-            var matchCollection = Regex.Matches(searchTerms, fileExtensionPattern);
-            SortedSet<string> matches = new SortedSet<string>();
+            var matchCollection = Regex.Matches(searchTerms, FileExtensionPattern);
+            var matches = new SortedSet<string>();
             foreach (Match match in matchCollection)
             {
                 string currentMatch = match.Value;//.Trim('"', ' ');
@@ -78,18 +78,17 @@ namespace Sando.Core.Tools
 
         public static bool InvalidCharactersFound(string searchTerms)
         {
-            MatchCollection matchCollection = Regex.Matches(searchTerms, quotesPattern);
+            MatchCollection matchCollection = Regex.Matches(searchTerms, QuotesPattern);
             foreach(Match match in matchCollection)
             {
                 searchTerms = searchTerms.Replace(match.Value, "");
             }
             searchTerms = searchTerms.Replace("\"", " ");
-            return Regex.IsMatch(searchTerms, pattern);
+            return Regex.IsMatch(searchTerms, Pattern);
         }
 
-        private static string pattern = "[^a-zA-Z0-9\\s\\*\\-]";
-        private static string quotesPattern = "-{0,1}\"[^\"]+\"";
-        private static string fileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
-
+        private const string Pattern = "[^a-zA-Z0-9\\s\\*\\-]";
+        private const string QuotesPattern = "-{0,1}\"[^\"]+\"";
+        private const string FileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
     }
 }
