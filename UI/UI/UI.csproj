@@ -226,6 +226,14 @@
     <Compile Include="UIPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="View\Search\AccessWrapper.cs" />
+    <Compile Include="View\Search\Converters\BoolToOppositeBoolConverter.cs" />
+    <Compile Include="View\Search\Converters\ElementToIcon.cs" />
+    <Compile Include="View\Search\Converters\FileTypeToIcon.cs" />
+    <Compile Include="View\Search\Converters\NullableBoolToBool.cs" />
+    <Compile Include="View\Search\Converters\NullOrEmptyIsHidden.cs" />
+    <Compile Include="View\Search\Converters\NullOrEmptyToVisibility.cs" />
+    <Compile Include="View\Search\ProgramElementWrapper.cs" />
     <Compile Include="View\TextBoxFocusHelper.cs" />
     <Compile Include="View\ViewManager.cs" />
     <Compile Include="VSPackage.Designer.cs">

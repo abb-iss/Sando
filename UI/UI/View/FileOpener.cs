@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Windows.Controls;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Core.Extensions.Logging;
 
@@ -10,26 +9,23 @@ namespace Sando.UI.View
 {
 		public static class FileOpener
     	{
-			
-			private static DTE2 dte = null;
+			private static DTE2 _dte;
 
-    		public static void OpenItem(object sender,string text)
+            public static void OpenItem(CodeSearchResult result, string text)
     		{
-    			var result = sender as ListBoxItem;
     			if(result != null)
     			{
-					var myResult = result.Content as CodeSearchResult;
-    				OpenFile(myResult.Element.FullFilePath, myResult.Element.DefinitionLineNumber, text);
+					OpenFile(result.Element.FullFilePath, result.Element.DefinitionLineNumber, text);
     			}
     		}
 
     		public static void OpenFile(string filePath, int lineNumber, string text)
     		{
     			InitDte2();
-    			dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
+    			_dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
     			try
     			{
-    				var selection = (TextSelection) dte.ActiveDocument.Selection;                    
+    				var selection = (TextSelection) _dte.ActiveDocument.Selection;                    
     				selection.GotoLine(lineNumber);
 
                     if (IsLiteralSearchString(text))
@@ -49,8 +45,8 @@ namespace Sando.UI.View
                 var terms = text.Split(' ');
                 foreach (var term in terms)
                 {
-                    TextSelection objSel = (EnvDTE.TextSelection)(dte.ActiveDocument.Selection);
-                    EnvDTE.TextRanges textRanges = null;
+                    var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
+                    TextRanges textRanges = null;
                     objSel.FindPattern(term, 0, ref textRanges);
                     {
                         long lStartLine = objSel.TopPoint.Line;
@@ -70,11 +66,11 @@ namespace Sando.UI.View
 
             private static void FocusOnLiteralString(string text) 
             {
-                var chars = '"';
+                const char chars = '"';
                 text = text.TrimStart(chars);
                 text = text.TrimEnd(chars);
-                TextSelection objSel = (EnvDTE.TextSelection)(dte.ActiveDocument.Selection);
-                EnvDTE.TextRanges textRanges = null;
+                var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
+                TextRanges textRanges = null;
                 objSel.FindPattern(text, 0, ref textRanges);
                 {
                     objSel.SelectLine();
@@ -83,9 +79,9 @@ namespace Sando.UI.View
 
     		private static void InitDte2()
     		{
-    			if (dte == null)
+    			if (_dte == null)
     			{
-    				dte = Package.GetGlobalService(typeof (DTE)) as DTE2;
+    				_dte = ServiceLocator.Resolve<DTE2>();
     			}
     		}
     	}
