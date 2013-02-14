@@ -85,10 +85,10 @@ namespace Sando.IntegrationTests.Search
             expectedLowestRank = 2;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetCustomProperties");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
-            keywords = "analyze type";
-            expectedLowestRank = 7;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Enum && (el.Element.Name == "AnalyzerType");
-            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            //keywords = "access level";
+            //expectedLowestRank = 7;
+            //predicate = el => el.Element.ProgramElementType == ProgramElementType.Enum && (el.Element.Name == "AccessLevel");
+            //EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "ParserException";
             expectedLowestRank = 1;
             predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "ParserException");

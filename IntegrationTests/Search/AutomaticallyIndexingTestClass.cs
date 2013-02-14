@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.DependencyInjection;
-using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
-using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
 using Sando.Recommender;
-using Sando.Core.Tools;
 using Sando.Indexer.IndexFiltering;
 using Sando.UI.Options;
 using Configuration.OptionsPages;
@@ -52,7 +45,7 @@ namespace Sando.IntegrationTests.Search
             CreateSystemWideDefaults(indexDirName);
             CreateKey(filesInThisDirectory);
             CreateIndexer();
-            _currentMonitor = SolutionMonitorFactory.CreateMonitor();
+            SolutionMonitorFactory.CreateMonitor();
             CreateGenerator();
             CreateArchive(filesInThisDirectory);
             AddArchiveListeners();
@@ -72,7 +65,7 @@ namespace Sando.IntegrationTests.Search
 
         private void CreateSwum()
         {
-            SwumManager.Instance.Initialize(ServiceLocator.Resolve<Sando.Core.SolutionKey>().IndexPath, false);
+            SwumManager.Instance.Initialize(ServiceLocator.Resolve<Core.SolutionKey>().IndexPath, false);
             SwumManager.Instance.Archive = _srcMLArchive;
         }
 
@@ -86,13 +79,9 @@ namespace Sando.IntegrationTests.Search
 
         private void CreateArchive(string filesInThisDirectory)
         {
-            var srcMlArchiveFolder = Path.Combine(indexPath, "archive");
+            var srcMlArchiveFolder = Path.Combine(_indexPath, "archive");
             Directory.CreateDirectory(srcMlArchiveFolder);
-            var fakeFiles = new StaticFileList(new string[]
-                {
-                    "C:\\Temp\\Temp.txt"       
-                }
-            );
+            var fakeFiles = new StaticFileList(new[] {"C:\\Temp\\Temp.txt"});
             var filesToWatch = new StaticFileList(Path.GetFullPath(filesInThisDirectory));
 
             //FILTERING LIST TEMPORARILY
@@ -112,7 +101,7 @@ namespace Sando.IntegrationTests.Search
         private void CreateGenerator()
         {
             string src2SrcmlDir = Path.Combine(".", "LIBS", "SrcML");
-            _generator = new ABB.SrcML.SrcMLGenerator(src2SrcmlDir);
+            _generator = new SrcMLGenerator(src2SrcmlDir);
         }
 
         private void CreateIndexer()
@@ -126,21 +115,21 @@ namespace Sando.IntegrationTests.Search
             ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
         }
 
-        public virtual System.TimeSpan? GetTimeToCommit()
+        public virtual TimeSpan? GetTimeToCommit()
         {
             return null;
         }
 
         private void CreateKey(string filesInThisDirectory)
         {
-            Directory.CreateDirectory(indexPath);
-            var key = new Sando.Core.SolutionKey(Guid.NewGuid(), filesInThisDirectory, indexPath);
+            Directory.CreateDirectory(_indexPath);
+            var key = new Core.SolutionKey(Guid.NewGuid(), filesInThisDirectory, _indexPath);
             ServiceLocator.RegisterInstance(key);
         }
 
         private void CreateSystemWideDefaults(string indexDirName)
         {
-            indexPath = Path.Combine(Path.GetTempPath(), indexDirName);
+            _indexPath = Path.Combine(Path.GetTempPath(), indexDirName);
             TestUtils.InitializeDefaultExtensionPoints();
             ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
             ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
@@ -154,13 +143,11 @@ namespace Sando.IntegrationTests.Search
             _srcMLArchive.Dispose();
             ServiceLocator.Resolve<IndexFilterManager>().Dispose();
             ServiceLocator.Resolve<DocumentIndexer>().Dispose();
-            Directory.Delete(indexPath, true);
+            Directory.Delete(_indexPath, true);
         }
 
-        private string indexPath;
-        private static SolutionMonitor monitor;
-        private SolutionMonitor _currentMonitor;
-        private ABB.SrcML.SrcMLArchive _srcMLArchive;
+        private string _indexPath;
+        private SrcMLArchive _srcMLArchive;
         private SrcMLGenerator _generator;
 
         protected List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
