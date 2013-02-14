@@ -246,62 +246,54 @@ DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<Progr
             }
         }
 
-        private void BeginSearch(string searchString) {
-            //set access type
-            SearchCriteria.SearchByAccessLevel = true;
-            bool allchecked = true;
-            SearchCriteria.AccessLevels.Clear();
-            foreach (var accessWrapper in AccessLevels)
+        private void BeginSearch(string searchString)
+        {
+            var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
+            if (selectedAccessLevels.Any())
             {
-                if(accessWrapper.Checked)
-                {
-                    SearchCriteria.AccessLevels.Add(accessWrapper.Access);       
-                }else
-                {
-                    allchecked = false;
-                }
+                SearchCriteria.SearchByAccessLevel = true;
+                SearchCriteria.AccessLevels = new SortedSet<AccessLevel>(selectedAccessLevels);
             }
-            if (allchecked) SearchCriteria.SearchByAccessLevel = false;
-
-
-            allchecked = true;
-            SearchCriteria.SearchByProgramElementType = true;
-            SearchCriteria.ProgramElementTypes.Clear();
-            foreach (var progElement in ProgramElements)
+            else
             {
-                if (progElement.Checked)
-                {
-                    SearchCriteria.ProgramElementTypes.Add(progElement.ProgramElement);
-                }
-                else
-                {
-                    allchecked = false;
-                }
+                SearchCriteria.SearchByAccessLevel = false;
+                SearchCriteria.AccessLevels.Clear();
             }
-            if (allchecked) SearchCriteria.SearchByProgramElementType = false;
-                      
-            //execute search
+
+            var selectedProgramElementTypes =
+                ProgramElements.Where(e => e.Checked).Select(e => e.ProgramElement).ToList();
+            if (selectedProgramElementTypes.Any())
+            {
+                SearchCriteria.SearchByProgramElementType = true;
+                SearchCriteria.ProgramElementTypes = new SortedSet<ProgramElementType>(selectedProgramElementTypes);
+            }
+            else
+            {
+                SearchCriteria.SearchByProgramElementType = false;
+                SearchCriteria.ProgramElementTypes.Clear();
+            }
+
             SearchAsync(searchString, SearchCriteria);
         }
-        
+
         private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)
         {
             BackgroundWorker sandoWorker = new BackgroundWorker();
             sandoWorker.DoWork += new DoWorkEventHandler(sandoWorker_DoWork);
-            var workerSearchParams = new WorkerSearchParameters() { query = text, criteria = searchCriteria };
+            var workerSearchParams = new WorkerSearchParameters() { Query = text, Criteria = searchCriteria };
             sandoWorker.RunWorkerAsync(workerSearchParams);
         }
 
         private class WorkerSearchParameters
         {
-            public SimpleSearchCriteria criteria;
-            public String query;
+            public SimpleSearchCriteria Criteria { get; set; }
+            public String Query { get; set; }
         }
       
         void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
-            var searchStatus = _searchManager.Search(searchParams.query, searchParams.criteria);
+            var searchStatus = _searchManager.Search(searchParams.Query, searchParams.Criteria);
             e.Result = searchStatus;
         }
 
