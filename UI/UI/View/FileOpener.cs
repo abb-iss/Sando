@@ -15,7 +15,7 @@ namespace Sando.UI.View
     		{
     			if(result != null)
     			{
-					OpenFile(result.Element.FullFilePath, result.Element.DefinitionLineNumber, text);
+					OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text);
     			}
     		}
 

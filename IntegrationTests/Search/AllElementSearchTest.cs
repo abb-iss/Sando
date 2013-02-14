@@ -35,13 +35,13 @@ namespace Sando.IntegrationTests.Search
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
 			Assert.AreEqual(3, codeSearchResults.Count, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el =>
-																el.Element.ProgramElementType == ProgramElementType.Method &&
-																(el.Element.Name == "UsageTypeCriteriaToString"));
+																el.ProgramElement.ProgramElementType == ProgramElementType.Method &&
+																(el.ProgramElement.Name == "UsageTypeCriteriaToString"));
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var method = methodSearchResult.Element as MethodElement;
+			var method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Private, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "StringBuilder stringBuilder bool searchByUsageType", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -55,13 +55,13 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 
 			methodSearchResult = codeSearchResults.Find(el =>
-															el.Element.ProgramElementType == ProgramElementType.Method &&
-															(el.Element.Name == "SingleUsageTypeCriteriaToString"));
+															el.ProgramElement.ProgramElementType == ProgramElementType.Method &&
+															(el.ProgramElement.Name == "SingleUsageTypeCriteriaToString"));
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			method = methodSearchResult.Element as MethodElement;
+			method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Private, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "StringBuilder stringBuilder UsageType usageType", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -102,13 +102,13 @@ namespace Sando.IntegrationTests.Search
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
 
 			var methodSearchResult = codeSearchResults.Find(el =>
-																el.Element.ProgramElementType == ProgramElementType.Method &&
-																(el.Element.Name == "FetchOutputStream"));
+																el.ProgramElement.ProgramElementType == ProgramElementType.Method &&
+																(el.ProgramElement.Name == "FetchOutputStream"));
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var method = methodSearchResult.Element as MethodElement;
+			var method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Public, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "A B string fileName Image image", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");

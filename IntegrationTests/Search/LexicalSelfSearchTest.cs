@@ -26,7 +26,7 @@ namespace Sando.IntegrationTests.Search
 		{
             string keywords = "LexicalSelfSearchTest";
 		    var expectedLowestRank = 1;
-			Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "LexicalSelfSearchTest");
+			Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "LexicalSelfSearchTest");
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
@@ -35,7 +35,7 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "lexicalselfsearchtest";
             var expectedLowestRank = 1;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "LexicalSelfSearchTest");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "LexicalSelfSearchTest");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
@@ -44,7 +44,7 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "LexicalSelf";
             var expectedLowestRank = 1;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "LexicalSelfSearchTest");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "LexicalSelfSearchTest");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
@@ -74,7 +74,7 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "Pumpkin";
             var expectedLowestRank = 1;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "Pumpkin");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "Pumpkin");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             Assert.IsTrue(results.Count >= 3);
             Assert.IsTrue(results[0].Score > results[1].Score);
@@ -113,7 +113,7 @@ namespace Sando.IntegrationTests.Search
 		{
             string keywords = "\"private static void InitDte2()\"";
             var expectedLowestRank = 3;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "InitDte2");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "InitDte2");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 

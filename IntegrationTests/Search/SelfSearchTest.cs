@@ -26,7 +26,7 @@ namespace Sando.IntegrationTests.Search
 		{
             string keywords = "header element resolver";
 		    var expectedLowestRank = 3;
-			Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "CppHeaderElementResolver");
+			Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "CppHeaderElementResolver");
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
@@ -37,7 +37,7 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "test sando search";
             var expectedLowestRank = 2;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SelfSearchTest");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "SelfSearchTest");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
@@ -46,7 +46,7 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "-test sando search";
             var expectedLowestRank = 10;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SelfSearchTest");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "SelfSearchTest");
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             var methodSearchResult = codeSearchResults.Find(predicate);
@@ -62,7 +62,7 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "RespondToSolutionOpened";
             var expectedLowestRank = 2;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "RespondToSolutionOpened");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "RespondToSolutionOpened");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }
 
@@ -71,19 +71,19 @@ namespace Sando.IntegrationTests.Search
         {
             string keywords = "parse method";
             var expectedLowestRank = 2;
-            Predicate<CodeSearchResult> predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ParseMethod");
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "ParseMethod");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "parse class";
             expectedLowestRank = 2;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ParseClass");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "ParseClass");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "parse util";
             expectedLowestRank = 3;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "SrcMLParsingUtils");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "SrcMLParsingUtils");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "custom properties";
             expectedLowestRank = 2;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetCustomProperties");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "GetCustomProperties");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             //keywords = "access level";
             //expectedLowestRank = 7;
@@ -91,19 +91,19 @@ namespace Sando.IntegrationTests.Search
             //EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "ParserException";
             expectedLowestRank = 1;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Class && (el.Element.Name == "ParserException");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "ParserException");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "word extract";
             expectedLowestRank = 1;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "ExtractWords");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "ExtractWords");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "translation get";
             expectedLowestRank = 3;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "GetTranslation");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "GetTranslation");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "register extension points";
             expectedLowestRank = 12;
-            predicate = el => el.Element.ProgramElementType == ProgramElementType.Method && (el.Element.Name == "RegisterExtensionPoints");
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "RegisterExtensionPoints");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
         }
 
