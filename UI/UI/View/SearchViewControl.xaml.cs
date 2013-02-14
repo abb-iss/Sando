@@ -10,10 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Sando.Core.Extensions.Logging;
-using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.Indexer;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
 using Sando.Recommender;
@@ -22,11 +20,10 @@ using Sando.UI.View.Search;
 
 namespace Sando.UI.View
 {
-    public partial class SearchViewControl : IIndexUpdateListener, ISearchResultListener
+    public partial class SearchViewControl : ISearchResultListener
     {
         public SearchViewControl()
         {
-            _instance = this;
             DataContext = this; //so we can show results
             InitializeComponent();
 
@@ -256,21 +253,6 @@ namespace Sando.UI.View
             }
         }
 
-        public static IIndexUpdateListener GetInstance()
-        {
-            if (_instance == null)
-            {
-                var viewManager = ServiceLocator.Resolve<ViewManager>();
-                viewManager.EnsureViewExists();
-            }
-            return _instance;
-        }
-
-        public void NotifyAboutIndexUpdate()
-        {
-            _searchManager.MarkInvalid();
-        }
-
         public void Update(IQueryable<CodeSearchResult> results)
         {
             if (Thread.CurrentThread == Dispatcher.Thread)
@@ -431,6 +413,5 @@ namespace Sando.UI.View
 
         private readonly SearchManager _searchManager;
         private readonly QueryRecommender _recommender;
-        private static IIndexUpdateListener _instance;
     }
 }

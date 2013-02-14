@@ -341,9 +341,6 @@ namespace Sando.UI
                 
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
-
-                // Don't know if AddUpdateListener() is still useful.
-                currentIndexer.AddIndexUpdateListener(SearchViewControl.GetInstance());
             }
             catch (Exception e)
             {

@@ -151,7 +151,6 @@
     <Compile Include="TestFiles\Searching\ProgramElementReaderTest.cs" />
     <Compile Include="TestFiles\Searching\Results\CsSimpleTest.cs" />
     <Compile Include="TestFiles\Searching\Results\SearchTester.cs" />
-    <Compile Include="TestIndexUpdateListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestFiles\Searching\Criteria\SearchCriteriaTest.cs" />
     <None Include="TestFiles\CS_1\ImageCapture.cs">
