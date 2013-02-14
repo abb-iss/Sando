@@ -18,7 +18,7 @@ using Sando.Recommender;
 namespace Sando.IntegrationTests.Search
 {
 	[TestFixture]
-	public class NamesWithNumbersSearchTest
+	public class NamesWithNumbersSearchTest :AutomaticallyIndexingTestClass
 	{
 		[Test]
 		public void SearchReturnsElementsWithNumbersInNames()
@@ -60,41 +60,49 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(constructorElement.RawSource), "Constructor snippet is invalid!");
 		}
 
+        public override string GetIndexDirName()
+        {
+            return "NamesWithNumbersSearchTest";
+        }
 
+        public override string GetFilesDirectory()
+        {
+            return "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles";
+        }
 
-        [TestFixtureSetUp]
-		public void Setup()
-		{
-            TestUtils.InitializeDefaultExtensionPoints();
-			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
-			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);
-            ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+        //[TestFixtureSetUp]
+        //public void Setup()
+        //{
+            //TestUtils.InitializeDefaultExtensionPoints();
+            //indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
+            //Directory.CreateDirectory(indexPath);
+            //key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles", indexPath);
+            //ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
-            var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
-            ServiceLocator.RegisterInstance(indexer);
+            //var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
+            //ServiceLocator.RegisterInstance(indexer);
 
-			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
-			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles");
-            SwumManager.Instance.Initialize(key.IndexPath, true);
-            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
-			foreach(var file in files)
-			{
-				string fullPath = Path.GetFullPath(file);
-				monitor.ProcessFileForTesting(fullPath);
-			}
-			monitor.UpdateAfterAdditions();
-		}
+            //monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
+            //string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles");
+            //SwumManager.Instance.Initialize(key.IndexPath, true);
+            //SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
+            //foreach(var file in files)
+            //{
+            //    string fullPath = Path.GetFullPath(file);
+            //    monitor.ProcessFileForTesting(fullPath);
+            //}
+            //monitor.UpdateAfterAdditions();
+		//}
 
-		[TestFixtureTearDown]
-		public void TearDown()
-		{
-            monitor.StopMonitoring(true);
-			Directory.Delete(indexPath, true);
-		}
+        //[TestFixtureTearDown]
+        //public void TearDown()
+        //{
+        //    monitor.StopMonitoring(true);
+        //    Directory.Delete(indexPath, true);
+        //}
 
 		private string indexPath;
-		private static SolutionMonitor monitor;
+		//private static SolutionMonitor monitor;
 		private static SolutionKey key;
 	}
 }

@@ -21,7 +21,7 @@ using UnitTestHelpers;
 namespace Sando.IntegrationTests.Search
 {
 	[TestFixture]
-	public class StemmingSearchTest
+	public class StemmingSearchTest : AutomaticallyIndexingTestClass
 	{
 		[Test]
 		public void SearchIsUsingStemming()
@@ -98,54 +98,21 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(methodElement.RawSource), "Field snippet is invalid!");
 		}
 
-		[TestFixtureSetUp]
-		public void Setup()
-		{
-            TestUtils.InitializeDefaultExtensionPoints();
-            ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
-            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
-            extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
-            var generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".cs"}, new SrcMLCSharpParser(generator));
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() {".h", ".cpp", ".cxx"}, new SrcMLCppParser(generator));
+        public override string GetIndexDirName()
+        {
+            return "StemminSearchTest";
+        }
+
+        public override string GetFilesDirectory()
+        {
+            return "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles";
+        }
+
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(1);
+        }
 
 
-			indexPath = Path.Combine(Path.GetTempPath(), "NamesWithNumbersSearchTest");
-            assemblyPath = Path.Combine(Path.GetTempPath(), "assembly");
-			Directory.CreateDirectory(indexPath);
-            key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles", indexPath);
-            ServiceLocator.RegisterInstance(key);
-
-            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-
-            var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
-            ServiceLocator.RegisterInstance(indexer);
-			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
-			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\StemmingTestFiles");
-
-            SwumManager.Instance.Initialize(key.IndexPath, true);
-            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
-
-			foreach(var file in files)
-			{
-				string fullPath = Path.GetFullPath(file);
-				monitor.ProcessFileForTesting(fullPath);
-			}
-            monitor.UpdateAfterAdditions();
-		}
-
-		[TestFixtureTearDown]
-		public void TearDown()
-		{
-            monitor.StopMonitoring(true);
-			Directory.Delete(indexPath, true);
-            //Directory.Delete(assemblyPath, true);
-		}
-
-		private string indexPath;
-        private string assemblyPath;
-		private static SolutionMonitor monitor;
-		private static SolutionKey key;
 	}
 }

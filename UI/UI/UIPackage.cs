@@ -269,6 +269,7 @@ namespace Sando.UI
                     _srcMLArchive.Dispose();
                     _srcMLArchive = null;
                     ServiceLocator.Resolve<IndexFilterManager>().Dispose();
+                    ServiceLocator.Resolve<DocumentIndexer>().Dispose();
                 }
             }
             catch (Exception e)

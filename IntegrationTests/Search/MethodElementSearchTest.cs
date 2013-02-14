@@ -4,7 +4,6 @@ using System.IO;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
-using Sando.Core;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -15,11 +14,18 @@ using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
 using Sando.Recommender;
+using Sando.Core.Tools;
+using Sando.Indexer.IndexFiltering;
+using Sando.UI.Options;
+using Configuration.OptionsPages;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
+using ABB.SrcML;
+using System.Threading;
 
 namespace Sando.IntegrationTests.Search
 {
 	[TestFixture]
-	public class MethodElementSearchTest
+	public class MethodElementSearchTest: AutomaticallyIndexingTestClass
 	{
 		[Test]
 		public void MethodElementReturnedFromSearchContainsAllFields()
@@ -111,41 +117,15 @@ namespace Sando.IntegrationTests.Search
             //Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
         }
 
+        public override string GetIndexDirName()
+        {            
+            return "MethodElementSearchTest";
+        }
 
-		[TestFixtureSetUp]
-		public void Setup()
-		{
-            TestUtils.InitializeDefaultExtensionPoints();
-			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
-			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
-            ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+        public override string GetFilesDirectory()
+        {
+            return "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles";
+        }
 
-            var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
-            ServiceLocator.RegisterInstance(indexer);
-
-			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
-            SwumManager.Instance.Initialize(key.IndexPath, true);
-            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
-
-			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
-			foreach(var file in files)
-			{
-				string fullPath = Path.GetFullPath(file);
-				monitor.ProcessFileForTesting(fullPath);
-			}
-			monitor.UpdateAfterAdditions();
-		}
-
-		[TestFixtureTearDown]
-		public void TearDown()
-		{
-            monitor.StopMonitoring(true);
-			Directory.Delete(indexPath, true);
-		}
-
-		private string indexPath;
-		private static SolutionMonitor monitor;
-		private static SolutionKey key;
 	}
 }

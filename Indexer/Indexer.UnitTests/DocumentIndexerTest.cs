@@ -139,6 +139,7 @@ namespace Sando.Indexer.UnitTests
                 e.SetUnwind();
                 _contractFailed = true;
             };
+            ServiceLocator.RegisterType<Analyzer, SimpleAnalyzer>();
         }
 
 		[TestFixtureSetUp]

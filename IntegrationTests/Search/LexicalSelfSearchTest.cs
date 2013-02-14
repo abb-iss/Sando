@@ -19,7 +19,7 @@ using Sando.Recommender;
 namespace Sando.IntegrationTests.Search
 {
 	[TestFixture]
-	public class LexicalSelfSearchTest
+	public class LexicalSelfSearchTest :AutomaticallyIndexingTestClass
 	{
 		[Test]
 		public void ExactLexMatchSearch1()
@@ -117,86 +117,82 @@ namespace Sando.IntegrationTests.Search
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
-        [TestFixtureSetUp]
-        public void Setup()
+
+        public override string GetIndexDirName()
         {
-            TestUtils.InitializeDefaultExtensionPoints();
-            indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
-            Directory.CreateDirectory(indexPath);
-            key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath);
-            ServiceLocator.RegisterInstance(key);
-
-            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-
-            var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
-            ServiceLocator.RegisterInstance(indexer);
-
-            monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
-
-            SwumManager.Instance.Initialize(key.IndexPath, true);
-            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
-
-            //not an exaustive list, so it will be a bit of a messy parse
-            sandoDirsToAvoid = new List<String>() { "LIBS", ".hg", "bin", "obj" };
-
-            string startingPath = "..\\..";
-            string[] dirs = Directory.GetDirectories(startingPath);
-            ProcessDirectoryForTesting(dirs);
-
-            monitor.UpdateAfterAdditions();
+            return "LexSelfSearchTest";
         }
 
-        [TestFixtureTearDown]
-        public void TearDown()
+        public override string GetFilesDirectory()
         {
-            monitor.StopMonitoring(true);
-            Directory.Delete(indexPath, true);
+            return "..\\..";
         }
 
-		private void ProcessDirectoryForTesting(string[] dirs)
-		{
-			foreach (var dir in dirs)
-			{
-				if (sandoDirsToAvoid.Contains(Path.GetFileName(dir))) continue;
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(10);
+        }
 
-				string[] subdirs = Directory.GetDirectories(dir);
-				ProcessDirectoryForTesting(subdirs);
+        //[TestFixtureSetUp]
+        //public void Setup()
+        //{
+        //    TestUtils.InitializeDefaultExtensionPoints();
+        //    indexPath = Path.Combine(Path.GetTempPath(), "SelfSearchTest");
+        //    Directory.CreateDirectory(indexPath);
+        //    key = new SolutionKey(Guid.NewGuid(), "..\\..", indexPath);
+        //    ServiceLocator.RegisterInstance(key);
 
-				string[] files = Directory.GetFiles(dir);
-				foreach (var file in files)
-				{ 
-					string fullPath = Path.GetFullPath(file);
-					if (Path.GetExtension(fullPath) == ".cs")
-					{
-						monitor.ProcessFileForTesting(fullPath);
-					}
-				}
-			}
-		}
+        //    ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+        //    var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
+        //    ServiceLocator.RegisterInstance(indexer);
+
+        //    monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
+
+        //    SwumManager.Instance.Initialize(key.IndexPath, true);
+        //    SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
+
+        //    //not an exaustive list, so it will be a bit of a messy parse
+        //    sandoDirsToAvoid = new List<String>() { "LIBS", ".hg", "bin", "obj" };
+
+        //    string startingPath = "..\\..";
+        //    string[] dirs = Directory.GetDirectories(startingPath);
+        //    ProcessDirectoryForTesting(dirs);
+
+        //    monitor.UpdateAfterAdditions();
+        //}
+
+        //[TestFixtureTearDown]
+        //public void TearDown()
+        //{
+        //    monitor.StopMonitoring(true);
+        //    Directory.Delete(indexPath, true);
+        //}
+
+        //private void ProcessDirectoryForTesting(string[] dirs)
+        //{
+        //    foreach (var dir in dirs)
+        //    {
+        //        if (sandoDirsToAvoid.Contains(Path.GetFileName(dir))) continue;
+
+        //        string[] subdirs = Directory.GetDirectories(dir);
+        //        ProcessDirectoryForTesting(subdirs);
+
+        //        string[] files = Directory.GetFiles(dir);
+        //        foreach (var file in files)
+        //        { 
+        //            string fullPath = Path.GetFullPath(file);
+        //            if (Path.GetExtension(fullPath) == ".cs")
+        //            {
+        //                monitor.ProcessFileForTesting(fullPath);
+        //            }
+        //        }
+        //    }
+        //}
 
 	
 
-        private static List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
-        {
-            var codeSearcher = new CodeSearcher(new IndexerSearcher());
-            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-            var methodSearchResult = codeSearchResults.Find(predicate);
-            if (methodSearchResult == null)
-            {
-                Assert.Fail("Failed to find relevant search result for search: " + keywords);
-            }
-
-            var rank = codeSearchResults.IndexOf(methodSearchResult) + 1;
-            Assert.IsTrue(rank <= expectedLowestRank,
-                          "Searching for " + keywords + " doesn't return a result in the top " + expectedLowestRank + "; rank=" +
-                          rank);
-
-            return codeSearchResults;
-        }
-
-		private string indexPath;
-		private static SolutionMonitor monitor;
-		private static SolutionKey key;
-		private static List<string> sandoDirsToAvoid;
+ 		
+				
 	}
 }

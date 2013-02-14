@@ -19,7 +19,7 @@ using Sando.Recommender;
 namespace Sando.IntegrationTests.Search
 {
 	[TestFixture]
-	public class AllElementsSearchTest
+    public class AllElementsSearchTest : AutomaticallyIndexingTestClass
 	{
 		[Test]
 		public void SearchRespectsAccessLevelCriteria()
@@ -122,41 +122,26 @@ namespace Sando.IntegrationTests.Search
 			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
+        public override string GetIndexDirName()
+        {
+            return "AllElementSearchTest";
+        }
+
+        public override string GetFilesDirectory()
+        {
+            return "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles";
+        }
+
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(1);
+        }
 		
 
-		[TestFixtureSetUp]
-		public void Setup()
-		{
-            TestUtils.InitializeDefaultExtensionPoints();
-			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
-			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
-            ServiceLocator.RegisterInstance(key); ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
 
-            var indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
-            ServiceLocator.RegisterInstance(indexer);
-
-			monitor = new SolutionMonitor(new SolutionWrapper(), indexer, false);
-			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
-            SwumManager.Instance.Initialize(key.IndexPath, true);
-            SwumManager.Instance.Generator = new ABB.SrcML.SrcMLGenerator("LIBS\\SrcML"); ;
-			foreach(var file in files)
-			{
-				string fullPath = Path.GetFullPath(file);
-				monitor.ProcessFileForTesting(fullPath);
-			}
-            monitor.UpdateAfterAdditions();
-		}
-
-		[TestFixtureTearDown]
-		public void TearDown()
-		{
-			monitor.StopMonitoring(true);
-			Directory.Delete(indexPath, true);
-		}
 
 		private string indexPath;
-		private static SolutionMonitor monitor;
+		//private static SolutionMonitor monitor;
 		private static SolutionKey key;
 	}
 }
