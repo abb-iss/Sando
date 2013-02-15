@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Text;
-using Sando.Core.Extensions;
+﻿using System.Collections.Generic;
 using Sando.ExtensionContracts.ProgramElementContracts;
-using Sando.Indexer.Documents;
-using Sando.Indexer.Exceptions;
-using Sando.Translation;
 
 namespace Sando.Indexer.Searching.Criteria
 {
@@ -28,27 +21,22 @@ namespace Sando.Indexer.Searching.Criteria
 
 		public override string ToQueryString()
 		{
-            LuceneQueryStringBuilder builder = new LuceneQueryStringBuilder(this);
+            var builder = new LuceneQueryStringBuilder(this);
             return builder.Build();
-
 		}
-
-
-
-		public virtual SortedSet<string> SearchTerms { get; set; }
-		public virtual bool MatchCase { get; set; }
-		public virtual bool ExactMode { get; set; }
-		public virtual bool SearchByAccessLevel { get; set; }
-		public virtual SortedSet<AccessLevel> AccessLevels { get; set; }
-		public virtual bool SearchByProgramElementType { get; set; }
-		public virtual SortedSet<ProgramElementType> ProgramElementTypes { get; set; }
-		public virtual bool SearchByUsageType { get; set; }
-		public virtual SortedSet<UsageType> UsageTypes { get; set; }
-		public virtual bool SearchByLocation { get; set; }
-		public virtual SortedSet<string> Locations { get; set; }
-        public virtual bool SearchByFileExtension { get; set; }
-        public virtual SortedSet<string> FileExtensions { get; set; }
-
-		private Dictionary<string, float> queryWeights;
+        
+		public SortedSet<string> SearchTerms { get; set; }
+		public bool MatchCase { get; set; }
+		public bool ExactMode { get; set; }
+		public bool SearchByAccessLevel { get; set; }
+		public SortedSet<AccessLevel> AccessLevels { get; set; }
+		public bool SearchByProgramElementType { get; set; }
+		public SortedSet<ProgramElementType> ProgramElementTypes { get; set; }
+		public bool SearchByUsageType { get; set; }
+		public SortedSet<UsageType> UsageTypes { get; set; }
+		public bool SearchByLocation { get; set; }
+		public SortedSet<string> Locations { get; set; }
+        public bool SearchByFileExtension { get; set; }
+        public SortedSet<string> FileExtensions { get; set; }
 	}
 }

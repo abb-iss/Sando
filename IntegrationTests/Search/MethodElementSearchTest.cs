@@ -34,12 +34,12 @@ namespace Sando.IntegrationTests.Search
 			string keywords = "fetch output stream";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 5, "Invalid results number");
-			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "FetchOutputStream");
+			var methodSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "FetchOutputStream");
 			if(methodSearchResult == null)
 			{ 
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var method = methodSearchResult.Element as MethodElement;
+			var method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Public, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "A B string fileName Image image", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -66,12 +66,12 @@ namespace Sando.IntegrationTests.Search
 			};
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
 			Assert.AreEqual(7, codeSearchResults.Count, "Invalid results number");
-			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "ToQueryString");
+			var methodSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "ToQueryString");
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var method = methodSearchResult.Element as MethodElement;
+			var method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Public, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, String.Empty, "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -98,7 +98,7 @@ namespace Sando.IntegrationTests.Search
                 };
             var codeSearchResults = codeSearcher.Search(searchCriteria);
             Assert.AreEqual(1, codeSearchResults.Count, "Invalid results number");
-            var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "main");
+            var methodSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "main");
             if (methodSearchResult == null)
             {
                 Assert.Fail("Failed to find relevant search result for search: " + keywords);

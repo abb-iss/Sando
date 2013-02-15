@@ -29,7 +29,7 @@ namespace Sando.SearchEngine
 		{
             Contract.Requires(searchCriteria != null, "CodeSearcher:Search - searchCriteria cannot be null!");
 
-            var searchResults = _searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+            var searchResults = _searcher.Search(searchCriteria).ToList();
 		    if (!searchResults.Any() && rerunWithWildcardIfNoResults)
 		        searchResults = RerunQueryWithWildcardAtTheEnd(searchCriteria, searchResults);
 			return searchResults;
@@ -46,7 +46,7 @@ namespace Sando.SearchEngine
                     var term = simple.SearchTerms.First();
                     simple.SearchTerms.Clear();
                     simple.SearchTerms.Add(term + "*");
-                    searchResults = _searcher.Search(searchCriteria).Select(tuple => new CodeSearchResult(tuple.Item1, tuple.Item2)).ToList();
+                    searchResults = _searcher.Search(searchCriteria).ToList();
                 }
             }
             return searchResults;

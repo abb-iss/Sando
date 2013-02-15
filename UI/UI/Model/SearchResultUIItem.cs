@@ -54,7 +54,7 @@ namespace Sando.UI.Model
 		{
 			get
 			{
-				return CodeSearchResult.Element.DefinitionLineNumber;
+				return CodeSearchResult.ProgramElement.DefinitionLineNumber;
 			}
 		}
 
@@ -63,10 +63,10 @@ namespace Sando.UI.Model
 			get
 			{
 				string accessLevel;
-				PropertyInfo info = CodeSearchResult.Element.GetType().GetProperty("AccessLevel");
+				PropertyInfo info = CodeSearchResult.ProgramElement.GetType().GetProperty("AccessLevel");
 				if (info != null)
 				{
-					accessLevel = info.GetValue(CodeSearchResult.Element, null).ToString();
+					accessLevel = info.GetValue(CodeSearchResult.ProgramElement, null).ToString();
 				}
 				else
 				{

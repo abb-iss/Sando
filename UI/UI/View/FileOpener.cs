@@ -15,7 +15,7 @@ namespace Sando.UI.View
     		{
     			if(result != null)
     			{
-					OpenFile(result.Element.FullFilePath, result.Element.DefinitionLineNumber, text);
+					OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text);
     			}
     		}
 
@@ -52,8 +52,7 @@ namespace Sando.UI.View
                         long lStartLine = objSel.TopPoint.Line;
                         long lStartColumn = objSel.TopPoint.LineCharOffset;                        
                         objSel.SwapAnchor();
-                        objSel.MoveToLineAndOffset(System.Convert.ToInt32
-                                (lStartLine), System.Convert.ToInt32(lStartColumn+term.Length), true);                                                
+                        objSel.MoveToLineAndOffset(Convert.ToInt32(lStartLine), Convert.ToInt32(lStartColumn+term.Length), true);                                                
                     }
 
                 }

@@ -71,8 +71,8 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
 												};
             Assert.DoesNotThrow(() => results = resultsReorderer.ReorderSearchResults(results.AsQueryable()).ToList());
             Assert.IsTrue(results != null && results.Count() == 2, "Invalid results from ReorderSearchResults method!");
-            Assert.IsTrue(results.ElementAt(0).Score == 3 && results.ElementAt(0).Element.ProgramElementType == ProgramElementType.Method, "First result is invalid!");
-            Assert.IsTrue(results.ElementAt(1).Score == 1 && results.ElementAt(1).Element.ProgramElementType == ProgramElementType.Class, "Second result is invalid!");
+            Assert.IsTrue(results.ElementAt(0).Score == 3 && results.ElementAt(0).ProgramElement.ProgramElementType == ProgramElementType.Method, "First result is invalid!");
+            Assert.IsTrue(results.ElementAt(1).Score == 1 && results.ElementAt(1).ProgramElement.ProgramElementType == ProgramElementType.Class, "Second result is invalid!");
         }
 
         [Test]

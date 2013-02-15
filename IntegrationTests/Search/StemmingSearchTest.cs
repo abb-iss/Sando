@@ -30,12 +30,12 @@ namespace Sando.IntegrationTests.Search
 			string keywords = "name";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 4, "Invalid results number");
-            var classSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Class && el.Element.Name == "FileNameTemplate");
+            var classSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && el.ProgramElement.Name == "FileNameTemplate");
 			if(classSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var classElement = classSearchResult.Element as ClassElement;
+			var classElement = classSearchResult.ProgramElement as ClassElement;
 			Assert.AreEqual(classElement.AccessLevel, AccessLevel.Public, "Class access level differs!");
 			Assert.AreEqual(classElement.ExtendedClasses, String.Empty, "Class extended classes differs!");
 			Assert.AreEqual(classElement.DefinitionLineNumber, 10, "Class definition line number differs!");
@@ -45,12 +45,12 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(classElement.ImplementedInterfaces, String.Empty, "Class implemented interfaces differs!");
 			Assert.False(String.IsNullOrWhiteSpace(classElement.RawSource), "Class snippet is invalid!");
 
-			var methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "Parse");
+			var methodSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "Parse");
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var methodElement = methodSearchResult.Element as MethodElement;
+			var methodElement = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(methodElement.AccessLevel, AccessLevel.Public, "Method access level differs!");
 			Assert.AreEqual(methodElement.Arguments, "string extension", "Method arguments differs!");
 			Assert.NotNull(methodElement.Body, "Method body is null!");
@@ -63,12 +63,12 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(methodElement.ReturnType, "ImagePairNames", "Method return type differs!");
 			Assert.False(String.IsNullOrWhiteSpace(methodElement.RawSource), "Method snippet is invalid!");
 
-			methodSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "TryAddTemplatePrompt");
+			methodSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "TryAddTemplatePrompt");
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			methodElement = methodSearchResult.Element as MethodElement;
+			methodElement = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(methodElement.AccessLevel, AccessLevel.Private, "Method access level differs!");
 			Assert.AreEqual(methodElement.Arguments, "ImagePairNames startNames", "Method arguments differs!");
 			Assert.NotNull(methodElement.Body, "Method body is null!");
@@ -81,12 +81,12 @@ namespace Sando.IntegrationTests.Search
 			//Assert.AreEqual(methodElement.ReturnType, "ImagePairNames", "Method return type differs!");
 			Assert.False(String.IsNullOrWhiteSpace(methodElement.RawSource), "Method snippet is invalid!");
 
-			var fieldSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Field && el.Element.Name == "fileName");
+			var fieldSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Field && el.ProgramElement.Name == "fileName");
 			if(fieldSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var fieldElement = fieldSearchResult.Element as FieldElement;
+			var fieldElement = fieldSearchResult.ProgramElement as FieldElement;
 			Assert.AreEqual(fieldElement.AccessLevel, AccessLevel.Private, "Field access level differs!");
 			Assert.True(fieldElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
             Assert.AreEqual(fieldElement.ClassName, "FileNameTemplate", "Field class name differs!");

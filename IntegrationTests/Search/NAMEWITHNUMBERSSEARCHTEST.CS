@@ -27,12 +27,12 @@ namespace Sando.IntegrationTests.Search
 			string keywords = "problem";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
-			var classSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Class && el.Element.Name == "Problem0010Resolver");
+			var classSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && el.ProgramElement.Name == "Problem0010Resolver");
 			if(classSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var classElement = classSearchResult.Element as ClassElement;
+			var classElement = classSearchResult.ProgramElement as ClassElement;
 			Assert.AreEqual(classElement.AccessLevel, AccessLevel.Public, "Class access level differs!");
 			Assert.AreEqual(classElement.ExtendedClasses, "IResolver", "Class extended classes differs!");
 			Assert.AreEqual(classElement.DefinitionLineNumber, 8, "Class definition line number differs!");
@@ -42,12 +42,12 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(classElement.ImplementedInterfaces, String.Empty, "Class implemented interfaces differs!");
 			Assert.False(String.IsNullOrWhiteSpace(classElement.RawSource), "Class snippet is invalid!");
 
-			var constructorSearchResult = codeSearchResults.Find(el => el.Element.ProgramElementType == ProgramElementType.Method && el.Element.Name == "Problem0010Resolver");
+			var constructorSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "Problem0010Resolver");
 			if(constructorSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var constructorElement = constructorSearchResult.Element as MethodElement;
+			var constructorElement = constructorSearchResult.ProgramElement as MethodElement;
 			//Assert.AreEqual(constructorElement.AccessLevel, AccessLevel.Public, "Constructor access level differs!");
 			Assert.IsTrue(constructorElement.IsConstructor, "IResolver", "Constructor extended classes differs!");
 			Assert.AreEqual(constructorElement.DefinitionLineNumber, 10, "Constructor definition line number differs!");

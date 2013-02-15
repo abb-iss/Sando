@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Lucene.Net.Search;
 using Sando.DependencyInjection;
-using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
 using System.Linq;
 using Sando.Indexer.Documents.Converters;
@@ -16,17 +15,14 @@ namespace Sando.Indexer.Searching
 			_documentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
 		}
 
-        public IEnumerable<Tuple<ProgramElement, float>> Search(SearchCriteria searchCriteria)
+        public IEnumerable<CodeSearchResult> Search(SearchCriteria searchCriteria)
 		{
-			string searchQueryString = searchCriteria.ToQueryString();
-			Query query = _documentIndexer.QueryParser.Parse(searchQueryString);
-			int hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
-			TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, true);
+			var searchQueryString = searchCriteria.ToQueryString();
+			var query = _documentIndexer.QueryParser.Parse(searchQueryString);
+			var hitsPerPage = searchCriteria.NumberOfSearchResultsReturned;
+			var collector = TopScoreDocCollector.create(hitsPerPage, true);
 			var documentTuples = _documentIndexer.Search(query, collector);
-		    var searchResults =
-		        documentTuples.Select(
-		            d =>
-		            new Tuple<ProgramElement, float>(ConverterFromHitToProgramElement.Create(d.Item1).Convert(), d.Item2));
+		    var searchResults = documentTuples.Select(d => new CodeSearchResult(ConverterFromHitToProgramElement.Create(d.Item1).Convert(), d.Item2));
 			return searchResults;
 		}
 
