@@ -15,6 +15,7 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.Parser;
 using UnitTestHelpers;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
 namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
 {
@@ -32,17 +33,16 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
 
         private SearchTester()
         {
+            TestUtils.InitializeDefaultExtensionPoints();
             //set up generator
             _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML"));
-            _luceneTempIndexesDirectory = Path.Combine(Path.GetTempPath(), "basic");
+            _luceneTempIndexesDirectory = PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>());
             Directory.CreateDirectory(_luceneTempIndexesDirectory);
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
         }
 
         public void CheckFolderForExpectedResults(string searchString, string methodNameToFind, string solutionPath)
         {
-            var key = new SolutionKey(Guid.NewGuid(), solutionPath);
-            ServiceLocator.RegisterInstance(key);
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
             _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
             ServiceLocator.RegisterInstance(_indexer);

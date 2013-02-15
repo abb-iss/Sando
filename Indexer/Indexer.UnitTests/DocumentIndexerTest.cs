@@ -12,6 +12,7 @@ using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -68,8 +69,8 @@ namespace Sando.Indexer.UnitTests
         public void DocumentIndexer_DeleteDocuments()
         {
             try
-            {                                
-                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
+            {
+                TestUtils.ClearDirectory(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
                 _documentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
                 MethodElement sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
@@ -90,7 +91,7 @@ namespace Sando.Indexer.UnitTests
         {
             try
             {
-                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
+                TestUtils.ClearDirectory(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
                 _documentIndexer = new DocumentIndexer(TimeSpan.FromMilliseconds(500));
                 var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
@@ -112,7 +113,7 @@ namespace Sando.Indexer.UnitTests
         {
             try
             {
-                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
+                TestUtils.ClearDirectory(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
                 _documentIndexer = new DocumentIndexer(TimeSpan.FromMilliseconds(100));
                 var sampleMethodElement = SampleProgramElementFactory.GetSampleMethodElement();
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
@@ -146,9 +147,6 @@ namespace Sando.Indexer.UnitTests
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-		    _luceneTempIndexesDirectory = Path.Combine(Path.GetTempPath(), "basic");
-		    if (!Directory.Exists(_luceneTempIndexesDirectory))
-		        Directory.CreateDirectory(_luceneTempIndexesDirectory);
             TestUtils.InitializeDefaultExtensionPoints();
 		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
 		    var newSolutionKey = new SolutionKey(solutionKey.GetSolutionId(), solutionKey.GetSolutionPath());
@@ -166,11 +164,11 @@ namespace Sando.Indexer.UnitTests
         [TestFixtureTearDown]
         public void TearDown()
         {
-            if (Directory.Exists(_luceneTempIndexesDirectory))
-                Directory.Delete(_luceneTempIndexesDirectory, true);
+            if (Directory.Exists(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>())))
+                Directory.Delete(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), true);
         }
         
-        private string _luceneTempIndexesDirectory;
+        //private string _luceneTempIndexesDirectory;
         private bool _contractFailed;
 		private DocumentIndexer _documentIndexer;
 	}

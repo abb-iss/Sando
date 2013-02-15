@@ -49,7 +49,7 @@ namespace Sando.Core.Tools
 
         public string GetIndexPath(ABB.SrcML.VisualStudio.SolutionMonitor.SolutionKey solutionKey)
         {
-            var solutionName = Path.GetFileNameWithoutExtension(solutionKey.GetSolutionPath()) + solutionKey.GetSolutionPath().GetHashCode();
+            var solutionName = Path.GetFileNameWithoutExtension(solutionKey.GetSolutionPath()) + solutionKey.GetSolutionPath().GetHashCode();          
             return LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(solutionName, PathManager.Instance.GetExtensionRoot());                
         }
     }

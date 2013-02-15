@@ -8,7 +8,7 @@ namespace Sando.Core.Tools
     {
         public static string GetOrCreateLuceneDirectoryForSolution(string solutionFullName, string luceneDirectoryParentPath)
         {
-            if (String.IsNullOrWhiteSpace(solutionFullName) || String.IsNullOrWhiteSpace(luceneDirectoryParentPath) || !File.Exists(solutionFullName) || !Directory.Exists(luceneDirectoryParentPath))
+            if (String.IsNullOrWhiteSpace(solutionFullName) || String.IsNullOrWhiteSpace(luceneDirectoryParentPath) || !Directory.Exists(luceneDirectoryParentPath))
                 return String.Empty;
 
             var solutionName = Path.GetFileName(solutionFullName) ?? Guid.NewGuid().ToString();
