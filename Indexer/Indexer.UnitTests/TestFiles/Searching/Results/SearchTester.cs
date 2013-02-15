@@ -13,6 +13,7 @@ using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Parser;
 using UnitTestHelpers;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
 {
@@ -39,7 +40,7 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
 
         public void CheckFolderForExpectedResults(string searchString, string methodNameToFind, string solutionPath)
         {
-            var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory);
+            var key = new SolutionKey(Guid.NewGuid(), solutionPath);
             ServiceLocator.RegisterInstance(key);
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
             _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));

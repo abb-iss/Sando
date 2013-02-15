@@ -12,6 +12,7 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace Sando.SearchEngine.UnitTests
 {
@@ -46,7 +47,7 @@ namespace Sando.SearchEngine.UnitTests
 
 			_indexerPath = Path.GetTempPath() + "luceneindexer";
 		    Directory.CreateDirectory(_indexerPath);
-			_solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath", _indexerPath);
+			_solutionKey = new SolutionKey(Guid.NewGuid(), "C:/SolutionPath");
             ServiceLocator.RegisterInstance(_solutionKey);
             ServiceLocator.RegisterInstance<Analyzer>(new SimpleAnalyzer());
             _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));

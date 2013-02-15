@@ -18,6 +18,7 @@ using Configuration.OptionsPages;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using System.Threading;
+using Sando.Core.Tools;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -65,7 +66,7 @@ namespace Sando.IntegrationTests.Search
 
         private void CreateSwum()
         {
-            SwumManager.Instance.Initialize(ServiceLocator.Resolve<Core.SolutionKey>().IndexPath, false);
+            SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), false);
             SwumManager.Instance.Archive = _srcMLArchive;
         }
 
@@ -123,7 +124,7 @@ namespace Sando.IntegrationTests.Search
         private void CreateKey(string filesInThisDirectory)
         {
             Directory.CreateDirectory(_indexPath);
-            var key = new Core.SolutionKey(Guid.NewGuid(), filesInThisDirectory, _indexPath);
+            var key = new SolutionKey(Guid.NewGuid(), filesInThisDirectory);
             ServiceLocator.RegisterInstance(key);
         }
 

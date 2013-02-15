@@ -11,6 +11,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -150,7 +151,7 @@ namespace Sando.Indexer.UnitTests
 		        Directory.CreateDirectory(_luceneTempIndexesDirectory);
             TestUtils.InitializeDefaultExtensionPoints();
 		    var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-		    var newSolutionKey = new SolutionKey(solutionKey.SolutionId, solutionKey.SolutionPath, _luceneTempIndexesDirectory);
+		    var newSolutionKey = new SolutionKey(solutionKey.GetSolutionId(), solutionKey.GetSolutionPath());
 		    ServiceLocator.RegisterInstance(newSolutionKey);
 		    ServiceLocator.RegisterType<Analyzer, SimpleAnalyzer>();
 		}

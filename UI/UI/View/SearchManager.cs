@@ -12,6 +12,7 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
 using Sando.Core.Extensions.Logging;
 using Sando.UI.Monitoring;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace Sando.UI.View
 {

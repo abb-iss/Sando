@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
 using Sando.Core.Extensions.Logging;
 using Sando.DependencyInjection;
+using Sando.Core.Tools;
 
 namespace Sando.UI.View
 {

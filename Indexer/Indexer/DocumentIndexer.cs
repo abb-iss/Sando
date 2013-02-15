@@ -17,18 +17,19 @@ using Sando.Indexer.Exceptions;
 using Sando.Translation;
 using System.Linq;
 using Sando.Indexer.Documents.Converters;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
 namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-        public DocumentIndexer(TimeSpan? refreshIndexSearcherThreadInterval = null, TimeSpan? commitChangesThreadInterval = null)
+        public DocumentIndexer(TimeSpan? refreshIndexSearcherThreadInterval = null, TimeSpan? commitChangesThreadInterval = null )
 		{
 			try
 			{
-                var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-			
-                var directoryInfo = new System.IO.DirectoryInfo(solutionKey.IndexPath);
+                var solutionKey = ServiceLocator.Resolve<SolutionKey>();			
+                var directoryInfo = new System.IO.DirectoryInfo(PathManager.Instance.GetIndexPath(solutionKey));
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = ServiceLocator.Resolve<Analyzer>();
                 IndexWriter = new IndexWriter(LuceneIndexesDirectory, Analyzer, IndexWriter.MaxFieldLength.LIMITED);

@@ -10,6 +10,8 @@ using Sando.DependencyInjection;
 using Sando.ExtensionContracts.IndexerContracts;
 using System.Linq;
 using log4net;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
 namespace Sando.Indexer.IndexFiltering
 {
@@ -26,9 +28,9 @@ namespace Sando.Indexer.IndexFiltering
         public IndexFilterManager()
         {
             var solutionKey = ServiceLocator.Resolve<SolutionKey>();
-            IndexFilterSettingsFilePath = Path.Combine(solutionKey.IndexPath, IndexFilterSettingsFileName);
+            IndexFilterSettingsFilePath = Path.Combine(PathManager.Instance.GetIndexPath(solutionKey), IndexFilterSettingsFileName);
             IndexFilterSettings = File.Exists(IndexFilterSettingsFilePath) ? GetIndexFilterSettingsFromFile(IndexFilterSettingsFilePath) : GetDefaultIndexFilterSettings();
-            Logger = FileLogger.CreateFileLogger("IndexFilterManagerLogger", Path.Combine(solutionKey.IndexPath, IndexFilterSettingsLogFileName));
+            Logger = FileLogger.CreateFileLogger("IndexFilterManagerLogger", Path.Combine(PathManager.Instance.GetIndexPath(solutionKey), IndexFilterSettingsLogFileName));
         }
 
         public void Dispose()

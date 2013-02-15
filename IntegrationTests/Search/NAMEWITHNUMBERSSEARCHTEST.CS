@@ -103,6 +103,6 @@ namespace Sando.IntegrationTests.Search
 
 		private string indexPath;
 		//private static SolutionMonitor monitor;
-		private static SolutionKey key;
+		
 	}
 }

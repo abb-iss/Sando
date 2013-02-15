@@ -27,7 +27,6 @@ using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
-using SolutionKey = Sando.Core.SolutionKey;
 
 namespace Sando.UI
 {
@@ -296,9 +295,9 @@ namespace Sando.UI
                 //TODO if solution is reopen - the guid should be read from file - future change
                 var solutionId = Guid.NewGuid();
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
-                var solutionPath = openSolution.FileName;                
-                var luceneDirectoryForSolution = LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());                
-                ServiceLocator.RegisterInstance(new SolutionKey(solutionId, solutionPath, luceneDirectoryForSolution));
+                var solutionPath = openSolution.FileName;
+                var key = new SolutionKey(solutionId, solutionPath);              
+                ServiceLocator.RegisterInstance(key);
                 ServiceLocator.RegisterInstance(new IndexFilterManager());                
 
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
@@ -336,7 +335,7 @@ namespace Sando.UI
                 //However, registration must happen before file monitoring begins below.
                 RegisterExtensionPoints();
 
-                SwumManager.Instance.Initialize(ServiceLocator.Resolve<SolutionKey>().IndexPath, !isIndexRecreationRequired);
+                SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), !isIndexRecreationRequired);
                 SwumManager.Instance.Archive = _srcMLArchive;
                 
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()

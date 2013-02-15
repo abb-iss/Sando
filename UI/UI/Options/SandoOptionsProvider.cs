@@ -3,6 +3,8 @@ using System.IO;
 using Configuration.OptionsPages;
 using Sando.Core;
 using Sando.DependencyInjection;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
 namespace Sando.UI.Options
 {
