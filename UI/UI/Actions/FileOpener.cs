@@ -5,7 +5,7 @@ using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Core.Extensions.Logging;
 
-namespace Sando.UI.View
+namespace Sando.UI.Actions
 {
 		public static class FileOpener
     	{

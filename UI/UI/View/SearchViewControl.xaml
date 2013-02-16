@@ -281,7 +281,14 @@
                        SelectionChanged="searchResultListbox_SelectionChanged"
                        
                        >
-
+                <ListView.ContextMenu>
+                    <ContextMenu Name="SearchResultMenu" StaysOpen="true">
+                        <ContextMenu.BitmapEffect>
+                            <BitmapEffectGroup/>
+                        </ContextMenu.BitmapEffect>                        
+                        <MenuItem Header="Remove Entire File from Index" Name="Remove" Click="Remove_Click_1" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Triggers>

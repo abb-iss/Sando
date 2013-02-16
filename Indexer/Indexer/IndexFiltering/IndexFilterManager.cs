@@ -190,5 +190,10 @@ namespace Sando.Indexer.IndexFiltering
             IgnoredPathExpressions,
             IgnoredPathRegularExpressions
         }
+
+        public void AddFileExclusion(string path)
+        {
+            this.IndexFilterSettings.IgnoredFileNames.Add(path);
+        }
     }
 }

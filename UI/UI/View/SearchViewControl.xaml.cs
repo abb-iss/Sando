@@ -17,6 +17,7 @@ using Sando.Translation;
 using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
+using Sando.UI.Actions;
 
 namespace Sando.UI.View
 {
@@ -412,5 +413,21 @@ namespace Sando.UI.View
 
         private readonly SearchManager _searchManager;
         private readonly QueryRecommender _recommender;
+
+        private void Remove_Click_1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var result = searchResultListbox.SelectedItems[0];
+                if (result != null)
+                {
+                    FileRemover.Remove((result as CodeSearchResult).ProgramElement.FullFilePath);
+                }
+            }
+            catch (ArgumentException aex)
+            {
+                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+            }
+        }        
     }
 }

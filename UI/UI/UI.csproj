@@ -198,6 +198,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\FileOpener.cs" />
+    <Compile Include="Actions\FileRemover.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
     <Compile Include="Monitoring\InitialIndexingWatcher.cs" />
@@ -208,7 +210,6 @@
     <Compile Include="PathManagerFactory.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />
-    <Compile Include="View\FileOpener.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\ISearchResultListener.cs" />
     <Compile Include="View\SearchManager.cs" />
