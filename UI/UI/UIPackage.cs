@@ -79,6 +79,7 @@ namespace Sando.UI
         /// </summary>
         public UIPackage()
         {
+            PathManagerFactory.Setup();
             FileLogger.SetupDefautlFileLogger(PathManager.Instance.GetExtensionRoot());
             FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }

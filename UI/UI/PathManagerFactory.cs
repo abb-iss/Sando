@@ -16,7 +16,7 @@ namespace Sando.UI
     public class PathManagerFactory
     {
        
-        private static void Setup()
+        public static void Setup()
         {
             try
             {
