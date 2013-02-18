@@ -19,7 +19,10 @@ namespace Sando.Core.Tools
 
         public static void Create(string path)
         {
-            new PathManager(path);
+            if(Path.HasExtension(path))
+                new PathManager(Path.GetDirectoryName(path));
+            else
+                new PathManager(path);
         }
 
         private PathManager(string pathToExtensionRoot)

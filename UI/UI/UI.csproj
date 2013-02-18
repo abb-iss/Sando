@@ -207,7 +207,6 @@
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
     <Compile Include="Monitoring\SrcMLArchiveEventsHandlers.cs" />
     <Compile Include="Options\SandoOptionsProvider.cs" />
-    <Compile Include="PathManagerFactory.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />

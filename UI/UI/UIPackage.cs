@@ -27,6 +27,9 @@ using Sando.UI.Monitoring;
 using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
+using System.Reflection;
+
+
 
 namespace Sando.UI
 {
@@ -78,8 +81,8 @@ namespace Sando.UI
         /// initialization is the Initialize method.
         /// </summary>
         public UIPackage()
-        {
-            PathManagerFactory.Setup();
+        {            
+            PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
             FileLogger.SetupDefautlFileLogger(PathManager.Instance.GetExtensionRoot());
             FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
         }
@@ -103,6 +106,7 @@ namespace Sando.UI
         {
             try
             {
+                base.Initialize();                
                 FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
 
@@ -117,6 +121,7 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
         }
+
 
         private void SetUpLifeCycleEvents()
         {
