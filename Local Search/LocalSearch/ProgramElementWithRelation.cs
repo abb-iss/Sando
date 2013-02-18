@@ -7,12 +7,14 @@ using Sando.ExtensionContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using System.ComponentModel;
+using System.Xml.Linq;
+using ABB.SrcML;
 
 namespace LocalSearch
 {
     public class ProgramElementWithRelation : CodeSearchResult
     {
-        public ProgramElementRelation ProgramElementRelation { get; set; }
+        public ProgramElementRelation ProgramElementRelation { get; set; }         
 
         public String ProgramElementRelationString
         {
@@ -79,6 +81,8 @@ namespace LocalSearch
         {
             get { return ProgramElementType.ToString().Substring(0, 1).ToLower(); }
         }
+
+        public XElement RelationCode { get; set; }
 
         public ProgramElementWithRelation(ProgramElement element, double score, ProgramElementRelation relation):
             base(element, score)

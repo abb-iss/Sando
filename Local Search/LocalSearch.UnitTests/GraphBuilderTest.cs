@@ -193,6 +193,15 @@ namespace LocalSearch.UnitTests
             Assert.IsEmpty(listMethodsUse);
         }
 
+        [Test]
+        public void GetXElementFromLineNumTest()
+        {
+            GraphBuilder gbuilder = new GraphBuilder(xmlPath);
+            XElement line = gbuilder.GetXElementFromLineNum(9);
+            String linestr = "DatabaseCommand = new RoutedUICommand(\"Command from table context menu\", \"DatabaseCommand\", typeof(DatabaseMenuCommands));";
+            Assert.IsTrue(line.ToSource().Equals(linestr));
+        }
+
         //[Test]
         //public void GetFieldDeclFromNameTest() 
         //{

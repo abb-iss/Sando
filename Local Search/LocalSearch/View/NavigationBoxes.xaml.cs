@@ -75,8 +75,8 @@ namespace LocalSearch.View
                 var results = searcher.Search(s);
                 FirstProgramElements.Clear();
                 foreach (var result in results)
-                {
-                    InformationSource.searchres.Add(result); //set context
+                {   
+                    InformationSource.searchres.Add(Tuple.Create(result, Convert.ToInt32(result.DefinitionLineNumber))); //set context
                     FirstProgramElements.Add(new ProgramElementWithRelation(result.Element, result.Score));
                 }
             }

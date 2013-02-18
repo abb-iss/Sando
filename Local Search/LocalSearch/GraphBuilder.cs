@@ -121,6 +121,7 @@ namespace LocalSearch
                     var methodaselement = GetMethodElementWRelationFromXElement(callee.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
                     methodaselement.RelationLineNumber[0] = callee.Item2;
+                    methodaselement.RelationCode = GetXElementFromLineNum(callee.Item2);
                     listCallees.Add(methodaselement);                    
                 }
             }
@@ -139,6 +140,7 @@ namespace LocalSearch
                     var methodaselement = GetMethodElementWRelationFromXElement(caller.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.Call;
                     methodaselement.RelationLineNumber[0] = caller.Item2;
+                    methodaselement.RelationCode = GetXElementFromLineNum(caller.Item2);
                     listCallers.Add(methodaselement);                    
                 }
             }
@@ -273,6 +275,7 @@ namespace LocalSearch
                     var fieldaselement = GetFieldElementWRelationFromDecl(use.Item1);
                     fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
                     fieldaselement.RelationLineNumber[0] = use.Item2;
+                    fieldaselement.RelationCode = GetXElementFromLineNum(use.Item2);
                     listUses.Add(fieldaselement);
                 }
             }
@@ -297,6 +300,7 @@ namespace LocalSearch
                     var methodaselement = GetMethodElementWRelationFromXElement(user.Item1);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
                     methodaselement.RelationLineNumber[0] = user.Item2;
+                    methodaselement.RelationCode = GetXElementFromLineNum(user.Item2);
                     listUsers.Add(methodaselement);
                 }
             }
@@ -319,6 +323,27 @@ namespace LocalSearch
 
 
         #region basic information collection
+
+        /// <summary>
+        /// Get corresponding XElement given the code line number in the source file.
+        /// </summary>
+        /// <param name="lineNum">The code line number.</param>
+        /// <returns>An XElement.</returns>
+        public XElement GetXElementFromLineNum(int lineNum)
+        {
+            foreach (XElement file in srcmlFile.FileUnits)
+            {
+                foreach (var element in file.Descendants())
+                {
+                    if (element.GetSrcLineNumber() == lineNum)
+                        return element;
+                }
+            }
+
+            return null;
+                            
+        }
+
         /// <summary>
         /// Get all field "declaration statements" in the source file.
         /// </summary>

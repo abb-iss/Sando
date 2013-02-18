@@ -15,7 +15,8 @@ namespace LocalSearch
     {
         public String query { set;  get; }
 
-        public List<CodeSearchResult> searchres { set; get; }
+        //int -- line number on which the query or its extension is satisfied (only the highest score result?)
+        public List<Tuple<CodeSearchResult, int>> searchres { set; get; }
 
         public List<ProgramElementWithRelation> path
         {
@@ -42,7 +43,7 @@ namespace LocalSearch
         {
             path = new List<ProgramElementWithRelation>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
-            searchres = new List<CodeSearchResult>();
+            searchres = new List<Tuple<CodeSearchResult,int>>();
         }
 
         public Context(String srcPath, String search, string SrcMLForCSharp = null)
@@ -51,7 +52,7 @@ namespace LocalSearch
             query = search;
             path = new List<ProgramElementWithRelation>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
-            searchres = new List<CodeSearchResult>();
+            searchres = new List<Tuple<CodeSearchResult, int>>();
         }
 
         public ProgramElementRelation GetRelation(CodeSearchResult element1, CodeSearchResult element2, ref List<int> UsedLineNumber)
@@ -139,6 +140,16 @@ namespace LocalSearch
                         BasicHeuristic(target, ref listRelatedInfo);
                         break;
                     }
+                case 2:
+                    {
+                        DistanceToQueryHeuristic(target, ref listRelatedInfo);
+                        break;
+                    }
+                case 3:
+                    {
+                        EditDistanceHeuristic(target, ref listRelatedInfo);
+                        break;
+                    }
                 default:
                     break;
             }
@@ -156,6 +167,7 @@ namespace LocalSearch
             }
         }
 
+        #region ranking heuristics 
         private void BasicHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
         {            
             foreach (var related in listRelatedInfo)
@@ -165,7 +177,7 @@ namespace LocalSearch
                     //what has shown before is set lower score
                     if (isExisting(path, related))
                     {
-                        related.Score = related.Score - 0.1;
+                        related.Score = related.Score - 0.2;
                     }
                 }
 
@@ -194,19 +206,31 @@ namespace LocalSearch
             return false;
         }
 
-        private bool isExisting(List<CodeSearchResult> source, ProgramElementWithRelation target)
+        private bool isExisting(List<Tuple<CodeSearchResult,int>> source, ProgramElementWithRelation target)
         {
             foreach (var ele in source)
             {
-                if(ele.Name.Equals(target.Name)
-                  && ele.ProgramElementType.Equals(target.ProgramElementType)
-                  && ele.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
+                var ele1 = ele.Item1;
+                if (ele1.Name.Equals(target.Name)
+                  && ele1.ProgramElementType.Equals(target.ProgramElementType)
+                  && ele1.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
                     return true;
             }
 
             return false;  
         }
-           
-        
+
+
+        private void DistanceToQueryHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
+        {
+
+        }
+
+        private void EditDistanceHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
+        {
+        }
+
+        #endregion ranking heuristics
+
     }
 }
