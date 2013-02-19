@@ -103,8 +103,20 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML, Version=2.0.39.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.46.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+    </Reference>
     <Reference Include="Contrib.Regex">
       <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Contrib.Regex.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net">
       <HintPath>..\Lucene.Net-2.9.4\bin\Lucene.Net.dll</HintPath>
@@ -138,18 +150,11 @@
     <Compile Include="Documents\DocumentFactoryTest.cs" />
     <Compile Include="Documents\MyCustomProgramElementForTesting.cs" />
     <Compile Include="Documents\SandoDocumentStringExtensionTest.cs" />
-    <Compile Include="IndexState\IndexFilesStatesManagerTest.cs" />
-    <Compile Include="IndexState\PhysicalFilesStatesManagerTest.cs" />
-    <Compile Include="IndexState\FileOperationResolverTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\AndSearchCriteriaTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\ParenthesisSearchCriteriaTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\NotSearchCriteriaTest.cs" />
-    <Compile Include="TestFiles\Searching\Criteria\OrSearchCriteriaTest.cs" />
+    <Compile Include="IndexFiltering\IndexFilterManagerTest.cs" />
     <Compile Include="TestFiles\Searching\Criteria\SimpleSearchCriteriaTest.cs" />
     <Compile Include="TestFiles\Searching\ProgramElementReaderTest.cs" />
     <Compile Include="TestFiles\Searching\Results\CsSimpleTest.cs" />
     <Compile Include="TestFiles\Searching\Results\SearchTester.cs" />
-    <Compile Include="TestIndexUpdateListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestFiles\Searching\Criteria\SearchCriteriaTest.cs" />
     <None Include="TestFiles\CS_1\ImageCapture.cs">
@@ -164,6 +169,10 @@
     <ProjectReference Include="..\..\Core\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DependencyInjection\DependencyInjection\DependencyInjection.csproj">
+      <Project>{C4332491-CD26-408E-8E80-7D1C7A5C6ABE}</Project>
+      <Name>DependencyInjection</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Parser\Parser\Parser.csproj">
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>

@@ -1,39 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
+using System.Threading;
 using Lucene.Net.Analysis;
-using Lucene.Net.Analysis.Snowball;
-using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Sando.Core;
 using Sando.Core.Extensions.Logging;
+using Sando.DependencyInjection;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Translation;
+using System.Linq;
+using Sando.Indexer.Documents.Converters;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
 namespace Sando.Indexer
 {
 	public class DocumentIndexer : IDisposable
 	{
-		public DocumentIndexer(string luceneTempIndexesDirectory, Analyzer analyzer)
+        public DocumentIndexer(TimeSpan? refreshIndexSearcherThreadInterval = null, TimeSpan? commitChangesThreadInterval = null )
 		{
-			Contract.Requires(!String.IsNullOrWhiteSpace(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory cannot be null or an empty string!");
-			Contract.Requires(System.IO.Directory.Exists(luceneTempIndexesDirectory), "DocumentIndexer:Constructor - luceneTempIndexesDirectory does not point to a valid directory!");
-			Contract.Requires(analyzer != null, "DocumentIndexer:Constructor - analyzer cannot be null!");
-
 			try
 			{
-				System.IO.DirectoryInfo directoryInfo = new System.IO.DirectoryInfo(luceneTempIndexesDirectory);
+                var solutionKey = ServiceLocator.Resolve<SolutionKey>();			
+                var directoryInfo = new System.IO.DirectoryInfo(PathManager.Instance.GetIndexPath(solutionKey));
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
-				Analyzer = analyzer;
-				IndexWriter = new IndexWriter(LuceneIndexesDirectory, analyzer, IndexWriter.MaxFieldLength.LIMITED);
-				IndexSearcher = new IndexSearcher(LuceneIndexesDirectory, true);
-				QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), analyzer);
-				indexUpdateListeners = new List<IIndexUpdateListener>();
+				Analyzer = ServiceLocator.Resolve<Analyzer>();
+                IndexWriter = new IndexWriter(LuceneIndexesDirectory, Analyzer, IndexWriter.MaxFieldLength.LIMITED);
+			    var indexReader = IndexWriter.GetReader();
+				_indexSearcher = new IndexSearcher(indexReader);
+                QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
+
+			    if (!refreshIndexSearcherThreadInterval.HasValue) 
+                    refreshIndexSearcherThreadInterval = TimeSpan.FromSeconds(10);
+			    var refreshIndexSearcherBackgroundWorker = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
+                refreshIndexSearcherBackgroundWorker.DoWork += PeriodicallyRefreshIndexSearcherIfNeeded;
+                refreshIndexSearcherBackgroundWorker.RunWorkerAsync(refreshIndexSearcherThreadInterval);
+
+                if (commitChangesThreadInterval.HasValue)
+			    {
+			        var commitChangesBackgroundWorker = new BackgroundWorker
+			            {
+			                WorkerReportsProgress = false,
+			                WorkerSupportsCancellation = false
+			            };
+			        commitChangesBackgroundWorker.DoWork += PeriodicallyCommitChangesIfNeeded;
+			        commitChangesBackgroundWorker.RunWorkerAsync(commitChangesThreadInterval);
+			    }
+                else
+                {
+                    _synchronousCommits = true;
+                }
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
@@ -52,83 +75,150 @@ namespace Sando.Indexer
 			}
 		}
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual void AddDocument(SandoDocument sandoDocument)
+        public virtual void AddDocument(SandoDocument sandoDocument)
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
-            
-            IndexWriter.AddDocument(sandoDocument.GetDocument());
+
+            lock (_lock)
+            {
+                IndexWriter.AddDocument(sandoDocument.GetDocument());
+                if(_synchronousCommits)
+                    CommitChanges();
+                else
+                    _hasIndexChanged = true;
+            }
 		}
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public virtual void DeleteDocuments(string fullFilePath)
         {
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
-            var term = new Term("FullFilePath", SandoDocument.StandardizeFilePath(fullFilePath));
-            IndexWriter.DeleteDocuments(new TermQuery(term));
+            var term = new Term("FullFilePath", ConverterFromHitToProgramElement.StandardizeFilePath(fullFilePath));
+            lock (_lock)
+            {
+                IndexWriter.DeleteDocuments(new TermQuery(term));
+                if (_synchronousCommits)
+                    CommitChanges();
+                else
+                    _hasIndexChanged = true;
+            }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-		public void CommitChanges()
-		{
-			IndexWriter.Commit();
-			UpdateReader();
-			NotifyIndexUpdateListeners();
-		}
-
-		[MethodImpl(MethodImplOptions.Synchronized)]
 		public void ClearIndex()
-		{   
-            IndexWriter.GetDirectory().EnsureOpen();
-			IndexWriter.DeleteAll();
+		{
+		    lock (_lock)
+		    {
+		        IndexWriter.GetDirectory().EnsureOpen();
+		        IndexWriter.DeleteAll();
+                CommitChanges();
+		    }
 		}
 
-		private void UpdateReader()
+        public List<Tuple<Document, float>> Search(Query query, TopScoreDocCollector collector)
+        {
+            lock (_lock)
+            {
+                try
+                {
+                    return RunSearch(query, collector);
+                }
+                catch (AlreadyClosedException)
+                {
+                    UpdateSearcher();
+                    return RunSearch(query, collector);
+                }
+            }
+        }
+
+        public int GetNumberOfIndexedDocuments()
+        {
+            return _indexSearcher.GetIndexReader().NumDocs();
+        }
+
+	    private List<Tuple<Document, float>> RunSearch(Query query, TopScoreDocCollector collector)
+	    {
+	        _indexSearcher.Search(query, collector);
+
+	        var hits = collector.TopDocs().ScoreDocs;
+	        var documents =
+	            hits.AsEnumerable().Select(h => new Tuple<Document, float>(_indexSearcher.Doc(h.doc), h.score)).ToList();
+	        return documents;
+	    }
+
+        private void CommitChanges()
+        {
+            IndexWriter.Commit();
+            UpdateSearcher();
+            _hasIndexChanged = false;
+        }
+
+		private void UpdateSearcher()
 		{
-			//TODO - please check this out and see if you agree tha we need this
-			var oldReader = IndexSearcher.GetIndexReader();
-			IndexReader newReader = oldReader.Reopen(true);
-			if (newReader != IndexSearcher.GetIndexReader())
-			{
-				oldReader.Close();
-				IndexSearcher = new IndexSearcher(newReader);
-			}
+		    try
+		    {
+		        var oldReader = _indexSearcher.GetIndexReader();
+		        var newReader = oldReader.Reopen(true);
+		        if (newReader != oldReader)
+		        {
+		            //_indexSearcher.Close(); - don't need this, because we create IndexSearcher by passing the IndexReader to it, so Close do nothing
+		            oldReader.Close();
+		            _indexSearcher = new IndexSearcher(newReader);
+		        }
+		    }
+            catch (AlreadyClosedException)
+		    {
+		        var indexReader = IndexWriter.GetReader();
+                _indexSearcher = new IndexSearcher(indexReader);
+		    }
 		}
 
+        private void PeriodicallyCommitChangesIfNeeded(object sender, DoWorkEventArgs args)
+        {
+            var backgroundThreadInterval = args.Argument;	        
+            while (!_disposed)
+            {
+                lock (_lock)
+                {
+                    if (_hasIndexChanged)
+                        CommitChanges();
+                }
+                Thread.Sleep(Convert.ToInt32(((TimeSpan)backgroundThreadInterval).TotalMilliseconds));
+            }
+        }
 
-		public void AddIndexUpdateListener(IIndexUpdateListener indexUpdateListener)
-		{
-			this.indexUpdateListeners.Add(indexUpdateListener);
-		}
+	    private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
+	    {
+            var backgroundThreadInterval = args.Argument;	        
+	        while (!_disposed)
+	        {
+	            lock (_lock)
+	            {
+	                if (!IsUsable())
+	                {
+	                    UpdateSearcher();
+	                }
+	            }
+                Thread.Sleep(Convert.ToInt32(((TimeSpan)backgroundThreadInterval).TotalMilliseconds));
+	        }
+	    }
 
-		public void RemoveIndexUpdateListener(IIndexUpdateListener indexUpdateListener)
-		{
-			this.indexUpdateListeners.Remove(indexUpdateListener);
-		}
-
-		private void NotifyIndexUpdateListeners()
-		{
-			foreach(IIndexUpdateListener listener in this.indexUpdateListeners)
-			{
-				listener.NotifyAboutIndexUpdate();
-			}
-		}
-
-
-		public bool IsUsable()
-		{
-            if (this.disposed)
-                return false;
+	    private bool IsUsable()
+        {
             try
             {
-                this.IndexSearcher.Search(new TermQuery(new Term("asdf")));
-            }catch(AlreadyClosedException)
+                _indexSearcher.Search(new TermQuery(new Term("asdf")), 1);
+            }
+            catch (AlreadyClosedException)
             {
                 return false;
             }
-		    return true;
-		}
+            return true;
+        }
+
+        public void NUnit_CloseIndexSearcher()
+        {
+            _indexSearcher.GetIndexReader().Close();
+        }
 
         public void Dispose()
         {
@@ -138,84 +228,56 @@ namespace Sando.Indexer
 
 		public void Dispose(bool killReaders)
         {
-            Dispose(true,killReaders);
-            GC.SuppressFinalize(this);
+		    lock (_lock)
+		    {
+                try
+                {
+                    CommitChanges();
+                }
+                catch (AlreadyClosedException)
+                {
+                    //This is expected in some cases
+                }
+		        Dispose(true, killReaders);
+		        GC.SuppressFinalize(this);
+		    }
         }
 		
 		protected virtual void Dispose(bool disposing, bool killReaders)
         {
-            if(!this.disposed)
+            if(!_disposed)
             {
                 if(disposing)
                 {
-					IndexWriter.Close();
-					IndexReader indexReader = IndexSearcher.GetIndexReader();
-                    if(indexReader != null && killReaders)
+                    IndexWriter.Close();
+					IndexReader indexReader = _indexSearcher.GetIndexReader();
+                    if(indexReader != null)
                         indexReader.Close();
-					IndexSearcher.Close();
+					_indexSearcher.Close();
 					LuceneIndexesDirectory.Close();
+                    try
+                    {
+                        Analyzer.Close();
+                    }
+                    catch (NullReferenceException)
+                    {
+                        //already closed, ignore
+                    }
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 
-        ~DocumentIndexer()
-        {
-            Dispose(false);
-        }
+	    public Directory LuceneIndexesDirectory { get; set; }
+		public QueryParser QueryParser { get; protected set; }
+		protected Analyzer Analyzer { get; set; }
+		protected IndexWriter IndexWriter { get; set; }
 
-		public virtual Directory LuceneIndexesDirectory { get; set; }
-		public virtual IndexSearcher IndexSearcher { get; protected set; }
-		public virtual QueryParser QueryParser { get; protected set; }
-		protected virtual Analyzer Analyzer { get; set; }
-		protected virtual IndexWriter IndexWriter { get; set; }
-
-		private List<IIndexUpdateListener> indexUpdateListeners;
-		private bool disposed = false;
-	}
-
-	public enum AnalyzerType
-	{
-		Simple, Snowball, Standard, Default
-	}
-
-	public class DocumentIndexerFactory
-	{
-		public static DocumentIndexer CreateIndexer(SolutionKey solutionKey, AnalyzerType analyzerType)
-		{
-			Guid solutionId = solutionKey.GetSolutionId();
-			if(documentIndexers.ContainsKey(solutionId))
-			{
-				if(!documentIndexers[solutionId].IsUsable())
-				{
-					documentIndexers[solutionId] = CreateInstance(solutionKey.GetIndexPath(), analyzerType);
-				}
-			}
-			else
-			{
-			    DocumentIndexer documentIndexer = CreateInstance(solutionKey.GetIndexPath(), analyzerType);
-			    documentIndexers.Add(solutionId, documentIndexer);
-			}
-		    return documentIndexers[solutionId];
-		}
-
-		private static DocumentIndexer CreateInstance(string luceneIndex, AnalyzerType analyzerType)
-		{
-			switch(analyzerType)
-			{
-				case AnalyzerType.Simple:
-					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
-				case AnalyzerType.Snowball:
-					return new DocumentIndexer(luceneIndex, new SnowballAnalyzer("English"));
-				case AnalyzerType.Standard:
-					return new DocumentIndexer(luceneIndex, new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_29));
-				case AnalyzerType.Default:
-				default:
-					return new DocumentIndexer(luceneIndex, new SimpleAnalyzer());
-			}			
-		}
-
-		private static Dictionary<Guid, DocumentIndexer> documentIndexers = new Dictionary<Guid, DocumentIndexer>();
+        private bool _hasIndexChanged;
+        private bool _disposed;
+	    private IndexSearcher _indexSearcher;
+        private readonly bool _synchronousCommits;
+	    private readonly object _lock = new object();
 	}
 }

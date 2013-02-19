@@ -11,6 +11,7 @@
 		DefinitionLineNumber,
 		DocumentedElementId,
 		ExtendedClasses,
+        FileExtension,
 		FullFilePath,
 		Id,
 		ImplementedInterfaces,
@@ -20,7 +21,7 @@
 		Namespace,
 		ProgramElementType,
 		ReturnType,
-		Snippet,
+		Source,
 		Modifiers
 	}
 }

@@ -1,10 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
+using Sando.DependencyInjection;
+using Sando.Indexer.IndexFiltering;
 using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace UnitTestHelpers
 {
@@ -25,8 +30,10 @@ namespace UnitTestHelpers
 		public static void InitializeDefaultExtensionPoints()
 		{
 			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
-			extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
+            PathManager.Create(Path.GetTempPath());
+            var generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(generator));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser(generator));
 
 			extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
 
@@ -35,6 +42,11 @@ namespace UnitTestHelpers
 			extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
 
 			extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+
+		    var solutionKey = new SolutionKey(Guid.NewGuid(), Path.GetTempPath());
+            ServiceLocator.RegisterInstance(solutionKey);
+
+            extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager());
 		}
     }
 }

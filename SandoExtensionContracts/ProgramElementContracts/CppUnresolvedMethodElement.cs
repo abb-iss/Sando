@@ -11,8 +11,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 			: base(name, definitionLineNumber, fullFilePath, snippet, AccessLevel.Protected, arguments, returnType, body, 
 					Guid.NewGuid(), className, String.Empty, isConstructor)
 		{
-			Contract.Requires(className != null, "CppSplitMethodElement:Constructor - class name cannot be null!");
-			Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
+            Contract.Requires(className != null, "CppUnresolvedMethodElement:Constructor - class name cannot be null!");
+            //Contract.Requires(headerFiles.Length > 0, "CppSplitMethodElement:Constructor - there have to be some header files defined here");
+            Contract.Requires(headerFiles != null, "CppUnresolvedMethodElement:Constructor - headerFiles cannot be null!");
 
 			IncludeFileNames = headerFiles;
 			IsResolved = false;
@@ -29,7 +30,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 
 			IsResolved = true;
 		    outMethodElement =
-                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, Snippet, accessLevel,
+                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, RawSource, accessLevel,
 		                                 Arguments, ReturnType, Body,
 		                                 classId, ClassName, String.Empty, IsConstructor) as MethodElement;
 		    SetCustomFields(unresolvedMethod, outMethodElement);
@@ -39,7 +40,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		//TODO: Remove this method
 		public MethodElement Copy()
 		{
-            var outMethodElement = Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, Snippet, AccessLevel.Protected,
+            var outMethodElement = Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, RawSource, AccessLevel.Protected,
                                          Arguments, ReturnType, Body,
                                          Guid.NewGuid(), ClassName, String.Empty, IsConstructor) as MethodElement;
             SetCustomFields(this, outMethodElement);

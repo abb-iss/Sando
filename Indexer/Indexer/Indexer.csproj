@@ -66,12 +66,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.46.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+    </Reference>
     <Reference Include="Contrib.Regex">
       <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Contrib.Regex.dll</HintPath>
     </Reference>
@@ -98,9 +102,10 @@
   <ItemGroup>
     <Compile Include="Documents\ClassDocument.cs" />
     <Compile Include="Documents\CommentDocument.cs" />
+    <Compile Include="Documents\Converters\ConverterFromHitToProgramElement.cs" />
+    <Compile Include="Documents\Converters\ConverterFromProgramElementToDocument.cs" />
     <Compile Include="Documents\TextLineDocument.cs" />
     <Compile Include="Documents\MethodPrototypeDocument.cs" />
-    <Compile Include="Documents\DocCommentDocument.cs" />
     <Compile Include="Documents\DocumentFactory.cs" />
     <Compile Include="Documents\EnumDocument.cs" />
     <Compile Include="Documents\FieldDocument.cs" />
@@ -112,27 +117,18 @@
     <Compile Include="Documents\SandoField.cs" />
     <Compile Include="Documents\StructDocument.cs" />
     <Compile Include="Exceptions\IndexerException.cs" />
+    <Compile Include="IndexFiltering\IndexFilterManager.cs" />
     <Compile Include="IndexState\IndexState.cs" />
     <Compile Include="IndexState\CppHeaderElementResolver.cs" />
     <Compile Include="IndexState\IndexStateManager.cs" />
-    <Compile Include="IndexState\PhysicalFilesStatesManager.cs" />
-    <Compile Include="IndexState\PhysicalFileState.cs" />
-    <Compile Include="IndexState\FileOperationResolver.cs" />
-    <Compile Include="IndexState\IndexFilesStatesManager.cs" />
-    <Compile Include="IndexState\IndexFileState.cs" />
-    <Compile Include="IndexState\IndexOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="IIndexUpdateListener.cs" />
+    <Compile Include="Searching\Criteria\CriteriaBuilder.cs" />
     <Compile Include="Searching\DefaultQueryRewriter.cs" />
-    <Compile Include="Searching\Criteria\AndSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\ParenthesisSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\OrSearchCriteria.cs" />
     <Compile Include="Searching\Criteria\SimpleSearchCriteria.cs" />
-    <Compile Include="Searching\Criteria\NotSearchCriteria.cs" />
     <Compile Include="Searching\IIndexerSearcher.cs" />
     <Compile Include="Searching\Criteria\SearchCriteria.cs" />
     <Compile Include="Searching\IndexerSearcher.cs" />
-    <Compile Include="Searching\ProgramElementReader.cs" />
+    <Compile Include="Searching\LuceneQueryStringBuilder.cs" />
     <Compile Include="Searching\QueryWeightsSupplier.cs" />
     <Compile Include="Searching\UsageType.cs" />
   </ItemGroup>
@@ -148,6 +144,10 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\DependencyInjection\DependencyInjection\DependencyInjection.csproj">
+      <Project>{c4332491-cd26-408e-8e80-7d1c7a5c6abe}</Project>
+      <Name>DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
       <Name>SandoExtensionContracts</Name>
@@ -157,7 +157,6 @@
       <Name>Translation</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\..\LIBS\Contracts\MsBuild\v4.0\Microsoft.CodeContracts.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

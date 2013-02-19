@@ -10,6 +10,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Parser;
+using Sando.Indexer.Documents.Converters;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
@@ -21,8 +22,8 @@ namespace Sando.Indexer.UnitTests.Documents
         public void LuceneDocToCustomProgramElement()
         {
             //test ReadProgramElementFromDocument            
-            var customSandoDocument = new SandoDocument(MyCustomProgramElementForTesting.GetLuceneDocument());
-            var customProgramElement = customSandoDocument.ReadProgramElementFromDocument();
+            var customSandoDocument = MyCustomProgramElementForTesting.GetLuceneDocument();
+            var customProgramElement = ConverterFromHitToProgramElement.Create(customSandoDocument).Convert();
             var myCustomProgramElementForTesting = customProgramElement as MyCustomProgramElementForTesting;
             Assert.IsTrue(myCustomProgramElementForTesting != null);
             Assert.IsTrue(myCustomProgramElementForTesting.A.Equals("A's value"));
@@ -69,8 +70,9 @@ namespace Sando.Indexer.UnitTests.Documents
         public static void InitializeExtensionPoints()
         {
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser());
-            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser());
+            var generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(generator));
+            extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser(generator));
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());           
             extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
         }

@@ -28,3 +28,4 @@ Sando/_UpgradeReport_Files/*
 Sando/Backup/*
 Sando/UpgradeLog.*
 Sando/TestResults/*
+*.csproj.user

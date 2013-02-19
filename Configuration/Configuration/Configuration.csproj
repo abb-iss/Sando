@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="OptionsPages\ISandoOptionsProvider.cs" />
     <Compile Include="OptionsPages\SandoOptions.cs" />
     <Compile Include="OptionsPages\SandoOptionsControl.cs">
       <SubType>UserControl</SubType>

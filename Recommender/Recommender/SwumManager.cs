@@ -9,6 +9,7 @@ using System.Text;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
+using Sando.Core.Extensions.Logging;
 
 
 namespace Sando.Recommender {
@@ -17,11 +18,7 @@ namespace Sando.Recommender {
     /// </summary>
     public class SwumManager {
         private static SwumManager instance;
-        
-        private const string SrcmlBinDir = "LIBS"; //relative to the PluginDirectory
-        private const string SrcmlCSharpBinDir = @"LIBS\srcML-Win-cSharp"; //relative to the PluginDirectory
         private const string DefaultCacheFile = "swum-cache.txt";
-
         private readonly XName[] functionTypes = new XName[] { SRC.Function, SRC.Constructor, SRC.Destructor };
         private SwumBuilder builder;
         private Dictionary<string, SwumDataRecord> signaturesToSwum;
@@ -30,7 +27,6 @@ namespace Sando.Recommender {
         /// Private constructor for a new SwumManager.
         /// </summary>
         private SwumManager() {
-            PluginDirectory = ".";
             builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
             signaturesToSwum = new Dictionary<string, SwumDataRecord>();
             CacheLoaded = false;
@@ -57,10 +53,16 @@ namespace Sando.Recommender {
         }
 
         /// <summary>
-        /// The directory containing the Sando plugin files.
+        /// The SrcMLArchive to retrieve SrcML files from
         /// </summary>
-        public string PluginDirectory { get; set; }
+        public SrcMLArchive Archive { get; set; }
 
+        /// <summary>
+        /// The SrcMLGenerator to use to convert source files to SrcML.
+        /// This is only used if Archive is null.
+        /// </summary>
+        public SrcMLGenerator Generator { get; set; }
+    
         /// <summary>
         /// The path to the cache file on disk.
         /// </summary>
@@ -72,28 +74,27 @@ namespace Sando.Recommender {
         public bool CacheLoaded { get; private set; }
 
         /// <summary>
-        /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
+        /// Sets the CachePath and initializes the SWUM data from the cache file in the given directory, if it exists.
+        /// Any previously constructed SWUMs will be deleted.
         /// </summary>
-        /// <param name="pluginDirectory">The directory containing the Sando plugin files.</param>
         /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
-        public void Initialize(string pluginDirectory, string cacheDirectory) {
-            Initialize(pluginDirectory, cacheDirectory, true);
+        public void Initialize(string cacheDirectory) {
+            Initialize(cacheDirectory, true);
         }
 
         /// <summary>
-        /// Initializes the SWUM data from the cache file in the given directory. Any previously constructed SWUMs will be deleted.
+        /// Sets the CachePath and initializes the SWUM data from the cache file in the given directory, if desired.
+        /// Any previously constructed SWUMs will be deleted.
         /// </summary>
-        /// <param name="pluginDirectory">The directory containing the Sando plugin files.</param>
         /// <param name="cacheDirectory">The path for the directory containing the SWUM cache file.</param>
         /// <param name="useCache">True to use the existing cache file, if any. False to not load any cache file.</param>
-        public void Initialize(string pluginDirectory, string cacheDirectory, bool useCache) {
+        public void Initialize(string cacheDirectory, bool useCache) {
             Clear();
-            PluginDirectory = pluginDirectory;
             CachePath = Path.Combine(cacheDirectory, DefaultCacheFile);
 
             if(useCache) {
                 if(!File.Exists(CachePath)) {
-                    Debug.WriteLine(string.Format("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath));
+                    FileLogger.DefaultLogger.InfoFormat("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
                     return;
                 }
                 ReadSwumCache(CachePath);
@@ -106,35 +107,44 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="sourcePath">The path to the source file.</param>
         public void AddSourceFile(string sourcePath) {
-            string fullPath = Path.GetFullPath(sourcePath);
-            string fileExt = Path.GetExtension(fullPath);
-            if(fileExt != null) {
-                //remove the dot from the extension
-                if(fileExt.Length > 1 && fileExt[0] == '.') {
-                    fileExt = fileExt.Substring(1);
-                } else if(fileExt.Length == 1 && fileExt[0] == '.') {
-                    fileExt = string.Empty;
-                }
+            //Don't try to process files that SrcML can't handle
+            if(Archive != null && !Archive.IsValidFileExtension(sourcePath)) { return; }
+            var fileExt = Path.GetExtension(sourcePath);
+            if(fileExt == null || (Generator != null && !Generator.ExtensionMapping.ContainsKey(fileExt))) {
+                return;
             }
 
-            Src2SrcMLRunner srcmlConverter;
-            if(string.Compare(fileExt, "cs", StringComparison.InvariantCultureIgnoreCase) == 0) {
-                srcmlConverter = new Src2SrcMLRunner(Path.Combine(PluginDirectory, SrcmlCSharpBinDir));
+            sourcePath = Path.GetFullPath(sourcePath);
+            XElement fileElement;
+            if(Archive != null) {
+                fileElement = Archive.GetXElementForSourceFile(sourcePath);
+                if(fileElement == null) {
+                    FileLogger.DefaultLogger.ErrorFormat("SwumManager: File not found in archive: {0}", sourcePath);
+                }
+            } else if(Generator != null) {
+                string outFile = Path.GetTempFileName();
+                try {
+                    var srcmlfile = Generator.GenerateSrcMLFromFile(sourcePath, outFile);
+                    fileElement = srcmlfile.FileUnits.FirstOrDefault();
+                    if(fileElement == null) {
+                        FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error converting file to SrcML, no file unit found: {0}", sourcePath);
+                    }
+                } finally {
+                    File.Delete(outFile);
+                }
             } else {
-                srcmlConverter = new Src2SrcMLRunner(Path.Combine(PluginDirectory, SrcmlBinDir));
-                srcmlConverter.ExtensionMapping.WillReturnDefaultValues = true;
-                if(!srcmlConverter.ExtensionMapping.Keys.Contains(fileExt)) {
-                    //if this is an unsupported file type, return and do nothing
-                    return;
-                }
-            }
-            var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(fullPath, Path.GetTempFileName());
-            try {
-                AddSrcMLFile(tempSrcMLFile);
-            } finally {
-                File.Delete(tempSrcMLFile.FileName);
+                throw new InvalidOperationException("SwumManager - Archive and Generator are both null");
             }
 
+            try {
+                if(fileElement != null) {
+                    AddSwumForMethodDefinitions(fileElement, sourcePath);
+                }
+            } catch(Exception e) {
+                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
+                FileLogger.DefaultLogger.Error(e.Message);
+                FileLogger.DefaultLogger.Error(e.StackTrace);
+            }
         }
 
         /// <summary>
@@ -142,7 +152,9 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="srcmlFile">A SrcML file.</param>
         public void AddSrcMLFile(SrcMLFile srcmlFile) {
-            AddSwumForMethodDefinitions(srcmlFile);
+            foreach(var unit in srcmlFile.FileUnits) {
+                AddSwumForMethodDefinitions(unit, srcmlFile.FileName);
+            }
         }
 
         /// <summary>
@@ -289,33 +301,34 @@ namespace Sando.Recommender {
 
         #region Protected methods
         /// <summary>
-        /// Constructs SWUMs for each of the methods defined in <paramref name="srcFile"/> and adds them to the cache.
+        /// Constructs SWUMs for each of the methods defined in <paramref name="unitElement"/> and adds them to the cache.
         /// </summary>
-        /// <param name="srcFile">The srcML file containing the method definitions.</param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="srcFile"/> is null.</exception>
-        protected void AddSwumForMethodDefinitions(SrcMLFile srcFile) {
-            if(srcFile == null) { throw new ArgumentNullException("srcFile"); }
+        /// <param name="unitElement">The root element for the file unit to be processed.</param>
+        /// <param name="filePath">The path for the file represented by <paramref name="unitElement"/>.</param>
+        /// <exception cref="System.ArgumentNullException"><paramref name="unitElement"/> is null.</exception>
+        protected void AddSwumForMethodDefinitions(XElement unitElement, string filePath) {
+            if(unitElement == null) { throw new ArgumentNullException("unitElement"); }
 
             //iterate over each method definition in the SrcML file
-            foreach(XElement file in srcFile.FileUnits) {
-                var fileAttribute = file.Attribute("filename");
-                string filePath = fileAttribute != null ? fileAttribute.Value : srcFile.FileName;
-                var functions = from func in file.Descendants()
-                                where functionTypes.Contains(func.Name) && !func.Ancestors(SRC.Declaration).Any()
-                                select func;
-                foreach(XElement func in functions) {
-                    //construct SWUM on the function (if necessary)
-                    string sig = SrcMLElement.GetMethodSignature(func);
-                    lock(signaturesToSwum) {
-                        if(signaturesToSwum.ContainsKey(sig)) {
-                            //update the SwumDataRecord with the filename of the duplicate method
-                            signaturesToSwum[sig].FileNames.Add(filePath);
-                        } else {
-                            MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
-                            var swumData = ProcessSwumNode(mdn);
-                            swumData.FileNames.Add(filePath);
-                            signaturesToSwum[sig] = swumData;
-                        }
+            var fileAttribute = unitElement.Attribute("filename");
+            if(fileAttribute != null) {
+                filePath = fileAttribute.Value;
+            }
+            var functions = from func in unitElement.Descendants()
+                            where functionTypes.Contains(func.Name) && !func.Ancestors(SRC.Declaration).Any()
+                            select func;
+            foreach(XElement func in functions) {
+                //construct SWUM on the function (if necessary)
+                string sig = SrcMLElement.GetMethodSignature(func);
+                lock(signaturesToSwum) {
+                    if(signaturesToSwum.ContainsKey(sig)) {
+                        //update the SwumDataRecord with the filename of the duplicate method
+                        signaturesToSwum[sig].FileNames.Add(filePath);
+                    } else {
+                        MethodDeclarationNode mdn = ConstructSwumFromMethodElement(func);
+                        var swumData = ProcessSwumNode(mdn);
+                        swumData.FileNames.Add(filePath);
+                        signaturesToSwum[sig] = swumData;
                     }
                 }
             }
@@ -439,6 +452,4 @@ namespace Sando.Recommender {
         }
         #endregion Protected methods
     }
-
-    
 }

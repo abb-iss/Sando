@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Sando.ExtensionContracts.ProgramElementContracts;
+﻿using System.Collections.Generic;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.Searching
 {
 	public interface IIndexerSearcher
 	{
-		List<Tuple<ProgramElement,float>> Search(SearchCriteria searchCriteria);
-
+        IEnumerable<CodeSearchResult> Search(SearchCriteria searchCriteria);
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer;
@@ -11,16 +14,18 @@ using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
+using Sando.Recommender;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace Sando.IntegrationTests.Search
 {
 	[TestFixture]
-	public class AllElementsSearchTest
+    public class AllElementsSearchTest : AutomaticallyIndexingTestClass
 	{
 		[Test]
 		public void SearchRespectsAccessLevelCriteria()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());
 			string keywords = "usage type";
 			SearchCriteria searchCriteria = new SimpleSearchCriteria()
 			{
@@ -29,15 +34,15 @@ namespace Sando.IntegrationTests.Search
 				SearchTerms = new SortedSet<string>(keywords.Split(' '))
 			};
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
-			Assert.AreEqual(codeSearchResults.Count, 3, "Invalid results number");
+			Assert.AreEqual(3, codeSearchResults.Count, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el =>
-																el.Element.ProgramElementType == ProgramElementType.Method &&
-																(el.Element.Name == "UsageTypeCriteriaToString"));
+																el.ProgramElement.ProgramElementType == ProgramElementType.Method &&
+																(el.ProgramElement.Name == "UsageTypeCriteriaToString"));
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var method = methodSearchResult.Element as MethodElement;
+			var method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Private, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "StringBuilder stringBuilder bool searchByUsageType", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -48,16 +53,16 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Name, "UsageTypeCriteriaToString", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
-			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 
 			methodSearchResult = codeSearchResults.Find(el =>
-															el.Element.ProgramElementType == ProgramElementType.Method &&
-															(el.Element.Name == "SingleUsageTypeCriteriaToString"));
+															el.ProgramElement.ProgramElementType == ProgramElementType.Method &&
+															(el.ProgramElement.Name == "SingleUsageTypeCriteriaToString"));
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			method = methodSearchResult.Element as MethodElement;
+			method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Private, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "StringBuilder stringBuilder UsageType usageType", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -68,7 +73,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Name, "SingleUsageTypeCriteriaToString", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
-			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
 		[Test]
@@ -76,7 +81,7 @@ namespace Sando.IntegrationTests.Search
 		{
 			try
 			{
-				var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+				var codeSearcher = new CodeSearcher(new IndexerSearcher());
 				string keywords = "  usage ";
 				List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			}
@@ -89,7 +94,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void SearchReturnsElementsUsingCrossFieldMatching()
 		{
-			var codeSearcher = new CodeSearcher(IndexerSearcherFactory.CreateSearcher(key));
+			var codeSearcher = new CodeSearcher(new IndexerSearcher());
 			string keywords = "fetch output argument";
 			SearchCriteria searchCriteria = new SimpleSearchCriteria()
 			{
@@ -98,13 +103,13 @@ namespace Sando.IntegrationTests.Search
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(searchCriteria);
 
 			var methodSearchResult = codeSearchResults.Find(el =>
-																el.Element.ProgramElementType == ProgramElementType.Method &&
-																(el.Element.Name == "FetchOutputStream"));
+																el.ProgramElement.ProgramElementType == ProgramElementType.Method &&
+																(el.ProgramElement.Name == "FetchOutputStream"));
 			if(methodSearchResult == null)
 			{
 				Assert.Fail("Failed to find relevant search result for search: " + keywords);
 			}
-			var method = methodSearchResult.Element as MethodElement;
+			var method = methodSearchResult.ProgramElement as MethodElement;
 			Assert.AreEqual(method.AccessLevel, AccessLevel.Public, "Method access level differs!");
 			Assert.AreEqual(method.Arguments, "A B string fileName Image image", "Method arguments differs!");
 			Assert.NotNull(method.Body, "Method body is null!");
@@ -115,41 +120,29 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(method.Name, "FetchOutputStream", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
-			Assert.False(String.IsNullOrWhiteSpace(method.Snippet), "Method snippet is invalid!");
+			Assert.False(String.IsNullOrWhiteSpace(method.RawSource), "Method snippet is invalid!");
 		}
 
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
+        public override string GetIndexDirName()
+        {
+            return "AllElementSearchTest";
+        }
 
-		[SetUp]
-		public void Setup()
-		{
-			indexPath = Path.Combine(Path.GetTempPath(), "MethodElementSearchTest");
-			Directory.CreateDirectory(indexPath);
-			key = new SolutionKey(Guid.NewGuid(), "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles", indexPath);
-			var indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-			monitor = new SolutionMonitor(new SolutionWrapper(), key, indexer, false);
-			string[] files = Directory.GetFiles("..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles");
-			foreach(var file in files)
-			{
-				string fullPath = Path.GetFullPath(file);
-				monitor.ProcessFileForTesting(fullPath);
-			}
-            monitor.UpdateAfterAdditions();
-		}
+        public override string GetFilesDirectory()
+        {
+            return "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles";
+        }
 
-		[TearDown]
-		public void TearDown()
-		{
-			monitor.StopMonitoring(true);
-			Directory.Delete(indexPath, true);
-		}
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(1);
+        }
+		
+
+
 
 		private string indexPath;
-		private static SolutionMonitor monitor;
+		//private static SolutionMonitor monitor;
 		private static SolutionKey key;
 	}
 }
