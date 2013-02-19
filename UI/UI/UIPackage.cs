@@ -32,6 +32,8 @@ using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
 using System.Xml.Linq;
 using ABB.SrcML;
+using LocalSearch;
+using LocalSearch.View;
 
 namespace Sando.UI
 {
@@ -171,10 +173,41 @@ namespace Sando.UI
                 var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.sandoSearch);
                 var menuToolWin = new MenuCommand(_viewManager.ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand(menuToolWin);
-                    int number = Convert.ToInt32(element.DefinitionLineNumber);
-                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score, gbuilder.GetXElementFromLineNum(number));
+
+                var menuCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.localSandoSearch);
+                var menuItem = new MenuCommand((sender, evt) => TriggerLocalSearch(), menuCommandID);
+                mcs.AddCommand(menuItem);
             }
         }
+
+        private void TriggerLocalSearch()
+        {
+            var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
+            if (active != null)
+            {
+                var fileName = Path.Combine(active.Path, active.Name);
+                Context gbuilder = new Context(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\SrcML\\CSharp"));
+                var elements = gbuilder.GetMethodsAsMethodElements();
+                elements.AddRange(gbuilder.GetFieldsAsFieldElements());
+
+                var boxes = new NavigationBoxes();
+                boxes.InformationSource = gbuilder;
+                foreach (var element in elements)
+                {
+                    int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
+                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+                    boxes.FirstProgramElements.Add(element2);
+                }
+                System.Windows.Window window = new System.Windows.Window
+                {
+                    Title = "Single File Search",
+                    Content = boxes
+                };
+                window.ShowDialog();
+                window.Close();
+            }
+        }
+
 
         private void StartupCompleted()
         {

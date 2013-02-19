@@ -107,11 +107,6 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             get { return Path.GetFileName(ProgramElement.FullFilePath); }
         }
 
-        public int DefinitionLineNumber
-        {
-            get;
-            set;
-        }
 
         public string Parent
         {

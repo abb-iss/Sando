@@ -96,7 +96,7 @@ namespace LocalSearch
            this.ProgramElementRelation = ProgramElementRelation.Other;
 
            this.RelationLineNumber = new List<int>();
-           this.RelationLineNumber.Add(Convert.ToInt32(this.DefinitionLineNumber));
+           this.RelationLineNumber.Add(Convert.ToInt32(this.ProgramElement.DefinitionLineNumber));
 
            this.RelationCode = new XElement(code);
            if (element.ProgramElementType == ProgramElementType.Method) 

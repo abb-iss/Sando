@@ -199,7 +199,7 @@ namespace LocalSearch
             {
                 if (ele.Name.Equals(target.Name)
                 && ele.ProgramElementType.Equals(target.ProgramElementType)
-                && ele.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
+                && ele.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
                     return true;
             }
 
@@ -213,7 +213,7 @@ namespace LocalSearch
                 var ele1 = ele.Item1;
                 if (ele1.Name.Equals(target.Name)
                   && ele1.ProgramElementType.Equals(target.ProgramElementType)
-                  && ele1.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
+                  && ele1.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
                     return true;
             }
 
