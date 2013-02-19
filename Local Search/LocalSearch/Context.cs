@@ -52,11 +52,12 @@ namespace LocalSearch
         public void Intialize(string srcPath, string srcMLPath = null)
         {
             graph = new GraphBuilder(srcPath, srcMLPath);
+            graph.Initialize();
             filePath = srcPath;
         }
 
 
-        public void RankRelatedInfo(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
+        private void RankRelatedInfo(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
         {
             //score setting
             switch (heuristic)
@@ -175,10 +176,16 @@ namespace LocalSearch
         public List<ProgramElementWithRelation> GetRecommendations(CodeSearchResult codeSearchResult)
         {            
             ProgramElementType elementtype = codeSearchResult.ProgramElementType;
+            List<ProgramElementWithRelation> recommendations = new List<ProgramElementWithRelation>();
+            
             if (elementtype.Equals(ProgramElementType.Field))
-                return GetFieldRelatedInfo(codeSearchResult);
+                recommendations = GetFieldRelatedInfo(codeSearchResult);                
             else // if(elementtype.Equals(ProgramElementType.Method))
-                return GetMethodRelatedInfo(codeSearchResult);
+                recommendations = GetMethodRelatedInfo(codeSearchResult);
+
+            RankRelatedInfo(codeSearchResult, ref recommendations);
+
+            return recommendations;
         }
 
         private List<ProgramElementWithRelation> GetFieldRelatedInfo(CodeSearchResult codeSearchResult)
@@ -244,12 +251,15 @@ namespace LocalSearch
 
             return listMethodRelated;
         }
-
-
-
+        
         public XElement GetXElementFromLineNum(int number)
         {
             return graph.GetXElementFromLineNum(number);
+        }
+
+        public ProgramElementRelation GetRelation(CodeSearchResult searchRes1, CodeSearchResult searchRes2, ref List<int> UsedLineNumber)
+        {
+            return graph.GetRelation(searchRes1, searchRes2, ref UsedLineNumber);
         }
     }
 }
