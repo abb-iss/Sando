@@ -184,9 +184,12 @@ namespace LocalSearch
                 if (searchres.Count() != 0)
                 {
                     //what is more closer related to search result is set higher score
-                    if (isExisting(searchres, related))
+                    double searchScore = isExisting(searchres, related);
+                    if (searchScore > 0)
                     {
                         related.Score = related.Score + 0.1;
+                        if (searchScore > 1)
+                            related.Score += searchScore - 1;
                     }
                 }
 
@@ -206,18 +209,21 @@ namespace LocalSearch
             return false;
         }
 
-        private bool isExisting(List<Tuple<CodeSearchResult,int>> source, ProgramElementWithRelation target)
+        private double isExisting(List<Tuple<CodeSearchResult,int>> source, ProgramElementWithRelation target)
         {
+            double res = -1;
+
             foreach (var ele in source)
             {
                 var ele1 = ele.Item1;
                 if (ele1.Name.Equals(target.Name)
                   && ele1.ProgramElementType.Equals(target.ProgramElementType)
                   && ele1.DefinitionLineNumber.Equals(target.DefinitionLineNumber))
-                    return true;
+                    return ele1.Score;
             }
 
-            return false;  
+
+            return res;  
         }
 
 
