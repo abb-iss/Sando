@@ -20,23 +20,23 @@ namespace LocalSearch.UnitTests
         public void ShowUIOfField()
         {
             Context gbuilder = new Context(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.cs"); 
-            var elements = gbuilder.GetFieldsAsFieldElements();
-            var boxes = new NavigationBoxes();
-            boxes.InformationSource = gbuilder;
-            foreach (var element in elements)
-            {
-                int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
-                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
-                boxes.FirstProgramElements.Add(element2);
-            }
-            Window window = new Window
-            {
-                Title = "My User Control Dialog",
-                Content = boxes 
-            };
-            window.ShowDialog();
-            window.Close();
-            Dispatcher.CurrentDispatcher.InvokeShutdown();
+            //var elements = gbuilder.GetFieldsAsFieldElements();
+            //var boxes = new NavigationBoxes();
+            //boxes.InformationSource = gbuilder;
+            //foreach (var element in elements)
+            //{
+            //    int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
+            //    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+            //    boxes.FirstProgramElements.Add(element2);
+            //}
+            //Window window = new Window
+            //{
+            //    Title = "My User Control Dialog",
+            //    Content = boxes 
+            //};
+            //window.ShowDialog();
+            //window.Close();
+            //Dispatcher.CurrentDispatcher.InvokeShutdown();
         }
 
         [Test]
@@ -44,23 +44,23 @@ namespace LocalSearch.UnitTests
         public void ShowUIOfMethod()
         {
             Context gbuilder = new Context(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.cs");
-            var elements = gbuilder.GetMethodsAsMethodElements();
-            var boxes = new NavigationBoxes();
-            boxes.InformationSource = gbuilder;
-            foreach (var element in elements)
-            {
-                int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
-                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
-                boxes.FirstProgramElements.Add(element2);
-            }
-            Window window = new Window
-            {
-                Title = "My User Control Dialog",
-                Content = boxes
-            };
-            window.ShowDialog();
-            window.Close();
-            Dispatcher.CurrentDispatcher.InvokeShutdown();
+            //var elements = gbuilder.GetMethodsAsMethodElements();
+            //var boxes = new NavigationBoxes();
+            //boxes.InformationSource = gbuilder;
+            //foreach (var element in elements)
+            //{
+            //    int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
+            //    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+            //    boxes.FirstProgramElements.Add(element2);
+            //}
+            //Window window = new Window
+            //{
+            //    Title = "My User Control Dialog",
+            //    Content = boxes
+            //};
+            //window.ShowDialog();
+            //window.Close();
+            //Dispatcher.CurrentDispatcher.InvokeShutdown();
         }
 
     }

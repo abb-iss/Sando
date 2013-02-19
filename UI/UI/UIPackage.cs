@@ -186,16 +186,14 @@ namespace Sando.UI
             if (active != null)
             {
                 var fileName = Path.Combine(active.Path, active.Name);
-                Context gbuilder = new Context(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\SrcML\\CSharp"));
-                var elements = gbuilder.GetMethodsAsMethodElements();
-                elements.AddRange(gbuilder.GetFieldsAsFieldElements());
-
+                Context context = new Context();
+                context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\SrcML\\CSharp"));
                 var boxes = new NavigationBoxes();
-                boxes.InformationSource = gbuilder;
-                foreach (var element in elements)
+                boxes.InformationSource = context;
+                foreach (var element in context.GetRecommendations())
                 {
                     int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
-                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, context.GetXElementFromLineNum(number));
                     boxes.FirstProgramElements.Add(element2);
                 }
                 System.Windows.Window window = new System.Windows.Window

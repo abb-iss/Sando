@@ -11,14 +11,18 @@ using System.Xml.Linq;
 
 namespace LocalSearch
 {
-    public class Context : GraphBuilder
+    public class Context 
     {
+
+        private GraphBuilder graph;
+        private string filePath;
+
         public String query { set;  get; }
 
         //int -- line number on which the query or its extension is satisfied (only the highest score result?)
-        public List<Tuple<CodeSearchResult, int>> searchres { set; get; }
+        public List<Tuple<CodeSearchResult, int>> InitialSearchResults { set; get; }
 
-        public List<ProgramElementWithRelation> path
+        public List<ProgramElementWithRelation> CurrentPath
         {
             set; //when the user makes a new selection in the UI, set it
             get;
@@ -29,106 +33,28 @@ namespace LocalSearch
             set; //when the user drop a path (by returning to an ealier state), set it
             get;
         }
-
-        public int curPos
-        {
-            get
-            {
-                return path.Count - 1;
-            }
-
-        }
         
-        public Context(String srcPath, string SrcMLForCSharp = null):base(srcPath, SrcMLForCSharp) 
+        public Context()
         {
-            path = new List<ProgramElementWithRelation>();
+            CurrentPath = new List<ProgramElementWithRelation>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
-            searchres = new List<Tuple<CodeSearchResult,int>>();
+            InitialSearchResults = new List<Tuple<CodeSearchResult,int>>();
         }
 
-        public Context(String srcPath, String search, string SrcMLForCSharp = null)
-            : base(srcPath, SrcMLForCSharp) 
+        public Context(String search)            
         {
             query = search;
-            path = new List<ProgramElementWithRelation>();
+            CurrentPath = new List<ProgramElementWithRelation>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
-            searchres = new List<Tuple<CodeSearchResult, int>>();
+            InitialSearchResults = new List<Tuple<CodeSearchResult, int>>();
         }
 
-        public ProgramElementRelation GetRelation(CodeSearchResult element1, CodeSearchResult element2, ref List<int> UsedLineNumber)
+        public void Intialize(string srcPath, string srcMLPath = null)
         {
-            ProgramElementRelation relation = ProgramElementRelation.No;
-            ProgramElementType eletype1 = element1.ProgramElementType;
-            ProgramElementType eletype2 = element2.ProgramElementType;
-
-            if(eletype1.Equals(ProgramElementType.Field))
-            {
-                if(eletype2.Equals(ProgramElementType.Method))
-                {
-                    var methodDeclaration = GetMethod(element2.ProgramElement as MethodElement);
-                    if(ifFieldUsedinMethod(methodDeclaration, element1.Name, ref UsedLineNumber))
-                    {
-                        relation = ProgramElementRelation.UseBy;
-                        return relation;
-                    }
-                }
-            }            
-            else // eletype1.Equals(ProgramElementType.Method)
-            {
-                   if(eletype2.Equals(ProgramElementType.Method))
-                   {
-                       var methodDec1 = GetMethod(element1.ProgramElement as MethodElement);
-                       var methodDec2 = GetMethod(element2.ProgramElement as MethodElement);
-
-                       List<Tuple<XElement, int>> myCallers = null;
-                       List<Tuple<XElement, int>> myCallees = null;
-                       Callers.TryGetValue(methodDec1.GetSrcLineNumber(), out myCallers);
-                       Calls.TryGetValue(methodDec1.GetSrcLineNumber(), out myCallees);
-
-                       if (myCallers != null)
-                       {   
-                           foreach (var caller in myCallers)
-                           {
-                               if ((caller.Item1.GetSrcLineNumber() == methodDec2.GetSrcLineNumber())
-                               && (caller.Item1.Element(SRC.Name).Value == methodDec2.Element(SRC.Name).Value))
-                               {
-                                   relation = ProgramElementRelation.CallBy;
-                                   UsedLineNumber.Add(caller.Item2);
-                               }                               
-                           }
-                           return relation;
-                       }
-
-                       if (myCallees != null)
-                       {
-                           foreach (var callee in myCallees)
-                           {
-                               if ((callee.Item1.GetSrcLineNumber() == methodDec2.GetSrcLineNumber())
-                               && (callee.Item1.Element(SRC.Name).Value == methodDec2.Element(SRC.Name).Value))
-                               {
-                                   relation = ProgramElementRelation.Call;
-                                   UsedLineNumber.Add(callee.Item2);
-                               }
-                           }
-
-                           return relation;                           
-                       }
-
-                   }
-                   else //eletype2.Equals(ProgramElementType.Field)
-                   {
-                       var methodDeclaration = GetMethod(element1.ProgramElement as MethodElement);
-                       if(ifFieldUsedinMethod(methodDeclaration, element2.Name, ref UsedLineNumber))
-                       {
-                            relation = ProgramElementRelation.Use;
-                            return relation;
-                       }
-                   }
-            }
-
-            return relation;
-                
+            graph = new GraphBuilder(srcPath, srcMLPath);
+            filePath = srcPath;
         }
+
 
         public void RankRelatedInfo(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
         {
@@ -172,19 +98,19 @@ namespace LocalSearch
         {            
             foreach (var related in listRelatedInfo)
             {
-                if (path.Count() != 0)
+                if (CurrentPath.Count() != 0)
                 {
                     //what has shown before is set lower score
-                    if (isExisting(path, related))
+                    if (isExisting(CurrentPath, related))
                     {
                         related.Score = related.Score - 0.2;
                     }
                 }
 
-                if (searchres.Count() != 0)
+                if (InitialSearchResults.Count() != 0)
                 {
                     //what is more closer related to search result is set higher score
-                    double searchScore = isExisting(searchres, related);
+                    double searchScore = isExisting(InitialSearchResults, related);
                     if (searchScore > 0)
                     {
                         related.Score = related.Score + 0.1;
@@ -238,5 +164,92 @@ namespace LocalSearch
 
         #endregion ranking heuristics
 
+
+        public IEnumerable<CodeSearchResult> GetRecommendations()
+        {
+            var methods = graph.GetMethodsAsMethodElements();
+            methods.AddRange(graph.GetFieldsAsFieldElements());
+            return methods;
+        }
+
+        public List<ProgramElementWithRelation> GetRecommendations(CodeSearchResult codeSearchResult)
+        {            
+            ProgramElementType elementtype = codeSearchResult.ProgramElementType;
+            if (elementtype.Equals(ProgramElementType.Field))
+                return GetFieldRelatedInfo(codeSearchResult);
+            else // if(elementtype.Equals(ProgramElementType.Method))
+                return GetMethodRelatedInfo(codeSearchResult);
+        }
+
+        private List<ProgramElementWithRelation> GetFieldRelatedInfo(CodeSearchResult codeSearchResult)
+        {
+            List<ProgramElementWithRelation> listFiledRelated
+                = new List<ProgramElementWithRelation>();
+            String fieldname = codeSearchResult.Name;
+
+            //relation 0: get the decl of itself
+            if ((codeSearchResult as ProgramElementWithRelation) == null //direct search result (first column)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
+            {
+                //var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
+                var fieldDeclaration = graph.GetField(codeSearchResult.ProgramElement as FieldElement);
+                listFiledRelated.Add(XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(fieldDeclaration, filePath));
+            }
+
+            //relation 1: get methods that use this field
+            //listFiledRelated.AddRange(GetMethodElementsUseField(fieldname));
+            listFiledRelated.AddRange(graph.GetFieldUsers(codeSearchResult));
+
+            //there may be other relations that will be considered in the future
+            // todo
+
+            return listFiledRelated;
+
+        }
+
+        private List<ProgramElementWithRelation> GetMethodRelatedInfo(CodeSearchResult codeSearchResult)
+        {
+            List<ProgramElementWithRelation> listMethodRelated
+                = new List<ProgramElementWithRelation>();
+
+            //relation 0: get the decl of itself
+            if ((codeSearchResult as ProgramElementWithRelation) == null
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
+                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
+            {
+                var methodDeclaration = graph.GetMethod(codeSearchResult.ProgramElement as MethodElement);
+                listMethodRelated.Add(XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(methodDeclaration,filePath));
+            }
+
+            String methodname = codeSearchResult.Name;
+            int srcLineNumber = codeSearchResult.ProgramElement.DefinitionLineNumber;
+
+            //var method = GetFullMethodFromName(methodname, srcLineNumber);
+            //Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");
+
+            //relation 1: get methods that are called by this method (callees)
+            listMethodRelated.AddRange(graph.GetCallees(codeSearchResult));
+
+            //relation 2: get fields that are used by this method
+            //listMethodRelated.AddRange(GetFieldElementsUsedinMethod(method));
+            listMethodRelated.AddRange(graph.GetFieldUses(codeSearchResult));
+
+            //relation 3: get methods that call this method (callers)
+            listMethodRelated.AddRange(graph.GetCallers(codeSearchResult));
+
+            return listMethodRelated;
+        }
+
+
+
+        public XElement GetXElementFromLineNum(int number)
+        {
+            return graph.GetXElementFromLineNum(number);
+        }
     }
 }

@@ -36,6 +36,7 @@ using EnvDTE;
 using EnvDTE80;
 using Sando.ExtensionContracts.Services;
 using System.ComponentModel.Composition;
+using Sando.DependencyInjection;
 
 
 namespace LocalSearch.View
@@ -45,9 +46,6 @@ namespace LocalSearch.View
     /// </summary>
     public partial class NavigationBoxes : UserControl
     {
-
-        [Import(typeof(ISearchService))]
-        ISearchService searcher;
 
         public NavigationBoxes()
         {
@@ -68,16 +66,14 @@ namespace LocalSearch.View
             try
             {
                 InitDte2();
-                var sp = new ServiceProvider(dte as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
-                var container = sp.GetService(typeof(Microsoft.VisualStudio.ComponentModelHost.SComponentModel)) as Microsoft.VisualStudio.ComponentModelHost.IComponentModel;
-                container.DefaultCompositionService.SatisfyImportsOnce(this);
+                var searchManager = ServiceLocator.Resolve<ISearchService>();
                 InformationSource.query = s; //set context
-                var results = searcher.Search(s);
+                var results = searchManager.Search(s);
                 FirstProgramElements.Clear();
                 foreach (var result in results)
                 {   
                     int number = Convert.ToInt32(result.ProgramElement.DefinitionLineNumber);
-                    InformationSource.searchres.Add(Tuple.Create(result, number)); //set context
+                    InformationSource.InitialSearchResults.Add(Tuple.Create(result, number)); //set context
                     FirstProgramElements.Add(new ProgramElementWithRelation(result.ProgramElement, result.Score, InformationSource.GetXElementFromLineNum(number)));
                 }
             }
@@ -247,7 +243,7 @@ namespace LocalSearch.View
                 }
                 var selected = currentNavigationBox.SelectedItem as CodeSearchResult;
                 SelectedElements.Add(selected);
-                var relatedmembers = InformationSource.GetRelatedInfo(selected);
+                var relatedmembers = InformationSource.GetRecommendations(selected);
                 InformationSource.RankRelatedInfo(selected, ref relatedmembers); // ranking
 
                 foreach (var member in relatedmembers)
@@ -266,7 +262,7 @@ namespace LocalSearch.View
             {
                 SelectedElements.RemoveRange(currentPos, SelectedNum - currentPos);
 
-                InformationSource.path.RemoveRange(currentPos, SelectedNum - currentPos); // set context
+                InformationSource.CurrentPath.RemoveRange(currentPos, SelectedNum - currentPos); // set context
             }
         }
 
@@ -284,7 +280,7 @@ namespace LocalSearch.View
             strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
 
             if (firstElement as ProgramElementWithRelation != null) //set context
-                InformationSource.path.Add(firstElement as ProgramElementWithRelation);
+                InformationSource.CurrentPath.Add(firstElement as ProgramElementWithRelation);
 
             int i = 1;
             while (i < count)
@@ -297,7 +293,7 @@ namespace LocalSearch.View
 
                 if (Element as ProgramElementWithRelation != null)
                 {
-                    InformationSource.path.Add(Element as ProgramElementWithRelation); //set context
+                    InformationSource.CurrentPath.Add(Element as ProgramElementWithRelation); //set context
 
                     var memInfo = type.GetMember(((Element as ProgramElementWithRelation)).ProgramElementRelation.ToString());
                     var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
