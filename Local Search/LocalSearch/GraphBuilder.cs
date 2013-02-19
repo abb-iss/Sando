@@ -53,6 +53,11 @@ namespace LocalSearch
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
             }
 
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             FullMethods = GetFullMethods();
 
             FieldDecs = GetFieldDecs();
@@ -61,6 +66,7 @@ namespace LocalSearch
 
             CreateFieldUseGraph();
         }
+
 
         #region callgraph related
         private void CreateCallGraph()
