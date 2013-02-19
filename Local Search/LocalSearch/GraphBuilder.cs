@@ -636,7 +636,7 @@ namespace LocalSearch
             var definitionLineNumber = fielddecl.Element(SRC.Name).GetSrcLineNumber();
             var fullFilePath = srcmlFile.FileName;
             var snippet = fielddecl.ToSource();
-            var relation = ProgramElementRelation.Other; //by default
+            //var relation = ProgramElementRelation.Other; //by default
 
             AccessLevel accessLevel = AccessLevel.Internal; //by default
             var specifier = fielddecl.Element(SRC.Type).Elements(SRC.Specifier);
@@ -664,7 +664,7 @@ namespace LocalSearch
                 definitionLineNumber, fullFilePath, snippet, 
                 accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
 
-            var elementwrelation = new ProgramElementWithRelation(element, 1.0, relation);
+            var elementwrelation = new ProgramElementWithRelation(element, 1.0, fielddecl);
 
             return elementwrelation;
                         
@@ -678,7 +678,7 @@ namespace LocalSearch
             var snippet = "";
             if(block != null)
                 snippet = fullmethod.Element(SRC.Block).ToSource(); //todo: only show related lines  
-            var relation = ProgramElementRelation.Other; //by default
+            //var relation = ProgramElementRelation.Other; //by default
             
             AccessLevel accessLevel = AccessLevel.Internal; //by default
             var specifier = fullmethod.Elements(SRC.Specifier); //for constructor (no return type/value)
@@ -729,7 +729,7 @@ namespace LocalSearch
             var element = new MethodElement(fullmethod.Element(SRC.Name).Value,
                 definitionLineNumber, fullFilePath, snippet, 
                 accessLevel, args, returnType, body, classId, className, String.Empty, isconstructor);
-            var elementwrelation = new ProgramElementWithRelation(element, 1.0, relation);
+            var elementwrelation = new ProgramElementWithRelation(element, 1.0, fullmethod);
 
             return elementwrelation;
             

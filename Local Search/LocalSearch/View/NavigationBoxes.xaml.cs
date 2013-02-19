@@ -76,8 +76,9 @@ namespace LocalSearch.View
                 FirstProgramElements.Clear();
                 foreach (var result in results)
                 {   
-                    InformationSource.searchres.Add(Tuple.Create(result, Convert.ToInt32(result.DefinitionLineNumber))); //set context
-                    FirstProgramElements.Add(new ProgramElementWithRelation(result.Element, result.Score));
+                    int number = Convert.ToInt32(result.DefinitionLineNumber);
+                    InformationSource.searchres.Add(Tuple.Create(result, number)); //set context
+                    FirstProgramElements.Add(new ProgramElementWithRelation(result.Element, result.Score, InformationSource.GetXElementFromLineNum(number)));
                 }
             }
             catch (NullReferenceException e)

@@ -36,6 +36,8 @@ using System.ComponentModel.Composition;
 using Sando.ExtensionContracts.Services;
 using System.Linq;
 using Sando.Indexer.Searching.Criteria;
+using System.Xml.Linq;
+using ABB.SrcML;
 
 namespace Sando.UI
 {
@@ -231,7 +233,8 @@ namespace Sando.UI
                 boxes.InformationSource = gbuilder;
                 foreach (var element in elements)
                 {
-                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
+                    int number = Convert.ToInt32(element.DefinitionLineNumber);
+                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score, gbuilder.GetXElementFromLineNum(number));
                     boxes.FirstProgramElements.Add(element2);
                 }
                 System.Windows.Window window = new System.Windows.Window

@@ -25,7 +25,8 @@ namespace LocalSearch.UnitTests
             boxes.InformationSource = gbuilder;
             foreach (var element in elements)
             {
-                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
+                int number = Convert.ToInt32(element.DefinitionLineNumber);
+                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score, gbuilder.GetXElementFromLineNum(number));
                 boxes.FirstProgramElements.Add(element2);
             }
             Window window = new Window
@@ -48,7 +49,8 @@ namespace LocalSearch.UnitTests
             boxes.InformationSource = gbuilder;
             foreach (var element in elements)
             {
-                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
+                int number = Convert.ToInt32(element.DefinitionLineNumber);
+                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score, gbuilder.GetXElementFromLineNum(number));
                 boxes.FirstProgramElements.Add(element2);
             }
             Window window = new Window

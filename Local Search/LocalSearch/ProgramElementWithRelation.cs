@@ -84,22 +84,35 @@ namespace LocalSearch
 
         public XElement RelationCode { get; set; }
 
-        public ProgramElementWithRelation(ProgramElement element, double score, ProgramElementRelation relation):
-            base(element, score)
-	   {           
-		   this.ProgramElementRelation = relation;
-           this.RelationLineNumber = new List<int>();
-           this.RelationLineNumber.Add(Convert.ToInt32(this.DefinitionLineNumber));
-	   }
-
-        public ProgramElementWithRelation(ProgramElement element, double score) :
-            base(element, score)
+        public String RelationCodeAsString
         {
-            this.ProgramElementRelation = ProgramElementRelation.Other;
-            this.RelationLineNumber = new List<int>();
-            this.RelationLineNumber.Add(Convert.ToInt32(this.DefinitionLineNumber));
+            get { return RelationCode.ToSource(); }
         }
 
+        public ProgramElementWithRelation(ProgramElement element, double score, XElement code):
+            base(element, score)
+	   {           
+		   //this.ProgramElementRelation = relation;
+           this.ProgramElementRelation = ProgramElementRelation.Other;
+
+           this.RelationLineNumber = new List<int>();
+           this.RelationLineNumber.Add(Convert.ToInt32(this.DefinitionLineNumber));
+
+           this.RelationCode = new XElement(code);
+           if (element.ProgramElementType == ProgramElementType.Method) 
+           {
+               XElement body = this.RelationCode.Element(SRC.Block);
+               //try [todo -- uncomment when release, now leave for detecting bug]
+               {
+                   body.Remove();
+               }
+               //catch (NullReferenceException e)
+               //{
+               //    //do nothing
+               //}
+           }
+           
+	   }
                
     }
 }

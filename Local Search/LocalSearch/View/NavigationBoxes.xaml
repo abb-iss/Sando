@@ -36,12 +36,12 @@
                                         </TextBlock>
                                     </Label.Content>                                    
                                 </Label>
-                                <!--<Label Content="{Binding Path=Name}"></Label>
+                                <!--<Label Content="{Binding Path=Name}"></Label>-->
                                 <StackPanel Orientation="Horizontal">
-                                            <Label Content="{Binding Path=ProgramElementType}" FontSize="9" FontStyle="Italic"></Label>
-                                            <Label Content="{Binding Path=DefinitionLineNumber}" FontSize="9"></Label>
-                                            <Label Content="{Binding Path=ProgramElementRelation}" FontSize="9"></Label>
-                                        </StackPanel>-->
+                                            <!--<Label Content="{Binding Path=ProgramElementType}" FontSize="9" FontStyle="Italic"></Label>
+                                            <Label Content="{Binding Path=DefinitionLineNumber}" FontSize="9"></Label>-->
+                                    <Label Content="{Binding Path=RelationCodeAsString}" FontSize="9"></Label>
+                                </StackPanel>
                                 <Separator Width="140" Background="Black" />
                             </StackPanel>
                         </Border>                            
