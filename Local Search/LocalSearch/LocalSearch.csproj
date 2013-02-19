@@ -103,7 +103,6 @@
     <Compile Include="GraphBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\NavigationBoxes.xaml.cs" />
-    <Compile Include="View\SearchManager.cs" />
     <Compile Include="XElementToProgramElementConverter.cs" />
   </ItemGroup>
   <ItemGroup>
