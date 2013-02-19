@@ -148,6 +148,7 @@
     <Compile Include="Documents\CustomElementTest.cs" />
     <Compile Include="Documents\CustomFieldTest.cs" />
     <Compile Include="Documents\DocumentFactoryTest.cs" />
+    <Compile Include="Documents\LuceneQueryBuilderTest.cs" />
     <Compile Include="Documents\MyCustomProgramElementForTesting.cs" />
     <Compile Include="Documents\SandoDocumentStringExtensionTest.cs" />
     <Compile Include="IndexFiltering\IndexFilterManagerTest.cs" />

@@ -96,16 +96,16 @@ namespace LocalSearch
         }
 
         protected List<ProgramElementWithRelation> GetCallees(CodeSearchResult codeSearchResult)
-        {         
-            
-            var method = GetMethod(codeSearchResult.Element as MethodElement);
+        {
+
+            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
             return GetCallees( method);
         }
 
         protected List<ProgramElementWithRelation> GetCallers(CodeSearchResult codeSearchResult)
         {
 
-            var method = GetMethod(codeSearchResult.Element as MethodElement);
+            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
             return GetCallers(method);
         }
 
@@ -259,7 +259,7 @@ namespace LocalSearch
 
         protected List<ProgramElementWithRelation> GetFieldUses(CodeSearchResult codeSearchResult)
         {
-            var method = GetMethod(codeSearchResult.Element as MethodElement);
+            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
             return GetFieldUses(method);
         }
 
@@ -284,7 +284,7 @@ namespace LocalSearch
 
         protected List<ProgramElementWithRelation> GetFieldUsers(CodeSearchResult codeSearchResult)
         {
-            var field = GetField(codeSearchResult.Element as FieldElement);
+            var field = GetField(codeSearchResult.ProgramElement as FieldElement);
             return GetFieldUsers(field);
         }        
 
@@ -581,7 +581,7 @@ namespace LocalSearch
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
             {
                 //var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
-                var fieldDeclaration = GetField(codeSearchResult.Element as FieldElement);
+                var fieldDeclaration = GetField(codeSearchResult.ProgramElement as FieldElement);
                 listFiledRelated.Add(GetFieldElementWRelationFromDecl(fieldDeclaration));
             }
 
@@ -608,12 +608,12 @@ namespace LocalSearch
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
                 || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
             {
-                var methodDeclaration = GetMethod(codeSearchResult.Element as MethodElement);
+                var methodDeclaration = GetMethod(codeSearchResult.ProgramElement as MethodElement);
                 listMethodRelated.Add(GetMethodElementWRelationFromXElement(methodDeclaration));
             }
 
             String methodname = codeSearchResult.Name;
-            int srcLineNumber = codeSearchResult.Element.DefinitionLineNumber;
+            int srcLineNumber = codeSearchResult.ProgramElement.DefinitionLineNumber;
 
             //var method = GetFullMethodFromName(methodname, srcLineNumber);
             //Contract.Requires((method != null), "Method "+ methodname + " does not belong to this local file.");

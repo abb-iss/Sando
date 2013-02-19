@@ -7,6 +7,7 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
+using System.Text.RegularExpressions;
 
 namespace Sando.Indexer.Searching
 {
@@ -107,8 +108,10 @@ namespace Sando.Indexer.Searching
             int collectionSize = _criteria.Locations.Count;
             foreach (string location in _criteria.Locations)
             {
+                var updatedLocation = EscapeFilePath(location);
+
                 stringBuilder.Append(SandoField.FullFilePath.ToString() + ":");
-                stringBuilder.Append(String.IsNullOrWhiteSpace(location) ? "*" : '\"' + location + '\"');
+                stringBuilder.Append(String.IsNullOrWhiteSpace(updatedLocation) ? "*" : '\"' + updatedLocation + '\"');
                 AppendBoostFactor(stringBuilder, SandoField.FullFilePath.ToString());
                 if (collectionSize > 1)
                 {
@@ -117,6 +120,15 @@ namespace Sando.Indexer.Searching
                 --collectionSize;
             }
             stringBuilder.Append(")");
+        }
+
+        private static string EscapeFilePath(string location)
+        {
+            string strRegex = @"([^\\])\\([^\\])";
+            RegexOptions myRegexOptions = RegexOptions.None;
+            Regex myRegex = new Regex(strRegex, myRegexOptions);
+            string strReplace = @"$1\\$2";
+            return myRegex.Replace(location, strReplace);
         }
 
         private void FileExtensionsCriteriaToString(StringBuilder stringBuilder)

@@ -45,6 +45,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSearch", "..\Local Sea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSearch.UnitTests", "..\Local Search\LocalSearch.UnitTests\LocalSearch.UnitTests.csproj", "{9526630F-74C1-4FF0-880C-5A572F6A044F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjection", "..\DependencyInjection\DependencyInjection\DependencyInjection.csproj", "{C4332491-CD26-408E-8E80-7D1C7A5C6ABE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyInjectionUnitTests", "..\DependencyInjection\DependencyInjectionUnitTests\DependencyInjectionUnitTests.csproj", "{45930FA0-47BA-4398-BEB4-2F95CA162DD3}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Sando.vsmdi
@@ -258,6 +262,26 @@ Global
 		{546295B5-61C1-4BF6-9936-6015079734C6}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{546295B5-61C1-4BF6-9936-6015079734C6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{546295B5-61C1-4BF6-9936-6015079734C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6DE1BF7E-F357-40F8-AEDC-B52D19CBDB11}.Release|x86.ActiveCfg = Release|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9526630F-74C1-4FF0-880C-5A572F6A044F}.Release|x86.ActiveCfg = Release|Any CPU
 		{C4332491-CD26-408E-8E80-7D1C7A5C6ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C4332491-CD26-408E-8E80-7D1C7A5C6ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4332491-CD26-408E-8E80-7D1C7A5C6ABE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

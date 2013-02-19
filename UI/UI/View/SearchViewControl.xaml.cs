@@ -18,6 +18,8 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
+using EnvDTE80;
+using Sando.DependencyInjection;
 
 namespace Sando.UI.View
 {
@@ -42,38 +44,43 @@ namespace Sando.UI.View
 
         public ObservableCollection<AccessWrapper> AccessLevels
         {
-            get { return (ObservableCollection<AccessWrapper>) GetValue(AccessLevelsProperty); }
+            get { return (ObservableCollection<AccessWrapper>)GetValue(AccessLevelsProperty); }
             set { SetValue(AccessLevelsProperty, value); }
         }
 
 
         public ObservableCollection<ProgramElementWrapper> ProgramElements
         {
-            get { return (ObservableCollection<ProgramElementWrapper>) GetValue(ProgramElementsProperty); }
+            get { return (ObservableCollection<ProgramElementWrapper>)GetValue(ProgramElementsProperty); }
             set { SetValue(ProgramElementsProperty, value); }
         }
 
         public ObservableCollection<CodeSearchResult> SearchResults
         {
-            get { return (ObservableCollection<CodeSearchResult>) GetValue(SearchResultsProperty); }
+            get { return (ObservableCollection<CodeSearchResult>)GetValue(SearchResultsProperty); }
             set { SetValue(SearchResultsProperty, value); }
         }
 
         public string SearchStatus
         {
-            get { return (string) GetValue(SearchStatusProperty); }
+            get { return (string)GetValue(SearchStatusProperty); }
             private set { SetValue(SearchStatusProperty, value); }
         }
 
         public SimpleSearchCriteria SearchCriteria
         {
-            get { return (SimpleSearchCriteria) GetValue(SearchCriteriaProperty); }
+            get { return (SimpleSearchCriteria)GetValue(SearchCriteriaProperty); }
             set { SetValue(SearchCriteriaProperty, value); }
         }
 
         public string SearchLabel
         {
             get { return Translator.GetTranslation(TranslationCode.SearchLabel); }
+        }
+
+        public string SearchFileLabel
+        {
+            get { return Translator.GetTranslation(TranslationCode.SearchFileLabel); }
         }
 
         public string ExpandCollapseResultsLabel
@@ -173,7 +180,7 @@ namespace Sando.UI.View
             }
         }
 
-        private void BeginSearch(string searchString)
+        private void BeginSearch(string searchString, bool localSearch = false)
         {
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
@@ -200,6 +207,21 @@ namespace Sando.UI.View
                 SearchCriteria.ProgramElementTypes.Clear();
             }
 
+            if (localSearch)
+            {
+                var activeDocument = ServiceLocator.Resolve<DTE2>().ActiveDocument;
+                if (activeDocument != null)
+                {
+                    var path = activeDocument.FullName;
+                    SearchCriteria.SearchByLocation = true;
+                    SearchCriteria.Locations.Clear();
+                    SearchCriteria.Locations.Add(path);
+                }
+            }
+            else
+            {
+                SearchCriteria.SearchByLocation = false;
+            }
             SearchAsync(searchString, SearchCriteria);
         }
 
@@ -216,10 +238,10 @@ namespace Sando.UI.View
             public SimpleSearchCriteria Criteria { get; set; }
             public String Query { get; set; }
         }
-      
+
         void sandoWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var searchParams = (WorkerSearchParameters) e.Argument;
+            var searchParams = (WorkerSearchParameters)e.Argument;
             _searchManager.Search(searchParams.Query, searchParams.Criteria);
         }
 
@@ -261,7 +283,7 @@ namespace Sando.UI.View
             }
             else
             {
-                Dispatcher.Invoke((Action) (() => UpdateResults(results)));
+                Dispatcher.Invoke((Action)(() => UpdateResults(results)));
             }
         }
 
@@ -331,7 +353,7 @@ namespace Sando.UI.View
 
         private void recommendationWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var queryString = (string) e.Argument;
+            var queryString = (string)e.Argument;
 
             var result = _recommender.GenerateRecommendations(queryString);
             if (Thread.CurrentThread == Dispatcher.Thread)
@@ -340,7 +362,7 @@ namespace Sando.UI.View
             }
             else
             {
-                Dispatcher.Invoke((Action) (() => UpdateRecommendations(result, queryString)));
+                Dispatcher.Invoke((Action)(() => UpdateRecommendations(result, queryString)));
             }
         }
 
@@ -375,11 +397,6 @@ namespace Sando.UI.View
         }
 
         private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-
-        internal SearchManager GetSearchManager()
-        {
-            return _searchManager;
-        }
         {
             var listBox = sender as ListBox;
             if (listBox != null)
@@ -388,13 +405,13 @@ namespace Sando.UI.View
 
         private void Toggled_Popup(object sender, RoutedEventArgs e)
         {
-            if(!SelectionPopup.IsOpen)
+            if (!SelectionPopup.IsOpen)
                 SelectionPopup.IsOpen = true;
         }
 
 
         public static readonly DependencyProperty AccessLevelsProperty =
-            DependencyProperty.Register("AccessLevels", typeof (ObservableCollection<AccessWrapper>), typeof (SearchViewControl), new UIPropertyMetadata(null));
+            DependencyProperty.Register("AccessLevels", typeof(ObservableCollection<AccessWrapper>), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty ProgramElementsProperty =
             DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<ProgramElementWrapper>), typeof(SearchViewControl), new UIPropertyMetadata(null));
@@ -433,6 +450,12 @@ namespace Sando.UI.View
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
             }
-        }        
+        }
+
+        private void SearchFileButtonClick(object sender, RoutedEventArgs e)
+        {
+            BeginSearch(searchBox.Text, true);
+        }
+    
     }
 }

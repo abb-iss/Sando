@@ -12,7 +12,7 @@ using Sando.Indexer.IndexState;
 namespace Sando.UI.Monitoring
 {
     public class IndexUpdateManager
-	{
+    {
         private readonly DocumentIndexer _currentIndexer;
 
         public IndexUpdateManager()
@@ -64,5 +64,5 @@ namespace Sando.UI.Monitoring
                 FileLogger.DefaultLogger.Info("Exception in IndexUpdateManager.Update() " + e.Message + "\n" + e.StackTrace);
             }
         }
-	}
+    }
 }

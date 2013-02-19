@@ -25,6 +25,14 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 			Assert.AreEqual(queryString, String.Empty, "Created query string is invalid!");
 		}
 
+        [Test]
+        public void SimpleSearchCriteria_Location()
+        {
+            SimpleSearchCriteria simpleSearchCriteria = new SimpleSearchCriteria();
+            simpleSearchCriteria.Locations.Add("C:\\wow\\open\\dogs");
+            Assert.IsTrue(simpleSearchCriteria.Locations.Contains("C:\\\\wow\\\\open\\\\dogs"), "Location not modified as needed");
+        }
+
 		[Test]
 		public void SimpleSearchCriteria_ToQueryStringThrowsWhenSearchingByAccessLevelWithNoAccessLevelCriteria()
 		{

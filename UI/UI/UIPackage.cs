@@ -28,6 +28,8 @@ using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
 using System.Reflection;
+using Sando.Indexer.Documents;
+using Lucene.Net.Analysis.Standard;
 
 
 
@@ -53,26 +55,25 @@ namespace Sando.UI
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SearchToolWindow), Transient = false, MultiInstances = false, Style = VsDockStyle.Tabbed)]
-    
+
     [Guid(GuidList.guidUIPkgString)]
-	// This attribute starts up our extension early so that it can listen to solution events    
-	[ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
+    // This attribute starts up our extension early so that it can listen to solution events    
+    [ProvideAutoLoad("ADFC4E64-0397-11D1-9F4E-00A0C911004F")]
     // Start when solution exists
     //[ProvideAutoLoad("f1536ef8-92ec-443c-9ed7-fdadf150da82")]    
-	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
-	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
-    [Export(typeof(ISearchService))]
-    public sealed class UIPackage : Package, IToolWindowFinder, ISearchService
+    [ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
+    [ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
+    public sealed class UIPackage : Package, IToolWindowFinder
     {
         private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
         private ABB.SrcML.SrcMLArchive _srcMLArchive;
 
-    	private SolutionEvents _solutionEvents;
-		private ExtensionPointsConfiguration _extensionPointsConfiguration;
+        private SolutionEvents _solutionEvents;
+        private ExtensionPointsConfiguration _extensionPointsConfiguration;
         private DTEEvents _dteEvents;
         private ViewManager _viewManager;
-		private SolutionReloadEventListener _listener;
-        private WindowEvents _windowEvents;        
+        private SolutionReloadEventListener _listener;
+        private WindowEvents _windowEvents;
 
         /// <summary>
         /// Default constructor of the package.
@@ -82,7 +83,7 @@ namespace Sando.UI
         /// initialization is the Initialize method.
         /// </summary>
         public UIPackage()
-        {            
+        {
             PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
             FileLogger.SetupDefautlFileLogger(PathManager.Instance.GetExtensionRoot());
             FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
@@ -92,7 +93,7 @@ namespace Sando.UI
 
         public SandoDialogPage GetSandoDialogPage()
         {
-            return GetDialogPage(typeof (SandoDialogPage)) as SandoDialogPage;
+            return GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage;
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -107,17 +108,17 @@ namespace Sando.UI
         {
             try
             {
-                base.Initialize();                
+                base.Initialize();
                 FileLogger.DefaultLogger.Info("Sando initialization started.");
                 base.Initialize();
 
                 SetupDependencyInjectionObjects();
 
                 _viewManager = ServiceLocator.Resolve<ViewManager>();
-                AddCommand();                
+                AddCommand();
                 SetUpLifeCycleEvents();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
@@ -132,16 +133,21 @@ namespace Sando.UI
             _dteEvents.OnStartupComplete += StartupCompleted;
             _windowEvents = dte.Events.WindowEvents;
             _windowEvents.WindowActivated += SandoWindowActivated;
-            
+
         }
 
         private void SandoWindowActivated(Window gotFocus, Window lostFocus)
         {
             try
-            {                
+            {
                 if (gotFocus.ObjectKind.Equals("{AC71D0B7-7613-4EDD-95CC-9BE31C0A993A}"))
                 {
                     var window = FindToolWindow(typeof(SearchToolWindow), 0, true);
+                    if ((null == window) || (null == window.Frame))
+                    {
+                        throw new NotSupportedException(Resources.CanNotCreateWindow);
+                    }
+                    var stw = window as SearchToolWindow;
                     if (stw != null)
                     {
                         stw.GetSearchViewControl().FocusOnText();
@@ -152,110 +158,67 @@ namespace Sando.UI
             {
                 FileLogger.DefaultLogger.Error(e);
             }
-            
-        }
 
-        private SearchToolWindow GetSearchToolWindow()
-        {
-            SearchToolWindow stw = null;
-            var window = this.FindToolWindow(typeof(SearchToolWindow), 0, true);
-            if ((null == window) || (null == window.Frame))
-            {
-                throw new NotSupportedException(Resources.CanNotCreateWindow);
-            }
-            stw = window as SearchToolWindow;
-            return stw;
         }
 
         private void AddCommand()
         {
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            var mcs = GetService(typeof (IMenuCommandService)) as OleMenuCommandService;
+            var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
                 // Create the command for the tool window
-                var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int) PkgCmdIDList.sandoSearch);
+                var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.sandoSearch);
                 var menuToolWin = new MenuCommand(_viewManager.ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand(menuToolWin);
-                
-                var menuCommandID = new CommandID(GuidList.guidUICmdSet,(int)PkgCmdIDList.localSandoSearch);                
-                var menuItem = new MenuCommand((sender, evt) => TriggerLocalSearch(), menuCommandID);
-                mcs.AddCommand(menuItem);                
-            }
-        }
-
-        private void TriggerLocalSearch()
-        {
-            var active = GetDte().ActiveDocument;
-            if (active != null)
-            {
-                var fileName = Path.Combine(active.Path, active.Name);
-                Context gbuilder = new Context(fileName,  Path.Combine(GetSrcMLDirectory(), "srcML-Win-cSharp")); 
-                var elements = gbuilder.GetMethodsAsMethodElements();
-                elements.AddRange(gbuilder.GetFieldsAsFieldElements());
-                
-                var boxes = new NavigationBoxes();
-                boxes.InformationSource = gbuilder;
-                foreach (var element in elements)
-                {
-                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.Element, element.Score);
-                    boxes.FirstProgramElements.Add(element2);
-                }
-                System.Windows.Window window = new System.Windows.Window
-                                                   {
-                                                       Title = "Single File Search",
-                                                       Content = boxes
-                                                   };
-                window.ShowDialog();
-                window.Close();
             }
         }
 
         private void StartupCompleted()
         {
-        	if (_viewManager.ShouldShow())
-        	{
-        		_viewManager.ShowSando();
-        		_viewManager.ShowToolbar();
-        	}
+            if (_viewManager.ShouldShow())
+            {
+                _viewManager.ShowSando();
+                _viewManager.ShowToolbar();
+            }
 
             if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
-        	{
-				//only need to do this in VS2010, and it breaks things in VS2012
-        		Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
-        		if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
-        		{
-        			SolutionHasBeenOpened();
-        		}
-        	}
+            {
+                //only need to do this in VS2010, and it breaks things in VS2012
+                Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
+                if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+                {
+                    SolutionHasBeenOpened();
+                }
+            }
 
-        	RegisterSolutionEvents();
-        }  
+            RegisterSolutionEvents();
+        }
 
         private void RegisterSolutionEvents()
         {
             var dte = ServiceLocator.Resolve<DTE2>();
             if (dte != null)
             {
-                _solutionEvents = dte.Events.SolutionEvents;                
+                _solutionEvents = dte.Events.SolutionEvents;
                 _solutionEvents.Opened += SolutionHasBeenOpened;
                 _solutionEvents.BeforeClosing += SolutionAboutToClose;
             }
 
-			_listener = new SolutionReloadEventListener();
-			_listener.OnQueryUnloadProject += () =>
-			{
-				SolutionAboutToClose();
-				SolutionHasBeenOpened();
-			};
+            _listener = new SolutionReloadEventListener();
+            _listener.OnQueryUnloadProject += () =>
+            {
+                SolutionAboutToClose();
+                SolutionHasBeenOpened();
+            };
         }
 
-         
+
 
         private void DteEventsOnOnBeginShutdown()
         {
             if (_extensionPointsConfiguration != null)
-            {                                
+            {
                 ExtensionPointsConfigurationFileReader.WriteConfiguration(_extensionPointsConfiguration);
                 //After writing the extension points configuration file, the index state file on disk is out of date; so it needs to be rewritten
                 IndexStateManager.SaveCurrentIndexState();
@@ -269,15 +232,15 @@ namespace Sando.UI
 
             extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
             extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
-            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx"},
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx" },
                                                                    new XMLFileParser());
-			extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
-																   new TextFileParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
+                                                                   new TextFileParser());
 
-            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter()); 	
+            extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());
             extensionPointsRepository.RegisterResultsReordererImplementation(new SortByScoreResultsReorderer());
- 	        extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
- 	        extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
+            extensionPointsRepository.RegisterQueryWeightsSupplierImplementation(new QueryWeightsSupplier());
+            extensionPointsRepository.RegisterQueryRewriterImplementation(new DefaultQueryRewriter());
             extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager());
 
 
@@ -287,26 +250,28 @@ namespace Sando.UI
             var logger = FileLogger.CreateFileLogger("ExtensionPointsLogger", loggerPath);
             _extensionPointsConfiguration = ExtensionPointsConfigurationFileReader.ReadAndValidate(logger);
 
-            if(_extensionPointsConfiguration != null)
-			{
+            if (_extensionPointsConfiguration != null)
+            {
                 _extensionPointsConfiguration.PluginDirectoryPath = sandoOptions.ExtensionPointsPluginDirectoryPath;
-				ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(_extensionPointsConfiguration, logger);
-			}
+                ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(_extensionPointsConfiguration, logger);
+            }
 
             var csParser = extensionPointsRepository.GetParserImplementation(".cs") as SrcMLCSharpParser;
-            if(csParser != null) {
+            if (csParser != null)
+            {
                 csParser.Archive = _srcMLArchive;
             }
             var cppParser = extensionPointsRepository.GetParserImplementation(".cpp") as SrcMLCppParser;
-            if(cppParser != null) {
+            if (cppParser != null)
+            {
                 cppParser.Archive = _srcMLArchive;
             }
 
         }
 
         private void SolutionAboutToClose()
-		{
-			try
+        {
+            try
             {
                 if (_srcMLArchive != null)
                 {
@@ -320,14 +285,14 @@ namespace Sando.UI
             {
                 FileLogger.DefaultLogger.Error(e);
             }
-		}
+        }
 
-		private void SolutionHasBeenOpened()
-		{
-            var bw = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
-		    bw.DoWork += RespondToSolutionOpened;
-		    bw.RunWorkerAsync();
-		}
+        private void SolutionHasBeenOpened()
+        {
+            var bw = new BackgroundWorker { WorkerReportsProgress = false, WorkerSupportsCancellation = false };
+            bw.DoWork += RespondToSolutionOpened;
+            bw.RunWorkerAsync();
+        }
 
         /// <summary>
         /// Respond to solution opening.
@@ -341,15 +306,18 @@ namespace Sando.UI
                 var solutionId = Guid.NewGuid();
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
                 var solutionPath = openSolution.FileName;
-                var key = new SolutionKey(solutionId, solutionPath);              
+                var key = new SolutionKey(solutionId, solutionPath);
                 ServiceLocator.RegisterInstance(key);
-                ServiceLocator.RegisterInstance(new IndexFilterManager());                
+                ServiceLocator.RegisterInstance(new IndexFilterManager());
 
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
                 FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
 
-                ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+                PerFieldAnalyzerWrapper analyzer =
+                    new PerFieldAnalyzerWrapper(new SnowballAnalyzer("English"));
+                analyzer.AddAnalyzer(SandoField.FullFilePath.ToString(), new KeywordAnalyzer());
+                ServiceLocator.RegisterInstance<Analyzer>(analyzer);
 
                 var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(4));
                 ServiceLocator.RegisterInstance(currentIndexer);
@@ -370,7 +338,7 @@ namespace Sando.UI
                 var generator = new ABB.SrcML.SrcMLGenerator(src2SrcmlDir);
                 var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
                 _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
-                
+
                 var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
                 _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
                 _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
@@ -382,14 +350,22 @@ namespace Sando.UI
 
                 SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), !isIndexRecreationRequired);
                 SwumManager.Instance.Archive = _srcMLArchive;
-                
+
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
             }
             catch (Exception e)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
-            }    
+            }
+        }
+
+        private class NoAnalyzer : Analyzer
+        {
+            public override TokenStream TokenStream(string fieldName, TextReader reader)
+            {
+                return new StandardTokenizer(reader);
+            }
         }
 
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
@@ -403,56 +379,20 @@ namespace Sando.UI
             }
         }
 
-    	#endregion
+        #endregion
 
 
 
 
         private void SetupDependencyInjectionObjects()
         {
-            ServiceLocator.RegisterInstance(GetService(typeof (DTE)) as DTE2);
+            ServiceLocator.RegisterInstance(GetService(typeof(DTE)) as DTE2);
             ServiceLocator.RegisterInstance(this);
             ServiceLocator.RegisterInstance(new ViewManager(this));
             ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
             ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
             ServiceLocator.RegisterInstance(new InitialIndexingWatcher());
             ServiceLocator.RegisterType<IIndexerSearcher, IndexerSearcher>();
-                ListUpdater updater = new ListUpdater(new List<CodeSearchResult>());
-                manager._myDaddy = updater;
-                var criteria = new SimpleSearchCriteria();
-                //criteria.SearchByLocation = true;
-                criteria.SearchByProgramElementType = true;
-                var dteTemp = Package.GetGlobalService(typeof(DTE)) as DTE2;
-                criteria.Locations.Add(dteTemp.ActiveDocument.FullName);
-                criteria.ProgramElementTypes.Add(ProgramElementType.Method);
-                criteria.ProgramElementTypes.Add(ProgramElementType.MethodPrototype);
-                criteria.ProgramElementTypes.Add(ProgramElementType.Field);
-                criteria.ProgramElementTypes.Add(ProgramElementType.Property);
-                manager.Search(searchCriteria,criteria);
-                manager._myDaddy = oldDaddy;
-                return updater.list;
-        }
-
-        public class ListUpdater : ISearchResultListener
-        {
-            
-            public List<CodeSearchResult> list;
-
-            public ListUpdater(List<CodeSearchResult> list)
-            {
-                // TODO: Complete member initialization
-                this.list = list;
-            }
-
-            public void Update(IQueryable<CodeSearchResult> results)
-            {
-                list.Clear();
-                list.AddRange(results);
-            }
-            public void UpdateMessage(string message)
-            {
-
-            }
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using System.Collections.ObjectModel;
 
 namespace Sando.Indexer.Searching.Criteria
 {
 	public class SimpleSearchCriteria : SearchCriteria
 	{
+
 		public SimpleSearchCriteria()
 		{
 			SearchTerms = new SortedSet<string>();
@@ -35,8 +37,13 @@ namespace Sando.Indexer.Searching.Criteria
 		public bool SearchByUsageType { get; set; }
 		public SortedSet<UsageType> UsageTypes { get; set; }
 		public bool SearchByLocation { get; set; }
-		public SortedSet<string> Locations { get; set; }
+        public SortedSet<string> Locations
+        {
+            get;
+            set;
+        }
+        private SortedSet<string> _locations;
         public bool SearchByFileExtension { get; set; }
-        public SortedSet<string> FileExtensions { get; set; }
+        public SortedSet<string> FileExtensions { get; set; }        
 	}
 }

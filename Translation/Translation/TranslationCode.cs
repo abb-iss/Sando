@@ -12,6 +12,7 @@
 			Exception_Indexer_LuceneIndexIsCorrupt,
 			Exception_Indexer_LuceneIndexAlreadyOpened,
 			SearchLabel,
+            SearchFileLabel,
             ExpandResultsLabel,
             CollapseResultsLabel,
 			ComboBoxItemCurrentDocument,

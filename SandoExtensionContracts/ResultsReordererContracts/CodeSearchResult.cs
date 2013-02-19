@@ -17,7 +17,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             Score = score;
         }
 
-        public double Score { get; private set; }
+        public double Score { get; set; }
 
         public ProgramElement ProgramElement { get; private set; }
 
@@ -105,6 +105,12 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         public string FileName
         {
             get { return Path.GetFileName(ProgramElement.FullFilePath); }
+        }
+
+        public int DefinitionLineNumber
+        {
+            get;
+            set;
         }
 
         public string Parent

@@ -19,6 +19,8 @@ using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using System.Threading;
 using Sando.Core.Tools;
+using Sando.Indexer.Documents;
+using Lucene.Net.Analysis.Standard;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -107,8 +109,12 @@ namespace Sando.IntegrationTests.Search
 
         private void CreateIndexer()
         {
+            
             ServiceLocator.RegisterInstance(new IndexFilterManager());
-            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+            PerFieldAnalyzerWrapper analyzer =
+                    new PerFieldAnalyzerWrapper(new SnowballAnalyzer("English"));
+            analyzer.AddAnalyzer(SandoField.FullFilePath.ToString(), new StandardAnalyzer());
+            ServiceLocator.RegisterInstance<Analyzer>(analyzer);
             var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), GetTimeToCommit());
             ServiceLocator.RegisterInstance(currentIndexer);
             ServiceLocator.RegisterInstance(new IndexUpdateManager());

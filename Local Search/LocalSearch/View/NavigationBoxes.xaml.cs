@@ -77,7 +77,7 @@ namespace LocalSearch.View
                 foreach (var result in results)
                 {   
                     InformationSource.searchres.Add(Tuple.Create(result, Convert.ToInt32(result.DefinitionLineNumber))); //set context
-                    FirstProgramElements.Add(new ProgramElementWithRelation(result.Element, result.Score));
+                    FirstProgramElements.Add(new ProgramElementWithRelation(result.ProgramElement, result.Score));
                 }
             }
             catch (NullReferenceException e)
@@ -278,7 +278,7 @@ namespace LocalSearch.View
                 return strbuilder;
             
             CodeSearchResult firstElement = SelectedElements[0];
-            String NameOfElement = firstElement.Element.Name;
+            String NameOfElement = firstElement.ProgramElement.Name;
             String TypeOfElement = firstElement.ProgramElementType.ToString();
             strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
 

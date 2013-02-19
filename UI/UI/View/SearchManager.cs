@@ -21,8 +21,6 @@ namespace Sando.UI.View
         private readonly ISearchResultListener _searchResultListener;
 
         public SearchManager(ISearchResultListener searchResultListener)
-            private static SearchManager current;
-                current = this;
         {
             _searchResultListener = searchResultListener;
         }
@@ -34,7 +32,7 @@ namespace Sando.UI.View
                 var codeSearcher = new CodeSearcher(new IndexerSearcher());
                 if (String.IsNullOrEmpty(searchString))
                     return;
-                
+
                 var solutionKey = ServiceLocator.ResolveOptional<SolutionKey>(); //no opened solution
                 if (solutionKey == null)
                 {
@@ -79,19 +77,14 @@ namespace Sando.UI.View
         }
 
         private static SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
-        {            
-            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                       
+        {
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
             return CriteriaBuilder.GetBuilder().
                 AddCriteria(searchCriteria).
                 AddSearchString(searchString).
                 NumResults(sandoOptions.NumberOfSearchResultsReturned).
-                Ext(searchString).GetCriteria();                        
+                Ext(searchString).GetCriteria();
         }
-
-            internal static SearchManager GetSearchManager()
-            {
-                return current;
-            }
     }
 
 }
