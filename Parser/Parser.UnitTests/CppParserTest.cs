@@ -10,39 +10,38 @@ using System.Diagnostics;
 namespace Sando.Parser.UnitTests
 {
 	[TestFixture]
-	public class CppParserTest
-	{
-		private static string CurrentDirectory;
+	public class CppParserTest {
+	    private ABB.SrcML.SrcMLGenerator generator;
 
-		[SetUp]
-		public static void Init()
-		{
-			//set up generator
-			CurrentDirectory = Environment.CurrentDirectory;
+		[TestFixtureSetUp]
+		public void FixtureSetUp() {
+		    generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
 		}
 
-		[Test]
+        
+        [Test]
 		public void ParseCPPSourceTest()
 		{
 			bool seenGetTimeMethod = false;
 			int numMethods = 0;
-			string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
-			var parser = new SrcMLCppParser();
+			///////string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
+            string sourceFile = @"TestFiles\Event.cpp";
+            var parser = new SrcMLCppParser(generator);
 			var elements = parser.Parse(sourceFile);
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Count, 6);
-            CheckParseOfEventFile(parser, sourceFile, elements);
-
+            ///////CheckParseOfEventFile(parser, sourceFile, elements);
 		}
 
+        
 
 		[Test]
 		public void ParseCPPHeaderTest()
 		{
 			bool hasClass = false;
 			bool hasEnum = false;
-			var parser = new SrcMLCppParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
+            var parser = new SrcMLCppParser(generator);
+			var elements = parser.Parse("TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
 			Assert.AreEqual(elements.Count, 8);
 			foreach(ProgramElement pe in elements)
@@ -54,7 +53,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(classElem.DefinitionLineNumber, 12);
 					Assert.AreEqual(classElem.AccessLevel, AccessLevel.Public);
 					Assert.AreEqual(classElem.Namespace, String.Empty);
-					Assert.True(classElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt"));
+					Assert.True(classElem.FullFilePath.EndsWith("TestFiles\\Event.H.txt"));
 					hasClass = true;
 				}
 				else if(pe is EnumElement)
@@ -65,7 +64,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.Namespace, String.Empty);
 					Assert.AreEqual(enumElem.Body, "SENSED_DATA_READY SENDING_DONE RECEIVING_DONE");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
-					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt"));
+					Assert.True(enumElem.FullFilePath.EndsWith("TestFiles\\Event.H.txt"));
 					hasEnum = true;
 				}
 			}
@@ -75,9 +74,9 @@ namespace Sando.Parser.UnitTests
 
         [Test]
         public void ParseAboutDlgTest()
-        {        
-            var parser = new SrcMLCppParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\AboutDlg.cpp");
+        {
+            var parser = new SrcMLCppParser(generator);
+            var elements = parser.Parse("TestFiles\\AboutDlg.cpp");
             Assert.IsNotNull(elements);
         }
 
@@ -85,8 +84,8 @@ namespace Sando.Parser.UnitTests
 		public void ParseUndefinedNameEnumTest()
 		{
 			bool hasEnum = false;
-			var parser = new SrcMLCppParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\PlayMp3Dlg.h.txt");
+            var parser = new SrcMLCppParser(generator);
+			var elements = parser.Parse("TestFiles\\PlayMp3Dlg.h.txt");
 			Assert.IsNotNull(elements);
 			foreach(ProgramElement pe in elements)
 			{
@@ -97,7 +96,7 @@ namespace Sando.Parser.UnitTests
 					Assert.AreEqual(enumElem.DefinitionLineNumber, 30);
 					Assert.AreEqual(enumElem.Body, "IDD IDD_PLAYMP3_DIALOG");
 					Assert.AreEqual(enumElem.AccessLevel, AccessLevel.Public);
-					Assert.True(enumElem.FullFilePath.EndsWith("Parser\\Parser.UnitTests\\TestFiles\\PlayMp3Dlg.h.txt"));
+					Assert.True(enumElem.FullFilePath.EndsWith("TestFiles\\PlayMp3Dlg.h.txt"));
 					hasEnum = true;
 				}
 			}
@@ -107,16 +106,16 @@ namespace Sando.Parser.UnitTests
 		[Test]
 		public void ParseAnotherEnumTest()
 		{
-			var parser = new SrcMLCppParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\xmlMatchedTagsHighlighter.cpp");
+            var parser = new SrcMLCppParser(generator);
+			var elements = parser.Parse("TestFiles\\xmlMatchedTagsHighlighter.cpp");
 			Assert.IsNotNull(elements);
 		}
 
 		[Test]
 		public void TrickyFileTest()
 		{
-			var parser = new SrcMLCppParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Parameters.h");
+            var parser = new SrcMLCppParser(generator);
+			var elements = parser.Parse("TestFiles\\Parameters.h");
 			Assert.IsNotNull(elements);
 		}
 
@@ -133,7 +132,7 @@ namespace Sando.Parser.UnitTests
 
             bool hasStruct = false;
             Guid structId = Guid.Empty;
-			var parser = new SrcMLCppParser();
+            var parser = new SrcMLCppParser(generator);
 			var elements = parser.Parse(WeirdStructFile);
 			Assert.IsTrue(elements.Count == 2);
 
@@ -163,8 +162,8 @@ namespace Sando.Parser.UnitTests
 		public void ParseCppConstructorTest()
 		{
 			bool hasConstructor = false;
-			var parser = new SrcMLCppParser();
-			var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\Event.H.txt");
+            var parser = new SrcMLCppParser(generator);
+			var elements = parser.Parse("TestFiles\\Event.H.txt");
 			Assert.IsNotNull(elements);
 			foreach(ProgramElement pe in elements)
 			{
@@ -193,23 +192,19 @@ namespace Sando.Parser.UnitTests
             Assert.IsTrue(_processFileInBackground.IsBusy==false);
         }
 
-		[TestFixtureSetUp]
-		public void SetUp()
-		{
-			TestUtils.InitializeDefaultExtensionPoints();
-		}
+		
 
 	    private void _processFileInBackground_DoWork(object sender, DoWorkEventArgs e)
 	    {
-            var parser = new SrcMLCppParser();
-            var elements = parser.Parse("..\\..\\Parser\\Parser.UnitTests\\TestFiles\\xmlMatchedTagsHighlighter.cpp");     
+            var parser = new SrcMLCppParser(generator);
+            var elements = parser.Parse("TestFiles\\xmlMatchedTagsHighlighter.cpp");     
 	    }
 
         [Test]
         public void ParseCppSourceWithAlternativeParserTest()
         {
-            string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
-            var parser = new MySrcMlCppParser();
+            string sourceFile = @"TestFiles\Event.CPP.txt";
+            var parser = new MySrcMlCppParser(generator);
             var elements = parser.Parse(sourceFile);
             Assert.IsNotNull(elements);
             Assert.AreEqual(elements.Count, 6);
@@ -274,6 +269,10 @@ namespace Sando.Parser.UnitTests
 
     public class MySrcMlCppParser : SrcMLCppParser
     {
+        public MySrcMlCppParser(ABB.SrcML.SrcMLGenerator generator) {
+            this.Generator = generator;
+        }
+
         public override MethodElement ParseCppFunction(System.Xml.Linq.XElement function, List<ProgramElement> programElements, string fileName, string[] includedFiles, Type resolvedType, Type unresolvedType, bool isConstructor = false)
         {
             var methodElement = base.ParseCppFunction(function, programElements, fileName, includedFiles, typeof(MyMethodElementType),  typeof(MyMethodElementUnresolvedType), isConstructor);

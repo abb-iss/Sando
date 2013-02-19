@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Text;
-using Sando.Core.Extensions;
+﻿using System.Collections.Generic;
 using Sando.ExtensionContracts.ProgramElementContracts;
-using Sando.Indexer.Documents;
-using Sando.Indexer.Exceptions;
-using Sando.Translation;
+using System.Collections.ObjectModel;
 
 namespace Sando.Indexer.Searching.Criteria
 {
 	public class SimpleSearchCriteria : SearchCriteria
 	{
+
 		public SimpleSearchCriteria()
 		{
 			SearchTerms = new SortedSet<string>();
@@ -28,241 +23,27 @@ namespace Sando.Indexer.Searching.Criteria
 
 		public override string ToQueryString()
 		{
-			queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
-			StringBuilder stringBuilder = new StringBuilder();
-			if(SearchByAccessLevel)
-			{
-				AccessLevelCriteriaToString(stringBuilder);
-			}
-			if(SearchByProgramElementType)
-			{
-				if(stringBuilder.Length > 0)
-					stringBuilder.Append(" AND ");
-				ProgramElementTypeCriteriaToString(stringBuilder);
-			}
-			if(SearchByLocation)
-			{
-				if(stringBuilder.Length > 0)
-					stringBuilder.Append(" AND ");
-				LocationCriteriaToString(stringBuilder);
-			}
-			UsageTypeCriteriaToString(stringBuilder, SearchByUsageType);
-            var query = stringBuilder.ToString();
-			return query;
+            var builder = new LuceneQueryStringBuilder(this);
+            return builder.Build();
 		}
-
-		private void AccessLevelCriteriaToString(StringBuilder stringBuilder)
-		{
-			Contract.Requires(AccessLevels != null, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be null!");
-			Contract.Requires(AccessLevels.Count > 0, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be empty!");
-
-			stringBuilder.Append("(");
-			int collectionSize = AccessLevels.Count;
-			foreach(AccessLevel accessLevel in AccessLevels)
-			{
-				stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
-				stringBuilder.Append(accessLevel.ToString());
-				AppendBoostFactor(stringBuilder, SandoField.AccessLevel.ToString());
-				if(collectionSize > 1)
-				{
-					stringBuilder.Append(" OR ");
-				}
-				--collectionSize;
-			}
-			stringBuilder.Append(")");
-		}
-
-		private void ProgramElementTypeCriteriaToString(StringBuilder stringBuilder)
-		{
-			Contract.Requires(ProgramElementTypes != null, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be null!");
-			Contract.Requires(ProgramElementTypes.Count > 0, "SimpleSearchCriteria:ProgramElementTypeCriteriaToString - ProgramElementTypes cannot be empty!");
-
-			stringBuilder.Append("(");
-			int collectionSize = ProgramElementTypes.Count;
-			foreach(ProgramElementType programElementType in ProgramElementTypes)
-			{
-				stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
-			    string value = programElementType.ToString();
-                if(!value.Equals(ProgramElementType.Method.ToString()))
-                {
-                    value = value + "*";
-                }
-			    stringBuilder.Append(value);
-				AppendBoostFactor(stringBuilder, SandoField.ProgramElementType.ToString());
-				if(collectionSize > 1)
-				{
-					stringBuilder.Append(" OR ");
-				}
-				--collectionSize;
-			}
-			stringBuilder.Append(")");
-		}
-
-		private void LocationCriteriaToString(StringBuilder stringBuilder)
-		{
-			Contract.Requires(Locations != null, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be null!");
-			Contract.Requires(Locations.Count > 0, "SimpleSearchCriteria:LocationCriteriaToString - Locations cannot be empty!");
-
-			stringBuilder.Append("(");
-			int collectionSize = Locations.Count;
-			foreach(string location in Locations)
-			{
-				stringBuilder.Append(SandoField.FullFilePath.ToString() + ":");
-				stringBuilder.Append(String.IsNullOrWhiteSpace(location) ? "*" : '\"' + location + '\"');
-				AppendBoostFactor(stringBuilder, SandoField.FullFilePath.ToString());
-				if(collectionSize > 1)
-				{
-					stringBuilder.Append(" OR ");
-				}
-				--collectionSize;
-			}
-			stringBuilder.Append(")");
-		}
-
-		private void UsageTypeCriteriaToString(StringBuilder stringBuilder, bool searchByUsageType)
-		{
-			Contract.Requires(UsageTypes != null, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be null!");
-			Contract.Requires(!SearchByUsageType || UsageTypes.Count > 0, "SimpleSearchCriteria:UsageTypeCriteriaToString - UsageTypes cannot be empty!");
-
-			if(SearchTerms.Count == 0)
-				return;
-			
-			if(stringBuilder.Length > 0)
-				stringBuilder.Append(" AND ");
-			
-			stringBuilder.Append("(");
-			if(!SearchByUsageType)
-			{
-				foreach(UsageType usageType in Enum.GetValues(typeof(UsageType)))
-				{
-					UsageTypes.Add(usageType);
-				}
-			}
-			int searchTermsLeft = SearchTerms.Count;
-			foreach(string searchTerm in SearchTerms)
-			{
-				//stringBuilder.Append("(");
-			    bool notCondition = false;
-			    string searchTermEscaped = searchTerm;
-                if(searchTermEscaped.StartsWith("-"))
-                {
-                    notCondition = true;
-                    searchTermEscaped = searchTerm.Substring(1);                    
-                }
-                searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
-				int usageTypesLeft = UsageTypes.Count;
-				foreach(UsageType usageType in UsageTypes)
-				{
-                    if(notCondition)
-                        stringBuilder.Append(" NOT ");
-                    SingleUsageTypeCriteriaToString(stringBuilder, usageType, searchTermEscaped);
-					if(usageTypesLeft > 1 && !notCondition)
-					{                     
-					    stringBuilder.Append(" OR ");
-					}
-					--usageTypesLeft;
-				}
-				if(searchTermsLeft > 1)
-				{
-					stringBuilder.Append(" OR ");
-				}
-				--searchTermsLeft;
-			}
-			stringBuilder.Append(")");
-		}
-
-        private string EscapeSpecialCharacters(string searchTerm)
+        
+		public SortedSet<string> SearchTerms { get; set; }
+		public bool MatchCase { get; set; }
+		public bool ExactMode { get; set; }
+		public bool SearchByAccessLevel { get; set; }
+		public SortedSet<AccessLevel> AccessLevels { get; set; }
+		public bool SearchByProgramElementType { get; set; }
+		public SortedSet<ProgramElementType> ProgramElementTypes { get; set; }
+		public bool SearchByUsageType { get; set; }
+		public SortedSet<UsageType> UsageTypes { get; set; }
+		public bool SearchByLocation { get; set; }
+        public SortedSet<string> Locations
         {
-            StringBuilder escapedSearchTermBuilder = new StringBuilder(searchTerm);
-            //escapedSearchTermBuilder.Replace("\\", "\\\\");
-            escapedSearchTermBuilder.Replace("+", "\\+");
-            escapedSearchTermBuilder.Replace("-", "\\-");
-            escapedSearchTermBuilder.Replace("&&", "\\&\\&");
-            escapedSearchTermBuilder.Replace("||", "\\|\\|");
-            escapedSearchTermBuilder.Replace("!", "\\!");
-            escapedSearchTermBuilder.Replace("(", "\\(");
-            escapedSearchTermBuilder.Replace(")", "\\)");
-            escapedSearchTermBuilder.Replace("{", "\\{");
-            escapedSearchTermBuilder.Replace("}", "\\}");
-            escapedSearchTermBuilder.Replace("[", "\\[");
-            escapedSearchTermBuilder.Replace("]", "\\]");
-            escapedSearchTermBuilder.Replace("^", "\\^");
-            //escapedSearchTermBuilder.Replace("\"", "\\\"");
-            escapedSearchTermBuilder.Replace("~", "\\~");
-            escapedSearchTermBuilder.Replace(":", "\\:");
-            return escapedSearchTermBuilder.ToString();
+            get;
+            set;
         }
-
-		private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
-		{
-			switch(usageType)
-			{
-				case UsageType.Bodies:
-					stringBuilder.Append(SandoField.Body.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.Body.ToString());
-					break;
-				case UsageType.Definitions:
-					stringBuilder.Append(SandoField.Name.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.Name.ToString());
-					break;
-				case UsageType.ExtendedClasses:
-					stringBuilder.Append(SandoField.ExtendedClasses.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.ExtendedClasses.ToString());
-					break;
-				case UsageType.ImplementedInterfaces:
-					stringBuilder.Append(SandoField.ImplementedInterfaces.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.ImplementedInterfaces.ToString());
-					break;
-				case UsageType.MethodArguments:
-					stringBuilder.Append(SandoField.Arguments.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.Arguments.ToString());
-					break;
-				case UsageType.MethodReturnTypes:
-					stringBuilder.Append(SandoField.ReturnType.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.ReturnType.ToString());
-					break;
-				case UsageType.NamespaceNames:
-					stringBuilder.Append(SandoField.Namespace.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.Namespace.ToString());
-					break;
-				case UsageType.PropertyOrFieldTypes:
-					stringBuilder.Append(SandoField.DataType.ToString() + ":");
-					stringBuilder.Append(searchTerm);
-					AppendBoostFactor(stringBuilder, SandoField.DataType.ToString());
-					break;
-				default:
-					throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
-			}
-		}
-
-		private void AppendBoostFactor(StringBuilder stringBuilder, string fieldName)
-		{
-			if(queryWeights.ContainsKey(fieldName) && queryWeights[fieldName] != 1)
-			{
-				stringBuilder.Append("^");
-				stringBuilder.Append(queryWeights[fieldName]);
-			}
-		}
-
-		public virtual SortedSet<string> SearchTerms { get; set; }
-		public virtual bool MatchCase { get; set; }
-		public virtual bool ExactMode { get; set; }
-		public virtual bool SearchByAccessLevel { get; set; }
-		public virtual SortedSet<AccessLevel> AccessLevels { get; set; }
-		public virtual bool SearchByProgramElementType { get; set; }
-		public virtual SortedSet<ProgramElementType> ProgramElementTypes { get; set; }
-		public virtual bool SearchByUsageType { get; set; }
-		public virtual SortedSet<UsageType> UsageTypes { get; set; }
-		public virtual bool SearchByLocation { get; set; }
-		public virtual SortedSet<string> Locations { get; set; }
-
-		private Dictionary<string, float> queryWeights;
+        private SortedSet<string> _locations;
+        public bool SearchByFileExtension { get; set; }
+        public SortedSet<string> FileExtensions { get; set; }        
 	}
 }

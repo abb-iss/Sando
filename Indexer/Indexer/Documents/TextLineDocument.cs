@@ -1,6 +1,7 @@
 ﻿using System;
 using Lucene.Net.Documents;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using System.Collections.Generic;
 
 namespace Sando.Indexer.Documents
 {
@@ -16,16 +17,18 @@ namespace Sando.Indexer.Documents
 		{
 		}
 
-		protected override void AddDocumentFields()
+        public override List<Field> GetFieldsForLucene()
 		{
+            List<Field> fields = new List<Field>();
 			var textLineElement = (TextLineElement) programElement;
-			document.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            fields.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            return fields;
 		}
 
-		protected override ProgramElement ReadProgramElementFromDocument(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
 		{
             string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue();
-			return new TextLineElement(name, definitionLineNumber, fullFilePath, snippet, body);
+			return new object[]{name, definitionLineNumber, fullFilePath, snippet, body};
 		}
 	}
 }

@@ -9,6 +9,7 @@
 		MethodArguments,
 		MethodReturnTypes,
 		NamespaceNames,
-		PropertyOrFieldTypes
+		PropertyOrFieldTypes,
+		RawSourceCode
 	}
 }

@@ -3,90 +3,54 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Lucene.Net.Analysis;
+using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Parser;
 using UnitTestHelpers;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Tools;
 
-namespace Sando.Indexer.UnitTests.Searching.Results
+namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
 {
     public class SearchTester
     {
-        private  string _currentDirectory;
-        private  SrcMLCSharpParser _parser;
-        private  string _luceneTempIndexesDirectory = "C:/Windows/Temp/basic";
+        private readonly SrcMLCSharpParser _parser;
+        private readonly string _luceneTempIndexesDirectory;        
         
-        public SearchTester()
+        private DocumentIndexer _indexer;
+
+        public static SearchTester Create()
         {
-                //set up generator
-                _currentDirectory = Environment.CurrentDirectory;
-                _parser = new SrcMLCSharpParser();
-                Directory.CreateDirectory(_luceneTempIndexesDirectory);
-                TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
-         
+            return new SearchTester();
         }
 
-  
-
-        public  bool HasResults(string methodNameToFind, List<Tuple<ProgramElement, float>> results)
+        private SearchTester()
         {
-            foreach (var result in results)
-            {
-                var method = result.Item1 as MethodElement;
-                if (method != null)
-                {
-                    if (method.Name.Equals(methodNameToFind))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            TestUtils.InitializeDefaultExtensionPoints();
+            //set up generator
+            _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML"));
+            _luceneTempIndexesDirectory = PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>());
+            Directory.CreateDirectory(_luceneTempIndexesDirectory);
+            TestUtils.ClearDirectory(_luceneTempIndexesDirectory);
         }
 
-        public  List<Tuple<ProgramElement, float>> GetResults(string searchString, SolutionKey key)
+        public void CheckFolderForExpectedResults(string searchString, string methodNameToFind, string solutionPath)
         {
-                var searcher = IndexerSearcherFactory.CreateSearcher(key);
-                var criteria = new SimpleSearchCriteria();
-                criteria.SearchTerms = new SortedSet<string>(searchString.Split(' ').ToList());
-                var results = searcher.Search(criteria);
-                return results;            
-        }
+            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+            _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
+            ServiceLocator.RegisterInstance(_indexer);
 
-
-        public  SolutionKey IndexFilesInDirectory(string solutionPath, out DocumentIndexer indexer)
-        {
-            
-            var key = new SolutionKey(Guid.NewGuid(), solutionPath, _luceneTempIndexesDirectory);
-            indexer = DocumentIndexerFactory.CreateIndexer(key, AnalyzerType.Snowball);
-
-            string[] files = Directory.GetFiles(solutionPath);
-            foreach (var file in files)
-            {
-                string fullPath = Path.GetFullPath(file);
-                var srcML = _parser.Parse(fullPath);
-                foreach (var programElement in srcML)
-                {
-                    indexer.AddDocument(DocumentFactory.Create(programElement));
-                }
-            }
-            indexer.CommitChanges();
-            return key;
-        }
-
-        public  void CheckFolderForExpectedResults(string searchString, string methodNameToFind, string solutionPath)
-        {
-            
-            Analyzer analyzer = new SimpleAnalyzer();
-            DocumentIndexer indexer = null;
             try
             {
-                var key = IndexFilesInDirectory(solutionPath, out indexer);
-                var results = GetResults(searchString, key);
+                IndexFilesInDirectory(solutionPath);
+                var results = GetResults(searchString);
                 Assert.IsTrue(HasResults(methodNameToFind, results), "Can't find expected results");
             }
             catch (Exception ex)
@@ -95,16 +59,41 @@ namespace Sando.Indexer.UnitTests.Searching.Results
             }
             finally
             {
-                if (indexer != null)
-                    indexer.Dispose(true);
+                if (_indexer != null)
+                    _indexer.Dispose(true);
             }
         }
 
-        public static SearchTester Create()
+        private void IndexFilesInDirectory(string solutionPath)
         {
-            return new SearchTester();
+
+            var files = Directory.GetFiles(solutionPath);
+            foreach (var file in files)
+            {
+                string fullPath = Path.GetFullPath(file);
+                var srcMl = _parser.Parse(fullPath);
+                foreach (var programElement in srcMl)
+                {
+                    _indexer.AddDocument(DocumentFactory.Create(programElement));
+                }
+            }
         }
 
-     
+        private IEnumerable<CodeSearchResult> GetResults(string searchString)
+        {
+            var searcher = new IndexerSearcher();
+            var criteria = new SimpleSearchCriteria
+                {
+                    SearchTerms = new SortedSet<string>(searchString.Split(' ').ToList())
+                };
+            var results = searcher.Search(criteria);
+            return results;
+        }
+
+
+        private bool HasResults(string methodNameToFind, IEnumerable<CodeSearchResult> results)
+        {
+            return results.Select(result => result.ProgramElement).OfType<MethodElement>().Any(method => method.Name.Equals(methodNameToFind));
+        }
     }
 }

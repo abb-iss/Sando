@@ -1,37 +1,41 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 using System.Collections.Generic;
+using Configuration.OptionsPages;
+using Sando.DependencyInjection;
 
 namespace Sando.Indexer.IndexState
 {
 	public class IndexStateManager
 	{
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public static bool IsIndexRecreationRequired(string extensionPointsConfigurationPath)
+		public static bool IsIndexRecreationRequired()
 		{
 			if(string.IsNullOrEmpty(IndexDirectoryPath) || string.IsNullOrEmpty(IndexStatePath)) 
 			{
 				ConstructIndexPaths();
 			}
 			IndexState previousIndexState = readPreviousIndexState(IndexStatePath);
-			IndexState currentIndexState = readCurrentIndexState(IndexDirectoryPath, extensionPointsConfigurationPath);
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions(); ;
+			    
+			IndexState currentIndexState = readCurrentIndexState(IndexDirectoryPath, sandoOptions.ExtensionPointsConfigurationFilePath);
 			bool result = previousIndexState == null || !previousIndexState.Equals(currentIndexState);
 			saveIndexState(currentIndexState, IndexStatePath);
 			return result;
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public static void SaveCurrentIndexState(string extensionPointsConfigurationPath) 
+		public static void SaveCurrentIndexState() 
 		{
 			if(string.IsNullOrEmpty(IndexDirectoryPath) || string.IsNullOrEmpty(IndexStatePath)) 
 			{
 				ConstructIndexPaths();
 			}
-			IndexState currentIndexState = readCurrentIndexState(IndexDirectoryPath, extensionPointsConfigurationPath);
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+            IndexState currentIndexState = readCurrentIndexState(IndexDirectoryPath, sandoOptions.ExtensionPointsConfigurationFilePath);
 			saveIndexState(currentIndexState, IndexStatePath);
 		}
 
@@ -69,8 +73,7 @@ namespace Sando.Indexer.IndexState
 		private static IndexState readCurrentIndexState(string indexDirectoryPath, string extensionPointsConfigurationPath)
 		{
 			IndexState currentIndexState = new IndexState();
-			findAndAddRelevantFilesToIndexState(indexDirectoryPath, currentIndexState);
-			findAndAddRelevantFilesToIndexState(extensionPointsConfigurationPath, currentIndexState);
+			findAndAddRelevantFilesToIndexState(indexDirectoryPath, currentIndexState);			
 			string extensionPointsConfigurationFilePath = Path.Combine(extensionPointsConfigurationPath, "ExtensionPointsConfiguration.xml");
 			FileInfo configFileInfo = new FileInfo(extensionPointsConfigurationFilePath);
 			currentIndexState.RelevantFilesInfo.Add(new RelevantFileInfo() { FullName = configFileInfo.FullName, LastWriteTime = configFileInfo.LastWriteTime });

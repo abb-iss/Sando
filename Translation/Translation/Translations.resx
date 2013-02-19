@@ -144,6 +144,9 @@
   <data name="SearchLabel" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="SearchFileLabel" xml:space="preserve">
+    <value>Search File</value>
+  </data>
   <data name="TestResource" xml:space="preserve">
     <value>Test resource</value>
   </data>

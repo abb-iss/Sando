@@ -59,22 +59,6 @@ namespace Sando.Indexer.UnitTests
 		}
 
 		[Test]
-		public void DocumentFactory_CreateReturnsDocCommentDocumentForValidDocCommentElement()
-		{
-			try
-			{
-				ProgramElement programElement = SampleProgramElementFactory.GetSampleDocCommentElement();
-				SandoDocument sandoDocument = DocumentFactory.Create(programElement);
-				Assert.True(sandoDocument != null, "Null returned from DocumentFactory!");
-				Assert.True(sandoDocument is DocCommentDocument, "DocCommentDocument must be returned for DocCommentElement object!");
-			}
-			catch(Exception ex)
-			{
-				Assert.Fail(ex.Message + ". " + ex.StackTrace);
-			}
-		}
-
-		[Test]
 		public void DocumentFactory_CreateReturnsEnumDocumentForValidEnumElement()
 		{
 			try

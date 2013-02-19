@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using Sando.Core.Tools;
-using Sando.ExtensionContracts.QueryContracts;
+﻿using Sando.ExtensionContracts.QueryContracts;
 
 namespace Sando.Indexer.Searching
 {

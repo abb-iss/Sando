@@ -115,9 +115,13 @@
     <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML, Version=2.0.37.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
@@ -150,13 +154,24 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL" />
+    <Reference Include="Lucene.Net, Version=2.9.4.1, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Lucene.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net.Contrib.Snowball, Version=2.0.0.1, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Debug\Lucene.Net.Contrib.Snowball.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\..\LIBS\Extensions\Microsoft.VisualStudio.CommandBars.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.ExtensionManager, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\VisualStudio\Microsoft.VisualStudio.ExtensionManager.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\VisualStudio\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
@@ -215,14 +230,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\FileOpener.cs" />
+    <Compile Include="Actions\FileRemover.cs" />
     <Compile Include="Model\SearchResultUIItem.cs" />
-    <Compile Include="Monitoring\BackgroundWorkersManager.cs" />
     <Compile Include="Monitoring\IndexUpdateManager.cs" />
+    <Compile Include="Monitoring\InitialIndexingWatcher.cs" />
     <Compile Include="Monitoring\ISolution.cs" />
     <Compile Include="Monitoring\SolutionReloadEventListener.cs" />
-    <Compile Include="MyFontConverter.cs" />
-    <Compile Include="MyStrokeConverter.cs" />
-    <Compile Include="View\FileOpener.cs" />
+    <Compile Include="Monitoring\SrcMLArchiveEventsHandlers.cs" />
+    <Compile Include="Options\SandoOptionsProvider.cs" />
+    <Compile Include="View\Converters\MyFontConverter.cs" />
+    <Compile Include="View\Converters\MyStrokeConverter.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\ISearchResultListener.cs" />
     <Compile Include="View\SearchManager.cs" />
@@ -237,11 +255,17 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Monitoring\SolutionMonitor.cs" />
-    <Compile Include="Monitoring\SolutionMonitorFactory.cs" />
     <Compile Include="UIPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="View\Search\AccessWrapper.cs" />
+    <Compile Include="View\Search\Converters\BoolToOppositeBoolConverter.cs" />
+    <Compile Include="View\Search\Converters\ElementToIcon.cs" />
+    <Compile Include="View\Search\Converters\FileTypeToIcon.cs" />
+    <Compile Include="View\Search\Converters\NullableBoolToBool.cs" />
+    <Compile Include="View\Search\Converters\NullOrEmptyIsHidden.cs" />
+    <Compile Include="View\Search\Converters\NullOrEmptyToVisibility.cs" />
+    <Compile Include="View\Search\ProgramElementWrapper.cs" />
     <Compile Include="View\TextBoxFocusHelper.cs" />
     <Compile Include="View\ViewManager.cs" />
     <Compile Include="VSPackage.Designer.cs">
@@ -279,68 +303,148 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\bz2-1.dll">
+      <Link>LIBS\SrcML\CSharp\bz2-1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\iconv.dll">
+      <Link>LIBS\SrcML\CSharp\iconv.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libantlr2-0.dll">
+      <Link>LIBS\SrcML\CSharp\libantlr2-0.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libarchive-2.dll">
+      <Link>LIBS\SrcML\CSharp\libarchive-2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libexslt.dll">
+      <Link>LIBS\SrcML\CSharp\libexslt.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libgcc_s_sjlj-1.dll">
+      <Link>LIBS\SrcML\CSharp\libgcc_s_sjlj-1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libgcrypt-11.dll">
+      <Link>LIBS\SrcML\CSharp\libgcrypt-11.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libgnurx-0.dll">
+      <Link>LIBS\SrcML\CSharp\libgnurx-0.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libgpg-error-0.dll">
+      <Link>LIBS\SrcML\CSharp\libgpg-error-0.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libsrcml.dll">
+      <Link>LIBS\SrcML\CSharp\libsrcml.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libstdc++-6.dll">
+      <Link>LIBS\SrcML\CSharp\libstdc++-6.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libxml2.dll">
+      <Link>LIBS\SrcML\CSharp\libxml2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\libxslt.dll">
+      <Link>LIBS\SrcML\CSharp\libxslt.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\src2srcml.exe">
+      <Link>LIBS\SrcML\CSharp\src2srcml.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\srcml2src.exe">
+      <Link>LIBS\SrcML\CSharp\srcml2src.exe</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\..\LIBS\srcML-Win-cSharp\zlib1.dll">
+      <Link>LIBS\SrcML\CSharp\zlib1.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="..\..\LIBS\srcML-Win\bz2-1.dll">
-      <Link>LIBS\bz2-1.dll</Link>
+      <Link>LIBS\SrcML\bz2-1.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\iconv.dll">
-      <Link>LIBS\iconv.dll</Link>
+      <Link>LIBS\SrcML\iconv.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libarchive-2.dll">
-      <Link>LIBS\libarchive-2.dll</Link>
+      <Link>LIBS\SrcML\libarchive-2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libexslt.dll">
-      <Link>LIBS\libexslt.dll</Link>
+      <Link>LIBS\SrcML\libexslt.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libgcc_s_sjlj-1.dll">
-      <Link>LIBS\libgcc_s_sjlj-1.dll</Link>
+      <Link>LIBS\SrcML\libgcc_s_sjlj-1.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libgcrypt-11.dll">
-      <Link>LIBS\libgcrypt-11.dll</Link>
+      <Link>LIBS\SrcML\libgcrypt-11.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libgnurx-0.dll">
-      <Link>LIBS\libgnurx-0.dll</Link>
+      <Link>LIBS\SrcML\libgnurx-0.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libgpg-error-0.dll">
-      <Link>LIBS\libgpg-error-0.dll</Link>
+      <Link>LIBS\SrcML\libgpg-error-0.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libsrcml.dll">
-      <Link>LIBS\libsrcml.dll</Link>
+      <Link>LIBS\SrcML\libsrcml.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libstdc++-6.dll">
-      <Link>LIBS\libstdc++-6.dll</Link>
+      <Link>LIBS\SrcML\libstdc++-6.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libxml2.dll">
-      <Link>LIBS\libxml2.dll</Link>
+      <Link>LIBS\SrcML\libxml2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\libxslt.dll">
-      <Link>LIBS\libxslt.dll</Link>
+      <Link>LIBS\SrcML\libxslt.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\src2srcml.exe">
-      <Link>LIBS\src2srcml.exe</Link>
+      <Link>LIBS\SrcML\src2srcml.exe</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -349,70 +453,6 @@
     <Content Include="epl-1.0.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\bz2-1.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\iconv.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libantlr2-0.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libarchive-2.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libexslt.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libgcc_s_sjlj-1.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libgcrypt-11.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libgnurx-0.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libgpg-error-0.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libsrcml.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libstdc++-6.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libxml2.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\libxslt.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\src2srcml.exe">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\srcml2src.exe">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="LIBS\srcML-Win-cSharp\zlib1.dll">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Resources\VS2010Icons\xmlIcon.png" />
     <Content Include="sandoThumb.png">
@@ -557,12 +597,12 @@
     <Resource Include="Resources\Code_Cpp.png" />
     <Resource Include="Resources\Code_CS.png" />
     <Content Include="..\..\LIBS\srcML-Win\srcml2src.exe">
-      <Link>LIBS\srcml2src.exe</Link>
+      <Link>LIBS\SrcML\srcml2src.exe</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\LIBS\srcML-Win\zlib1.dll">
-      <Link>LIBS\zlib1.dll</Link>
+      <Link>LIBS\SrcML\zlib1.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -621,6 +661,10 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\DependencyInjection\DependencyInjection\DependencyInjection.csproj">
+      <Project>{C4332491-CD26-408E-8E80-7D1C7A5C6ABE}</Project>
+      <Name>DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
@@ -638,7 +682,7 @@
       <Name>Recommender</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
-      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Project>{17aa2b71-c4f9-4397-9d05-6119763d07a5}</Project>
       <Name>SandoExtensionContracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
@@ -677,8 +721,6 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(SolutionDir)..\LIBS" "$(OutDir)"
-xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win" "$(OutDir)"
-mkdir "$(OutDir)\srcML-Win-cSharp"
-xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win-cSharp" "$(OutDir)\srcML-Win-cSharp"</PostBuildEvent>
+xcopy /Y "$(SolutionDir)..\LIBS\srcML-Win" "$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

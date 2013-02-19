@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using ABB.SrcML;
 
 namespace Sando.Parser.UnitTests
 {
     public class ParserTestingUtils
     {
-        public static List<ProgramElement> ParseCsharpFile(string filePath)
-        {
-            SrcMLCSharpParser parser = new SrcMLCSharpParser();
+        public static List<ProgramElement> ParseCsharpFile(string filePath) {
+            SrcMLCSharpParser parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML"));
             var elements = parser.Parse(filePath);
             return elements;
         }

@@ -5,26 +5,48 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
+             xmlns:converters="clr-namespace:Sando.UI.View.Search.Converters"
              xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" mc:Ignorable="d" 
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Drawing="clr-namespace:System.Drawing;assembly=System.Drawing" d:DesignWidth="300" d:DesignHeight="400"
              xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
              Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" KeyboardNavigation.IsTabStop="False" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit">
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" KeyboardNavigation.IsTabStop="False" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+             xmlns:search="clr-namespace:Sando.UI.View.Search">
+
     <UserControl.Resources>
-        <view:ElementToIcon x:Key="ElementToIcon"/>
-        <view:FileTypeToIcon x:Key="FileTypeToIcon"/>
-        <view:NullableBoolToBool x:Key="NullableBoolToBool"/>
-        <view:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
-        <view:NullOrEmptyToVisibility x:Key="NullOrEmptyToVisibility"/>
+        <converters:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
+      
+        <Style x:Key="ToggleButtonStyleBorderless" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" 
+                                    Value="True">
+                                <Setter Property="Foreground"
+                                        Value="CadetBlue"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers >
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            
+        </Style>
+        <converters:ElementToIcon x:Key="ElementToIcon"/>
+        <converters:FileTypeToIcon x:Key="FileTypeToIcon"/>
+        <converters:NullableBoolToBool x:Key="NullableBoolToBool"/>
+        <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
+        <converters:NullOrEmptyToVisibility x:Key="NullOrEmptyToVisibility"/>
 
         <ObjectDataProvider x:Key="ProgramElementType" MethodName="GetValues" ObjectType="{x:Type ExContract:ProgramElementType}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="ExContract:ProgramElementType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-       
+
         <local:MyFontConverter x:Key="FontConverter" />
         <local:MyStrokeConverter x:Key="StrokeConverter" />
         <SolidColorBrush x:Key="GlyphBrush" Color="#444" />
@@ -38,7 +60,7 @@
               VerticalAlignment="Center"                
               Margin="1,1,1,1"
               Fill="{StaticResource GlyphBrush}"
-              Data="M 4 0 L 4 4 L 0 4 L 0 6 L 4 6 L 4 10 L 6 10 L 6 6 L 10 6 L 10 4 L 6 4 L 6 0 Z">                  
+              Data="M 4 0 L 4 4 L 0 4 L 0 6 L 4 6 L 4 10 L 6 10 L 6 6 L 10 6 L 10 4 L 6 4 L 6 0 Z">
                 </Path>
             </Grid>
             <ControlTemplate.Triggers>
@@ -56,6 +78,7 @@
                 </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>
+
         <Style x:Key="toggleButtonStyle" TargetType="ToggleButton">
             <Setter Property="Template" Value="{StaticResource toggleButtonTemplate}" />
         </Style>
@@ -63,6 +86,7 @@
 
 
     <Grid>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" MinHeight="30"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
@@ -71,19 +95,23 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="100"/>
-            <ColumnDefinition Width="65" />
+            <ColumnDefinition Width="55" />
+            <ColumnDefinition Width="70" />
         </Grid.ColumnDefinitions>
 
         <!-- Top Part: Query -->
-        <controls:AutoCompleteBox Loaded="searchBox_Loaded_1"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
+        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
-                                   MinimumPopulateDelay="100" MinimumPrefixLength="0" />
+                                  MinimumPrefixLength="0" MaxDropDownHeight="290"/>
 
-        <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
+        <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="25" Name="searchButton" Click="SearchButtonClick" 
+                        />
+
+        <Button Grid.Row="0" Grid.Column="2" Margin="0,5,5,0" Content="{Binding Path=SearchFileLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="65" Height="25" Name="searchFile" Click="SearchFileButtonClick" 
                         />
 
         <!-- info string -->
-        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
+        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="1" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="3" Text="{Binding Path=SearchStatus}"
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- details -->
@@ -93,7 +121,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Advanced Options" />
-                        
+
 
                     </StackPanel>
                 </DataTemplate>
@@ -112,7 +140,7 @@
                     </Grid.RowDefinitions>
                     <TextBlock Margin="5,0,5,5" Text="Access level:" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <ComboBox Name="searchAccessLevel" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
-                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" ItemsSource="{Binding AccessLevels}" Grid.ColumnSpan="2">
+                              KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" ItemsSource="{Binding AccessLevels}" Grid.ColumnSpan="3">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -135,17 +163,17 @@
                     <TextBlock Margin="5,0,5,5" Text="Element type:" Grid.Row="0"/>
                     <ComboBox Name="searchElementType" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
                               KeyboardNavigation.IsTabStop="{Binding ElementName=searchByProgramElementType,Path=IsChecked}"  ItemsSource="{Binding ProgramElements}">
-                                <ComboBox.ItemTemplate>
+                        <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <CheckBox Width="20" IsChecked="{Binding Path=Checked}"
                                                />
-                        <TextBlock 
+                                    <TextBlock 
                                        Width="100" Text="{Binding Path=ProgramElement}" />
-            </StackPanel>
-            </DataTemplate>
-            </ComboBox.ItemTemplate>
-            </ComboBox>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                 </Grid>
 
 
@@ -166,15 +194,89 @@
 
             </StackPanel>
         </Expander>
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,14,0,0" Grid.RowSpan="2">
+            
+            <Button Name="HelpButton"  ToolTip="Help" Margin="32,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
+            </Button>
+            
+            <ToggleButton  ToolTip="Expand/Collapse"   Margin="0,0,0,0" VerticalAlignment="Top" Height="25"   x:Name="expandButton"
+        		KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled"/>
+            
+            <Popup Name="SelectionPopup" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="350">
+                <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">
+                    <FlowDocument>
+                        <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>                     
+                        <Table>
+                            <Table.Columns>
+                                <TableColumn Width="1.85*" />
+                                <TableColumn Width="1.5*" />
+                            </Table.Columns>
+                            <TableRowGroup Paragraph.TextAlignment="left">
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Add                                            
+                                            <Italic>
+                                                <Bold>all</Bold>
+                                            </Italic> relevant terms:
+                                        </Paragraph>                                       
+                                    </TableCell>
+                                    <TableCell >                                        
+                                        <Paragraph FontFamily="Courier New">convert image
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Put exact phrases in quotes:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">"void StartMonitor("
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Put '-' before unwanted words:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">parse method -test
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Limit by file extension:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">image filetype:cs
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
 
-        <ToggleButton Grid.Row="2" Grid.Column="1" ToolTip="Expand/Collapse"   Margin="1,1,1,1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="30" Height="25"   Name="expandButton"
-											KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled">
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Add '*' to end of partial words:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">impl*
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                            </TableRowGroup>
+</Table>
 
-        </ToggleButton>
+                    </FlowDocument>
+                </RichTextBox>
+            </Popup>            
+        </StackPanel>
 
-
-			<!--Bottom Part: Result-->
-        <DockPanel Grid.Row="3" Grid.ColumnSpan="2" 
+        <!--Bottom Part: Result-->
+        <DockPanel Grid.Row="3" Grid.ColumnSpan="3" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -183,8 +285,15 @@
                        SelectionChanged="searchResultListbox_SelectionChanged"
                        
                        >
-
-                <ListView.ItemContainerStyle>                    
+                <ListView.ContextMenu>
+                    <ContextMenu Name="SearchResultMenu" StaysOpen="true">
+                        <ContextMenu.BitmapEffect>
+                            <BitmapEffectGroup/>
+                        </ContextMenu.BitmapEffect>                        
+                        <MenuItem Header="Remove Entire File from Index" Name="Remove" Click="Remove_Click_1" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
@@ -234,21 +343,21 @@
                                                 <RowDefinition Height="20"/>
                                                 <RowDefinition Height="1"/>
                                             </Grid.RowDefinitions>
-                                            <Canvas Width="Auto" Height="0" Margin="-5,-2,0,0" Grid.Row="0" Grid.Column="0">
-                                                <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
+                                            <Canvas Width="Auto" Height="0" Margin="-7,-2,0,0" Grid.Row="0" Grid.Column="0">
+                                                <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
                                             </Canvas>
-                                            <Image Source="{Binding Mode=OneWay, Path=Element, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" />
+                                            <Image Source="{Binding Mode=OneWay, Path=ProgramElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" />
                                             <TextBlock Name="Name" MaxWidth="210" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
                                             <TextBlock Grid.Row="1" Grid.Column="2" FontStyle="Italic" FontWeight="Light" Margin="5,0,5,0">in</TextBlock>
                                             <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="3" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
-                                            <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="2" Grid.Column="0">
-                                                <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
+                                            <Canvas Width="Auto" Height="0" Margin="-7,0,0,0" Grid.Row="2" Grid.Column="0">
+                                                <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
                                             </Canvas>
                                         </Grid>
                                         <TextBlock Name="Snippet" Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="10" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
                                                Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="1" Grid.Column="0" TextTrimming="CharacterEllipsis"/>
-                                        <Canvas Width="Auto" Height="0" Margin="-5,0,0,0" Grid.Row="2" Grid.Column="0">
-                                            <Line X1="1" X2="1000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="2"></Line>
+                                        <Canvas Width="Auto" Height="0" Margin="-7,0,0,0" Grid.Row="2" Grid.Column="0">
+                                            <Line X1="1" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="2"></Line>
                                         </Canvas>
                                     </Grid>
                                 </DataTemplate>

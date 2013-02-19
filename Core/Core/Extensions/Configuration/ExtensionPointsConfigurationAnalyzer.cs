@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Sando.ExtensionContracts.IndexerContracts;
 using log4net;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.QueryContracts;
@@ -24,6 +25,7 @@ namespace Sando.Core.Extensions.Configuration
 			FindAndRegisterValidResultsReordererExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidQueryWeightsSupplierExtensionPoints(extensionPointsConfiguration, logger);
 			FindAndRegisterValidQueryRewriterExtensionPoints(extensionPointsConfiguration, logger);
+            FindAndRegisterValidIndexFilterManagerExtensionPoints(extensionPointsConfiguration, logger);
 			logger.Info("-=#|#=- Analyzing configuration finished -=#|#=-");
 		}
 
@@ -39,6 +41,8 @@ namespace Sando.Core.Extensions.Configuration
 				RemoveInvalidQueryWeightsSupplierConfiguration(extensionPointsConfiguration, logger);
 			if(extensionPointsConfiguration.QueryRewriterConfiguration != null)
 				RemoveInvalidQueryRewriterConfiguration(extensionPointsConfiguration, logger);
+            if (extensionPointsConfiguration.IndexFilterManagerConfiguration != null)
+                RemoveInvalidIndexFilterManagerConfiguration(extensionPointsConfiguration, logger);
 		}
 
 		private static void RemoveInvalidParserConfigurations(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
@@ -88,6 +92,15 @@ namespace Sando.Core.Extensions.Configuration
 				logger.Info(String.Format("Invalid query rewriter configuration found - it will be omitted during registration process."));
 			}
 		}
+
+        private static void RemoveInvalidIndexFilterManagerConfiguration(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+        {
+            if (IsConfigurationInvalid(extensionPointsConfiguration.IndexFilterManagerConfiguration))
+            {
+                extensionPointsConfiguration.IndexFilterManagerConfiguration = null;
+                logger.Info(String.Format("Invalid index filter manager configuration found - it will be omitted during registration process."));
+            }
+        }
 
 		private static bool IsConfigurationInvalid(BaseExtensionPointConfiguration configuration)
 		{
@@ -198,6 +211,27 @@ namespace Sando.Core.Extensions.Configuration
 			}
 			logger.Info("Reading query rewriter extension point configuration finished");
 		}
+
+        private static void FindAndRegisterValidIndexFilterManagerExtensionPoints(ExtensionPointsConfiguration extensionPointsConfiguration, ILog logger)
+        {
+            logger.Info("Reading index filter manager extension point configuration started");
+            BaseExtensionPointConfiguration indexFilterManagerConfiguration = extensionPointsConfiguration.IndexFilterManagerConfiguration;
+            if (indexFilterManagerConfiguration != null)
+            {
+                try
+                {
+                    logger.Info(String.Format("Index filter manager found: {0}, from assembly: {1}", indexFilterManagerConfiguration.FullClassName, indexFilterManagerConfiguration.LibraryFileRelativePath));
+                    IIndexFilterManager indexFilterManager = CreateInstance<IIndexFilterManager>(extensionPointsConfiguration.PluginDirectoryPath, indexFilterManagerConfiguration.LibraryFileRelativePath, indexFilterManagerConfiguration.FullClassName);
+                    ExtensionPointsRepository.Instance.RegisterIndexFilterManagerImplementation(indexFilterManager);
+                    logger.Info(String.Format("Index filter manager {0} successfully registered.", indexFilterManagerConfiguration.FullClassName));
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(String.Format("Index filter manager {0} cannot be registered: {1}", indexFilterManagerConfiguration.FullClassName, ex.Message));
+                }
+            }
+            logger.Info("Reading index filter manager extension point configuration finished");
+        }
 
 		private static Assembly LoadAssembly(string pluginDirectoryPath, string libraryFileRelativePath)
 		{

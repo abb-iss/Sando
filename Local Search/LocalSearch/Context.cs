@@ -65,7 +65,7 @@ namespace LocalSearch
             {
                 if(eletype2.Equals(ProgramElementType.Method))
                 {
-                    var methodDeclaration = GetMethod(element2.Element as MethodElement);
+                    var methodDeclaration = GetMethod(element2.ProgramElement as MethodElement);
                     if(ifFieldUsedinMethod(methodDeclaration, element1.Name, ref UsedLineNumber))
                     {
                         relation = ProgramElementRelation.UseBy;
@@ -77,8 +77,8 @@ namespace LocalSearch
             {
                    if(eletype2.Equals(ProgramElementType.Method))
                    {
-                       var methodDec1 = GetMethod(element1.Element as MethodElement);
-                       var methodDec2 = GetMethod(element2.Element as MethodElement);
+                       var methodDec1 = GetMethod(element1.ProgramElement as MethodElement);
+                       var methodDec2 = GetMethod(element2.ProgramElement as MethodElement);
 
                        List<Tuple<XElement, int>> myCallers = null;
                        List<Tuple<XElement, int>> myCallees = null;
@@ -117,7 +117,7 @@ namespace LocalSearch
                    }
                    else //eletype2.Equals(ProgramElementType.Field)
                    {
-                       var methodDeclaration = GetMethod(element1.Element as MethodElement);
+                       var methodDeclaration = GetMethod(element1.ProgramElement as MethodElement);
                        if(ifFieldUsedinMethod(methodDeclaration, element2.Name, ref UsedLineNumber))
                        {
                             relation = ProgramElementRelation.Use;

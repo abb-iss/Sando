@@ -1,37 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Sando.Core.Extensions.Logging;
 
 namespace Sando.UI.View
 {
     public class FirstTimeIntroduction
     {
-        private string DirectoryPath;
-        private const string INTRO = "\\.intro";
-        private bool UpdatedDuringThisRun = false;
+        private readonly string _directoryPath;
+        private const string Intro = "\\.intro";
+        private bool _updatedDuringThisRun;
 
         public FirstTimeIntroduction(string path)
         {
-            DirectoryPath = path;
+            _directoryPath = path;
         }
 
         public bool ShouldIntroduce()
         {
-            if(File.Exists(DirectoryPath+INTRO))
+            if(File.Exists(_directoryPath+Intro))
             {
-                var lastWrite = File.GetLastWriteTime(DirectoryPath + INTRO);
+                var lastWrite = File.GetLastWriteTime(_directoryPath + Intro);
                 var now = DateTime.Now;
-                if (TooLongSinceLastSandoUsage(lastWrite, now))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return TooLongSinceLastSandoUsage(lastWrite, now);
             }
             return true;            
         }
@@ -40,8 +30,9 @@ namespace Sando.UI.View
         {
             try
             {
-                File.Create(DirectoryPath + INTRO);
-            }catch(Exception e)
+                File.Create(_directoryPath + Intro);
+            }
+            catch (Exception e)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
             }
@@ -50,9 +41,9 @@ namespace Sando.UI.View
 
         public void Update()
         {
-            if (!UpdatedDuringThisRun)
+            if (!_updatedDuringThisRun)
             {
-                string path = DirectoryPath + INTRO;
+                string path = _directoryPath + Intro;
                 if (File.Exists(path))
                 {
                     try
@@ -63,7 +54,7 @@ namespace Sando.UI.View
                     {
                         FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
                     }
-                    UpdatedDuringThisRun = true;
+                    _updatedDuringThisRun = true;
                 }
             }
         }

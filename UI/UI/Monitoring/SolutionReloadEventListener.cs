@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -14,8 +11,8 @@ namespace Sando.UI.Monitoring
 
 	public class SolutionReloadEventListener : IVsSolutionEvents
 	{
-		private IVsSolution solution;
-		private uint solutionEventsCookie;
+		private IVsSolution _solution;
+		private uint _solutionEventsCookie;
 
 		public event Action OnQueryUnloadProject;
 
@@ -23,11 +20,11 @@ namespace Sando.UI.Monitoring
 		{
 			InitNullEvents();
 
-			solution = Package.GetGlobalService(typeof (SVsSolution)) as IVsSolution;
+			_solution = Package.GetGlobalService(typeof (SVsSolution)) as IVsSolution;
 
-			if (solution != null)
+			if (_solution != null)
 			{
-				solution.AdviseSolutionEvents(this, out solutionEventsCookie);
+				_solution.AdviseSolutionEvents(this, out _solutionEventsCookie);
 			}
 		}
 
@@ -95,13 +92,13 @@ namespace Sando.UI.Monitoring
 
 		public void Dispose()
 		{
-			if (solution != null && solutionEventsCookie != 0)
+			if (_solution != null && _solutionEventsCookie != 0)
 			{
 				GC.SuppressFinalize(this);
-				solution.UnadviseSolutionEvents(solutionEventsCookie);
+				_solution.UnadviseSolutionEvents(_solutionEventsCookie);
 				OnQueryUnloadProject = null;
-				solutionEventsCookie = 0;
-				solution = null;
+				_solutionEventsCookie = 0;
+				_solution = null;
 			}
 		}
 

@@ -8,7 +8,7 @@ using Sando.Core.Tools;
 using Sando.ExtensionContracts.SplitterContracts;
 using UnitTestHelpers;
 
-namespace Sando.Core.UnitTests
+namespace Sando.Core.UnitTests.Tools
 {
     [TestFixture]
     class SplitterTest

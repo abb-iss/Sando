@@ -279,7 +279,7 @@ namespace LocalSearch.View
                 return strbuilder;
             
             CodeSearchResult firstElement = SelectedElements[0];
-            String NameOfElement = firstElement.Element.Name;
+            String NameOfElement = firstElement.ProgramElement.Name;
             String TypeOfElement = firstElement.ProgramElementType.ToString();
             strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
 

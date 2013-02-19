@@ -10,7 +10,7 @@ namespace Sando.SearchEngine.UnitTests
         public void FixSnipTabTest()
         {
             var stuff = "	public void yo()\n		sasdfsadf\n		asdfasdf\n";
-            string fixSnip = CodeSearchResult.FixSnip(stuff);
+            string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()\n\tsasdfsadf\n\tasdfasdf\n"));
         }
 
@@ -18,7 +18,7 @@ namespace Sando.SearchEngine.UnitTests
         public void FixSnipSpacesTest()
         {
             var stuff = "      public void yo()\n            sasdfsadf\n            asdfasdf\n";
-            string fixSnip = CodeSearchResult.FixSnip(stuff);
+			string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()\n      sasdfsadf\n      asdfasdf\n"));
         }
     }

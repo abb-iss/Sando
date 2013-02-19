@@ -3,11 +3,12 @@ using NUnit.Framework;
 using Sando.Core.Extensions;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching;
+using Sando.Indexer.UnitTests.TestFiles.Searching.Results;
 
 namespace Sando.Indexer.UnitTests.Searching.Results
 {
     [TestFixture]
-    public class CsSimpleTest
+    public class CsSimpleTest 
     {
         
         [SetUp]
