@@ -243,14 +243,16 @@ namespace LocalSearch.View
                 }
                 var selected = currentNavigationBox.SelectedItem as CodeSearchResult;
                 SelectedElements.Add(selected);
-                var relatedmembers = InformationSource.GetRecommendations(selected);
 
+                RelationSequence = ShowSequenceOfSelects();
+
+                var relatedmembers = InformationSource.GetRecommendations(selected);
                 foreach (var member in relatedmembers)
                 {
                     relatedInfo.Add(member);
                 }
                                 
-                RelationSequence = ShowSequenceOfSelects();
+                
             }
         }
 

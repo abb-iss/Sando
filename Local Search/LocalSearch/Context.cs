@@ -19,7 +19,8 @@ namespace LocalSearch
 
         public String query { set;  get; }
 
-        //int -- line number on which the query or its extension is satisfied (only the highest score result?)
+        //int -- line number on which the query or its extension is satisfied 
+        //       (only the highest score result?)
         public List<Tuple<CodeSearchResult, int>> InitialSearchResults { set; get; }
 
         public List<ProgramElementWithRelation> CurrentPath
@@ -41,9 +42,9 @@ namespace LocalSearch
             InitialSearchResults = new List<Tuple<CodeSearchResult,int>>();
         }
 
-        public Context(String search)            
+        public Context(String searchQuery)            
         {
-            query = search;
+            query = searchQuery;
             CurrentPath = new List<ProgramElementWithRelation>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
             InitialSearchResults = new List<Tuple<CodeSearchResult, int>>();
@@ -57,24 +58,31 @@ namespace LocalSearch
         }
 
 
-        private void RankRelatedInfo(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
+        #region ranking heuristics
+        private void RankRelatedInfo(ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
         {
             //score setting
             switch (heuristic)
             {
                 case 1:
                     {
-                        BasicHeuristic(target, ref listRelatedInfo);
+                        BasicHeuristic(ref listRelatedInfo);
                         break;
                     }
                 case 2:
                     {
-                        DistanceToQueryHeuristic(target, ref listRelatedInfo);
+                        ProgramElementWithRelation lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
+                        TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo);
                         break;
                     }
                 case 3:
                     {
-                        EditDistanceHeuristic(target, ref listRelatedInfo);
+                        EditDistanceHeuristic(ref listRelatedInfo);
+                        break;
+                    }
+                case 4:
+                    {
+                        UseLocationHeuristic(ref listRelatedInfo);
                         break;
                     }
                 default:
@@ -94,9 +102,12 @@ namespace LocalSearch
             }
         }
 
-        #region ranking heuristics 
-        private void BasicHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
-        {            
+         
+        private void BasicHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
+        {
+            if (listRelatedInfo.Count() == 0)
+                return;
+
             foreach (var related in listRelatedInfo)
             {
                 if (CurrentPath.Count() != 0)
@@ -154,18 +165,80 @@ namespace LocalSearch
         }
 
 
-        private void DistanceToQueryHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
+        private void TopologyHeuristic(ProgramElementWithRelation sourceProgramElement, ref List<ProgramElementWithRelation> listRelatedInfo)
+        {
+            if (listRelatedInfo.Count() == 0)
+                return;
+
+            double numberOfCallers = 0;
+            double numberOfCalls = 0;
+            double numberOfUsers = 0;
+            double numberOfUses = 0;
+            double FixedNumerator = 1;
+            CodeSearchResult sourceAsCodeSearchRes = sourceProgramElement as CodeSearchResult;
+
+            if (sourceProgramElement.ProgramElementType == ProgramElementType.Field)
+            {
+                numberOfUsers = graph.GetFieldUsers(sourceAsCodeSearchRes).Count();
+                foreach (var relatedProgramElement in listRelatedInfo)
+                {
+                    if (relatedProgramElement.ProgramElementRelation == ProgramElementRelation.Use)
+                    {
+                        numberOfUses = graph.GetFieldUses(relatedProgramElement as CodeSearchResult).Count();
+                        relatedProgramElement.Score += (FixedNumerator / numberOfUsers) * (FixedNumerator / numberOfUses);
+                    }
+
+                    //else is declaration
+                }
+            }
+
+            if (sourceProgramElement.ProgramElementType == ProgramElementType.Method)
+            {
+                numberOfCallers = graph.GetCallers(sourceAsCodeSearchRes).Count();
+                numberOfCalls = graph.GetCallees(sourceAsCodeSearchRes).Count();
+                numberOfUses = graph.GetFieldUses(sourceAsCodeSearchRes).Count();
+                foreach (var relatedProgramElement in listRelatedInfo)
+                {
+                    ProgramElementRelation relation = relatedProgramElement.ProgramElementRelation;
+                    if (relation == ProgramElementRelation.Call)
+                    {
+                        double NumOfCall = graph.GetCallees(relatedProgramElement as CodeSearchResult).Count();
+                        relatedProgramElement.Score += (FixedNumerator / numberOfCallers) * (FixedNumerator / NumOfCall);
+                    }
+
+                    if (relation == ProgramElementRelation.CallBy)
+                    {
+                        double NumOfCaller = graph.GetCallers(relatedProgramElement as CodeSearchResult).Count();
+                        relatedProgramElement.Score += (FixedNumerator / numberOfCalls) * (FixedNumerator / NumOfCaller);
+                    }
+
+                    if (relation == ProgramElementRelation.UseBy)
+                    {
+                        double NumOfUser = graph.GetFieldUsers(relatedProgramElement as CodeSearchResult).Count();
+                        relatedProgramElement.Score += (FixedNumerator / numberOfUses) * (FixedNumerator / NumOfUser);
+                    }
+
+                    //else declaration
+                }
+                    
+            }            
+
+            
+        }
+
+        private void EditDistanceHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
         {
 
         }
 
-        private void EditDistanceHeuristic(CodeSearchResult target, ref List<ProgramElementWithRelation> listRelatedInfo)
+        private void UseLocationHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
         {
+
         }
 
         #endregion ranking heuristics
 
-
+        #region public APIs
         public IEnumerable<CodeSearchResult> GetRecommendations()
         {
             var methods = graph.GetMethodsAsMethodElements();
@@ -183,7 +256,7 @@ namespace LocalSearch
             else // if(elementtype.Equals(ProgramElementType.Method))
                 recommendations = GetMethodRelatedInfo(codeSearchResult);
 
-            RankRelatedInfo(codeSearchResult, ref recommendations);
+            RankRelatedInfo(ref recommendations, 2);
 
             return recommendations;
         }
@@ -261,5 +334,6 @@ namespace LocalSearch
         {
             return graph.GetRelation(searchRes1, searchRes2, ref UsedLineNumber);
         }
+        #endregion public APIs
     }
 }

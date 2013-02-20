@@ -20,7 +20,7 @@ namespace LocalSearch.UnitTests
         public void ShowUI()
         {
             Context gbuilder = new Context();
-            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\ConfigManip.cs");
+            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SrcMLCSharpParser.cs");
             var elements = gbuilder.GetRecommendations();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;
