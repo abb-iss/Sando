@@ -16,6 +16,7 @@ namespace LocalSearch
 
         private GraphBuilder graph;
         private string filePath;
+        private CodeSearchResult _currentElement;
 
         public String query { set;  get; }
 
@@ -27,6 +28,8 @@ namespace LocalSearch
             set; //when the user makes a new selection in the UI, set it
             get;
         }
+
+ 
 
         public List<List<ProgramElementWithRelation>> droppedPaths
         {
@@ -251,5 +254,11 @@ namespace LocalSearch
         {
             return graph.GetXElementFromLineNum(number);
         }
+
+        public Context Copy()
+        {
+            return this;
+        }
+
     }
 }

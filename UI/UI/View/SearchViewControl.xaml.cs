@@ -20,6 +20,10 @@ using Sando.UI.View.Search;
 using Sando.UI.Actions;
 using EnvDTE80;
 using Sando.DependencyInjection;
+using Sando.UI.View.Navigator;
+using LocalSearch;
+using System.IO;
+using Sando.Core.Tools;
 
 namespace Sando.UI.View
 {
@@ -182,6 +186,7 @@ namespace Sando.UI.View
 
         private void BeginSearch(string searchString, bool localSearch = false)
         {
+            lastSearchWasLocal = localSearch;
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
             {
@@ -369,7 +374,24 @@ namespace Sando.UI.View
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateExpansionState(searchResultListbox);
+            if (lastSearchWasLocal)
+            {
+                if (lastOne != null)
+                    lastOne.Dispose();
+
+                var listBox = searchResultListbox;
+                var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
+                var fileName = "";
+                if (active != null)
+                {
+                    fileName = Path.Combine(active.Path, active.Name);
+                }
+                lastOne = RecommendationShower.Create(listBox, fileName, Dispatcher);
+                lastOne.Show();
+            }
         }
+
+
 
         private void Toggled(object sender, RoutedEventArgs e)
         {
@@ -435,6 +457,8 @@ namespace Sando.UI.View
 
         private readonly SearchManager _searchManager;
         private readonly QueryRecommender _recommender;
+        private bool lastSearchWasLocal;
+        private RecommendationShower lastOne;
 
         private void Remove_Click_1(object sender, RoutedEventArgs e)
         {

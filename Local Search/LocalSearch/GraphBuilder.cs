@@ -26,6 +26,7 @@ namespace LocalSearch
         protected Dictionary<int, List<Tuple<XElement, int>>> Callers = new Dictionary<int, List<Tuple<XElement, int>>>();
         protected Dictionary<int, List<Tuple<XElement, int>>> FieldUses = new Dictionary<int, List<Tuple<XElement, int>>>();
         protected Dictionary<int, List<Tuple<XElement, int>>> FieldUsers = new Dictionary<int, List<Tuple<XElement, int>>>();
+        private string origPath;
 
         /// <summary>
         /// Constructing a new Graph Builder.
@@ -33,6 +34,7 @@ namespace LocalSearch
         /// <param name="srcPath">The full path to the given Source Code or XML file.</param>
         public GraphBuilder(String srcPath, string SrcMLForCSharp = null)
         {
+            origPath = srcPath;
             if (SrcMLForCSharp != null)
             {
                 SrcmlLibSharp = SrcMLForCSharp;
@@ -118,7 +120,7 @@ namespace LocalSearch
             {
                 foreach (var callee in myCallees)
                 {
-                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(callee.Item1, this.srcmlFile.FileName);
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(callee.Item1, origPath);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
                     methodaselement.RelationLineNumber[0] = callee.Item2;
                     methodaselement.RelationCode = GetXElementFromLineNum(callee.Item2);
@@ -137,7 +139,7 @@ namespace LocalSearch
             {
                 foreach (var caller in myCallers)
                 {
-                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(caller.Item1, this.srcmlFile.FileName);
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(caller.Item1, origPath);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.Call;
                     methodaselement.RelationLineNumber[0] = caller.Item2;
                     methodaselement.RelationCode = GetXElementFromLineNum(caller.Item2);
@@ -272,7 +274,7 @@ namespace LocalSearch
             {
                 foreach (var use in myUses)
                 {
-                    var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(use.Item1,srcmlFile.FileName);
+                    var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(use.Item1, origPath);
                     fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
                     fieldaselement.RelationLineNumber[0] = use.Item2;
                     fieldaselement.RelationCode = GetXElementFromLineNum(use.Item2);
@@ -297,7 +299,7 @@ namespace LocalSearch
             {
                 foreach (var user in myUsers)
                 {
-                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(user.Item1,srcmlFile.FileName);
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(user.Item1,origPath);
                     methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
                     methodaselement.RelationLineNumber[0] = user.Item2;
                     methodaselement.RelationCode = GetXElementFromLineNum(user.Item2);
@@ -718,7 +720,7 @@ namespace LocalSearch
 
                     foreach (var linenumber in useLineNum)
                     {
-                        var fieldelement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(fielddecl,srcmlFile.FileName);
+                        var fieldelement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(fielddecl,origPath);
                         fieldelement.RelationLineNumber.Clear();
                         fieldelement.RelationLineNumber.Add(linenumber);
                         fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
@@ -749,7 +751,7 @@ namespace LocalSearch
                 {
                     foreach (var line in useLineNum)
                     {
-                        var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(method, srcmlFile.FileName);
+                        var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(method, origPath);
                         methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
                         methodaselement.RelationLineNumber.Clear();
                         methodaselement.RelationLineNumber.Add(line);
@@ -860,7 +862,7 @@ namespace LocalSearch
 
             foreach (XElement field in fields)
             {
-                var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(field, srcmlFile.FileName);
+                var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(field, origPath);
 
                 CodeSearchResult result = fieldaselement as CodeSearchResult;
                 elements.Add(result);
@@ -878,7 +880,7 @@ namespace LocalSearch
             foreach (XElement method in methods)
             {
                 var fullmethod = GetFullMethodFromName(method);
-                var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(fullmethod, srcmlFile.FileName);
+                var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(fullmethod, origPath);
                 CodeSearchResult result = methodaselement as CodeSearchResult;
                 elements.Add(result);
             }

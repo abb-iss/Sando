@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="Sando.UI.View.Navigator.RelatedItems"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:converters="clr-namespace:Sando.UI.View.Search.Converters"
+             xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" 
+             xmlns:actions="clr-namespace:Sando.UI.Actions"
+             xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
+             BorderBrush="DarkGray"
+             d:DesignHeight="400" d:DesignWidth="150" 
+             Loaded="Done_Loading">
+    <UserControl.InputBindings>
+        <KeyBinding Key="Escape" Command="{x:Static actions:CloseWindow.Instance}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
+    </UserControl.InputBindings>
+    <UserControl.Resources>
+        <converters:ProgramElementToRelationConverter x:Key="ProgramElementToRelation"/>
+        <converters:ElementToIcon x:Key="ElementToIcon"/>
+        <converters:FileTypeToIcon x:Key="FileTypeToIcon"/>
+        <converters:NullableBoolToBool x:Key="NullableBoolToBool"/>
+        <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
+        <converters:NullOrEmptyToVisibility x:Key="NullOrEmptyToVisibility"
+/>
+
+        <ObjectDataProvider x:Key="ProgramElementType" MethodName="GetValues" ObjectType="{x:Type ExContract:ProgramElementType}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ExContract:ProgramElementType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <local:MyFontConverter x:Key="FontConverter" />
+        <local:MyStrokeConverter x:Key="StrokeConverter" />
+        
+    </UserControl.Resources>
+    <DockPanel>        
+            <Grid Width="Auto" Height="35" Margin="0,0,0,0" DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding Mode=OneWay, Path=CurrentRelation}" FontStyle="Italic" FontSize="10" Margin="1,4,0,0" TextTrimming="CharacterEllipsis" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Left" FontWeight="Bold" />
+                <Image Source="{Binding Mode=OneWay, Path=CurrentElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" />
+            <TextBlock Name="Name" MaxWidth="210" Text="{Binding Mode=OneWay, Path=CurrentName}" Margin="1,0,0,4" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="Bold" />
+            </Grid>
+        <Expander IsExpanded="{Binding Mode=OneWay, Path=NeedsElement}">
+        <ListView BorderBrush="Transparent" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DockPanel.Dock="Bottom"
+                  Name="relatedItemsListbox"  ItemsSource="{Binding Path=relatedItems}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="relatedItemsListbox_SelectionChanged_1">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                <Grid Margin="0,0,0,0" Grid.Row="0" Grid.Column="0" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="15"/>
+                                        <RowDefinition Height="20"/>                                        
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding Mode=OneWay, Path=ProgramElementRelationString}" FontStyle="Italic" FontSize="10" Margin="1,4,0,0" TextTrimming="CharacterEllipsis" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Left" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />                                    
+                                    <Image Source="{Binding Mode=OneWay, Path=ProgramElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" />
+                                    <TextBlock Name="Name" MaxWidth="210" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,4" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="0,0,0,0"/>
+                    <Setter Property="Padding" Value="0,0,0,0"/>                    
+                    <Setter Property="Height" Value="32"/>
+                    <!--<EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
+                    <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>
+                    -->
+                </Style>                
+            </ListView.ItemContainerStyle>
+        </ListView>
+        </Expander>
+    </DockPanel>
+</UserControl>

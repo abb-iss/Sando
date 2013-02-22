@@ -11,15 +11,15 @@ namespace Sando.UI.Actions
     	{
 			private static DTE2 _dte;
 
-            public static void OpenItem(CodeSearchResult result, string text)
+            public static void OpenItem(CodeSearchResult result, string text, bool justShowLine = false)
     		{
     			if(result != null)
     			{
-					OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text);
+					OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text,justShowLine);
     			}
     		}
 
-    		public static void OpenFile(string filePath, int lineNumber, string text)
+    		public static void OpenFile(string filePath, int lineNumber, string text, bool justShowLine = false)
     		{
     			InitDte2();
     			_dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
@@ -28,7 +28,11 @@ namespace Sando.UI.Actions
     				var selection = (TextSelection) _dte.ActiveDocument.Selection;                    
     				selection.GotoLine(lineNumber);
 
-                    if (IsLiteralSearchString(text))
+                    if (justShowLine)
+                    {
+                        selection.SelectLine();
+                    }
+                    else if (IsLiteralSearchString(text))
                         FocusOnLiteralString(text);
                     else
                         HighlightTerms(text);

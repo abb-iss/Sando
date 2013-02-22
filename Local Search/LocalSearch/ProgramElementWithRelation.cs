@@ -21,7 +21,7 @@ namespace LocalSearch
             get
             {
                 if(ProgramElementRelation.Equals(ProgramElementRelation.Other))
-                    return "";
+                    return "definition";
                 else
                 {
                     //WHAT THE HECK!!?!?!  

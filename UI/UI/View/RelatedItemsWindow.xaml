@@ -1,0 +1,12 @@
+﻿<Window x:Class="Sando.UI.View.RelatedItemsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="clr-namespace:Sando.UI.View.Navigator" 
+        Title="RelatedItemsWindow" Height="400" Width="170"
+        WindowStyle="None"
+        Topmost="True"
+        Focusable="True"
+        SizeToContent="Height"    >
+    <view:RelatedItems >        
+    </view:RelatedItems>
+</Window>

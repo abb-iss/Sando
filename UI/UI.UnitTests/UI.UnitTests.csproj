@@ -71,13 +71,17 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\LIBS\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,6 +90,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RelatedItemsTest.cs" />
     <None Include="TestFiles\FourCSFiles\FileNameTemplate.cs" />
     <None Include="TestFiles\FourCSFiles\HotKeySelection.cs" />
     <None Include="TestFiles\FourCSFiles\ImageCapture.cs" />
@@ -103,6 +108,10 @@
     <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
       <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
       <Name>Indexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Local Search\LocalSearch\LocalSearch.csproj">
+      <Project>{6de1bf7e-f357-40f8-aedc-b52d19cbdb11}</Project>
+      <Name>LocalSearch</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Recommender\Recommender\Recommender.csproj">
       <Project>{6b68ca9f-e9b3-433e-880c-d94cacd08a0e}</Project>
