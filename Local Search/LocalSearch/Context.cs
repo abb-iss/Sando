@@ -81,6 +81,7 @@ namespace LocalSearch
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
                         TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
                         UseLocationHeuristic(ref listRelatedInfo);
+                        //EditDistanceHeuristic(lastSelectedProgramElement, ref listRelatedInfo);
                         break;
                     }
                 case 3:
@@ -108,6 +109,14 @@ namespace LocalSearch
                     listRelatedInfo[j] = listRelatedInfo[i];
                     listRelatedInfo[i] = temp;
                 }
+            }
+        }
+
+        private void EditDistanceHeuristic(CodeSearchResult lastSelectedProgramElement, ref List<ProgramElementWithRelation> relatedProgramElements)
+        {
+            foreach (var info in relatedProgramElements)
+            {
+                info.Score += 1 / LevenshteinDistance(info.Name, lastSelectedProgramElement.Name);                    
             }
         }
 
