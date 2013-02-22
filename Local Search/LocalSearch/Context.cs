@@ -62,7 +62,7 @@ namespace LocalSearch
 
 
         #region ranking heuristics
-        private void RankRelatedInfo(ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
+        public void RankRelatedInfo(ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
         {
             //score setting
             switch (heuristic)

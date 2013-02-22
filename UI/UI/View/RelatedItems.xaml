@@ -10,10 +10,7 @@
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
              BorderBrush="DarkGray"
              d:DesignHeight="400" d:DesignWidth="150" 
-             Loaded="Done_Loading">
-    <UserControl.InputBindings>
-        <KeyBinding Key="Escape" Command="{x:Static actions:CloseWindow.Instance}" CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}" />
-    </UserControl.InputBindings>
+             >    
     <UserControl.Resources>
         <converters:ProgramElementToRelationConverter x:Key="ProgramElementToRelation"/>
         <converters:ElementToIcon x:Key="ElementToIcon"/>

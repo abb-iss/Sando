@@ -230,7 +230,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\CloseWindow.cs" />
     <Compile Include="Actions\FileOpener.cs" />
     <Compile Include="Actions\FileRemover.cs" />
     <Compile Include="Actions\RecommendationShower.cs" />

@@ -35,14 +35,6 @@ namespace Sando.UI.View.Navigator
             NeedsElement = true;
         }
 
-        private void Done_Loading(object sender, RoutedEventArgs e)
-        {
-            var parent = VisualTreeHelper.GetParent(this);
-            while (parent.GetType() != typeof(Window))
-                parent = VisualTreeHelper.GetParent(parent);
-            (parent as Window).InputBindings.AddRange(this.InputBindings);                
-        }
-
         public ObservableCollection<CodeSearchResult> relatedItems
         {
             get { return (ObservableCollection<CodeSearchResult>)GetValue(relatedItemsProperty); }
