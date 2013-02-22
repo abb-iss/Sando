@@ -24,7 +24,7 @@ namespace LocalSearch
         //       (only the highest score result?)
         public List<Tuple<CodeSearchResult, int>> InitialSearchResults { set; get; }
 
-        public List<ProgramElementWithRelation> CurrentPath
+        public List<CodeSearchResult> CurrentPath
         {
             set; //when the user makes a new selection in the UI, set it
             get;
@@ -40,7 +40,7 @@ namespace LocalSearch
         
         public Context()
         {
-            CurrentPath = new List<ProgramElementWithRelation>();
+            CurrentPath = new List<CodeSearchResult>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
             InitialSearchResults = new List<Tuple<CodeSearchResult,int>>();
         }
@@ -48,7 +48,7 @@ namespace LocalSearch
         public Context(String searchQuery)            
         {
             query = searchQuery;
-            CurrentPath = new List<ProgramElementWithRelation>();
+            CurrentPath = new List<CodeSearchResult>();
             droppedPaths = new List<List<ProgramElementWithRelation>>();
             InitialSearchResults = new List<Tuple<CodeSearchResult, int>>();
         }
@@ -78,7 +78,7 @@ namespace LocalSearch
                     }
                 case 2:
                     {
-                        ProgramElementWithRelation lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
+                        CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
                         TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
                         UseLocationHeuristic(ref listRelatedInfo);
                         break;
@@ -140,7 +140,7 @@ namespace LocalSearch
             }            
         }
 
-        private bool isExisting(List<ProgramElementWithRelation> source, ProgramElementWithRelation target)
+        private bool isExisting(List<CodeSearchResult> source, CodeSearchResult target)
         {   
             foreach (var ele in source)
             {
@@ -171,7 +171,7 @@ namespace LocalSearch
         }
 
 
-        private void TopologyHeuristic(ProgramElementWithRelation sourceProgramElement,
+        private void TopologyHeuristic(CodeSearchResult sourceProgramElement,
             ref List<ProgramElementWithRelation> listRelatedInfo, int weight)
         {
             double numberOfCallers = 0;

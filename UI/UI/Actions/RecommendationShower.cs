@@ -73,6 +73,7 @@ namespace Sando.UI.Actions
             var context = (e.Argument as RecommendParameters).CurrentContext;
             var selected = (e.Argument as RecommendParameters).Item;
             var itemsView = (e.Argument as RecommendParameters).MyView;
+            context.CurrentPath.Add(selected);
             var relatedmembers = context.GetRecommendations(selected);            
             
             if (Thread.CurrentThread == dispatcher.Thread)
