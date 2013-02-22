@@ -79,14 +79,16 @@ namespace LocalSearch
                 case 2:
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
+                        BasicHeuristic(ref listRelatedInfo);
+                        TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);                        
+                        EditDistanceHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
                         UseLocationHeuristic(ref listRelatedInfo);
-                        //EditDistanceHeuristic(lastSelectedProgramElement, ref listRelatedInfo);
                         break;
                     }
                 case 3:
                     {
-                        EditDistanceHeuristic(ref listRelatedInfo, 1);
+                        CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
+                        EditDistanceHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
                         UseLocationHeuristic(ref listRelatedInfo);
                         break;
                     }
@@ -110,17 +112,8 @@ namespace LocalSearch
                     listRelatedInfo[i] = temp;
                 }
             }
-        }
-
-        private void EditDistanceHeuristic(CodeSearchResult lastSelectedProgramElement, ref List<ProgramElementWithRelation> relatedProgramElements)
-        {
-            foreach (var info in relatedProgramElements)
-            {
-                info.Score += 1 / LevenshteinDistance(info.Name, lastSelectedProgramElement.Name);                    
-            }
-        }
-
-         
+        }      
+                 
         private void BasicHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
         {
             foreach (var related in listRelatedInfo)
@@ -159,6 +152,8 @@ namespace LocalSearch
                     return true;
             }
 
+            //todo -- if it's an declaration, maybe treated differently
+
             return false;
         }
 
@@ -178,10 +173,9 @@ namespace LocalSearch
 
             return res;  
         }
-
-
+        
         private void TopologyHeuristic(CodeSearchResult sourceProgramElement,
-            ref List<ProgramElementWithRelation> listRelatedInfo, int weight)
+            ref List<ProgramElementWithRelation> listRelatedInfo, double weight)
         {
             double numberOfCallers = 0;
             double numberOfCalls = 0;
@@ -203,10 +197,9 @@ namespace LocalSearch
                     {
                         numberOfUses = graph.GetFieldUses(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfUsers) * (FixedNumerator / numberOfUses);
-                        //listOfDegree.Add(degree);
                     }
                     
-                    listOfDegree.Add(0);
+                    listOfDegree.Add(degree);
                 }
             }
 
@@ -223,21 +216,18 @@ namespace LocalSearch
                     {
                         double NumOfCall = graph.GetCallees(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfCallers) * (FixedNumerator / NumOfCall);
-                        //listOfDegree.Add(degree);
                     }
 
                     if (relation == ProgramElementRelation.CallBy)
                     {
                         double NumOfCaller = graph.GetCallers(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfCalls) * (FixedNumerator / NumOfCaller);
-                        //listOfDegree.Add(degree);
                     }
 
                     if (relation == ProgramElementRelation.UseBy)
                     {
                         double NumOfUser = graph.GetFieldUsers(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfUses) * (FixedNumerator / NumOfUser);
-                        //listOfDegree.Add(degree);
                     }
 
                     //else declaration
@@ -252,54 +242,78 @@ namespace LocalSearch
                 listRelatedInfo[i].Score += listOfDegree[i] * weight;            
         }
 
-        private void EditDistanceHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo, int normalizeFactor)
-        {
 
+        private void EditDistanceHeuristic(CodeSearchResult lastSelectedProgramElement, 
+            ref List<ProgramElementWithRelation> relatedProgramElements, double weight)
+        {
+            List<double> listOfDegree = new List<double>();
+
+            foreach (var info in relatedProgramElements)
+            {
+                double degree = 0;
+
+                if (info.ProgramElementRelation != ProgramElementRelation.Other)
+                {
+                    double distance = LevenshteinDistance(info.Name, lastSelectedProgramElement.Name);
+                    if (distance == 0)
+                        degree = double.MaxValue;
+                    else
+                        degree = 1 / distance;                    
+                }
+
+                listOfDegree.Add(degree);
+            }
+
+            NormalizeScore(ref listOfDegree);
+
+            for (int i = 0; i < relatedProgramElements.Count(); i++)
+                relatedProgramElements[i].Score += listOfDegree[i] * weight;
         }
 
         private int LevenshteinDistance(String s, String t)
         {
             int n = s.Length;
-	int m = t.Length;
-	int[,] d = new int[n + 1, m + 1];
+	        int m = t.Length;
+	        int[,] d = new int[n + 1, m + 1];
 
-	// Step 1
-	if (n == 0)
-	{
-	    return m;
-	}
+	        // Step 1
+	        if (n == 0)
+	        {
+	            return m;
+	        }
 
-	if (m == 0)
-	{
-	    return n;
-	}
+	        if (m == 0)
+	        {
+	            return n;
+	        }
 
-	// Step 2
-	for (int i = 0; i <= n; d[i, 0] = i++)
-	{
-	}
+	        // Step 2
+	        for (int i = 0; i <= n; d[i, 0] = i++)
+	        {
+	        }
 
-	for (int j = 0; j <= m; d[0, j] = j++)
-	{
-	}
+	        for (int j = 0; j <= m; d[0, j] = j++)
+	        {
+	        }
 
-	// Step 3
-	for (int i = 1; i <= n; i++)
-	{
-	    //Step 4
-	    for (int j = 1; j <= m; j++)
-	    {
-		// Step 5
-		int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+	        // Step 3
+	        for (int i = 1; i <= n; i++)
+	        {
+	             //Step 4
+	             for (int j = 1; j <= m; j++)
+	            {
+		            // Step 5
+		            int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
 
-		// Step 6
-		d[i, j] = Math.Min(
-		    Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
-		    d[i - 1, j - 1] + cost);
-	    }
-	}
-	// Step 7
-	return d[n, m];
+		            // Step 6
+		            d[i, j] = Math.Min(
+		                Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+		                d[i - 1, j - 1] + cost);
+	            }
+        	}
+            
+            // Step 7
+	        return d[n, m];
     
         }
 
@@ -314,12 +328,15 @@ namespace LocalSearch
 
         private void NormalizeScore(ref List<double> scores)
         {
-            double minscore = scores.Min();
-            if (minscore == 0)
-                minscore = double.Epsilon;
+            double maxscore = scores.Max();
+            //foreach (var score in scores)
+            //{
+            //    if((score < minscore) && (score > 0))
+            //        minscore = score;
+            //}            
             List<double> normalizedscores = new List<double>();
             foreach (var score in scores)
-                normalizedscores.Add(score / minscore);
+                normalizedscores.Add(score / maxscore);
             scores = normalizedscores;
         }
 
@@ -330,6 +347,7 @@ namespace LocalSearch
         {
             var methods = graph.GetMethodsAsMethodElements();
             methods.AddRange(graph.GetFieldsAsFieldElements());
+
             return methods;
         }
 
