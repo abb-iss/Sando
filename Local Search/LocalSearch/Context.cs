@@ -64,23 +64,29 @@ namespace LocalSearch
         #region ranking heuristics
         public void RankRelatedInfo(ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
         {
+            if (listRelatedInfo.Count() == 0)
+                return;
+
             //score setting
             switch (heuristic)
             {
                 case 1:
                     {
                         BasicHeuristic(ref listRelatedInfo);
+                        UseLocationHeuristic(ref listRelatedInfo);
                         break;
                     }
                 case 2:
                     {
                         ProgramElementWithRelation lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo);
+                        TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
+                        UseLocationHeuristic(ref listRelatedInfo);
                         break;
                     }
                 case 3:
                     {
-                        EditDistanceHeuristic(ref listRelatedInfo);
+                        EditDistanceHeuristic(ref listRelatedInfo, 1);
+                        UseLocationHeuristic(ref listRelatedInfo);
                         break;
                     }
                 case 4:
@@ -108,9 +114,6 @@ namespace LocalSearch
          
         private void BasicHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
         {
-            if (listRelatedInfo.Count() == 0)
-                return;
-
             foreach (var related in listRelatedInfo)
             {
                 if (CurrentPath.Count() != 0)
@@ -118,7 +121,7 @@ namespace LocalSearch
                     //what has shown before is set lower score
                     if (isExisting(CurrentPath, related))
                     {
-                        related.Score = related.Score - 0.2;
+                        related.Score = related.Score - 1;
                     }
                 }
 
@@ -168,11 +171,9 @@ namespace LocalSearch
         }
 
 
-        private void TopologyHeuristic(ProgramElementWithRelation sourceProgramElement, ref List<ProgramElementWithRelation> listRelatedInfo)
+        private void TopologyHeuristic(ProgramElementWithRelation sourceProgramElement,
+            ref List<ProgramElementWithRelation> listRelatedInfo, int weight)
         {
-            if (listRelatedInfo.Count() == 0)
-                return;
-
             double numberOfCallers = 0;
             double numberOfCalls = 0;
             double numberOfUsers = 0;
@@ -180,18 +181,23 @@ namespace LocalSearch
             double FixedNumerator = 1;
             CodeSearchResult sourceAsCodeSearchRes = sourceProgramElement as CodeSearchResult;
 
+            List<double> listOfDegree = new List<double>();
+
             if (sourceProgramElement.ProgramElementType == ProgramElementType.Field)
             {
                 numberOfUsers = graph.GetFieldUsers(sourceAsCodeSearchRes).Count();
                 foreach (var relatedProgramElement in listRelatedInfo)
                 {
+                    double degree = 0;
+
                     if (relatedProgramElement.ProgramElementRelation == ProgramElementRelation.Use)
                     {
                         numberOfUses = graph.GetFieldUses(relatedProgramElement as CodeSearchResult).Count();
-                        relatedProgramElement.Score += (FixedNumerator / numberOfUsers) * (FixedNumerator / numberOfUses);
+                        degree = (FixedNumerator / numberOfUsers) * (FixedNumerator / numberOfUses);
+                        //listOfDegree.Add(degree);
                     }
-
-                    //else is declaration
+                    
+                    listOfDegree.Add(0);
                 }
             }
 
@@ -202,41 +208,110 @@ namespace LocalSearch
                 numberOfUses = graph.GetFieldUses(sourceAsCodeSearchRes).Count();
                 foreach (var relatedProgramElement in listRelatedInfo)
                 {
+                    double degree = 0;
                     ProgramElementRelation relation = relatedProgramElement.ProgramElementRelation;
                     if (relation == ProgramElementRelation.Call)
                     {
                         double NumOfCall = graph.GetCallees(relatedProgramElement as CodeSearchResult).Count();
-                        relatedProgramElement.Score += (FixedNumerator / numberOfCallers) * (FixedNumerator / NumOfCall);
+                        degree = (FixedNumerator / numberOfCallers) * (FixedNumerator / NumOfCall);
+                        //listOfDegree.Add(degree);
                     }
 
                     if (relation == ProgramElementRelation.CallBy)
                     {
                         double NumOfCaller = graph.GetCallers(relatedProgramElement as CodeSearchResult).Count();
-                        relatedProgramElement.Score += (FixedNumerator / numberOfCalls) * (FixedNumerator / NumOfCaller);
+                        degree = (FixedNumerator / numberOfCalls) * (FixedNumerator / NumOfCaller);
+                        //listOfDegree.Add(degree);
                     }
 
                     if (relation == ProgramElementRelation.UseBy)
                     {
                         double NumOfUser = graph.GetFieldUsers(relatedProgramElement as CodeSearchResult).Count();
-                        relatedProgramElement.Score += (FixedNumerator / numberOfUses) * (FixedNumerator / NumOfUser);
+                        degree = (FixedNumerator / numberOfUses) * (FixedNumerator / NumOfUser);
+                        //listOfDegree.Add(degree);
                     }
 
                     //else declaration
+                    listOfDegree.Add(degree);
                 }
                     
-            }            
+            }
 
-            
+            NormalizeScore(ref listOfDegree);
+
+            for (int i = 0; i < listRelatedInfo.Count(); i++)
+                listRelatedInfo[i].Score += listOfDegree[i] * weight;            
         }
 
-        private void EditDistanceHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
+        private void EditDistanceHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo, int normalizeFactor)
         {
 
+        }
+
+        private int LevenshteinDistance(String s, String t)
+        {
+            int n = s.Length;
+	int m = t.Length;
+	int[,] d = new int[n + 1, m + 1];
+
+	// Step 1
+	if (n == 0)
+	{
+	    return m;
+	}
+
+	if (m == 0)
+	{
+	    return n;
+	}
+
+	// Step 2
+	for (int i = 0; i <= n; d[i, 0] = i++)
+	{
+	}
+
+	for (int j = 0; j <= m; d[0, j] = j++)
+	{
+	}
+
+	// Step 3
+	for (int i = 1; i <= n; i++)
+	{
+	    //Step 4
+	    for (int j = 1; j <= m; j++)
+	    {
+		// Step 5
+		int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
+
+		// Step 6
+		d[i, j] = Math.Min(
+		    Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+		    d[i - 1, j - 1] + cost);
+	    }
+	}
+	// Step 7
+	return d[n, m];
+    
         }
 
         private void UseLocationHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
         {
+            foreach (var relatedProgramElement in listRelatedInfo)
+            {
+                int relationLine = relatedProgramElement.RelationLineNumber[0];
+                relatedProgramElement.Score += 1 / Convert.ToDouble(relationLine) * 0.0001;
+            }
+        }
 
+        private void NormalizeScore(ref List<double> scores)
+        {
+            double minscore = scores.Min();
+            if (minscore == 0)
+                minscore = double.Epsilon;
+            List<double> normalizedscores = new List<double>();
+            foreach (var score in scores)
+                normalizedscores.Add(score / minscore);
+            scores = normalizedscores;
         }
 
         #endregion ranking heuristics
