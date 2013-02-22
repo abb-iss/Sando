@@ -55,6 +55,11 @@ namespace LocalSearch
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
             }
 
+            //Initialize();
+        }
+
+        public void Initialize()
+        {
             FullMethods = GetFullMethods();
 
             FieldDecs = GetFieldDecs();
@@ -63,6 +68,7 @@ namespace LocalSearch
 
             CreateFieldUseGraph();
         }
+
 
         #region callgraph related
         private void CreateCallGraph()
@@ -561,9 +567,6 @@ namespace LocalSearch
 
         #region core functionality
         
-
-
-
         public ProgramElementRelation GetRelation(CodeSearchResult element1, CodeSearchResult element2, ref List<int> UsedLineNumber)
         {
             ProgramElementRelation relation = ProgramElementRelation.No;
@@ -638,8 +641,7 @@ namespace LocalSearch
             return relation;
 
         }
-
-
+        
         #endregion core functionality
 
 
