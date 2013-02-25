@@ -29,7 +29,6 @@ namespace LocalSearch
             set; //when the user makes a new selection in the UI, set it
             get;
         }
-
  
 
         public List<List<ProgramElementWithRelation>> droppedPaths
@@ -62,9 +61,9 @@ namespace LocalSearch
 
 
         #region ranking heuristics
-        public void RankRelatedInfo(ref List<ProgramElementWithRelation> listRelatedInfo, UInt16 heuristic = 1)
+        public void RankRelatedInfo(ref List<ProgramElementWithRelation> RelatedProgramElements, UInt16 heuristic = 4)
         {
-            if (listRelatedInfo.Count() == 0)
+            if (RelatedProgramElements.Count() == 0)
                 return;
 
             //score setting
@@ -72,29 +71,29 @@ namespace LocalSearch
             {
                 case 1:
                     {
-                        BasicHeuristic(ref listRelatedInfo);
-                        UseLocationHeuristic(ref listRelatedInfo);
+                        BasicHeuristic(ref RelatedProgramElements);
+                        UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
                 case 2:
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        BasicHeuristic(ref listRelatedInfo);
-                        TopologyHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);                        
-                        EditDistanceHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
-                        UseLocationHeuristic(ref listRelatedInfo);
+                        BasicHeuristic(ref RelatedProgramElements);
+                        TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);                        
+                        EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
                 case 3:
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        EditDistanceHeuristic(lastSelectedProgramElement, ref listRelatedInfo, 1);
-                        UseLocationHeuristic(ref listRelatedInfo);
+                        EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
                 case 4:
                     {
-                        UseLocationHeuristic(ref listRelatedInfo);
+                        UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
                 default:
@@ -102,40 +101,40 @@ namespace LocalSearch
             }
 
             //bubble ranking
-            for (int i = 0; i < listRelatedInfo.Count()-1; i++)
-                for(int j=i+1; j< listRelatedInfo.Count(); j++)
+            for (int i = 0; i < RelatedProgramElements.Count()-1; i++)
+                for(int j=i+1; j< RelatedProgramElements.Count(); j++)
             {
-                if (listRelatedInfo[j].Score > listRelatedInfo[i].Score)
+                if (RelatedProgramElements[j].Score > RelatedProgramElements[i].Score)
                 {
-                    ProgramElementWithRelation temp = listRelatedInfo[j];
-                    listRelatedInfo[j] = listRelatedInfo[i];
-                    listRelatedInfo[i] = temp;
+                    ProgramElementWithRelation temp = RelatedProgramElements[j];
+                    RelatedProgramElements[j] = RelatedProgramElements[i];
+                    RelatedProgramElements[i] = temp;
                 }
             }
         }      
                  
-        private void BasicHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
+        private void BasicHeuristic(ref List<ProgramElementWithRelation> RelatedProgramElements)
         {
-            foreach (var related in listRelatedInfo)
+            foreach (var relatedProgramElement in RelatedProgramElements)
             {
                 if (CurrentPath.Count() != 0)
                 {
                     //what has shown before is set lower score
-                    if (isExisting(CurrentPath, related))
+                    if (isExisting(CurrentPath, relatedProgramElement))
                     {
-                        related.Score = related.Score - 1;
+                        relatedProgramElement.Score = relatedProgramElement.Score - 1;
                     }
                 }
 
                 if (InitialSearchResults.Count() != 0)
                 {
                     //what is more closer related to search result is set higher score
-                    double searchScore = isExisting(InitialSearchResults, related);
+                    double searchScore = isExisting(InitialSearchResults, relatedProgramElement);
                     if (searchScore > 0)
                     {
-                        related.Score = related.Score + 0.1;
+                        relatedProgramElement.Score = relatedProgramElement.Score + 0.1;
                         if (searchScore > 1)
-                            related.Score += searchScore - 1;
+                            relatedProgramElement.Score += searchScore - 1;
                     }
                 }
 
@@ -144,11 +143,11 @@ namespace LocalSearch
 
         private bool isExisting(List<CodeSearchResult> source, CodeSearchResult target)
         {   
-            foreach (var ele in source)
+            foreach (var programelement in source)
             {
-                if (ele.Name.Equals(target.Name)
-                && ele.ProgramElementType.Equals(target.ProgramElementType)
-                && ele.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
+                if (programelement.Name.Equals(target.Name)
+                && programelement.ProgramElementType.Equals(target.ProgramElementType)
+                && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
                     return true;
             }
 
@@ -161,13 +160,13 @@ namespace LocalSearch
         {
             double res = -1;
 
-            foreach (var ele in source)
+            foreach (var searchresult in source)
             {
-                var ele1 = ele.Item1;
-                if (ele1.Name.Equals(target.Name)
-                  && ele1.ProgramElementType.Equals(target.ProgramElementType)
-                  && ele1.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
-                    return ele1.Score;
+                var programelement = searchresult.Item1;
+                if (programelement.Name.Equals(target.Name)
+                  && programelement.ProgramElementType.Equals(target.ProgramElementType)
+                  && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
+                    return programelement.Score;
             }
 
 
@@ -175,7 +174,7 @@ namespace LocalSearch
         }
         
         private void TopologyHeuristic(CodeSearchResult sourceProgramElement,
-            ref List<ProgramElementWithRelation> listRelatedInfo, double weight)
+            ref List<ProgramElementWithRelation> RelatedProgramElements, double weight)
         {
             double numberOfCallers = 0;
             double numberOfCalls = 0;
@@ -189,7 +188,7 @@ namespace LocalSearch
             if (sourceProgramElement.ProgramElementType == ProgramElementType.Field)
             {
                 numberOfUsers = graph.GetFieldUsers(sourceAsCodeSearchRes).Count();
-                foreach (var relatedProgramElement in listRelatedInfo)
+                foreach (var relatedProgramElement in RelatedProgramElements)
                 {
                     double degree = 0;
 
@@ -208,7 +207,7 @@ namespace LocalSearch
                 numberOfCallers = graph.GetCallers(sourceAsCodeSearchRes).Count();
                 numberOfCalls = graph.GetCallees(sourceAsCodeSearchRes).Count();
                 numberOfUses = graph.GetFieldUses(sourceAsCodeSearchRes).Count();
-                foreach (var relatedProgramElement in listRelatedInfo)
+                foreach (var relatedProgramElement in RelatedProgramElements)
                 {
                     double degree = 0;
                     ProgramElementRelation relation = relatedProgramElement.ProgramElementRelation;
@@ -238,8 +237,8 @@ namespace LocalSearch
 
             NormalizeScore(ref listOfDegree);
 
-            for (int i = 0; i < listRelatedInfo.Count(); i++)
-                listRelatedInfo[i].Score += listOfDegree[i] * weight;            
+            for (int i = 0; i < RelatedProgramElements.Count(); i++)
+                RelatedProgramElements[i].Score += listOfDegree[i] * weight;            
         }
 
 
@@ -256,7 +255,7 @@ namespace LocalSearch
                 {
                     double distance = LevenshteinDistance(info.Name, lastSelectedProgramElement.Name);
                     if (distance == 0)
-                        degree = double.MaxValue;
+                        degree = 1.1;//double.MaxValue;
                     else
                         degree = 1 / distance;                    
                 }
@@ -270,13 +269,12 @@ namespace LocalSearch
                 relatedProgramElements[i].Score += listOfDegree[i] * weight;
         }
 
-        private int LevenshteinDistance(String s, String t)
+        public int LevenshteinDistance(String s, String t)
         {
             int n = s.Length;
 	        int m = t.Length;
 	        int[,] d = new int[n + 1, m + 1];
 
-	        // Step 1
 	        if (n == 0)
 	        {
 	            return m;
@@ -287,7 +285,6 @@ namespace LocalSearch
 	            return n;
 	        }
 
-	        // Step 2
 	        for (int i = 0; i <= n; d[i, 0] = i++)
 	        {
 	        }
@@ -296,23 +293,18 @@ namespace LocalSearch
 	        {
 	        }
 
-	        // Step 3
 	        for (int i = 1; i <= n; i++)
 	        {
-	             //Step 4
 	             for (int j = 1; j <= m; j++)
 	            {
-		            // Step 5
 		            int cost = (t[j - 1] == s[i - 1]) ? 0 : 1;
 
-		            // Step 6
 		            d[i, j] = Math.Min(
 		                Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
 		                d[i - 1, j - 1] + cost);
 	            }
         	}
             
-            // Step 7
 	        return d[n, m];
     
         }
