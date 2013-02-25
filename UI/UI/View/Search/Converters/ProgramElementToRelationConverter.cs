@@ -8,7 +8,7 @@ using LocalSearch;
 namespace Sando.UI.View.Search.Converters
 {
     [ValueConversion(typeof(ProgramElement), typeof(String))]
-    [ValueConversion(typeof(ProgramElementWithRelation), typeof(String))]
+    [ValueConversion(typeof(CodeNavigationResult), typeof(String))]
     public class ProgramElementToRelationConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -16,7 +16,7 @@ namespace Sando.UI.View.Search.Converters
             if (value == null)
                 return null;
 
-            var element = value as ProgramElementWithRelation;
+            var element = value as CodeNavigationResult;
             if (element == null)
                 return "";
             else

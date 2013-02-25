@@ -12,7 +12,7 @@ using ABB.SrcML;
 
 namespace LocalSearch
 {
-    public class ProgramElementWithRelation : CodeSearchResult
+    public class CodeNavigationResult : CodeSearchResult
     {
         public ProgramElementRelation ProgramElementRelation { get; set; }         
 
@@ -27,9 +27,9 @@ namespace LocalSearch
                     //WHAT THE HECK!!?!?!  
                     var Element = this;
                     var type = typeof(ProgramElementRelation);
-                    if (Element as ProgramElementWithRelation != null)
+                    if (Element as CodeNavigationResult != null)
                     {
-                        var memInfo = type.GetMember(((Element as ProgramElementWithRelation)).ProgramElementRelation.ToString());
+                        var memInfo = type.GetMember(((Element as CodeNavigationResult)).ProgramElementRelation.ToString());
                         var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
                             false);
                         var description = ((DescriptionAttribute)attributes[0]).Description;
@@ -89,7 +89,7 @@ namespace LocalSearch
             get { return RelationCode.ToSource(); }
         }
 
-        public ProgramElementWithRelation(ProgramElement element, double score, XElement code):
+        public CodeNavigationResult(ProgramElement element, double score, XElement code):
             base(element, score)
 	   {           
 		   //this.ProgramElementRelation = relation;

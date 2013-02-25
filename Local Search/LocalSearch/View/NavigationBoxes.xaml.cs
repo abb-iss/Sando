@@ -51,12 +51,12 @@ namespace LocalSearch.View
         {
             this.DataContext = this;
             FirstProgramElements = new ObservableCollection<CodeSearchResult>();
-            SecondProgramElements = new ObservableCollection<ProgramElementWithRelation>();
-            ThirdProgramElements = new ObservableCollection<ProgramElementWithRelation>();
-            FourthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
-            FifthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
-            SixthProgramElements = new ObservableCollection<ProgramElementWithRelation>();
-            SeventhProgramElements = new ObservableCollection<ProgramElementWithRelation>();
+            SecondProgramElements = new ObservableCollection<CodeNavigationResult>();
+            ThirdProgramElements = new ObservableCollection<CodeNavigationResult>();
+            FourthProgramElements = new ObservableCollection<CodeNavigationResult>();
+            FifthProgramElements = new ObservableCollection<CodeNavigationResult>();
+            SixthProgramElements = new ObservableCollection<CodeNavigationResult>();
+            SeventhProgramElements = new ObservableCollection<CodeNavigationResult>();
             SelectedElements = new List<CodeSearchResult>();
             InitializeComponent();            
         }
@@ -74,7 +74,7 @@ namespace LocalSearch.View
                 {   
                     int number = Convert.ToInt32(result.ProgramElement.DefinitionLineNumber);
                     InformationSource.InitialSearchResults.Add(Tuple.Create(result, number)); //set context
-                    FirstProgramElements.Add(new ProgramElementWithRelation(result.ProgramElement, result.Score, InformationSource.GetXElementFromLineNum(number)));
+                    FirstProgramElements.Add(new CodeNavigationResult(result.ProgramElement, result.Score, InformationSource.GetXElementFromLineNum(number)));
                 }
             }
             catch (NullReferenceException e)
@@ -87,22 +87,22 @@ namespace LocalSearch.View
                 DependencyProperty.Register("FirstProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SecondProgramElementsProperty =
-                DependencyProperty.Register("SecondProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("SecondProgramElements", typeof(ObservableCollection<CodeNavigationResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty ThirdProgramElementsProperty =
-                DependencyProperty.Register("ThirdProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("ThirdProgramElements", typeof(ObservableCollection<CodeNavigationResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty FourthProgramElementsProperty =
-                DependencyProperty.Register("FourthProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("FourthProgramElements", typeof(ObservableCollection<CodeNavigationResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty FifthProgramElementsProperty =
-                DependencyProperty.Register("FifthProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("FifthProgramElements", typeof(ObservableCollection<CodeNavigationResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SixthProgramElementsProperty =
-                DependencyProperty.Register("SixthProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("SixthProgramElements", typeof(ObservableCollection<CodeNavigationResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty SeventhProgramElementsProperty =
-                DependencyProperty.Register("SeventhProgramElements", typeof(ObservableCollection<ProgramElementWithRelation>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
+                DependencyProperty.Register("SeventhProgramElements", typeof(ObservableCollection<CodeNavigationResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty RelationSequenceProperty =
              DependencyProperty.Register("RelationSequence", typeof(string), typeof(NavigationBoxes), new UIPropertyMetadata(null));
@@ -123,11 +123,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<ProgramElementWithRelation> SecondProgramElements
+        public ObservableCollection<CodeNavigationResult> SecondProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(SecondProgramElementsProperty);
+                return (ObservableCollection<CodeNavigationResult>)GetValue(SecondProgramElementsProperty);
             }
             set
             {
@@ -135,11 +135,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<ProgramElementWithRelation> ThirdProgramElements
+        public ObservableCollection<CodeNavigationResult> ThirdProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(ThirdProgramElementsProperty);
+                return (ObservableCollection<CodeNavigationResult>)GetValue(ThirdProgramElementsProperty);
             }
             set
             {
@@ -147,11 +147,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<ProgramElementWithRelation> FourthProgramElements
+        public ObservableCollection<CodeNavigationResult> FourthProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(FourthProgramElementsProperty);
+                return (ObservableCollection<CodeNavigationResult>)GetValue(FourthProgramElementsProperty);
             }
             set
             {
@@ -159,11 +159,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<ProgramElementWithRelation> FifthProgramElements
+        public ObservableCollection<CodeNavigationResult> FifthProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(FifthProgramElementsProperty);
+                return (ObservableCollection<CodeNavigationResult>)GetValue(FifthProgramElementsProperty);
             }
             set
             {
@@ -171,11 +171,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<ProgramElementWithRelation> SixthProgramElements
+        public ObservableCollection<CodeNavigationResult> SixthProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(SixthProgramElementsProperty);
+                return (ObservableCollection<CodeNavigationResult>)GetValue(SixthProgramElementsProperty);
             }
             set
             {
@@ -183,11 +183,11 @@ namespace LocalSearch.View
             }
         }
 
-        public ObservableCollection<ProgramElementWithRelation> SeventhProgramElements
+        public ObservableCollection<CodeNavigationResult> SeventhProgramElements
         {
             get
             {
-                return (ObservableCollection<ProgramElementWithRelation>)GetValue(SeventhProgramElementsProperty);
+                return (ObservableCollection<CodeNavigationResult>)GetValue(SeventhProgramElementsProperty);
             }
             set
             {
@@ -221,7 +221,7 @@ namespace LocalSearch.View
             }
         }
 
-        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<ProgramElementWithRelation> relatedInfo, int currentPos)
+        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<CodeNavigationResult> relatedInfo, int currentPos)
         {
 
             ClearSelectedElements(currentPos);
@@ -230,7 +230,7 @@ namespace LocalSearch.View
 
             if (currentNavigationBox.SelectedItem != null)
             {
-                var relation = currentNavigationBox.SelectedItem as ProgramElementWithRelation;
+                var relation = currentNavigationBox.SelectedItem as CodeNavigationResult;
                 if (relation!=null)
                 {   
                     foreach (var linenumber in relation.RelationLineNumber)
@@ -280,8 +280,8 @@ namespace LocalSearch.View
             String TypeOfElement = firstElement.ProgramElementType.ToString();
             strbuilder += TypeOfElement + " \"" + NameOfElement + "\" ";
 
-            if (firstElement as ProgramElementWithRelation != null) //set context
-                InformationSource.CurrentPath.Add(firstElement as ProgramElementWithRelation);
+            if (firstElement as CodeNavigationResult != null) //set context
+                InformationSource.CurrentPath.Add(firstElement as CodeNavigationResult);
 
             int i = 1;
             while (i < count)
@@ -292,11 +292,11 @@ namespace LocalSearch.View
 
                 var type = typeof(ProgramElementRelation);
 
-                if (Element as ProgramElementWithRelation != null)
+                if (Element as CodeNavigationResult != null)
                 {
-                    InformationSource.CurrentPath.Add(Element as ProgramElementWithRelation); //set context
+                    InformationSource.CurrentPath.Add(Element as CodeNavigationResult); //set context
 
-                    var memInfo = type.GetMember(((Element as ProgramElementWithRelation)).ProgramElementRelation.ToString());
+                    var memInfo = type.GetMember(((Element as CodeNavigationResult)).ProgramElementRelation.ToString());
                     var attributes = memInfo[0].GetCustomAttributes(typeof(DescriptionAttribute),
                         false);
                     var description = ((DescriptionAttribute)attributes[0]).Description;

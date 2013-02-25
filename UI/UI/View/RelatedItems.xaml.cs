@@ -69,7 +69,7 @@ namespace Sando.UI.View.Navigator
 
         private void ShowItem()
         {            
-            var navigationResult = relatedItemsListbox.SelectedItem as ProgramElementWithRelation;
+            var navigationResult = relatedItemsListbox.SelectedItem as CodeNavigationResult;
             if (navigationResult != null)
             {
                 FileOpener.OpenFile(navigationResult.ProgramElement.FullFilePath, navigationResult.RelationLineNumber[0], "", true);                
@@ -127,8 +127,8 @@ namespace Sando.UI.View.Navigator
         {
             CurrentElement = cs1.ProgramElement;
             CurrentName = cs1.Name;
-            if (cs1 as ProgramElementWithRelation != null)
-                CurrentRelation = (cs1 as ProgramElementWithRelation).ProgramElementRelationString;
+            if (cs1 as CodeNavigationResult != null)
+                CurrentRelation = (cs1 as CodeNavigationResult).ProgramElementRelationString;
             NeedsElement = false;
         }
 

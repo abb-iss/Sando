@@ -27,7 +27,7 @@ namespace LocalSearch.UnitTests
             foreach (var element in elements)
             {
                 int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
-                ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+                CodeNavigationResult element2 = new CodeNavigationResult(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
                 boxes.FirstProgramElements.Add(element2);
             }
             Window window = new Window

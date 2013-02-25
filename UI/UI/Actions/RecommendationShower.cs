@@ -86,7 +86,7 @@ namespace Sando.UI.Actions
             }
         }
 
-        private void UpdateRecommender(List<ProgramElementWithRelation> relatedmembers, RelatedItems itemsView)
+        private void UpdateRecommender(List<CodeNavigationResult> relatedmembers, RelatedItems itemsView)
         {
             foreach (var item in relatedmembers)
                 itemsView.relatedItems.Add(item);

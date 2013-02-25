@@ -193,7 +193,7 @@ namespace Sando.UI
                 foreach (var element in context.GetRecommendations())
                 {
                     int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
-                    ProgramElementWithRelation element2 = new ProgramElementWithRelation(element.ProgramElement, element.Score, context.GetXElementFromLineNum(number));
+                    CodeNavigationResult element2 = new CodeNavigationResult(element.ProgramElement, element.Score, context.GetXElementFromLineNum(number));
                     boxes.FirstProgramElements.Add(element2);
                 }
                 System.Windows.Window window = new System.Windows.Window

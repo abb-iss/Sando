@@ -31,7 +31,7 @@ namespace LocalSearch
         }
  
 
-        public List<List<ProgramElementWithRelation>> droppedPaths
+        public List<List<CodeNavigationResult>> droppedPaths
         {
             set; //when the user drop a path (by returning to an ealier state), set it
             get;
@@ -40,7 +40,7 @@ namespace LocalSearch
         public Context()
         {
             CurrentPath = new List<CodeSearchResult>();
-            droppedPaths = new List<List<ProgramElementWithRelation>>();
+            droppedPaths = new List<List<CodeNavigationResult>>();
             InitialSearchResults = new List<Tuple<CodeSearchResult,int>>();
         }
 
@@ -48,7 +48,7 @@ namespace LocalSearch
         {
             query = searchQuery;
             CurrentPath = new List<CodeSearchResult>();
-            droppedPaths = new List<List<ProgramElementWithRelation>>();
+            droppedPaths = new List<List<CodeNavigationResult>>();
             InitialSearchResults = new List<Tuple<CodeSearchResult, int>>();
         }
 
@@ -61,7 +61,7 @@ namespace LocalSearch
 
 
         #region ranking heuristics
-        public void RankRelatedInfo(ref List<ProgramElementWithRelation> RelatedProgramElements, UInt16 heuristic = 4)
+        public void RankRelatedInfo(ref List<CodeNavigationResult> RelatedProgramElements, UInt16 heuristic = 4)
         {
             if (RelatedProgramElements.Count() == 0)
                 return;
@@ -106,14 +106,14 @@ namespace LocalSearch
             {
                 if (RelatedProgramElements[j].Score > RelatedProgramElements[i].Score)
                 {
-                    ProgramElementWithRelation temp = RelatedProgramElements[j];
+                    CodeNavigationResult temp = RelatedProgramElements[j];
                     RelatedProgramElements[j] = RelatedProgramElements[i];
                     RelatedProgramElements[i] = temp;
                 }
             }
         }      
                  
-        private void BasicHeuristic(ref List<ProgramElementWithRelation> RelatedProgramElements)
+        private void BasicHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
         {
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
@@ -156,7 +156,7 @@ namespace LocalSearch
             return false;
         }
 
-        private double isExisting(List<Tuple<CodeSearchResult,int>> source, ProgramElementWithRelation target)
+        private double isExisting(List<Tuple<CodeSearchResult,int>> source, CodeNavigationResult target)
         {
             double res = -1;
 
@@ -174,7 +174,7 @@ namespace LocalSearch
         }
         
         private void TopologyHeuristic(CodeSearchResult sourceProgramElement,
-            ref List<ProgramElementWithRelation> RelatedProgramElements, double weight)
+            ref List<CodeNavigationResult> RelatedProgramElements, double weight)
         {
             double numberOfCallers = 0;
             double numberOfCalls = 0;
@@ -243,7 +243,7 @@ namespace LocalSearch
 
 
         private void EditDistanceHeuristic(CodeSearchResult lastSelectedProgramElement, 
-            ref List<ProgramElementWithRelation> relatedProgramElements, double weight)
+            ref List<CodeNavigationResult> relatedProgramElements, double weight)
         {
             List<double> listOfDegree = new List<double>();
 
@@ -309,7 +309,7 @@ namespace LocalSearch
     
         }
 
-        private void UseLocationHeuristic(ref List<ProgramElementWithRelation> listRelatedInfo)
+        private void UseLocationHeuristic(ref List<CodeNavigationResult> listRelatedInfo)
         {
             foreach (var relatedProgramElement in listRelatedInfo)
             {
@@ -343,10 +343,10 @@ namespace LocalSearch
             return methods;
         }
 
-        public List<ProgramElementWithRelation> GetRecommendations(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult)
         {            
             ProgramElementType elementtype = codeSearchResult.ProgramElementType;
-            List<ProgramElementWithRelation> recommendations = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> recommendations = new List<CodeNavigationResult>();
             
             if (elementtype.Equals(ProgramElementType.Field))
                 recommendations = GetFieldRelatedInfo(codeSearchResult);                
@@ -358,18 +358,18 @@ namespace LocalSearch
             return recommendations;
         }
 
-        private List<ProgramElementWithRelation> GetFieldRelatedInfo(CodeSearchResult codeSearchResult)
+        private List<CodeNavigationResult> GetFieldRelatedInfo(CodeSearchResult codeSearchResult)
         {
-            List<ProgramElementWithRelation> listFiledRelated
-                = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listFiledRelated
+                = new List<CodeNavigationResult>();
             String fieldname = codeSearchResult.Name;
 
             //relation 0: get the decl of itself
-            if ((codeSearchResult as ProgramElementWithRelation) == null //direct search result (first column)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
+            if ((codeSearchResult as CodeNavigationResult) == null //direct search result (first column)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Call)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
             {
                 //var fieldDeclaration = GetFieldDeclFromName(codeSearchResult.Element.Name);
                 var fieldDeclaration = graph.GetField(codeSearchResult.ProgramElement as FieldElement);
@@ -387,17 +387,17 @@ namespace LocalSearch
 
         }
 
-        private List<ProgramElementWithRelation> GetMethodRelatedInfo(CodeSearchResult codeSearchResult)
+        private List<CodeNavigationResult> GetMethodRelatedInfo(CodeSearchResult codeSearchResult)
         {
-            List<ProgramElementWithRelation> listMethodRelated
-                = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listMethodRelated
+                = new List<CodeNavigationResult>();
 
             //relation 0: get the decl of itself
-            if ((codeSearchResult as ProgramElementWithRelation) == null
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Use)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.Call)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
-                || (codeSearchResult as ProgramElementWithRelation).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
+            if ((codeSearchResult as CodeNavigationResult) == null
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Use)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Call)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.CallBy)
+                || (codeSearchResult as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.UseBy))
             {
                 var methodDeclaration = graph.GetMethod(codeSearchResult.ProgramElement as MethodElement);
                 listMethodRelated.Add(XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(methodDeclaration,filePath));

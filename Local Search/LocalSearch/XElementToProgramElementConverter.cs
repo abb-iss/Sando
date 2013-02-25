@@ -11,7 +11,7 @@ namespace LocalSearch
     public class XElementToProgramElementConverter
     {
 
-        public static ProgramElementWithRelation GetMethodElementWRelationFromXElement(XElement fullmethod, string fileName)
+        public static CodeNavigationResult GetMethodElementWRelationFromXElement(XElement fullmethod, string fileName)
         {
             var definitionLineNumber = fullmethod.Element(SRC.Name).GetSrcLineNumber();            
             var block = fullmethod.Element(SRC.Block);
@@ -69,7 +69,7 @@ namespace LocalSearch
             var element = new MethodElement(fullmethod.Element(SRC.Name).Value,
                 definitionLineNumber, fileName, snippet,
                 accessLevel, args, returnType, body, classId, className, String.Empty, isconstructor);
-            var elementwrelation = new ProgramElementWithRelation(element, 1.0, fullmethod);
+            var elementwrelation = new CodeNavigationResult(element, 1.0, fullmethod);
 
             return elementwrelation;
 
@@ -79,7 +79,7 @@ namespace LocalSearch
             //return element;
         }
 
-        public static ProgramElementWithRelation GetFieldElementWRelationFromDecl(XElement fielddecl, string fileName)
+        public static CodeNavigationResult GetFieldElementWRelationFromDecl(XElement fielddecl, string fileName)
         {
             var definitionLineNumber = fielddecl.Element(SRC.Name).GetSrcLineNumber();
             var snippet = fielddecl.ToSource();
@@ -111,7 +111,7 @@ namespace LocalSearch
                 definitionLineNumber, fileName, snippet,
                 accessLevel, fieldType.Value, classId, className, String.Empty, initialValue);
 
-            var elementwrelation = new ProgramElementWithRelation(element, 1.0, fielddecl);
+            var elementwrelation = new CodeNavigationResult(element, 1.0, fielddecl);
 
             return elementwrelation;
 

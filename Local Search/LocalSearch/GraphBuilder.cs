@@ -103,23 +103,23 @@ namespace LocalSearch
             }            
         }
 
-        public List<ProgramElementWithRelation> GetCallees(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetCallees(CodeSearchResult codeSearchResult)
         {
 
             var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
             return GetCallees( method);
         }
 
-        public List<ProgramElementWithRelation> GetCallers(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetCallers(CodeSearchResult codeSearchResult)
         {
 
             var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
             return GetCallers(method);
         }
 
-        private List<ProgramElementWithRelation> GetCallees(XElement method)
+        private List<CodeNavigationResult> GetCallees(XElement method)
         {
-            List<ProgramElementWithRelation> listCallees = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listCallees = new List<CodeNavigationResult>();
             List<Tuple<XElement, int>> myCallees = null;
             Calls.TryGetValue(method.GetSrcLineNumber(), out myCallees);
             if (myCallees != null)
@@ -136,9 +136,9 @@ namespace LocalSearch
             return listCallees;
         }
 
-        private List<ProgramElementWithRelation> GetCallers(XElement method)
+        private List<CodeNavigationResult> GetCallers(XElement method)
         {
-            List<ProgramElementWithRelation> listCallers = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listCallers = new List<CodeNavigationResult>();
             List<Tuple<XElement, int>> myCallers = null;
             Callers.TryGetValue(method.GetSrcLineNumber(), out myCallers);
             if (myCallers != null)
@@ -265,15 +265,15 @@ namespace LocalSearch
 
         }
 
-        public List<ProgramElementWithRelation> GetFieldUses(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetFieldUses(CodeSearchResult codeSearchResult)
         {
             var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
             return GetFieldUses(method);
         }
 
-        private List<ProgramElementWithRelation> GetFieldUses(XElement method)
+        private List<CodeNavigationResult> GetFieldUses(XElement method)
         {
-            List<ProgramElementWithRelation> listUses = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listUses = new List<CodeNavigationResult>();
             List<Tuple<XElement, int>> myUses = null;
             FieldUses.TryGetValue(method.GetSrcLineNumber(), out myUses);
             if (myUses != null)
@@ -290,15 +290,15 @@ namespace LocalSearch
             return listUses;
         }
 
-        public List<ProgramElementWithRelation> GetFieldUsers(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetFieldUsers(CodeSearchResult codeSearchResult)
         {
             var field = GetField(codeSearchResult.ProgramElement as FieldElement);
             return GetFieldUsers(field);
         }        
 
-        private List<ProgramElementWithRelation> GetFieldUsers(XElement field)
+        private List<CodeNavigationResult> GetFieldUsers(XElement field)
         {
-            List<ProgramElementWithRelation> listUsers = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listUsers = new List<CodeNavigationResult>();
             List<Tuple<XElement, int>> myUsers = null;
             FieldUsers.TryGetValue(field.GetSrcLineNumber(), out myUsers);
             if (myUsers != null)
@@ -707,9 +707,9 @@ namespace LocalSearch
         /// </summary>
         /// <param name="method">FULL method in XElement</param>
         /// <returns>an array of fields in ProgramElementWithRelation</returns>
-        public ProgramElementWithRelation[] GetFieldElementsUsedinMethod(XElement method)
+        public CodeNavigationResult[] GetFieldElementsUsedinMethod(XElement method)
         {
-            List<ProgramElementWithRelation> listFieldElementsUsed = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listFieldElementsUsed = new List<CodeNavigationResult>();
 
             XElement[] allfields = GetFieldNames();
             foreach (var field in allfields)
@@ -739,9 +739,9 @@ namespace LocalSearch
         /// </summary>
         /// <param name="fieldname">field NAME in String</param>
         /// <returns>an array of FULL methods in ProgramElementWithRelation</returns>
-        public ProgramElementWithRelation[] GetMethodElementsUseField(String fieldname)
+        public CodeNavigationResult[] GetMethodElementsUseField(String fieldname)
         {
-            List<ProgramElementWithRelation> listMethodElements = new List<ProgramElementWithRelation>();
+            List<CodeNavigationResult> listMethodElements = new List<CodeNavigationResult>();
 
             //XElement[] allmethods = GetFullMethods();
             XElement[] allmethods = FullMethods;
