@@ -63,8 +63,22 @@ namespace Sando.UI.View.Navigator
             Window parentWindow = Window.GetWindow(this);
             lastOne = RecommendationShower.Create(listBox, fileName, Dispatcher).SetContext(Context).SetY(parentWindow.Top);
             lastOne.Show();
-            SetCurrent(listBox.SelectedItem as CodeSearchResult);            
-            FileOpener.OpenItem(listBox.SelectedItem as CodeSearchResult,"",true);
+            SetCurrent(listBox.SelectedItem as CodeSearchResult);
+            ShowItem();            
+        }
+
+        private void ShowItem()
+        {            
+            var navigationResult = relatedItemsListbox.SelectedItem as ProgramElementWithRelation;
+            if (navigationResult != null)
+            {
+                FileOpener.OpenFile(navigationResult.ProgramElement.FullFilePath, navigationResult.RelationLineNumber[0], "", true);                
+            }
+            else
+            {
+                var searchResult = relatedItemsListbox.SelectedItem as CodeSearchResult;
+                FileOpener.OpenItem(searchResult, "", true);
+            }
         }
 
         public string CurrentName
