@@ -66,5 +66,15 @@ namespace LocalSearch.UnitTests
             Assert.AreEqual(lines2.ElementAt(1), 384);
             Assert.AreEqual(lines2.ElementAt(2), 391);
         }
+
+        [Test]
+        public void LevenshteinDistanceTest()
+        {
+            String a = "kitten";
+            String b = "sitting";
+            Context obj = new Context();
+            int distance = obj.LevenshteinDistance(a,b);
+            Assert.AreEqual(distance, 3);
+        }
     }
 }
