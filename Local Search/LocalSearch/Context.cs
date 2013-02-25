@@ -80,14 +80,16 @@ namespace LocalSearch
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
                         BasicHeuristic(ref RelatedProgramElements);
                         TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);                        
-                        EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        //EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        EditDistanceHeuristicInPath(ref RelatedProgramElements, 1, 1);
                         UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
                 case 3:
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        //EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        EditDistanceHeuristicInPath(ref RelatedProgramElements, 1, 1);
                         UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
@@ -115,6 +117,13 @@ namespace LocalSearch
                  
         private void BasicHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
         {
+            ShowBeforeHeuristic(ref RelatedProgramElements);
+
+            AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 1);
+        }
+
+        private void ShowBeforeHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
+        {
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
                 if (CurrentPath.Count() != 0)
@@ -125,7 +134,13 @@ namespace LocalSearch
                         relatedProgramElement.Score = relatedProgramElement.Score - 1;
                     }
                 }
+            }
+        }
 
+        private void AmongInitialSearchResultsHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, int step)
+        {
+            foreach (var relatedProgramElement in RelatedProgramElements)
+            {                
                 if (InitialSearchResults.Count() != 0)
                 {
                     //what is more closer related to search result is set higher score
@@ -138,7 +153,7 @@ namespace LocalSearch
                     }
                 }
 
-            }            
+            }    
         }
 
         private bool isExisting(List<CodeSearchResult> source, CodeSearchResult target)
@@ -235,38 +250,72 @@ namespace LocalSearch
                     
             }
 
-            NormalizeScore(ref listOfDegree);
+            NormalizeScoreByMax(ref listOfDegree);
 
             for (int i = 0; i < RelatedProgramElements.Count(); i++)
                 RelatedProgramElements[i].Score += listOfDegree[i] * weight;            
         }
 
 
-        private void EditDistanceHeuristic(CodeSearchResult lastSelectedProgramElement, 
+        private void EditDistanceHeuristicInPath(ref List<CodeNavigationResult> relatedProgramElements, 
+            int steps, double weight)
+        {
+            if(CurrentPath.Count < steps)
+                steps = CurrentPath.Count;
+            
+            List<double> listOfDegree = new List<double>();
+            listOfDegree.Add(1);
+
+            for (double i = 2; i <= steps; i++)
+            {              
+                listOfDegree.Add(1 / (2*(i-1)));
+            }
+
+            NormalizeScoreBySum(ref listOfDegree);
+
+            for (int i = 1; i <= steps; i++)
+            {
+                CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
+                double absoluteweight = listOfDegree[i - 1] * weight;
+                EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, absoluteweight);
+            }
+        }
+
+
+        private void EditDistanceHeuristic(CodeSearchResult ProgramElementToCompare, 
             ref List<CodeNavigationResult> relatedProgramElements, double weight)
         {
             List<double> listOfDegree = new List<double>();
 
-            foreach (var info in relatedProgramElements)
+            foreach (var relatedelement in relatedProgramElements)
             {
                 double degree = 0;
 
-                if (info.ProgramElementRelation != ProgramElementRelation.Other)
+                if (relatedelement.ProgramElementRelation != ProgramElementRelation.Other)
                 {
-                    double distance = LevenshteinDistance(info.Name, lastSelectedProgramElement.Name);
+                    double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
                     if (distance == 0)
-                        degree = 1.1;//double.MaxValue;
+                        degree = 2.1;//double.MaxValue;
                     else
-                        degree = 1 / distance;                    
+                    {
+                        if (PartialWordMatch(relatedelement.Name, query))
+                            degree = 1;
+                        degree += 1 / distance;
+                    }
                 }
 
                 listOfDegree.Add(degree);
             }
 
-            NormalizeScore(ref listOfDegree);
+            NormalizeScoreByMax(ref listOfDegree);
 
             for (int i = 0; i < relatedProgramElements.Count(); i++)
                 relatedProgramElements[i].Score += listOfDegree[i] * weight;
+        }
+
+        private bool PartialWordMatch(string target, string source)
+        {
+            return false;
         }
 
         public int LevenshteinDistance(String s, String t)
@@ -317,18 +366,22 @@ namespace LocalSearch
                 relatedProgramElement.Score += 1 / Convert.ToDouble(relationLine) * 0.0001;
             }
         }
-
-        private void NormalizeScore(ref List<double> scores)
+             
+        private void NormalizeScoreByMax(ref List<double> scores)
         {
             double maxscore = scores.Max();
-            //foreach (var score in scores)
-            //{
-            //    if((score < minscore) && (score > 0))
-            //        minscore = score;
-            //}            
             List<double> normalizedscores = new List<double>();
             foreach (var score in scores)
                 normalizedscores.Add(score / maxscore);
+            scores = normalizedscores;
+        }
+
+        private void NormalizeScoreBySum(ref List<double> scores)
+        {
+            double sumscore = scores.Sum();
+            List<double> normalizedscores = new List<double>();
+            foreach (var score in scores)
+                normalizedscores.Add(score / sumscore);
             scores = normalizedscores;
         }
 

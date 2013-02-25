@@ -98,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context.cs" />
-    <Compile Include="ProgramElementWithRelation.cs" />
+    <Compile Include="CodeNavigationResult.cs" />
     <Compile Include="ProgramElementRelation.cs" />
     <Compile Include="GraphBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
