@@ -12,11 +12,11 @@ namespace Sando.Parser
 {
     public class SrcMLCppParser : IParser
     {
-        public SrcMLArchive Archive { get; set; }
+        public SrcMLArchive Archive { get; set; }           // should be deleted
         public SrcMLGenerator Generator { get; set; }
 
-
-        public SrcMLCppParser() {}
+        public SrcMLCppParser() {
+        }
 
         public SrcMLCppParser(SrcMLArchive archive) {
             this.Archive = archive;

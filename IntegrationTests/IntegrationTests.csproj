@@ -33,9 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML, Version=2.0.37.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, PublicKeyToken=888b27a1de876c83, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
+      <HintPath>..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
       <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>

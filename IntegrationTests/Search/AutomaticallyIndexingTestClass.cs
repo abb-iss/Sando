@@ -52,14 +52,14 @@ namespace Sando.IntegrationTests.Search
             CreateSystemWideDefaults(indexDirName);
             CreateKey(filesInThisDirectory);
             CreateIndexer();
-            _currentMonitor = SolutionMonitorFactory.CreateMonitor();
+////            _currentMonitor = SolutionMonitorFactory.CreateMonitor();
             CreateGenerator();
             CreateArchive(filesInThisDirectory);
             AddArchiveListeners();
             CreateSwum();
 
             //start the monitoring and wait for the initial indexing to finish before preceeding
-            _srcMLArchive.StartWatching();
+////            _srcMLArchive.StartWatching();
             while (ServiceLocator.Resolve<InitialIndexingWatcher>().IsInitialIndexingInProgress())
             {
                 Thread.Sleep(500);
@@ -79,9 +79,9 @@ namespace Sando.IntegrationTests.Search
         private void AddArchiveListeners()
         {
             var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-            _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-            _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
-            _srcMLArchive.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
+////            _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
+////            _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
+////            _srcMLArchive.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
         }
 
         private void CreateArchive(string filesInThisDirectory)
@@ -99,14 +99,14 @@ namespace Sando.IntegrationTests.Search
             //DUE TO SRCML.NET BUG
             var list = filesToWatch.GetMonitoredFiles(null);
             var filteredList = new List<string>();
-            var fake = new SrcMLArchive(fakeFiles, srcMlArchiveFolder, _generator);
+////            var fake = new SrcMLArchive(fakeFiles, srcMlArchiveFolder, _generator);
             foreach (var file in list)
             {
-                if (fake.IsValidFileExtension(file))
+////                if (fake.IsValidFileExtension(file))
                     filteredList.Add(file);
             }
 
-            _srcMLArchive = new SrcMLArchive(new StaticFileList(filteredList.ToArray()), srcMlArchiveFolder, _generator);
+////            _srcMLArchive = new SrcMLArchive(new StaticFileList(filteredList.ToArray()), srcMlArchiveFolder, _generator);
         }
 
         private void CreateGenerator()
@@ -158,8 +158,8 @@ namespace Sando.IntegrationTests.Search
         }
 
         private string indexPath;
-        private static SolutionMonitor monitor;
-        private SolutionMonitor _currentMonitor;
+////        private static SolutionMonitor monitor;
+////        private SolutionMonitor _currentMonitor;
         private ABB.SrcML.SrcMLArchive _srcMLArchive;
         private SrcMLGenerator _generator;
 
