@@ -46,7 +46,7 @@ namespace Sando.IntegrationTests.Search
             CreateSystemWideDefaults(indexDirName);
             CreateKey(filesInThisDirectory);
             CreateIndexer();
-            SolutionMonitorFactory.CreateMonitor();
+////            SolutionMonitorFactory.CreateMonitor();
             CreateGenerator();
             CreateArchive(filesInThisDirectory);
             AddArchiveListeners();

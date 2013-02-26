@@ -24,7 +24,7 @@ namespace Sando.UI.Actions
         {
             var path = e.Argument as string;
             var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-            var deleteFile = new ABB.SrcML.FileEventRaisedArgs(path, path, ABB.SrcML.FileEventType.FileDeleted);
+            var deleteFile = new ABB.SrcML.FileEventRaisedArgs(ABB.SrcML.FileEventType.FileDeleted, path, path);
             srcMLArchiveEventsHandlers.SourceFileChanged(null, deleteFile, true);
             ServiceLocator.Resolve<IndexFilterManager>().AddFileExclusion(path);
         }

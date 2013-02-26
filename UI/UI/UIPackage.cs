@@ -6,7 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 // JZ: SrcMLService Integration
-//using ABB.SrcML.VisualStudio.SolutionMonitor;
+using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using ABB.SrcML.VisualStudio.SrcMLService;
 // End of code changes
