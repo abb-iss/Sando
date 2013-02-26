@@ -89,7 +89,7 @@ namespace Sando.Indexer
             }
 		}
 
-        public virtual void DeleteDocuments(string fullFilePath)
+        public virtual void DeleteDocuments(string fullFilePath, bool commitImmediately = false)
         {
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
@@ -97,7 +97,7 @@ namespace Sando.Indexer
             lock (_lock)
             {
                 IndexWriter.DeleteDocuments(new TermQuery(term));
-                if (_synchronousCommits)
+                if (_synchronousCommits || commitImmediately)
                     CommitChanges();
                 else
                     _hasIndexChanged = true;

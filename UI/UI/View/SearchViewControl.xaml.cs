@@ -421,13 +421,18 @@ namespace Sando.UI.View
                 var result = searchResultListbox.SelectedItems[0];
                 if (result != null)
                 {
-                    FileRemover.Remove((result as CodeSearchResult).ProgramElement.FullFilePath);
+                    FileRemover.Remove((result as CodeSearchResult).ProgramElement.FullFilePath, RemoverCompleted);
                 }
             }
             catch (ArgumentException aex)
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
             }
+        }
+
+        private void RemoverCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            SearchButtonClick(null, null);
         }        
     }
 }

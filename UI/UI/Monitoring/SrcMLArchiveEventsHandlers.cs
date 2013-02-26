@@ -14,6 +14,11 @@ namespace Sando.UI.Monitoring
     {
         public void SourceFileChanged(object sender, FileEventRaisedArgs args)
         {
+            SourceFileChanged(sender, args, false);
+        }
+
+        public void SourceFileChanged(object sender, FileEventRaisedArgs args, bool commitImmediately = false)
+        {
             FileLogger.DefaultLogger.Info("Sando: RespondToSourceFileChangedEvent(), File = " + args.SourceFilePath + ", EventType = " + args.EventType);            
             // Ignore files that can not be indexed by Sando.
 		    var fileExtension = Path.GetExtension(args.SourceFilePath);
@@ -43,7 +48,7 @@ namespace Sando.UI.Monitoring
                                 SwumManager.Instance.UpdateSourceFile(sourceFilePath);
                                 break;
                             case FileEventType.FileDeleted:
-                                documentIndexer.DeleteDocuments(sourceFilePath);
+                                documentIndexer.DeleteDocuments(sourceFilePath,commitImmediately);
                                 SwumManager.Instance.RemoveSourceFile(sourceFilePath);
                                 break;
                             case FileEventType.FileRenamed: // FileRenamed is actually never raised.
@@ -56,7 +61,7 @@ namespace Sando.UI.Monitoring
                 }
                 else
                 {
-                    documentIndexer.DeleteDocuments(sourceFilePath);
+                    documentIndexer.DeleteDocuments(sourceFilePath,commitImmediately);
                 }
             }
         }

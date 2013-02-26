@@ -10,12 +10,13 @@ using System.Text;
 namespace Sando.UI.Actions
 {
     public static class FileRemover
-    {
+    {        
 
-        public static void Remove(string path)
+        public static void Remove(string path, RunWorkerCompletedEventHandler runworkerDone)
         {
             var bw = new BackgroundWorker { WorkerReportsProgress = false, WorkerSupportsCancellation = false };
-            bw.DoWork += RemoveFileFromIndex;
+            bw.DoWork += RemoveFileFromIndex;            
+            bw.RunWorkerCompleted += runworkerDone;
             bw.RunWorkerAsync(path); 
         }
 
@@ -24,7 +25,7 @@ namespace Sando.UI.Actions
             var path = e.Argument as string;
             var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
             var deleteFile = new ABB.SrcML.FileEventRaisedArgs(path, path, ABB.SrcML.FileEventType.FileDeleted);
-            srcMLArchiveEventsHandlers.SourceFileChanged(null, deleteFile);
+            srcMLArchiveEventsHandlers.SourceFileChanged(null, deleteFile, true);
             ServiceLocator.Resolve<IndexFilterManager>().AddFileExclusion(path);
         }
 
