@@ -332,6 +332,68 @@ namespace LocalSearch
 
         #region basic information collection
 
+        public List<CodeSearchResult> GetFieldsAsFieldElements()
+        {
+            var elements = new List<CodeSearchResult>();
+
+            //var fields = GetFieldDecs();
+            var fields = FieldDecs;
+
+            foreach (XElement field in fields)
+            {
+                var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(field, origPath);
+
+                CodeSearchResult result = fieldaselement as CodeSearchResult;
+                elements.Add(result);
+            }
+
+            return elements;
+        }
+
+        public List<CodeSearchResult> GetMethodsAsMethodElements()
+        {
+            var elements = new List<CodeSearchResult>();
+
+            var methods = GetMethodNames();
+
+            foreach (XElement method in methods)
+            {
+                var fullmethod = GetFullMethodFromName(method);
+                var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(fullmethod, origPath);
+                CodeSearchResult result = methodaselement as CodeSearchResult;
+                elements.Add(result);
+            }
+
+            return elements;
+        }
+
+        /// <summary>
+        /// Get full method XElement from a given method name.
+        /// </summary>
+        /// <param name="methodname">method NAME in XElement</param>
+        /// <returns>Full method in XElement</returns>
+        public XElement GetFullMethodFromName(XElement methodname)
+        {
+            int srcLineNum = methodname.GetSrcLineNumber();
+            String methodName = methodname.Value;
+
+            return GetFullMethodFromName(methodName, srcLineNum);
+        }
+
+        public XElement GetFullMethodFromName(String methodname, int srclinenum)
+        {
+            //var methods = GetFullMethods();
+            var methods = FullMethods;
+            foreach (XElement method in methods)
+            {
+                if ((methodname.Equals(method.Element(SRC.Name).Value))
+                    && (srclinenum == method.Element(SRC.Name).GetSrcLineNumber()))
+                    return method;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Get corresponding XElement given the code line number in the source file.
         /// </summary>
@@ -519,7 +581,7 @@ namespace LocalSearch
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
                 return false;
-            var allnames = methodbody.Descendants(SRC.Name);
+            var allnames = methodbody.Descendants(SRC.Name); // todo: ancestor can't be type!!
 
             var localvars = GetAllLocalVarsinMethod(method);
             var paras = GetAllParametersinMethod(method);
@@ -646,251 +708,178 @@ namespace LocalSearch
 
 
         #region maybe obsoleted
+        
+        ///// <summary>
+        ///// Get field declaration XElement from a given field name.
+        ///// </summary>
+        ///// <param name="fieldname">field NAME in String</param>
+        ///// <returns>field declaration in XElement</returns>
+        //public XElement GetFieldDeclFromName(String fieldname)
+        //{
+        //    //var fields = GetFieldDecs();
+        //    var fields = FieldDecs;
 
-        /// <summary>
-        /// Get full method XElement from a given method name.
-        /// </summary>
-        /// <param name="methodname">method NAME in XElement</param>
-        /// <returns>Full method in XElement</returns>
-        public XElement GetFullMethodFromName(XElement methodname)
-        {
-            //var methods = GetMethods();
+        //    foreach (XElement field in fields)
+        //    {
+        //        if (fieldname.Equals(field.Element(SRC.Name).Value))
+        //            return field;
+        //    }
 
-            //foreach (XElement method in methods)
-            //{
-            //    if (methodname.Equals(method.Element(SRC.Name)))
-            //        return method;
-            //}
+        //    return null;
+        //}
 
-            //return null;
-            int srcLineNum = methodname.GetSrcLineNumber();
-            String methodName = methodname.Value;
+        ///// <summary>
+        ///// Get fields that are used in a given method.
+        ///// </summary>
+        ///// <param name="method">FULL method in XElement</param>
+        ///// <returns>an array of fields in ProgramElementWithRelation</returns>
+        //public CodeNavigationResult[] GetFieldElementsUsedinMethod(XElement method)
+        //{
+        //    List<CodeNavigationResult> listFieldElementsUsed = new List<CodeNavigationResult>();
 
-            return GetFullMethodFromName(methodName, srcLineNum);
-        }
+        //    XElement[] allfields = GetFieldNames();
+        //    foreach (var field in allfields)
+        //    {
+        //        List<int> useLineNum = new List<int>();
+        //        if (ifFieldUsedinMethod(method, field.Value, ref useLineNum))
+        //        {
+        //            var fielddecl = GetFieldDeclFromName(field.Value);
+        //            Contract.Requires((fielddecl != null), "Field " + field.Value + " does not belong to this local file.");
 
-        public XElement GetFullMethodFromName(String methodname, int srclinenum)
-        {
-            //var methods = GetFullMethods();
-            var methods = FullMethods;
-            foreach (XElement method in methods)
-            {
-                if ((methodname.Equals(method.Element(SRC.Name).Value))
-                    && (srclinenum == method.Element(SRC.Name).GetSrcLineNumber()))
-                    return method;
-            }
+        //            foreach (var linenumber in useLineNum)
+        //            {
+        //                var fieldelement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(fielddecl,origPath);
+        //                fieldelement.RelationLineNumber.Clear();
+        //                fieldelement.RelationLineNumber.Add(linenumber);
+        //                fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
+        //                listFieldElementsUsed.Add(fieldelement);
+        //            }
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return listFieldElementsUsed.ToArray();
+        //}
 
-        /// <summary>
-        /// Get field declaration XElement from a given field name.
-        /// </summary>
-        /// <param name="fieldname">field NAME in String</param>
-        /// <returns>field declaration in XElement</returns>
-        public XElement GetFieldDeclFromName(String fieldname)
-        {
-            //var fields = GetFieldDecs();
-            var fields = FieldDecs;
+        ///// <summary>
+        ///// Get methods that use a given field.
+        ///// </summary>
+        ///// <param name="fieldname">field NAME in String</param>
+        ///// <returns>an array of FULL methods in ProgramElementWithRelation</returns>
+        //public CodeNavigationResult[] GetMethodElementsUseField(String fieldname)
+        //{
+        //    List<CodeNavigationResult> listMethodElements = new List<CodeNavigationResult>();
 
-            foreach (XElement field in fields)
-            {
-                if (fieldname.Equals(field.Element(SRC.Name).Value))
-                    return field;
-            }
+        //    //XElement[] allmethods = GetFullMethods();
+        //    XElement[] allmethods = FullMethods;
 
-            return null;
-        }
+        //    foreach (var method in allmethods)
+        //    {
+        //        List<int> useLineNum = new List<int>();
+        //        if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
+        //        {
+        //            foreach (var line in useLineNum)
+        //            {
+        //                var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(method, origPath);
+        //                methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+        //                methodaselement.RelationLineNumber.Clear();
+        //                methodaselement.RelationLineNumber.Add(line);
+        //                listMethodElements.Add(methodaselement);
+        //            }
+        //        }
+        //    }
 
-        /// <summary>
-        /// Get fields that are used in a given method.
-        /// </summary>
-        /// <param name="method">FULL method in XElement</param>
-        /// <returns>an array of fields in ProgramElementWithRelation</returns>
-        public CodeNavigationResult[] GetFieldElementsUsedinMethod(XElement method)
-        {
-            List<CodeNavigationResult> listFieldElementsUsed = new List<CodeNavigationResult>();
+        //    return listMethodElements.ToArray();
+        //}
 
-            XElement[] allfields = GetFieldNames();
-            foreach (var field in allfields)
-            {
-                List<int> useLineNum = new List<int>();
-                if (ifFieldUsedinMethod(method, field.Value, ref useLineNum))
-                {
-                    var fielddecl = GetFieldDeclFromName(field.Value);
-                    Contract.Requires((fielddecl != null), "Field " + field.Value + " does not belong to this local file.");
+        ///// <summary>
+        ///// Get methods that uses a given field.
+        ///// </summary>
+        ///// <param name="fieldname">field NAME in String</param>
+        ///// <returns>an array of FULL methods in XElement</returns>
+        //public XElement[] GetMethodsUseField(String fieldname)
+        //{
+        //    List<XElement> listMethods = new List<XElement>();
 
-                    foreach (var linenumber in useLineNum)
-                    {
-                        var fieldelement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(fielddecl,origPath);
-                        fieldelement.RelationLineNumber.Clear();
-                        fieldelement.RelationLineNumber.Add(linenumber);
-                        fieldelement.ProgramElementRelation = ProgramElementRelation.UseBy;
-                        listFieldElementsUsed.Add(fieldelement);
-                    }
-                }
-            }
+        //    //XElement[] allmethods = GetFullMethods();
+        //    XElement[] allmethods = FullMethods;
 
-            return listFieldElementsUsed.ToArray();
-        }
+        //    foreach (var method in allmethods)
+        //    {
+        //        List<int> useLineNum = new List<int>();
+        //        if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
+        //        {
+        //            listMethods.Add(method);
+        //        }
+        //    }
 
-        /// <summary>
-        /// Get methods that use a given field.
-        /// </summary>
-        /// <param name="fieldname">field NAME in String</param>
-        /// <returns>an array of FULL methods in ProgramElementWithRelation</returns>
-        public CodeNavigationResult[] GetMethodElementsUseField(String fieldname)
-        {
-            List<CodeNavigationResult> listMethodElements = new List<CodeNavigationResult>();
+        //    return listMethods.ToArray();
+        //}
 
-            //XElement[] allmethods = GetFullMethods();
-            XElement[] allmethods = FullMethods;
+        ///// <summary>
+        ///// Get fields used in a given method.
+        ///// </summary>
+        ///// <param name="method">FULL method in XElement</param>
+        ///// <returns>an array of field NAMES in XElement</returns>
+        //public XElement[] GetFieldsUsedinMethod(XElement method)
+        //{
+        //    List<XElement> listFieldsUsed = new List<XElement>();
 
-            foreach (var method in allmethods)
-            {
-                List<int> useLineNum = new List<int>();
-                if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
-                {
-                    foreach (var line in useLineNum)
-                    {
-                        var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(method, origPath);
-                        methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
-                        methodaselement.RelationLineNumber.Clear();
-                        methodaselement.RelationLineNumber.Add(line);
-                        listMethodElements.Add(methodaselement);
-                    }
-                }
-            }
+        //    XElement[] allfields = GetFieldNames();
+        //    foreach (var field in allfields)
+        //    {
+        //        List<int> useLineNum = new List<int>();
+        //        if (ifFieldUsedinMethod(method, field.Value, ref useLineNum))
+        //            listFieldsUsed.Add(field);
+        //    }
 
-            return listMethodElements.ToArray();
-        }
+        //    return listFieldsUsed.ToArray();
+        //}
 
-        /// <summary>
-        /// Get methods that uses a given field.
-        /// </summary>
-        /// <param name="fieldname">field NAME in String</param>
-        /// <returns>an array of FULL methods in XElement</returns>
-        public XElement[] GetMethodsUseField(String fieldname)
-        {
-            List<XElement> listMethods = new List<XElement>();
+        ///// <summary>
+        ///// Get methods that uses a given field.
+        ///// </summary>
+        ///// <param name="fieldname">field NAME in String</param>
+        ///// <returns>an array of method NAMES in XElement</returns>
+        //public XElement[] GetMethodNamesUseField(String fieldname)
+        //{
+        //    List<XElement> listMethods = new List<XElement>();
 
-            //XElement[] allmethods = GetFullMethods();
-            XElement[] allmethods = FullMethods;
+        //    //XElement[] allmethods = GetFullMethods();
+        //    XElement[] allmethods = FullMethods;
+        //    foreach (var method in allmethods)
+        //    {
+        //        List<int> useLineNum = new List<int>();
+        //        if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
+        //        {
+        //            var methodname = method.Element(SRC.Name);
+        //            listMethods.Add(methodname);
+        //        }
+        //    }
 
-            foreach (var method in allmethods)
-            {
-                List<int> useLineNum = new List<int>();
-                if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
-                {
-                    listMethods.Add(method);
-                }
-            }
+        //    return listMethods.ToArray();
+        //}
 
-            return listMethods.ToArray();
-        }
+        //public XElement[] GetMethodNamesUseField(XElement fieldname)
+        //{
+        //    return GetMethodNamesUseField(fieldname.Value);
+        //}
 
-        /// <summary>
-        /// Get fields used in a given method.
-        /// </summary>
-        /// <param name="method">FULL method in XElement</param>
-        /// <returns>an array of field NAMES in XElement</returns>
-        public XElement[] GetFieldsUsedinMethod(XElement method)
-        {
-            List<XElement> listFieldsUsed = new List<XElement>();
+        //private int IfCalledByMe(XElement method, IEnumerable<XElement> allCalls)
+        //{
+        //    foreach (var call in allCalls)
+        //    {
+        //        if (Matches(call, method))
+        //            return call.GetSrcLineNumber();
+        //    }
+        //    return -1;
+        //}
 
-            XElement[] allfields = GetFieldNames();
-            foreach (var field in allfields)
-            {
-                List<int> useLineNum = new List<int>();
-                if (ifFieldUsedinMethod(method, field.Value, ref useLineNum))
-                    listFieldsUsed.Add(field);
-            }
+        
 
-            return listFieldsUsed.ToArray();
-        }
-
-        /// <summary>
-        /// Get methods that uses a given field.
-        /// </summary>
-        /// <param name="fieldname">field NAME in String</param>
-        /// <returns>an array of method NAMES in XElement</returns>
-        public XElement[] GetMethodNamesUseField(String fieldname)
-        {
-            List<XElement> listMethods = new List<XElement>();
-
-            //XElement[] allmethods = GetFullMethods();
-            XElement[] allmethods = FullMethods;
-            foreach (var method in allmethods)
-            {
-                List<int> useLineNum = new List<int>();
-                if (ifFieldUsedinMethod(method, fieldname, ref useLineNum))
-                {
-                    var methodname = method.Element(SRC.Name);
-                    listMethods.Add(methodname);
-                }
-            }
-
-            return listMethods.ToArray();
-        }
-
-        public XElement[] GetMethodNamesUseField(XElement fieldname)
-        {
-            return GetMethodNamesUseField(fieldname.Value);
-        }
-
-        private int IfCalledByMe(XElement method, IEnumerable<XElement> allCalls)
-        {
-            foreach (var call in allCalls)
-            {
-                if (Matches(call, method))
-                    return call.GetSrcLineNumber();
-            }
-            return -1;
-        }
-
-        #region testzone
-
-        public List<CodeSearchResult> GetRelatedMethods(CodeSearchResult codeSearchResult)
-        {
-            return this.GetMethodsAsMethodElements();
-        }
-
-        public List<CodeSearchResult> GetFieldsAsFieldElements()
-        {
-            var elements = new List<CodeSearchResult>();
-
-            //var fields = GetFieldDecs();
-            var fields = FieldDecs;
-
-            foreach (XElement field in fields)
-            {
-                var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(field, origPath);
-
-                CodeSearchResult result = fieldaselement as CodeSearchResult;
-                elements.Add(result);
-            }
-
-            return elements;
-        }
-
-        public List<CodeSearchResult> GetMethodsAsMethodElements()
-        {
-            var elements = new List<CodeSearchResult>();
-
-            var methods = GetMethodNames();
-
-            foreach (XElement method in methods)
-            {
-                var fullmethod = GetFullMethodFromName(method);
-                var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(fullmethod, origPath);
-                CodeSearchResult result = methodaselement as CodeSearchResult;
-                elements.Add(result);
-            }
-
-            return elements;
-        }
-
-        #endregion testzone
+        //public List<CodeSearchResult> GetRelatedMethods(CodeSearchResult codeSearchResult)
+        //{
+        //    return this.GetMethodsAsMethodElements();
+        //}
 
         #endregion
 

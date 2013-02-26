@@ -120,78 +120,58 @@ namespace LocalSearch.UnitTests
             Assert.IsEmpty(listParameters);
         }
 
-        [Test]
-        public void GetFieldsUsedinMethodTest()
-        {
-            List<String> listFieldsUsed = new List<String>() 
-            { "configCnt", "configWorkspaceRoot","configList"};
+        
+        //[Test]
+        //public void GetMethodsUseFieldTest1()
+        //{
+        //    List<String> listMethodsUse = new List<String>() 
+        //    { "ConfigManip", "genConfigImp", "findChangeImpConfig" };
 
-            GraphBuilder gbuilder = new GraphBuilder(singlemethodPath);
-            var methods = gbuilder.GetFullMethods();
-            var method = methods.First(); //should be only one method
+        //    GraphBuilder gbuilder = new GraphBuilder(xmlPath);
+        //    var methodsuse = gbuilder.GetMethodNamesUseField("configWorkspaceRoot");
+        //    foreach (var method in methodsuse)
+        //    {
+        //        String methodname = method.Value;
+        //        Assert.IsTrue(listMethodsUse.Contains(methodname));
+        //        listMethodsUse.Remove(methodname);
+        //    }
 
-            var fieldsused = gbuilder.GetFieldsUsedinMethod(method);
-            foreach (var fieldused in fieldsused)
-            {
-                String fieldname = fieldused.Value;
-                Assert.IsTrue(listFieldsUsed.Contains(fieldname));
-                listFieldsUsed.Remove(fieldname);
-            }
+        //    Assert.IsEmpty(listMethodsUse);
+        //}
 
-            Assert.IsEmpty(listFieldsUsed);
-        }
+        //[Test]
+        //public void GetMethodsUseFieldTest2()
+        //{
+        //    List<String> listMethodsUse = new List<String>() { "ConfigManip", "displayConfig"};
 
-        [Test]
-        public void GetMethodsUseFieldTest1()
-        {
-            List<String> listMethodsUse = new List<String>() 
-            { "ConfigManip", "genConfigImp", "findChangeImpConfig" };
+        //    GraphBuilder gbuilder = new GraphBuilder(xmlPath);
+        //    var methodsuse = gbuilder.GetMethodNamesUseField("configList");
+        //    foreach (var method in methodsuse)
+        //    {
+        //        String methodname = method.Value;
+        //        Assert.IsTrue(listMethodsUse.Contains(methodname));
+        //        listMethodsUse.Remove(methodname);
+        //    }
 
-            GraphBuilder gbuilder = new GraphBuilder(xmlPath);
-            var methodsuse = gbuilder.GetMethodNamesUseField("configWorkspaceRoot");
-            foreach (var method in methodsuse)
-            {
-                String methodname = method.Value;
-                Assert.IsTrue(listMethodsUse.Contains(methodname));
-                listMethodsUse.Remove(methodname);
-            }
+        //    Assert.IsEmpty(listMethodsUse);
+        //}
 
-            Assert.IsEmpty(listMethodsUse);
-        }
+        //[Test]
+        //public void GetMethodsUseFieldTest3()
+        //{
+        //    List<String> listMethodsUse = new List<String>() { "getConfigSelect", "getChangeSets" };
 
-        [Test]
-        public void GetMethodsUseFieldTest2()
-        {
-            List<String> listMethodsUse = new List<String>() { "ConfigManip", "displayConfig"};
+        //    GraphBuilder gbuilder = new GraphBuilder(xmlPath);
+        //    var methodsuse = gbuilder.GetMethodNamesUseField("configSelect");
+        //    foreach (var method in methodsuse)
+        //    {
+        //        String methodname = method.Value;
+        //        Assert.IsTrue(listMethodsUse.Contains(methodname));
+        //        listMethodsUse.Remove(methodname);
+        //    }
 
-            GraphBuilder gbuilder = new GraphBuilder(xmlPath);
-            var methodsuse = gbuilder.GetMethodNamesUseField("configList");
-            foreach (var method in methodsuse)
-            {
-                String methodname = method.Value;
-                Assert.IsTrue(listMethodsUse.Contains(methodname));
-                listMethodsUse.Remove(methodname);
-            }
-
-            Assert.IsEmpty(listMethodsUse);
-        }
-
-        [Test]
-        public void GetMethodsUseFieldTest3()
-        {
-            List<String> listMethodsUse = new List<String>() { "getConfigSelect", "getChangeSets" };
-
-            GraphBuilder gbuilder = new GraphBuilder(xmlPath);
-            var methodsuse = gbuilder.GetMethodNamesUseField("configSelect");
-            foreach (var method in methodsuse)
-            {
-                String methodname = method.Value;
-                Assert.IsTrue(listMethodsUse.Contains(methodname));
-                listMethodsUse.Remove(methodname);
-            }
-
-            Assert.IsEmpty(listMethodsUse);
-        }
+        //    Assert.IsEmpty(listMethodsUse);
+        //}
 
         [Test]
         public void GetXElementFromLineNumTest()

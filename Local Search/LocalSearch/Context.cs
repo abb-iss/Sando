@@ -59,8 +59,6 @@ namespace LocalSearch
             filePath = srcPath;
         }
 
-
-        #region ranking heuristics
         public void RankRelatedInfo(ref List<CodeNavigationResult> RelatedProgramElements, UInt16 heuristic = 4)
         {
             if (RelatedProgramElements.Count() == 0)
@@ -79,7 +77,7 @@ namespace LocalSearch
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
                         BasicHeuristic(ref RelatedProgramElements);
-                        TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);                        
+                        TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
                         //EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
                         EditDistanceHeuristicInPath(ref RelatedProgramElements, 1, 1);
                         UseLocationHeuristic(ref RelatedProgramElements);
@@ -95,6 +93,7 @@ namespace LocalSearch
                     }
                 case 4:
                     {
+                        ShowBeforeHeuristic(ref RelatedProgramElements);
                         UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
@@ -103,17 +102,20 @@ namespace LocalSearch
             }
 
             //bubble ranking
-            for (int i = 0; i < RelatedProgramElements.Count()-1; i++)
-                for(int j=i+1; j< RelatedProgramElements.Count(); j++)
-            {
-                if (RelatedProgramElements[j].Score > RelatedProgramElements[i].Score)
+            for (int i = 0; i < RelatedProgramElements.Count() - 1; i++)
+                for (int j = i + 1; j < RelatedProgramElements.Count(); j++)
                 {
-                    CodeNavigationResult temp = RelatedProgramElements[j];
-                    RelatedProgramElements[j] = RelatedProgramElements[i];
-                    RelatedProgramElements[i] = temp;
+                    if (RelatedProgramElements[j].Score > RelatedProgramElements[i].Score)
+                    {
+                        CodeNavigationResult temp = RelatedProgramElements[j];
+                        RelatedProgramElements[j] = RelatedProgramElements[i];
+                        RelatedProgramElements[i] = temp;
+                    }
                 }
-            }
-        }      
+        }
+
+
+        #region ranking heuristics
                  
         private void BasicHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
         {
@@ -124,51 +126,68 @@ namespace LocalSearch
 
         private void ShowBeforeHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
         {
+            if(CurrentPath.Count() == 0)
+                return;
+
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
-                if (CurrentPath.Count() != 0)
+                //what has shown before is set lower score
+                if (isExisting(CurrentPath, relatedProgramElement))
                 {
-                    //what has shown before is set lower score
-                    if (isExisting(CurrentPath, relatedProgramElement))
-                    {
-                        relatedProgramElement.Score = relatedProgramElement.Score - 1;
-                    }
+                    relatedProgramElement.Score = relatedProgramElement.Score - 1;
                 }
+                
             }
         }
 
         private void AmongInitialSearchResultsHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, int step)
         {
-            foreach (var relatedProgramElement in RelatedProgramElements)
-            {                
-                if (InitialSearchResults.Count() != 0)
-                {
-                    //what is more closer related to search result is set higher score
-                    double searchScore = isExisting(InitialSearchResults, relatedProgramElement);
-                    if (searchScore > 0)
-                    {
-                        relatedProgramElement.Score = relatedProgramElement.Score + 0.1;
-                        if (searchScore > 1)
-                            relatedProgramElement.Score += searchScore - 1;
-                    }
-                }
+            if (InitialSearchResults.Count() == 0)
+                return;
 
+            foreach (var relatedProgramElement in RelatedProgramElements)
+            {  
+                //what is more closer related to search result is set higher score
+                double searchScore = isExisting(InitialSearchResults, relatedProgramElement);
+                if (searchScore > 0)
+                {
+                    relatedProgramElement.Score = relatedProgramElement.Score + 0.1;
+                    if (searchScore > 1)
+                        relatedProgramElement.Score += searchScore - 1;
+                }
             }    
         }
 
-        private bool isExisting(List<CodeSearchResult> source, CodeSearchResult target)
-        {   
-            foreach (var programelement in source)
+        private bool isExisting(List<CodeSearchResult> source, CodeNavigationResult target)
+        {
+            //if it's an declaration, treated differently
+            if (target.ProgramElementRelation == ProgramElementRelation.Other)
             {
-                if (programelement.Name.Equals(target.Name)
-                && programelement.ProgramElementType.Equals(target.ProgramElementType)
-                && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
-                    return true;
+                foreach (var programelement in source)
+                {
+                    if (programelement.Name.Equals(target.Name)
+                    && programelement.ProgramElementType.Equals(target.ProgramElementType)
+                    && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber)
+                    && ((programelement as CodeNavigationResult == null) ||
+                    ((programelement as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Other))))
+                            return true;                    
+                }
+
+                return false;
             }
+            else
+            {
+                foreach (var programelement in source)
+                {
+                    if (programelement.Name.Equals(target.Name)
+                    && programelement.ProgramElementType.Equals(target.ProgramElementType)
+                    && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
+                        return true;
+                }
 
-            //todo -- if it's an declaration, maybe treated differently
-
-            return false;
+                return false;
+            }  
+            
         }
 
         private double isExisting(List<Tuple<CodeSearchResult,int>> source, CodeNavigationResult target)
@@ -358,9 +377,9 @@ namespace LocalSearch
     
         }
 
-        private void UseLocationHeuristic(ref List<CodeNavigationResult> listRelatedInfo)
+        private void UseLocationHeuristic(ref List<CodeNavigationResult> relatedProgramElements)
         {
-            foreach (var relatedProgramElement in listRelatedInfo)
+            foreach (var relatedProgramElement in relatedProgramElements)
             {
                 int relationLine = relatedProgramElement.RelationLineNumber[0];
                 relatedProgramElement.Score += 1 / Convert.ToDouble(relationLine) * 0.0001;
@@ -383,6 +402,42 @@ namespace LocalSearch
             foreach (var score in scores)
                 normalizedscores.Add(score / sumscore);
             scores = normalizedscores;
+        }
+
+        private void ContextHeuristic(ref List<CodeNavigationResult> relatedProgramElements)
+        {
+            for(int i=0; i<relatedProgramElements.Count; i++)
+            {
+                CodeNavigationResult relatedprogramelement = relatedProgramElements[i];
+                double score = 0;
+                if (relatedProgramElements[i].ProgramElementType == ProgramElementType.Field)
+                    score = FieldContextHeuristic(relatedprogramelement);
+                else
+                    score = MethodContextHeuristic(relatedprogramelement);
+
+                relatedProgramElements[i].Score += score;
+            }
+        }
+
+        private double FieldContextHeuristic(CodeNavigationResult relatedFieldElement)
+        {
+            double res = 0;            
+            XElement fielddeclaration = graph.GetField(relatedFieldElement.ProgramElement as FieldElement); 
+            string classname = fielddeclaration.Element(SRC.Type).ToString();
+            if (PartialWordMatch(classname, query))
+                res += 1;
+
+            XElement relationcode = relatedFieldElement.RelationCode;
+
+            return res;
+        }
+
+        private double MethodContextHeuristic(CodeNavigationResult relatedMethodElement)
+        {
+            double res = 0;
+            XElement relationcode = relatedMethodElement.RelationCode;
+
+            return res;
         }
 
         #endregion ranking heuristics

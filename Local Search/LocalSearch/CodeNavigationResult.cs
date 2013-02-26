@@ -24,7 +24,6 @@ namespace LocalSearch
                     return "definition";
                 else
                 {
-                    //WHAT THE HECK!!?!?!  
                     var Element = this;
                     var type = typeof(ProgramElementRelation);
                     if (Element as CodeNavigationResult != null)
@@ -36,8 +35,7 @@ namespace LocalSearch
                         return description;
                     }
                     else
-                        return "";
-                    
+                        return "";                    
                 }
             }
         }
