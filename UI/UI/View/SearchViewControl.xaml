@@ -101,7 +101,14 @@
         <!-- Top Part: Query -->
         <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
-                                  MinimumPrefixLength="0" MaxDropDownHeight="290"/>
+                                  MinimumPrefixLength="0" MaxDropDownHeight="290">
+            <controls:AutoCompleteBox.ToolTip>
+                <StackPanel>                                        
+                    <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
+                    <TextBlock>Keyboard shortcut: ALT+S</TextBlock>
+                </StackPanel>
+            </controls:AutoCompleteBox.ToolTip>
+        </controls:AutoCompleteBox>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
                         />
