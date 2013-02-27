@@ -32,17 +32,17 @@ namespace Sando.UI.Monitoring
                 {
                     if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
                     {
+                        // Get SrcMLService and use its API to get the XElement
                         var srcMLService = (sender as ISrcMLGlobalService);
                         var xelement = srcMLService.GetXElementForSourceFile(args.FilePath);
-
                         //var xelement = args.SrcMLXElement;
+
                         var indexUpdateManager = ServiceLocator.Resolve<IndexUpdateManager>();
 
                         switch (args.EventType)
                         {
                             case FileEventType.FileAdded:
-                                documentIndexer.DeleteDocuments(sourceFilePath);
-                                    //"just to be safe!" from IndexUpdateManager.UpdateFile()
+                                documentIndexer.DeleteDocuments(sourceFilePath);    //"just to be safe!"
                                 indexUpdateManager.Update(sourceFilePath, xelement);
                                 SwumManager.Instance.AddSourceFile(sourceFilePath);
                                 break;

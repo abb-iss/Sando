@@ -350,9 +350,7 @@ namespace Sando.UI
 
                 ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
 
-
-
-                
+               
                 
                 // JZ: SrcMLService Integration
                 // Get the SrcML Service.
@@ -362,27 +360,10 @@ namespace Sando.UI
                 }
 
                 // Register all types of events from the SrcML Service.
-                var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
+                SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
                 srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
                 srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
                 srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
-
-                // TODO: How: Sando wants rc2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
-                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
-                var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
-
-                ////_currentMonitor = SolutionMonitorFactory.CreateMonitor();
-                ////_currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
-
-                ////string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
-                ////var generator = new ABB.SrcML.SrcMLGenerator(src2SrcmlDir);
-                ////var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
-                ////_srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
-
-                ////var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-                ////_srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-                ////_srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
-                ////_srcMLArchive.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
 
                 //This is done here because some extension points require data that isn't set until the solution is opened, e.g. the solution key or the srcml archive
                 //However, registration must happen before file monitoring begins below.
@@ -392,12 +373,16 @@ namespace Sando.UI
                 //SwumManager.Instance.Archive = _srcMLArchive;
                 
                 // SrcML Service starts monitoring the opened solution.
-                ////_srcMLArchive.StartWatching();
-                srcMLService.StartMonitering();
+                // Sando may define the directory of storing srcML archives
+                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
+                string srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
+                // Sando may decide whether to use existing srcML archives
+                bool useExistingSrcML = true;
 
+                // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
+                // the directory of storing srcML archives and whether to use existing srcML archives.
+                srcMLService.StartMonitering(srcMlArchiveFolder, useExistingSrcML);
                 // End of code changes
-
-
             }
             catch (Exception e)
             {
