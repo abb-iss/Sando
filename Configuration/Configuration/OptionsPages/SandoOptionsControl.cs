@@ -234,7 +234,7 @@ namespace Configuration.OptionsPages
 			}
 			else
 			{
-				SearchResultsConfigurationNumberOfResultsReturnedTextBox.Text = "20";
+				SearchResultsConfigurationNumberOfResultsReturnedTextBox.Text = "40";
 				MessageBox.Show("You have to enter a positive number!");
 			}
 		}

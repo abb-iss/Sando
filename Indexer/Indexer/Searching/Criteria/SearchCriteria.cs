@@ -2,9 +2,12 @@
 {
 	public abstract class SearchCriteria
 	{
+
+        public static int DefaultNumberOfSearchResultsReturned = 40;
+
 		public SearchCriteria()
 		{
-			NumberOfSearchResultsReturned = 20;
+            NumberOfSearchResultsReturned = DefaultNumberOfSearchResultsReturned;
 		}
 
 		public abstract string ToQueryString();

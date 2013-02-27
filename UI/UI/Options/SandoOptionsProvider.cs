@@ -5,6 +5,7 @@ using Sando.Core;
 using Sando.DependencyInjection;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
+using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.UI.Options
 {
@@ -21,11 +22,11 @@ namespace Sando.UI.Options
             if(!String.IsNullOrWhiteSpace(sandoDialogPage.ExtensionPointsPluginDirectoryPath) && Directory.Exists(sandoDialogPage.ExtensionPointsPluginDirectoryPath))
                 extensionPointsPluginDirectoryPath = sandoDialogPage.ExtensionPointsPluginDirectoryPath;
 
-            var numberOfSearchResultsReturned = 20;
+            var numberOfSearchResultsReturned = SearchCriteria.DefaultNumberOfSearchResultsReturned;
             if (!String.IsNullOrWhiteSpace(sandoDialogPage.NumberOfSearchResultsReturned))
             {
                 if (!int.TryParse(sandoDialogPage.NumberOfSearchResultsReturned, out numberOfSearchResultsReturned) || numberOfSearchResultsReturned < 0)
-                    numberOfSearchResultsReturned = 20;
+                    numberOfSearchResultsReturned = SearchCriteria.DefaultNumberOfSearchResultsReturned;
             }
             
             var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned);

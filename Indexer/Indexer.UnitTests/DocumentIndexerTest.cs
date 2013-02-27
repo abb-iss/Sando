@@ -13,6 +13,7 @@ using Sando.UnitTestHelpers;
 using UnitTestHelpers;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
+using Sando.Indexer.Searching.Criteria;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -97,7 +98,7 @@ namespace Sando.Indexer.UnitTests
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 const string searchQueryString = "body: sth";
 			    var query = _documentIndexer.QueryParser.Parse(searchQueryString);
-			    const int hitsPerPage = 20;
+			    int hitsPerPage = SearchCriteria.DefaultNumberOfSearchResultsReturned;
                 var collector = TopScoreDocCollector.create(hitsPerPage, true);
                 _documentIndexer.NUnit_CloseIndexSearcher();
                 _documentIndexer.Search(query, collector);
@@ -119,7 +120,7 @@ namespace Sando.Indexer.UnitTests
                 _documentIndexer.AddDocument(DocumentFactory.Create(sampleMethodElement));
                 const string searchQueryString = "body: sth";
                 var query = _documentIndexer.QueryParser.Parse(searchQueryString);
-                const int hitsPerPage = 20;
+                int hitsPerPage = SearchCriteria.DefaultNumberOfSearchResultsReturned;
                 var collector = TopScoreDocCollector.create(hitsPerPage, true);
                 _documentIndexer.NUnit_CloseIndexSearcher();
                 Thread.Sleep(600);
