@@ -5,7 +5,11 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+// JZ: SrcMLService Integration
 using ABB.SrcML.VisualStudio.SolutionMonitor;
+using ABB.SrcML;
+using ABB.SrcML.VisualStudio.SrcMLService;
+// End of code changes
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
@@ -63,8 +67,11 @@ namespace Sando.UI
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
     public sealed class UIPackage : Package, IToolWindowFinder
     {
-        private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
-        private ABB.SrcML.SrcMLArchive _srcMLArchive;
+        // JZ: SrcMLService Integration
+        //private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
+        private SrcMLArchive _srcMLArchive;
+        private ISrcMLGlobalService srcMLService;
+        // End of code changes
 
     	private SolutionEvents _solutionEvents;
 		private ExtensionPointsConfiguration _extensionPointsConfiguration;
@@ -184,7 +191,11 @@ namespace Sando.UI
         	{
 				//only need to do this in VS2010, and it breaks things in VS2012
         		Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
-        		if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+
+                // JZ: SrcMLService Integration
+                ////if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+                if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName))
+                // End of code changes
         		{
         			SolutionHasBeenOpened();
         		}
@@ -228,9 +239,13 @@ namespace Sando.UI
         {
             var extensionPointsRepository = ExtensionPointsRepository.Instance;
 
-            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
-            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
-            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx"},
+            // JZ: SrcMLService Integration
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser());
+            ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
+            ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
+            // JZ: End of code changes
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx" },
                                                                    new XMLFileParser());
 			extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
 																   new TextFileParser());
@@ -255,13 +270,17 @@ namespace Sando.UI
 			}
 
             var csParser = extensionPointsRepository.GetParserImplementation(".cs") as SrcMLCSharpParser;
-            if(csParser != null) {
-                csParser.Archive = _srcMLArchive;
-            }
+            // JZ: SrcMLService Integration
+            ////if(csParser != null) {
+            ////    csParser.Archive = _srcMLArchive;
+            ////}
+            // End of code changes
             var cppParser = extensionPointsRepository.GetParserImplementation(".cpp") as SrcMLCppParser;
-            if(cppParser != null) {
-                cppParser.Archive = _srcMLArchive;
-            }
+            // JZ: SrcMLService Integration
+            ////if(cppParser != null) {
+            ////    cppParser.Archive = _srcMLArchive;
+            ////}
+            // End of code changes
 
         }
 
@@ -269,7 +288,14 @@ namespace Sando.UI
 		{
 			try
             {
-                if (_srcMLArchive != null)
+                // JZ: SrcMLService Integration
+                srcMLService.StopMonitoring();
+                // TODO: DocumentIndexer.CommitChanges(); DocumentIndexer.Dispose(false);
+                // End of code changes
+
+                
+                
+                if(_srcMLArchive != null)
                 {
                     _srcMLArchive.Dispose();
                     _srcMLArchive = null;
@@ -324,28 +350,39 @@ namespace Sando.UI
 
                 ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
 
-                _currentMonitor = SolutionMonitorFactory.CreateMonitor();
-                _currentMonitor.FileEventRaised += RespondToSolutionMonitorEvent;
-
-                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
-                var generator = new ABB.SrcML.SrcMLGenerator(src2SrcmlDir);
-                var srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
-                _srcMLArchive = new ABB.SrcML.SrcMLArchive(_currentMonitor, srcMlArchiveFolder, !isIndexRecreationRequired, generator);
+               
                 
-                var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-                _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-                _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
-                _srcMLArchive.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
+                // JZ: SrcMLService Integration
+                // Get the SrcML Service.
+                srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
+                if(null == srcMLService) {
+                    FileLogger.DefaultLogger.Error("Can not get the SrcML global service.");
+                }
+
+                // Register all types of events from the SrcML Service.
+                SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
+                srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
+                srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
+                srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
 
                 //This is done here because some extension points require data that isn't set until the solution is opened, e.g. the solution key or the srcml archive
                 //However, registration must happen before file monitoring begins below.
                 RegisterExtensionPoints();
 
                 SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), !isIndexRecreationRequired);
-                SwumManager.Instance.Archive = _srcMLArchive;
+                //SwumManager.Instance.Archive = _srcMLArchive;
                 
-                // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
-                _srcMLArchive.StartWatching();
+                // SrcML Service starts monitoring the opened solution.
+                // Sando may define the directory of storing srcML archives
+                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
+                string srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());
+                // Sando may decide whether to use existing srcML archives
+                bool useExistingSrcML = true;
+
+                // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
+                // the directory of storing srcML archives and whether to use existing srcML archives.
+                srcMLService.StartMonitering(srcMlArchiveFolder, useExistingSrcML);
+                // End of code changes
             }
             catch (Exception e)
             {
@@ -353,18 +390,21 @@ namespace Sando.UI
             }    
         }
 
+        // JZ: SrcMLService Integration
+        /* // obsolete
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
-            FileLogger.DefaultLogger.Info("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
+            FileLogger.DefaultLogger.Info("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.FilePath + ", EventType = " + eventArgs.EventType);
             // Ignore files that can be parsed by SrcML.NET. Those files are processed by _srcMLArchive.SourceFileChanged event handler.
-            if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
+            if(!_srcMLArchive.IsValidFileExtension(eventArgs.FilePath))
             {
                 var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
                 srcMLArchiveEventsHandlers.SourceFileChanged(null, eventArgs);
             }
         }
-
-    	#endregion
+        */
+        // End of code changes
+        #endregion
 
 
 

@@ -14,23 +14,21 @@ namespace Sando.Parser
     {
         private static readonly int snippetSize = 5;
 
-        public SrcMLArchive Archive { get; set; }
+        public SrcMLArchive Archive { get; set; }           // should be deleted
         public SrcMLGenerator Generator { get; set; }
 
+        public SrcMLCSharpParser() {
+        }
 
-        public SrcMLCSharpParser() {}
-
-        public SrcMLCSharpParser(SrcMLArchive archive){
+        public SrcMLCSharpParser(SrcMLArchive archive) {
             this.Archive = archive;
         }
 
         public SrcMLCSharpParser(SrcMLGenerator generator) {
             this.Generator = generator;
         }
-
-
-        public List<ProgramElement> Parse(string fileName)
-        {
+        
+        public List<ProgramElement> Parse(string fileName) {
             var programElements = new List<ProgramElement>();
             XElement sourceElements;
             if(Archive != null) {
