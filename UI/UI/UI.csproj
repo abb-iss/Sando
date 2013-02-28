@@ -418,6 +418,9 @@
     </Content>
     <Resource Include="Resources\VS2010Icons\comment.png" />
     <Resource Include="Resources\VS2010Icons\generic.png" />
+    <Content Include="ABB.SrcML.VisualStudio.SrcMLService.pkgdef">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="epl-1.0.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

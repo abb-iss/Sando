@@ -31,5 +31,6 @@
   </References>
   <Content>
     <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
+    <VsPackage>ABB.SrcML.VisualStudio.SrcMLService.pkgdef</VsPackage>
   </Content>
 </Vsix>
