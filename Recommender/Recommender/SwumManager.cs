@@ -148,6 +148,23 @@ namespace Sando.Recommender {
         }
 
         /// <summary>
+        /// Generates SWUMs for the method definitions within the given source file.
+        /// </summary>
+        /// <param name="sourcePath">The path to the source file.</param>
+        /// <param name="sourceXml">The SrcML for the given source file.</param>
+        public void AddSourceFile(string sourcePath, XElement sourceXml) {
+            try {
+                if(sourceXml != null) {
+                    AddSwumForMethodDefinitions(sourceXml, sourcePath);
+                }
+            } catch(Exception e) {
+                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
+                FileLogger.DefaultLogger.Error(e.Message);
+                FileLogger.DefaultLogger.Error(e.StackTrace);
+            }
+        }
+
+        /// <summary>
         /// Generates SWUMs for the method definitions within the given SrcML file
         /// </summary>
         /// <param name="srcmlFile">A SrcML file.</param>
@@ -164,6 +181,16 @@ namespace Sando.Recommender {
         public void UpdateSourceFile(string sourcePath) {
             RemoveSourceFile(sourcePath);
             AddSourceFile(sourcePath);
+        }
+
+        /// <summary>
+        /// Regenerates SWUMs for the methods in the given source file. Any previously-generated SWUMs for the file will first be removed.
+        /// </summary>
+        /// <param name="sourcePath">The path of the file to update.</param>
+        /// <param name="sourceXml">The SrcML for the new version of the file.</param>
+        public void UpdateSourceFile(string sourcePath, XElement sourceXml) {
+            RemoveSourceFile(sourcePath);
+            AddSourceFile(sourcePath, sourceXml);
         }
 
         /// <summary>
@@ -308,6 +335,9 @@ namespace Sando.Recommender {
         /// <exception cref="System.ArgumentNullException"><paramref name="unitElement"/> is null.</exception>
         protected void AddSwumForMethodDefinitions(XElement unitElement, string filePath) {
             if(unitElement == null) { throw new ArgumentNullException("unitElement"); }
+            if(unitElement.Name != SRC.Unit) {
+                throw new ArgumentException("Must be a SRC.Unit element", "unitElement");
+            }
 
             //iterate over each method definition in the SrcML file
             var fileAttribute = unitElement.Attribute("filename");

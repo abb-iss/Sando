@@ -44,12 +44,12 @@ namespace Sando.UI.Monitoring
                             case FileEventType.FileAdded:
                                 documentIndexer.DeleteDocuments(sourceFilePath);    //"just to be safe!"
                                 indexUpdateManager.Update(sourceFilePath, xelement);
-                                SwumManager.Instance.AddSourceFile(sourceFilePath);
+                                SwumManager.Instance.AddSourceFile(sourceFilePath, xelement);
                                 break;
                             case FileEventType.FileChanged:
                                 documentIndexer.DeleteDocuments(sourceFilePath);
                                 indexUpdateManager.Update(sourceFilePath, xelement);
-                                SwumManager.Instance.UpdateSourceFile(sourceFilePath);
+                                SwumManager.Instance.UpdateSourceFile(sourceFilePath, xelement);
                                 break;
                             case FileEventType.FileDeleted:
                                 documentIndexer.DeleteDocuments(sourceFilePath,commitImmediately);
@@ -58,7 +58,7 @@ namespace Sando.UI.Monitoring
                             case FileEventType.FileRenamed: // FileRenamed is actually never raised.
                                 documentIndexer.DeleteDocuments(oldSourceFilePath);
                                 indexUpdateManager.Update(sourceFilePath, xelement);
-                                SwumManager.Instance.UpdateSourceFile(sourceFilePath);
+                                SwumManager.Instance.UpdateSourceFile(sourceFilePath, xelement);
                                 break;
                         }
                     }
