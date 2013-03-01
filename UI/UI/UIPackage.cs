@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Configuration.OptionsPages;
 using EnvDTE;
@@ -35,6 +38,10 @@ using Sando.Indexer.IndexState;
 // Code changed by JZ: solution monitor integration
 using System.Xml;
 using System.Xml.Linq;
+
+using ABB.SrcML.Utilities;
+using ABB.SrcML;
+
 // TODO: clarify where SolutionMonitorFactory (now in Sando), SolutionKey (now in Sando), ISolution (now in SrcML.NET) should be.
 //using ABB.SrcML.VisualStudio.SolutionMonitor;
 // End of code changes
@@ -109,10 +116,6 @@ namespace Sando.UI
         }
 
 
-
-
-   
-
         public static SandoOptions GetSandoOptions(UIPackage package)
         {
             return GetSandoOptions(null, 20,package);
@@ -147,6 +150,7 @@ namespace Sando.UI
         /// </summary>
         protected override void Initialize()
         {
+
             try
             {
                 Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}",
@@ -252,9 +256,7 @@ namespace Sando.UI
 				SolutionAboutToClose();
 				SolutionHasBeenOpened();
 			};
-        }
-
-         
+        }         
 
         private void DteEventsOnOnBeginShutdown()
         {
@@ -266,7 +268,6 @@ namespace Sando.UI
             }
             //TODO - kill file processing threads
         }
-
 
         private void SetUpLogger()
         {
@@ -445,6 +446,10 @@ namespace Sando.UI
                 _srcMLArchive.SourceFileChanged += RespondToSourceFileChangedEvent;
                 _srcMLArchive.StartupCompleted += RespondToStartupCompletedEvent;
                 _srcMLArchive.MonitoringStopped += RespondToMonitoringStoppedEvent;
+
+                ConcurrentDictionary<string, string> results = _srcMLArchive.initialization();
+                InitIndex(results);
+
                 // SolutionMonitor.StartWatching() is called in SrcMLArchive.StartWatching()
                 _srcMLArchive.StartWatching();
 
@@ -458,6 +463,43 @@ namespace Sando.UI
             }    
         }
 
+        private void InitIndex(ConcurrentDictionary<string, string> fileList){
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            //foreach(var element in fileList) {
+            //    string sourceFilePath = element.Key;
+            //    string xmlfileName = element.Value;
+            //    SrcMLFile temp = new SrcMLFile(xmlfileName);
+            //    XElement xelement = temp.FileUnits.FirstOrDefault();
+
+            //    SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
+            //    SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+            //}
+
+            //SolutionMonitorFactory.CommitIndexChanges();
+
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = 2;
+
+            Parallel.ForEach(fileList, options, currentPair => {
+                string sourceFilePath = currentPair.Key;
+                string xmlfileName = currentPair.Value;
+                SrcMLFile temp = new SrcMLFile(xmlfileName);
+                XElement xelement = temp.FileUnits.FirstOrDefault();
+
+                SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
+                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+
+            });
+
+            System.Threading.Tasks.Task.WaitAll();
+            SolutionMonitorFactory.CommitIndexChanges();
+
+            sw.Stop();
+            Trace.WriteLine("Updating Indexes takes " + sw.Elapsed);
+        }
         /// <summary>
         /// Respond to the SourceFileChanged event from SrcML.NET's Solution Monitor.
         /// </summary>
@@ -466,12 +508,13 @@ namespace Sando.UI
         private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
             writeLog("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
-            // Current design decision: 
-            // Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
-            if (!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath))
-            {
+            //// Current design decision: 
+            //// Ignore files that can be parsed by SrcML.NET. Those files are processed by RespondToSourceFileChangedEvent().
+
+            //Shared by serial and parallel version
+            if(!_srcMLArchive.IsValidFileExtension(eventArgs.SourceFilePath)) {
                 HandleSrcMLDOTNETEvents(eventArgs);
-            }
+             }
         }
 
         /// <summary>
@@ -483,9 +526,11 @@ namespace Sando.UI
         {
             writeLog( "Sando: RespondToSourceFileChangedEvent(), File = " + eventArgs.SourceFilePath + ", EventType = " + eventArgs.EventType);
             HandleSrcMLDOTNETEvents(eventArgs);
+
         }
 
         /// <summary>
+        /// Zhao: Parallel
         /// Handle SrcML.NET events, either from SrcMLArchive or from SolutionMonitor.
         /// TODO: UpdateIndex(), DeleteIndex(), and CommitIndexChanges() might be refactored to another class.
         /// </summary>
@@ -493,36 +538,49 @@ namespace Sando.UI
         private void HandleSrcMLDOTNETEvents(ABB.SrcML.FileEventRaisedArgs eventArgs)
         {
             // Ignore files that can not be indexed by Sando.
-		    string fileExtension = Path.GetExtension(eventArgs.SourceFilePath);
-            if (fileExtension != null && !fileExtension.Equals(String.Empty))
-            {
-                if (ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null)
-                {
-                    string sourceFilePath = eventArgs.SourceFilePath;
-                    string oldSourceFilePath = eventArgs.OldSourceFilePath;
-                    XElement xelement = eventArgs.SrcMLXElement;
+            //Zhao tracing the files
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
-                    switch (eventArgs.EventType)
-                    {
-                        case ABB.SrcML.FileEventType.FileAdded:
-                            SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
-                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                            break;
-                        case ABB.SrcML.FileEventType.FileChanged:
-                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                            break;
-                        case ABB.SrcML.FileEventType.FileDeleted:
-                            SolutionMonitorFactory.DeleteIndex(sourceFilePath);
-                            break;
-                        case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
-                            SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
-                            SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
-                            break;
+            ParallelOptions options = new ParallelOptions();
+            options.MaxDegreeOfParallelism = 6;
+
+            System.Threading.Tasks.Task.Factory.StartNew(() => {
+            //Parallel.Invoke(options, ()=> {
+                string fileExtension = Path.GetExtension(eventArgs.SourceFilePath);
+                if(fileExtension != null && !fileExtension.Equals(String.Empty)) {
+                    if(ExtensionPointsRepository.Instance.GetParserImplementation(fileExtension) != null) {
+                        string sourceFilePath = eventArgs.SourceFilePath;
+                        string oldSourceFilePath = eventArgs.OldSourceFilePath;
+                        XElement xelement = eventArgs.SrcMLXElement;
+
+                        switch(eventArgs.EventType) {
+                            case ABB.SrcML.FileEventType.FileAdded:
+                                SolutionMonitorFactory.DeleteIndex(sourceFilePath); //"just to be safe!" from IndexUpdateManager.UpdateFile()
+                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                break;
+                            case ABB.SrcML.FileEventType.FileChanged:
+                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                break;
+                            case ABB.SrcML.FileEventType.FileDeleted:
+                                SolutionMonitorFactory.DeleteIndex(sourceFilePath);
+                                break;
+                            case ABB.SrcML.FileEventType.FileRenamed: // FileRenamed is actually never raised.
+                                SolutionMonitorFactory.DeleteIndex(oldSourceFilePath);
+                                SolutionMonitorFactory.UpdateIndex(sourceFilePath, xelement);
+                                break;
+                        }
+                        SolutionMonitorFactory.CommitIndexChanges();
                     }
-                    SolutionMonitorFactory.CommitIndexChanges();
                 }
-            }
+            });
+
+            sw.Stop();
+            Trace.WriteLineIf((eventArgs.EventType == ABB.SrcML.FileEventType.FileChanged) || (eventArgs.EventType == ABB.SrcML.FileEventType.FileRenamed)
+                || (eventArgs.EventType == ABB.SrcML.FileEventType.FileAdded), eventArgs.SourceFilePath.ToString().Substring(eventArgs.SourceFilePath.ToString().LastIndexOf("\\") + 1) + " " + sw.ElapsedMilliseconds);
+            //Trace.WriteLine(eventArgs.SourceFilePath.ToString().Substring(eventArgs.SourceFilePath.ToString().LastIndexOf("\\") + 1) + " " + sw.ElapsedMilliseconds);
+
         }
 
         /// <summary>

@@ -184,7 +184,7 @@ namespace Sando.UI.Monitoring
         /// <param name="filePath"></param>
         /// <param name="xelement"></param>
         public void Update(string filePath, XElement xElement)
-        {
+         {
             FileInfo fileInfo = new FileInfo(filePath);
             writeLog( "IndexUpdateManager.Update(): " + filePath + " [" + fileInfo.Extension + "]");
             try

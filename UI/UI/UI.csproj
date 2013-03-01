@@ -67,7 +67,7 @@
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DeployExtension>False</DeployExtension>
+    <DeployExtension>True</DeployExtension>
     <CreateVsixContainer>True</CreateVsixContainer>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -78,17 +78,21 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <DeployExtension>False</DeployExtension>
+    <DeployExtension>True</DeployExtension>
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ABB.SrcML, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.dll</HintPath>
+      <HintPath>..\..\..\..\GitHub\SrcML.NET\Build\Release\ABB.SrcML.dll</HintPath>
     </Reference>
-    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+      <HintPath>..\..\..\..\GitHub\SrcML.NET\Build\Release\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+    </Reference>
+    <Reference Include="Configuration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22c1f6d7660dc0a2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Configuration\Configuration\obj\Debug\Configuration.dll</HintPath>
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
@@ -157,6 +161,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\VisualStudio\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="Recommender, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Release\Recommender.dll</HintPath>
+    </Reference>
     <Reference Include="SandoExtensionContracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22c1f6d7660dc0a2, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\bin\Debug\SandoExtensionContracts.dll</HintPath>
@@ -167,6 +175,7 @@
       <HintPath>..\..\LIBS\Extensions\stdole.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -179,6 +188,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="Translation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=22c1f6d7660dc0a2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Release\Translation.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -584,10 +597,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Configuration\Configuration\Configuration.csproj">
-      <Project>{483A35BF-139D-46C1-A6E3-87DEFAE90470}</Project>
-      <Name>Configuration</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Core\Core\Core.csproj">
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
@@ -600,17 +609,9 @@
       <Project>{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}</Project>
       <Name>Parser</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Recommender\Recommender\Recommender.csproj">
-      <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>
-      <Name>Recommender</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
       <Name>Search Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Translation\Translation\Translation.csproj">
-      <Project>{8DD830F7-7923-4E90-8CD3-6D4313A20FE8}</Project>
-      <Name>Translation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
