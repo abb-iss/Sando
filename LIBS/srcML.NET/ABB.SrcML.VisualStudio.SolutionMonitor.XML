@@ -11,39 +11,56 @@
             Methods of this interface were implemented to handle file creation and deletion events in Visual Studio envinronment.
             (2) IVsRunningDocTableEvents: Implements methods that fire in response to changes to documents in the Running Document Table (RDT).
             Methods of this interface were implemented to handle file change events in Visual Studio envinronment.
-            Also tried IVsFileChangeEvents (Notifies clients when selected files have been changed on disk), but it does not meet requirements.
-            
-            This class also implements ISolutionMonitorEvents so that client applications and SrcMLArchive can subscribe events that are raised from solution monitor.
+            This class also extends AbstractFileMonitor so that SrcMLService can subscribe events that are raised from solution monitor.
             </summary>
         </member>
-        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor._openSolution">
+        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.OpenSolution">
             <summary>
-            _openSolution: The solution to be monitored.
+            OpenSolution: The solution to be monitored.
             </summary>
         </member>
-        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.allMonitoredFiles">
+        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.AllMonitoredFiles">
             <summary>
             List of all "monitored" files.
             </summary>
         </member>
-        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor._documentTable">
+        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.DocumentTable">
             <summary>
             IVsRunningDocumentTable: Manages the set of currently open documents in the environment.
-            _documentTableItemId is used in registering/unregistering events.
+            DocumentTableItemId is used in registering/unregistering events.
             </summary>
         </member>
-        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor._projectDocumentsTracker">
+        <member name="F:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.ProjectDocumentsTracker">
             <summary>
             IVsTrackProjectDocumentsEvents2: Used by projects to query the environment for 
             permission to add, remove, or rename a file or directory in a solution.
             pdwCookie is used in registering/unregistering events.
             </summary>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.#ctor(ABB.SrcML.VisualStudio.SolutionMonitor.SolutionWrapper)">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.#ctor(ABB.SrcML.VisualStudio.SolutionMonitor.SolutionWrapper,System.String,ABB.SrcML.AbstractArchive,ABB.SrcML.AbstractArchive[])">
             <summary>
             Constructor.
             </summary>
             <param name="openSolution"></param>
+            <param name="baseDirectory"></param>
+            <param name="defaultArchive"></param>
+            <param name="otherArchives"></param>
+        </member>
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.StartMonitoring">
+            <summary>
+            Start monitoring the solution.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.StopMonitoring">
+            <summary>
+            Stop monitoring the solution.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.GetFilesFromSource">
+            <summary>
+            Gets the list of all files from the opened solution being monitored.
+            </summary>
+            <returns>An enumerable of files to be monitored</returns>
         </member>
         <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.RegisterTrackProjectDocumentsEvents2">
             <summary>
@@ -55,19 +72,20 @@
             Register RunningDocumentTable events.
             </summary>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor._processFileInBackground_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.UnregisterTrackProjectDocumentsEvents2">
             <summary>
-            no use so far, will consider this later
-            Run in background for processing a specific file.
-            TODO: Should be ProcessSingleFile(projectItem, null) or ProcessItem(projectItem, null)?
+            Unregister TrackProjectDocuments2 events.
             </summary>
-            <param name="sender"></param>
-            <param name="e"></param>
+        </member>
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.UnregisterRunningDocumentTableEvents">
+            <summary>
+            Unregister RunningDocumentTable events.
+            </summary>
         </member>
         <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.GetMonitoredFiles(System.ComponentModel.BackgroundWorker)">
             <summary>
             Get all "monitored" files in this solution.
-            TODO: exclude directories.
+            TODO: exclude directories? worker?
             </summary>
             <returns></returns>
         </member>
@@ -106,25 +124,6 @@
             <param name="item"></param>
             <param name="worker"></param>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.GetRDTFiles">
-            <summary>
-            Get a list of all files in the Running Docuement Table.
-            Seems to be useless now.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.saveRDTFile(System.String)">
-            <summary>
-            Save a specific file in the Running Docuement Table.
-            Being called in Sando's SolutionMonitor_SaveProjectItemsTest()
-            </summary>
-            <param name="fileName"></param>
-        </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.Dispose">
-            <summary>
-            Dispose this solution monitor.
-            </summary>
-        </member>
         <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.OnNotifyFileAddRemove(System.Int32,System.Int32,Microsoft.VisualStudio.Shell.Interop.IVsProject[],System.Int32[],System.String[],ABB.SrcML.FileEventType)">
             <summary>
             Handle file creation/deletion cases.
@@ -142,10 +141,9 @@
             <param name="type"></param>
             <returns></returns>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.RaiseSolutionMonitorEvent(System.String,System.String,ABB.SrcML.FileEventType)">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.RespondToVSFileChangedEvent(System.String,System.String,ABB.SrcML.FileEventType)">
             <summary>
-            Raise events of file creation/change/deletion in the solution in Visual Studio
-            TODO: why need the condition check? (From original SrcML.NET)
+            Respond to events of file creation/change/deletion in the solution in Visual Studio
             </summary>
             <param name="file"></param>
             <param name="type"></param>
@@ -363,35 +361,33 @@
             <param name="pFrame"></param>
             <returns></returns>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.StartMonitoring">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.GetRDTFiles">
             <summary>
-            Start monitoring the solution.
+            Get a list of all files in the Running Docuement Table.
             </summary>
+            <returns></returns>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.StopMonitoring">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.saveRDTFile(System.String)">
             <summary>
-            Stop monitoring the solution.
+            Save a specific file in the Running Docuement Table.
+            Being called in Sando's SolutionMonitor_SaveProjectItemsTest()
             </summary>
-        </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor.OnFileEventRaised(ABB.SrcML.FileEventRaisedArgs)">
-            <summary>
-            Handle SolutionMonitorEvents.
-            </summary>
-            <param name="e"></param>
+            <param name="fileName"></param>
         </member>
         <member name="T:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory">
             <summary>
-            This class was from Sando.
+            This class was adapted from Sando.
             Now most likely this class would not be needed any more in SrcML.NET. Sando would maintain its own SolutionMonitorFactory class.
+            However for SrcML.NET Service, this class seems to be useful.
             </summary>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(System.String,ABB.SrcML.AbstractArchive,ABB.SrcML.AbstractArchive[])">
             <summary>
             Constructor of SolutionMonitorFactory
             </summary>
             <returns></returns>
         </member>
-        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(EnvDTE.Solution)">
+        <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.CreateMonitor(EnvDTE.Solution,System.String,ABB.SrcML.AbstractArchive,ABB.SrcML.AbstractArchive[])">
             <summary>
             Constructor of SolutionMonitorFactory
             </summary>
@@ -401,7 +397,6 @@
         <member name="M:ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitorFactory.GetOpenSolution">
             <summary>
             Get the open solution.
-            Copied from UIPackage
             </summary>
             <returns></returns>
         </member>

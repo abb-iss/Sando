@@ -4,11 +4,76 @@
         <name>ABB.SrcML</name>
     </assembly>
     <members>
-        <member name="M:ABB.SrcML.AbstractArchive.WriteXmlnsAttributes(System.Xml.XmlWriter)">
+        <member name="T:ABB.SrcML.AbstractArchive">
             <summary>
-            Write attribute strings for each SrcML namespace to the given XmlWriter. This should be called immediately after XmlWriter.WriteStartElement.
+            The abstract archive class is the base class for archives. Archives are responsible for recording changes to files and then raising an <see cref="E:ABB.SrcML.AbstractArchive.FileChanged">event</see> when they are done.
             </summary>
-            <param name="writer">Instance of XmlWriter to write to.</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.#ctor(System.String,System.String)">
+            <summary>
+            Sets the archive path for AbstractArchive objects
+            </summary>
+            <param name="baseDirectory">the base directory</param>
+            <param name="archiveSubDirectory">the relative path within <paramref name="baseDirectory"/></param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.AddOrUpdateFile(System.String)">
+            <summary>
+            Adds or updates <paramref name="fileName"/> within the archive
+            </summary>
+            <param name="fileName">The file name to add or update. If the file exists, it is deleted and then added regardless of whether or not the file is outdated</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.DeleteFile(System.String)">
+            <summary>
+            Deletes <paramref name="fileName"/> from the archive
+            </summary>
+            <param name="fileName">The file name to delete. If it does not exist, nothing happens</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.RenameFile(System.String,System.String)">
+            <summary>
+            Renames the file to the new file name
+            </summary>
+            <param name="oldFileName">the existing path</param>
+            <param name="newFileName">the new path</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.ContainsFile(System.String)">
+            <summary>
+            Tests to see if the archive contains <paramref name="fileName"/>
+            </summary>
+            <param name="fileName">the file name to check for</param>
+            <returns>True if the file is in the archive; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.IsOutdated(System.String)">
+            <summary>
+            Compares file name with the archive representation
+            </summary>
+            <param name="fileName">the file name to check for</param>
+            <returns>True if the archive version of the file is older than <paramref name="fileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.GetFiles">
+            <summary>
+            Gets all of the file names stored in this archive
+            </summary>
+            <returns>An enumerable of filenames stored in this archive.</returns>
+        </member>
+        <member name="M:ABB.SrcML.AbstractArchive.Dispose">
+            <summary>
+            Disposes of this object
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.AbstractArchive.SupportedExtensions">
+            <summary>
+            the extensions supported by this collection. The strings returned by this property should match the ones returned by <see cref="M:System.IO.Path.GetExtension(System.String)"/>
+            </summary>
+        </member>
+        <member name="E:ABB.SrcML.AbstractArchive.FileChanged">
+            <summary>
+            This event should be raised whenever the archive updates its internal representation for a file
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.AbstractArchive.ArchivePath">
+            <summary>
+            The path where this archive is stored.
+            </summary>
         </member>
         <member name="T:ABB.SrcML.AbstractDocument">
             <summary>
@@ -59,6 +124,142 @@
             <summary>
             Get all units that have the "filename" attribute. This uses the <see cref="M:ABB.SrcML.XmlHelper.StreamElements(System.String,System.Xml.Linq.XName,System.Int32)"/> function for low memory overhead,
             unless the document is not compound (and the root unit is the only file unit). In that case, it uses <see cref="M:System.Xml.Linq.XElement.Load(System.String)"/>.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:ABB.SrcML.AbstractFileMonitor" -->
+        <member name="M:ABB.SrcML.AbstractFileMonitor.#ctor(System.String,ABB.SrcML.AbstractArchive,ABB.SrcML.AbstractArchive[])">
+            <summary>
+            Creates a new AbstractFileMonitor with the default archive and a collection of non-default archives that should be registered
+            </summary>
+            <param name="baseDirectory">The folder where this monitor stores it archives</param>
+            <param name="defaultArchive">The default archive</param>
+            <param name="otherArchives">A list of other archives that should be registered via <see cref="M:ABB.SrcML.AbstractFileMonitor.RegisterNonDefaultArchive(ABB.SrcML.AbstractArchive)"/></param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.#ctor(System.String,ABB.SrcML.AbstractArchive)">
+            <summary>
+            Creates a new AbstractFileMonitor with the default archive
+            </summary>
+            <param name="baseDirectory">The folder where this monitor stores its archives</param>
+            <param name="defaultArchive">The default archive</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.GetFilesFromSource">
+            <summary>
+            Gets the list of source files from the object being monitored
+            </summary>
+            <returns>An enumerable of files to be monitored</returns>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.GetArchivedFiles">
+            <summary>
+            Gets the list of files already present in this archive
+            </summary>
+            <returns>An enumerable of files present in all of the archives</returns>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.RegisterNonDefaultArchive(ABB.SrcML.AbstractArchive)">
+            <summary>
+            Registers an archive in the file monitor. All file changes will be automatically routed to the appropriate archive
+            based on file extension (via <see cref="P:ABB.SrcML.AbstractArchive.SupportedExtensions"/>
+            </summary>
+            <param name="archive">the archive to add.</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.RespondToArchiveFileEvent(System.Object,ABB.SrcML.FileEventRaisedArgs)">
+            <summary>
+            Raises the <see cref="E:ABB.SrcML.AbstractFileMonitor.FileChanged"/> event.
+            </summary>
+            <param name="sender">The caller</param>
+            <param name="e">The event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.StartMonitoring">
+            <summary>
+            Starts monitoring
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.StopMonitoring">
+            <summary>
+            Stops monitoring. Also calls <see cref="M:ABB.SrcML.AbstractFileMonitor.Dispose"/>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.AddFile(System.String)">
+            <summary>
+            Processes a file addition by adding the file to the appropriate archive
+            </summary>
+            <param name="filePath">the file to add</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.DeleteFile(System.String)">
+            <summary>
+            Processes a file deletion by deleting the file from the appropriate archive
+            </summary>
+            <param name="filePath">The file to delete</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.UpdateFile(System.String)">
+            <summary>
+            Processes a file update by updating the file in the appropriate archive
+            </summary>
+            <param name="filePath">the file to update</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.RenameFile(System.String,System.String)">
+            <summary>
+            Processes a file rename. If the old and new path are both in the same archive,
+            a <see cref="!:AbstractArchive.FileRename(string,string)"/> is called on the appropriate archive.
+            If they are in different archives, the <see cref="M:ABB.SrcML.AbstractArchive.DeleteFile(System.String)"/> is called on <paramref name="oldFilePath"/>
+            and <see cref="M:ABB.SrcML.AbstractArchive.AddOrUpdateFile(System.String)"/> is called on <paramref name="newFilePath"/>
+            </summary>
+            <param name="oldFilePath">the old file name</param>
+            <param name="newFilePath">the new file name</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.Startup">
+            <summary>
+            Synchronizes the archives with the object being monitored. Startup adds or updates outdated archive files and deletes archive files that are
+            no longer present on disk.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.Dispose">
+            <summary>
+            disposes of all of the archives and stops the events
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.OnFileChanged(ABB.SrcML.FileEventRaisedArgs)">
+            <summary>
+            event handler for <see cref="E:ABB.SrcML.AbstractFileMonitor.FileChanged"/>
+            </summary>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.OnStartupCompleted(System.EventArgs)">
+            <summary>
+            event handler for <see cref="E:ABB.SrcML.AbstractFileMonitor.StartupCompleted"/>
+            </summary>
+            <param name="e">null event</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.OnMonitoringStopped(System.EventArgs)">
+            <summary>
+            event handler for <see cref="E:ABB.SrcML.AbstractFileMonitor.MonitoringStopped"/>
+            </summary>
+            <param name="e">null event</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractFileMonitor.GetArchiveForFile(System.String)">
+            <summary>
+            Gets the appropriate archive for string this file name (based on <see cref="M:System.IO.Path.GetExtension(System.String)"/>
+            </summary>
+            <param name="fileName">The file name</param>
+            <returns>The archive that should contain this file name</returns>
+        </member>
+        <member name="P:ABB.SrcML.AbstractFileMonitor.MonitorStoragePath">
+            <summary>
+            The folder where all of the archives can store their data. <see cref="T:ABB.SrcML.AbstractArchive"/> objects can use this as their root folder
+            </summary>
+        </member>
+        <member name="E:ABB.SrcML.AbstractFileMonitor.FileChanged">
+            <summary>
+            Event fires when any of the archives raises their <see cref="E:ABB.SrcML.AbstractArchive.FileChanged"/>.
+            </summary>
+        </member>
+        <member name="E:ABB.SrcML.AbstractFileMonitor.StartupCompleted">
+            <summary>
+            Event fires when <see cref="M:ABB.SrcML.AbstractFileMonitor.Startup"/> is completed
+            </summary>
+        </member>
+        <member name="E:ABB.SrcML.AbstractFileMonitor.MonitoringStopped">
+            <summary>
+            Event fires when <see cref="M:ABB.SrcML.AbstractFileMonitor.StopMonitoring"/> is completed
             </summary>
         </member>
         <member name="T:ABB.SrcML.Extensions">
@@ -171,6 +372,79 @@
             <param name="name">A <see cref="T:ABB.SrcML.SRC"/> element.</param>
             <returns>The corresponding declaration, null if not found.</returns>
         </member>
+        <member name="T:ABB.SrcML.FileSystemFolderMonitor">
+            <summary>
+            An implementation of <see cref="!:AbstractFileMontor"/> that responds to file system events.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.#ctor(System.String,System.String,ABB.SrcML.AbstractArchive,ABB.SrcML.AbstractArchive[])">
+            <summary>
+            Creates a new file system monitor
+            </summary>
+            <param name="pathToSourceFolder">The folder to watch</param>
+            <param name="monitoringStorage">The base directory for the archive data</param>
+            <param name="defaultArchive">The default archive</param>
+            <param name="otherArchives">Other archives to register</param>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.SetupFileSystemWatcher">
+            <summary>
+            Sets up the internal file system monitor
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.HandleFileChanged(System.Object,System.IO.FileSystemEventArgs)">
+            <summary>
+            Respond to a file-changed event
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.HandleFileCreated(System.Object,System.IO.FileSystemEventArgs)">
+            <summary>
+            Respond to a file-created event
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.HandleFileDeleted(System.Object,System.IO.FileSystemEventArgs)">
+            <summary>
+            Respond to a file-changed deleted
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.HandleFileWatcherError(System.Object,System.IO.ErrorEventArgs)">
+            <summary>
+            Respond to an error for the file system watcher. Not implemented.
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.HandleFileRenamed(System.Object,System.IO.RenamedEventArgs)">
+            <summary>
+            Respond to a file-rename event
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.isFile(System.String)">
+            <summary>
+            Checks if the path points to a file
+            </summary>
+            <param name="fullPath">the path to check</param>
+            <returns>true if the path represents a file; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.FileSystemFolderMonitor.IsNotInMonitoringStorage(System.String)">
+            <summary>
+            Checks if the path is located within the archive directory
+            </summary>
+            <param name="filePath">the path to check</param>
+            <returns>True if the path is in the <see cref="P:ABB.SrcML.AbstractFileMonitor.MonitorStoragePath"/></returns>
+        </member>
+        <member name="P:ABB.SrcML.FileSystemFolderMonitor.FullFolderPath">
+            <summary>
+            The full path to the folder being monitored
+            </summary>
+        </member>
         <member name="T:ABB.SrcML.IFileMonitor">
             <summary>
             This interface is designed for all events that can be raised from SrcML.NET.
@@ -185,6 +459,88 @@
             <summary>
             Event data of SrcML.NET events.
             </summary>
+        </member>
+        <member name="T:ABB.SrcML.LastModifiedArchive">
+            <summary>
+            The last modified archive simply stores the last-modified times of all its files.
+            It serializes them to disk upon <see cref="M:ABB.SrcML.LastModifiedArchive.Dispose">disposal</see>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new archive in the <paramref name="storageDirectory">specified directory</paramref> with the given <paramref name="fileName"/>
+            </summary>
+            <param name="baseDirectory">the directory that this archive will be stored in</param>
+            <param name="fileName">the filename to store the mapping in</param>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.AddOrUpdateFile(System.String)">
+            <summary>
+            Adds or updates <paramref name="fileName"/> to the archive. It raises <see cref="E:ABB.SrcML.AbstractArchive.FileChanged"/> with
+            <see cref="F:ABB.SrcML.FileEventType.FileChanged"/> (if the file was in the archive) or <see cref="F:ABB.SrcML.FileEventType.FileAdded"/>.
+            </summary>
+            <param name="fileName">The file name to add</param>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.DeleteFile(System.String)">
+            <summary>
+            Deletes the given <paramref name="fileName"/> from the archive. It raises <see cref="E:ABB.SrcML.AbstractArchive.FileChanged"/> with
+            <see cref="F:ABB.SrcML.FileEventType.FileDeleted"/> if the file was in the archive.
+            </summary>
+            <param name="fileName">The file to delete</param>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.RenameFile(System.String,System.String)">
+            <summary>
+            Renames filename from <paramref name="oldFileName"/> to <paramref name="newFileName"/>. If <paramref name="oldFileName"/> is
+            in the archive, then <see cref="E:ABB.SrcML.AbstractArchive.FileChanged"/> is raised with <see cref="F:ABB.SrcML.FileEventType.FileRenamed"/>. Otherwise, this method simply calls <see cref="M:ABB.SrcML.LastModifiedArchive.AddOrUpdateFile(System.String)"/>
+            </summary>
+            <param name="oldFileName">the old file path</param>
+            <param name="newFileName">the new file path</param>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.ContainsFile(System.String)">
+            <summary>
+            Checks if the given file name is present in the archive
+            </summary>
+            <param name="fileName">The file name to test for</param>
+            <returns>True if the file is in the archive; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.IsOutdated(System.String)">
+            <summary>
+            Checks if the archive is outdated in comparison to the original file. A file is outdated if any of the following are true:
+            <list type="bullet">
+            <item><description>the file does not exist and it is in the archive</description></item>
+            <item><description>the file is not in the archive and it exists</description></item>
+            <item><description>The last modified time in the archive is more recent than <paramref name="fileName"/></description></item>
+            </list>
+            </summary>
+            <param name="fileName">the file to check</param>
+            <returns>True if the file is outdated; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.GetFiles">
+            <summary>
+            Gets all of the files stored in the archive
+            </summary>
+            <returns>the files in the archive</returns>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.Dispose">
+            <summary>
+            saves this archive to disk
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.ReadMap">
+            <summary>
+            Loads this map from disk (assuming <see cref="P:ABB.SrcML.AbstractArchive.ArchivePath"/> exists)
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.SaveMap">
+            <summary>
+            Saves this map to disk (at <see cref="P:ABB.SrcML.AbstractArchive.ArchivePath"/>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.LastModifiedArchive.GetFullPath(System.String)">
+            <summary>
+            Gets the full path for a file name (returns the file name if <see cref="M:System.IO.Path.IsPathRooted(System.String)"/> is true.
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
         </member>
         <member name="T:ABB.SrcML.ShortXmlFileNameMapping">
             <summary>
@@ -1699,69 +2055,120 @@
             <param name="outputFileName">Name of the output file.</param>
             <param name="unitIndex">Index of the unit.</param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String)">
+        <member name="T:ABB.SrcML.SrcMLArchive">
             <summary>
-            Creates a new SrcMLArchive.
+            This is an implementation of <see cref="T:ABB.SrcML.AbstractArchive"/>. File changes trigger the addition, update, and deletion of srcML archives in
+            the archive directory
             </summary>
-            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
-            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean)">
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String)">
             <summary>
-            Creates a new SrcMLArchive.
+            Creates a new SrcMLArchive. The archive is created in <c>"baseDirectory\srcML"</c>.
             </summary>
-            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
-            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="baseDirectory">the base directory</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates a new SrcMLArchive. The archive is created in <c>"baseDirectory\srcML"</c>.
+            </summary>
+            <param name="baseDirectory">the base directory</param>
             <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,ABB.SrcML.SrcMLGenerator)">
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.Boolean,ABB.SrcML.SrcMLGenerator)">
             <summary>
-            Creates a new SrcMLArchive.
+            Creates a new SrcMLArchive. The archive is created in <c>"baseDirectory\srcML"</c>.
             </summary>
-            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
-            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
-            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
-        </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator)">
-            <summary>
-            Creates a new SrcMLArchive.
-            </summary>
-            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
-            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="baseDirectory">the base directory</param>
             <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
             <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator,ABB.SrcML.XmlFileNameMapping)">
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.Boolean,ABB.SrcML.SrcMLGenerator,ABB.SrcML.XmlFileNameMapping)">
             <summary>
-            Creates a new SrcMLArchive.
+            Creates a new SrcMLArchive. The archive is created in <c>"baseDirectory\srcML"</c>.
             </summary>
-            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
-            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="baseDirectory">the base directory</param>
             <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
             <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
             <param name="xmlMapping">The XmlFileNameMapping to use to map source paths to xml file paths.</param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive._runStartupInBackground_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.String)">
             <summary>
-            Run in background when starting up the solution.
+            Creates a new SrcMLArchive. By default, any existing srcML will be used.
             </summary>
-            <param name="sender"></param>
-            <param name="anEvent"></param>
+            <param name="baseDirectory">The parent of <paramref name="srcMLDirectory"/>. <see cref="P:ABB.SrcML.AbstractArchive.ArchivePath"/> will be set to <c>Path.Combine(baseDirectory, srcMLDirectory)</c></param>
+            <param name="srcMLDirectory">The directory to store the SrcML files in. This will be created as a subdirectory of <paramref name="baseDirectory"/></param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.GetAllSrcMLedFiles">
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.String,System.Boolean)">
             <summary>
-            Get all "SrcMLed" files in this solution.
-            TODO: maybe use KeyValuePairs instead of List for better performance
+            Creates a new SrcMLArchive.
             </summary>
-            <returns></returns>
+            <param name="baseDirectory">The parent of <paramref name="srcMLDirectory"/>. <see cref="P:ABB.SrcML.AbstractArchive.ArchivePath"/> will be set to <c>Path.Combine(baseDirectory, srcMLDirectory)</c></param>
+            <param name="srcMLDirectory">The directory to store the SrcML files in. This will be created as a subdirectory of <paramref name="baseDirectory"/></param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.ProcessSingleSourceFile(System.String)">
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator)">
             <summary>
-            Process a single source file to add or change the corresponding srcML file, or do nothing.
-            TODO: GetXmlPathForSourcePath() twice
-            PROBLEM: cannot generate index in Sando for .txt, .xml etc files.  Have to raise solution monitor events too.
+            Creates a new SrcMLArchive.
             </summary>
-            <param name="sourceFilePath"></param>
+            <param name="baseDirectory">The parent of <paramref name="srcMLDirectory"/>. <see cref="P:ABB.SrcML.AbstractArchive.ArchivePath"/> will be set to <c>Path.Combine(baseDirectory, srcMLDirectory)</c></param>
+            <param name="srcMLDirectory">The directory to store the SrcML files in. This will be created as a subdirectory of <paramref name="baseDirectory"/></param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(System.String,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator,ABB.SrcML.XmlFileNameMapping)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="baseDirectory">The parent of <paramref name="srcMLDirectory"/>. <see cref="P:ABB.SrcML.AbstractArchive.ArchivePath"/> will be set to <c>Path.Combine(baseDirectory, srcMLDirectory)</c></param>
+            <param name="srcMLDirectory">The directory to store the SrcML files in. This will be created as a subdirectory of <paramref name="baseDirectory"/></param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+            <param name="xmlMapping">The XmlFileNameMapping to use to map source paths to xml file paths.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.Dispose">
+            <summary>
+            Disposes of the internal <see cref="T:ABB.SrcML.XmlFileNameMapping"/> and then calls <see cref="M:ABB.SrcML.AbstractArchive.Dispose"/>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.AddOrUpdateFile(System.String)">
+            <summary>
+            generates srcML for the given file. It raises <see cref="E:ABB.SrcML.AbstractArchive.FileChanged"/> when finished.
+            </summary>
+            <param name="fileName">the file to add or update</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.ContainsFile(System.String)">
+            <summary>
+            Checks to see if the file has a companions srcML file in the archive
+            </summary>
+            <param name="fileName">the file to check for</param>
+            <returns>true if the file is in the archive; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.DeleteFile(System.String)">
+            <summary>
+            Deletes the srcML document for the given file. It raises <see cref="E:ABB.SrcML.AbstractArchive.FileChanged"/> when finished.
+            </summary>
+            <param name="fileName">the file to delete</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GetFiles">
+            <summary>
+            Gets all of the source file names stored in this archive
+            </summary>
+            <returns>an enumerable of file names stored in this archive</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.IsOutdated(System.String)">
+            <summary>
+            Checks if the srcML stored in the archive is up to date with the source file.
+            If the file is not in the archive, it is outdated
+            </summary>
+            <param name="fileName">the file name to check</param>
+            <returns>true if the source file is newer than srcML file in the archive or the file is not in the archive.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.RenameFile(System.String,System.String)">
+            <summary>
+            Deletes the old XML file and generates the new one
+            </summary>
+            <param name="oldFileName">the old file name</param>
+            <param name="newFileName">the new file name</param>
         </member>
         <member name="M:ABB.SrcML.SrcMLArchive.IsValidFileExtension(System.String)">
             <summary>
@@ -1769,13 +2176,6 @@
             </summary>
             <param name="filePath">The file name to check.</param>
             <returns>True if the file can be converted to SrcML; False otherwise.</returns>
-        </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.RespondToFileEvent(System.Object,ABB.SrcML.FileEventRaisedArgs)">
-            <summary>
-            Respond to an event raised from Solution Monitor. Then raise a new event to client application (e.g., Sando)
-            </summary>
-            <param name="sender"></param>
-            <param name="eventArgs"></param>
         </member>
         <member name="M:ABB.SrcML.SrcMLArchive.GenerateXmlAndXElementForSource(System.String)">
             <summary>
@@ -1824,11 +2224,20 @@
             <param name="sourceFilePath">The source file to get the root XElement for.</param>
             <returns>The root XElement of the source file.</returns>
         </member>
-        <member name="M:ABB.SrcML.SrcMLArchive.OnSourceFileChanged(ABB.SrcML.FileEventRaisedArgs)">
+        <member name="P:ABB.SrcML.SrcMLArchive.XmlGenerator">
             <summary>
-            Raise a SrcML.NET event (SourceFileAdded, SourceFileChanged, SourceFileDeleted, SourceFileRenamed)
+            The SrcML generator used to generate srcML
             </summary>
-            <param name="e"></param>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLArchive.FileUnits">
+            <summary>
+            Enumerates over each file in the archive and returns a file unit
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLArchive.SupportedExtensions">
+            <summary>
+            The list of extensions supported by the archive (taken from <see cref="P:ABB.SrcML.SrcMLArchive.XmlGenerator"/>)
+            </summary>
         </member>
         <member name="T:ABB.SrcML.SrcMLElement">
             <summary>
@@ -1977,6 +2386,12 @@
             </summary>
             <param name="fileName">The filename to get an index for.</param>
             <returns>the index of the file. -1 if not found.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.WriteXmlnsAttributes(System.Xml.XmlWriter)">
+            <summary>
+            Write attribute strings for each SrcML namespace to the given XmlWriter. This should be called immediately after XmlWriter.WriteStartElement.
+            </summary>
+            <param name="writer">Instance of XmlWriter to write to.</param>
         </member>
         <member name="M:ABB.SrcML.SrcMLFile.GetXMLString">
             <summary>
