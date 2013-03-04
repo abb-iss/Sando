@@ -132,7 +132,7 @@ namespace LocalSearch
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
                 //what has shown before is set lower score
-                if (isExisting(CurrentPath, relatedProgramElement))
+                if (isExistingInCurrentPath(CurrentPath, relatedProgramElement))
                 {
                     relatedProgramElement.Score = relatedProgramElement.Score - 1;
                 }
@@ -145,20 +145,73 @@ namespace LocalSearch
             if (InitialSearchResults.Count() == 0)
                 return;
 
+            //bool isExisting = false;
+
+            List<double> weights = new List<double>();
+            weights.Add(1);
+            for (double i = 2; i <= step; i++)
+            {
+                weights.Add(1 / (2 * (i - 1)));
+            }
+            NormalizeScoreBySum(ref weights);
+
+            Dictionary<CodeNavigationResult, List<CodeNavigationResult>> relatedElementsInSteps
+                = new Dictionary<CodeNavigationResult, List<CodeNavigationResult>>();
+
             foreach (var relatedProgramElement in RelatedProgramElements)
-            {  
-                //what is more closer related to search result is set higher score
-                double searchScore = isExisting(InitialSearchResults, relatedProgramElement);
-                if (searchScore > 0)
+            {
+                List<CodeNavigationResult> relatedElements = new List<CodeNavigationResult>();
+                relatedElements.Add(relatedProgramElement);
+                relatedElementsInSteps[relatedProgramElement] = relatedElements;
+            }
+
+            AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]);
+
+            //while((step >=1) && (isExisting == false))
+            for (int i = 2; i <= step; i++)
+            {
+                foreach (var relatedProgramElement in RelatedProgramElements)
                 {
-                    relatedProgramElement.Score = relatedProgramElement.Score + 0.1;
-                    if (searchScore > 1)
-                        relatedProgramElement.Score += searchScore - 1;
+                    List<CodeNavigationResult> relatedElements = null;
+                    relatedElementsInSteps.TryGetValue(relatedProgramElement, out relatedElements);
+                    int NumOfElements = relatedElements.Count();
+                    for (int j = 0; j < NumOfElements; j++)
+                    {
+                        CodeNavigationResult origRelatedElement = relatedElements[0];
+                        List<CodeNavigationResult> newRelatedElements =
+                            GetBasicRecommendations(origRelatedElement as CodeSearchResult);
+                        relatedElementsInSteps[relatedProgramElement].AddRange(newRelatedElements.ToArray());
+                        relatedElementsInSteps[relatedProgramElement].RemoveAt(0);
+                    }
                 }
-            }    
+
+                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i-1]);
+            }
         }
 
-        private bool isExisting(List<CodeSearchResult> source, CodeNavigationResult target)
+        private void AmongInitialSearchResultsByStep(ref List<CodeNavigationResult> RelatedProgramElements,
+            Dictionary<CodeNavigationResult, List<CodeNavigationResult>> RelatedProgramElementsInSteps,
+            double weight)
+        {
+            foreach (var relatedProgramElement in RelatedProgramElements)
+            {
+                //what is more closer related to search result is set higher score
+                List<CodeNavigationResult> relatedElementsInSteps = null;
+                RelatedProgramElementsInSteps.TryGetValue(relatedProgramElement, out relatedElementsInSteps);
+                foreach (var relatedElement in relatedElementsInSteps)
+                {
+                    double searchScore = ExistingInInitialSearchRes(InitialSearchResults, relatedElement);
+                    if (searchScore > 0)
+                    {
+                        relatedProgramElement.Score = relatedProgramElement.Score + 0.1 * weight;
+                        if (searchScore > 1)
+                            relatedProgramElement.Score += (searchScore - 1) * weight;
+                    }
+                }
+            }
+        }
+
+        private bool isExistingInCurrentPath(List<CodeSearchResult> source, CodeNavigationResult target)
         {
             //if it's an declaration, treated differently
             if (target.ProgramElementRelation == ProgramElementRelation.Other)
@@ -190,7 +243,7 @@ namespace LocalSearch
             
         }
 
-        private double isExisting(List<Tuple<CodeSearchResult,int>> source, CodeNavigationResult target)
+        private double ExistingInInitialSearchRes(List<Tuple<CodeSearchResult,int>> source, CodeNavigationResult target)
         {
             double res = -1;
 
@@ -317,7 +370,7 @@ namespace LocalSearch
                         degree = 2.1;//double.MaxValue;
                     else
                     {
-                        if (PartialWordMatch(relatedelement.Name, query))
+                        if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
                             degree = 1;
                         degree += 1 / distance;
                     }
@@ -334,6 +387,18 @@ namespace LocalSearch
 
         private bool PartialWordMatch(string target, string source)
         {
+            //source may be multiple words
+            string[] sources = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var originalWord in sources)
+            {
+                Stemmer s = new Stemmer();
+                s.add(originalWord.ToCharArray(), originalWord.Length);
+                s.stem();
+                string stemWord = new string(s.getResultBuffer());
+                if (target.Contains(stemWord) || stemWord.Contains(target))
+                    return true;
+            }
+
             return false;
         }
 
@@ -421,12 +486,16 @@ namespace LocalSearch
 
         private double FieldContextHeuristic(CodeNavigationResult relatedFieldElement)
         {
-            double res = 0;            
-            XElement fielddeclaration = graph.GetField(relatedFieldElement.ProgramElement as FieldElement); 
-            string classname = fielddeclaration.Element(SRC.Type).ToString();
+            double res = 0;    
+        
+            //if the field Type is somehow matching the query
+            string classname = (relatedFieldElement.ProgramElement as FieldElement).FieldType;
+            //XElement fielddeclaration = graph.GetField(relatedFieldElement.ProgramElement as FieldElement); 
+            //string classname = fielddeclaration.Element(SRC.Type).ToString();
             if (PartialWordMatch(classname, query))
                 res += 1;
 
+            //if the field use is like "field.X" and X somehow matches the query
             XElement relationcode = relatedFieldElement.RelationCode;
 
             return res;
@@ -451,15 +520,23 @@ namespace LocalSearch
             return methods;
         }
 
-        public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult)
-        {            
+
+        public List<CodeNavigationResult> GetBasicRecommendations(CodeSearchResult codeSearchResult)
+        {
             ProgramElementType elementtype = codeSearchResult.ProgramElementType;
             List<CodeNavigationResult> recommendations = new List<CodeNavigationResult>();
-            
+
             if (elementtype.Equals(ProgramElementType.Field))
-                recommendations = GetFieldRelatedInfo(codeSearchResult);                
+                recommendations = GetFieldRelatedInfo(codeSearchResult);
             else // if(elementtype.Equals(ProgramElementType.Method))
                 recommendations = GetMethodRelatedInfo(codeSearchResult);
+
+            return recommendations;
+        }
+        
+        public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult)
+        {            
+            List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
             RankRelatedInfo(ref recommendations, 2);
 

@@ -581,12 +581,17 @@ namespace LocalSearch
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
                 return false;
-            var allnames = methodbody.Descendants(SRC.Name); // todo: ancestor can't be type!!
+
+            //get all "Names" that appear in the method body
+            //except: Name of Type
+            var allnames = from name in methodbody.Descendants(SRC.Name)
+                           where !name.Ancestors(SRC.Type).Any()
+                           select name; 
 
             var localvars = GetAllLocalVarsinMethod(method);
             var paras = GetAllParametersinMethod(method);
 
-            List<String> listNames = new List<String>();  
+            List<String> listNames = new List<String>();
             List<XElement> listNameElements = new List<XElement>();
             foreach (var name in allnames)
             {
@@ -605,15 +610,15 @@ namespace LocalSearch
             if (listNames.Contains(fieldname) &&
                 !(listLocalVars.Contains(fieldname)) &&
                 !(listParas.Contains(fieldname)))
-            {   
+            {
                 int index = 0;
-                while(index < listNames.Count())
+                while (index < listNames.Count())
                 {
                     index = listNames.FindIndex(index, name => name == fieldname);
                     if (index == -1)
                         break;
                     int line = listNameElements[index].GetSrcLineNumber();
-                    if(!UsedLineNumber.Contains(line)) //avoid adding field uses that happen on the same line
+                    if (!UsedLineNumber.Contains(line)) //avoid adding field uses that happen on the same line
                         UsedLineNumber.Add(line);
                     index++;
                 }

@@ -97,7 +97,7 @@ namespace LocalSearch
                     }
                     catch (Exception e)
                     {
-                        //do nothing, just becasue it's not a specifier of accesslevel, such as static
+                        //do nothing, it reaches here becasue it's not a specifier of accesslevel, such as static
                     }
                 }
             }
