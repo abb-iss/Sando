@@ -112,7 +112,7 @@ namespace Sando.IntegrationTests.Search
             var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), GetTimeToCommit());
             ServiceLocator.RegisterInstance(currentIndexer);
             ServiceLocator.RegisterInstance(new IndexUpdateManager());
-            currentIndexer.ClearIndex();
+            currentIndexer.ClearIndex();            
             ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
         }
 
