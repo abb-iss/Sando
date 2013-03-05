@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 
 namespace LocalSearch.UnitTests
@@ -38,7 +40,36 @@ namespace LocalSearch.UnitTests
             window.ShowDialog();
             window.Close();
             Dispatcher.CurrentDispatcher.InvokeShutdown();
-        }        
+        }
+
+        [Test]
+        [STAThread]
+        public void AmongInitialSearchResultsHeuristicTest()
+        {
+            Context gbuilder = new Context();
+            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\CreatureManager.cs");
+            var elements = gbuilder.GetRecommendations();
+
+            CodeSearchResult initialSearchRes = elements.ElementAt(4) as CodeSearchResult;
+            gbuilder.InitialSearchResults.Add(Tuple.Create(initialSearchRes, 1));
+
+            var boxes = new NavigationBoxes();
+            boxes.InformationSource = gbuilder;
+            foreach (var element in elements)
+            {
+                int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
+                CodeNavigationResult element2 = new CodeNavigationResult(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+                boxes.FirstProgramElements.Add(element2);
+            }
+            Window window = new Window
+            {
+                Title = "My User Control Dialog",
+                Content = boxes
+            };
+            window.ShowDialog();
+            window.Close();
+            Dispatcher.CurrentDispatcher.InvokeShutdown();
+        }
 
     }
 }

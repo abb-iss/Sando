@@ -67,34 +67,46 @@ namespace LocalSearch
             //score setting
             switch (heuristic)
             {
-                case 1:
+                case 1: //basic (default) heuristic
                     {
                         BasicHeuristic(ref RelatedProgramElements);
                         UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
-                case 2:
+                case 2: //comprehensive heuristics
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
                         BasicHeuristic(ref RelatedProgramElements);
                         TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
-                        //EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
                         EditDistanceHeuristicInPath(ref RelatedProgramElements, 1, 1);
                         UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
-                case 3:
+                case 3: //partially selected heuristics 
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        //EditDistanceHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
                         EditDistanceHeuristicInPath(ref RelatedProgramElements, 1, 1);
                         UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
-                case 4:
+                case 4: //no heuristics
+                    {   
+                        UseLocationHeuristic(ref RelatedProgramElements);
+                        break;
+                    }
+                case 5: //single heuristic
                     {
                         ShowBeforeHeuristic(ref RelatedProgramElements);
-                        UseLocationHeuristic(ref RelatedProgramElements);
+                        break;
+                    }
+                case 6: //single heuristic
+                    {
+                        AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 2);
+                        break;
+                    }
+                case 7: //single heuristic
+                    {
+                        EditDistanceHeuristicInPath(ref RelatedProgramElements, 2, 1);
                         break;
                     }
                 default:
@@ -132,7 +144,7 @@ namespace LocalSearch
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
                 //what has shown before is set lower score
-                if (isExistingInCurrentPath(CurrentPath, relatedProgramElement))
+                if (ExistingInCurrentPath(CurrentPath, relatedProgramElement))
                 {
                     relatedProgramElement.Score = relatedProgramElement.Score - 1;
                 }
@@ -174,6 +186,7 @@ namespace LocalSearch
                 {
                     List<CodeNavigationResult> relatedElements = null;
                     relatedElementsInSteps.TryGetValue(relatedProgramElement, out relatedElements);
+                    if (relatedElements == null) continue;
                     int NumOfElements = relatedElements.Count();
                     for (int j = 0; j < NumOfElements; j++)
                     {
@@ -198,6 +211,8 @@ namespace LocalSearch
                 //what is more closer related to search result is set higher score
                 List<CodeNavigationResult> relatedElementsInSteps = null;
                 RelatedProgramElementsInSteps.TryGetValue(relatedProgramElement, out relatedElementsInSteps);
+                if (relatedElementsInSteps == null)
+                    continue;
                 foreach (var relatedElement in relatedElementsInSteps)
                 {
                     double searchScore = ExistingInInitialSearchRes(InitialSearchResults, relatedElement);
@@ -211,7 +226,7 @@ namespace LocalSearch
             }
         }
 
-        private bool isExistingInCurrentPath(List<CodeSearchResult> source, CodeNavigationResult target)
+        private bool ExistingInCurrentPath(List<CodeSearchResult> source, CodeNavigationResult target)
         {
             //if it's an declaration, treated differently
             if (target.ProgramElementRelation == ProgramElementRelation.Other)
@@ -538,7 +553,7 @@ namespace LocalSearch
         {            
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
-            RankRelatedInfo(ref recommendations, 2);
+            RankRelatedInfo(ref recommendations, 6);
 
             return recommendations;
         }
