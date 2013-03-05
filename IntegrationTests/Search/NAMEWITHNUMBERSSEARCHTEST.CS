@@ -70,6 +70,11 @@ namespace Sando.IntegrationTests.Search
             return "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles";
         }
 
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(1);
+        }
+
         //[TestFixtureSetUp]
         //public void Setup()
         //{

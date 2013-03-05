@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\SandoExtensionContracts\QUERYCONTRACTS\IQueryRewriter.cs" pos:tabs="8"><namespace pos:line="1" pos:column="1">namespace <name><name pos:line="1" pos:column="11">Sando</name><op:operator pos:line="1" pos:column="16">.</op:operator><name pos:line="1" pos:column="17">ExtensionContracts</name><op:operator pos:line="1" pos:column="35">.</op:operator><name pos:line="1" pos:column="36">QueryContracts</name></name>
+<block pos:line="2" pos:column="1">{
+	<class type="interface"><specifier pos:line="3" pos:column="9">public</specifier> interface <name pos:line="3" pos:column="26">IQueryRewriter</name>
+	<block pos:line="4" pos:column="9">{
+		<function_decl><type><name pos:line="5" pos:column="17">string</name></type> <name pos:line="5" pos:column="24">RewriteQuery</name><parameter_list pos:line="5" pos:column="36">(<param><decl><type><name pos:line="5" pos:column="37">string</name></type> <name pos:line="5" pos:column="44">query</name></decl></param>)</parameter_list>;</function_decl>
+	}</block></class>
+}</block></namespace>
+</unit>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Indexer\Indexer\Searching\IIndexerSearcher.cs" pos:tabs="8"><using pos:line="1" pos:column="1">using <name><name pos:line="1" pos:column="7">System</name><op:operator pos:line="1" pos:column="13">.</op:operator><name pos:line="1" pos:column="14">Collections</name><op:operator pos:line="1" pos:column="25">.</op:operator><name pos:line="1" pos:column="26">Generic</name></name>;</using>
+<using pos:line="2" pos:column="1">using <name><name pos:line="2" pos:column="7">Sando</name><op:operator pos:line="2" pos:column="12">.</op:operator><name pos:line="2" pos:column="13">ExtensionContracts</name><op:operator pos:line="2" pos:column="31">.</op:operator><name pos:line="2" pos:column="32">ResultsReordererContracts</name></name>;</using>
+<using pos:line="3" pos:column="1">using <name><name pos:line="3" pos:column="7">Sando</name><op:operator pos:line="3" pos:column="12">.</op:operator><name pos:line="3" pos:column="13">Indexer</name><op:operator pos:line="3" pos:column="20">.</op:operator><name pos:line="3" pos:column="21">Searching</name><op:operator pos:line="3" pos:column="30">.</op:operator><name pos:line="3" pos:column="31">Criteria</name></name>;</using>
+
+<namespace pos:line="5" pos:column="1">namespace <name><name pos:line="5" pos:column="11">Sando</name><op:operator pos:line="5" pos:column="16">.</op:operator><name pos:line="5" pos:column="17">Indexer</name><op:operator pos:line="5" pos:column="24">.</op:operator><name pos:line="5" pos:column="25">Searching</name></name>
+<block pos:line="6" pos:column="1">{
+	<class type="interface"><specifier pos:line="7" pos:column="9">public</specifier> interface <name pos:line="7" pos:column="26">IIndexerSearcher</name>
+	<block pos:line="8" pos:column="9">{
+        <function_decl><type><name><name pos:line="9" pos:column="9">IEnumerable</name><argument_list pos:line="9" pos:column="20">&lt;<argument><name pos:line="9" pos:column="21">CodeSearchResult</name></argument>&gt;</argument_list></name></type> <name pos:line="9" pos:column="39">Search</name><parameter_list pos:line="9" pos:column="45">(<param><decl><type><name pos:line="9" pos:column="46">SearchCriteria</name></type> <name pos:line="9" pos:column="61">searchCriteria</name></decl></param>)</parameter_list>;</function_decl>
+    }</block></class>
+}</block></namespace>
+</unit>

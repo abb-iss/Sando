@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Core\Core\Extensions\Configuration\BaseExtensionPointConfiguration.cs" pos:tabs="8"><namespace pos:line="1" pos:column="1">namespace <name><name pos:line="1" pos:column="11">Sando</name><op:operator pos:line="1" pos:column="16">.</op:operator><name pos:line="1" pos:column="17">Core</name><op:operator pos:line="1" pos:column="21">.</op:operator><name pos:line="1" pos:column="22">Extensions</name><op:operator pos:line="1" pos:column="32">.</op:operator><name pos:line="1" pos:column="33">Configuration</name></name>
+<block pos:line="2" pos:column="1">{
+	<class><specifier pos:line="3" pos:column="9">public</specifier> class <name pos:line="3" pos:column="22">BaseExtensionPointConfiguration</name>
+	<block pos:line="4" pos:column="9">{
+		<decl_stmt><decl><type><specifier pos:line="5" pos:column="17">public</specifier> <name pos:line="5" pos:column="24">string</name></type> <name pos:line="5" pos:column="31">FullClassName</name> <block pos:line="5" pos:column="45">{ <function><name pos:line="5" pos:column="47">get</name>;</function> <function><name pos:line="5" pos:column="52">set</name>;</function> }</block></decl></decl_stmt>
+		<decl_stmt><decl><type><specifier pos:line="6" pos:column="17">public</specifier> <name pos:line="6" pos:column="24">string</name></type> <name pos:line="6" pos:column="31">LibraryFileRelativePath</name> <block pos:line="6" pos:column="55">{ <function><name pos:line="6" pos:column="57">get</name>;</function> <function><name pos:line="6" pos:column="62">set</name>;</function> }</block></decl></decl_stmt>
+	}</block></class>
+}</block></namespace>
+</unit>

@@ -374,7 +374,7 @@ namespace Sando.UI
                 
                 // SrcML Service starts monitoring the opened solution.
                 // Sando may define the directory of storing srcML archives
-                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS", "SrcML");
+                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "SrcML");
                 string srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());                
                 // Sando may decide whether to use existing srcML archives
                 bool useExistingSrcML = true;

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\SandoExtensionContracts\ParserContracts\IParser.cs" pos:tabs="8"><comment type="line" pos:line="1" pos:column="1">// Code changed by JZ: solution monitor integration</comment>
+<using pos:line="2" pos:column="1">using <name><name pos:line="2" pos:column="7">System</name><op:operator pos:line="2" pos:column="13">.</op:operator><name pos:line="2" pos:column="14">Xml</name></name>;</using>
+<using pos:line="3" pos:column="1">using <name><name pos:line="3" pos:column="7">System</name><op:operator pos:line="3" pos:column="13">.</op:operator><name pos:line="3" pos:column="14">Xml</name><op:operator pos:line="3" pos:column="17">.</op:operator><name pos:line="3" pos:column="18">Linq</name></name>;</using>
+<comment type="line" pos:line="4" pos:column="1">// End of code changes</comment>
+<using pos:line="5" pos:column="1">using <name><name pos:line="5" pos:column="7">System</name><op:operator pos:line="5" pos:column="13">.</op:operator><name pos:line="5" pos:column="14">Collections</name><op:operator pos:line="5" pos:column="25">.</op:operator><name pos:line="5" pos:column="26">Generic</name></name>;</using>
+<using pos:line="6" pos:column="1">using <name><name pos:line="6" pos:column="7">Sando</name><op:operator pos:line="6" pos:column="12">.</op:operator><name pos:line="6" pos:column="13">ExtensionContracts</name><op:operator pos:line="6" pos:column="31">.</op:operator><name pos:line="6" pos:column="32">ProgramElementContracts</name></name>;</using>
+
+<namespace pos:line="8" pos:column="1">namespace <name><name pos:line="8" pos:column="11">Sando</name><op:operator pos:line="8" pos:column="16">.</op:operator><name pos:line="8" pos:column="17">ExtensionContracts</name><op:operator pos:line="8" pos:column="35">.</op:operator><name pos:line="8" pos:column="36">ParserContracts</name></name>
+<block pos:line="9" pos:column="1">{
+	<class type="interface"><specifier pos:line="10" pos:column="9">public</specifier> interface <name pos:line="10" pos:column="26">IParser</name>
+	<block pos:line="11" pos:column="9">{
+		<function_decl><type><name><name pos:line="12" pos:column="17">List</name><argument_list pos:line="12" pos:column="21">&lt;<argument><name pos:line="12" pos:column="22">ProgramElement</name></argument>&gt;</argument_list></name></type> <name pos:line="12" pos:column="38">Parse</name><parameter_list pos:line="12" pos:column="43">(<param><decl><type><name pos:line="12" pos:column="44">string</name></type> <name pos:line="12" pos:column="51">filename</name></decl></param>)</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="14" pos:column="9">// Code changed by JZ: solution monitor integration</comment>
+        <comment type="line" pos:line="15" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="16" pos:column="9">/// New Parse method that takes both source file path and the XElement representation of the source file as input arguments.</comment>
+        <comment type="line" pos:line="17" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="18" pos:column="9">/// &lt;param name="filename"&gt;&lt;/param&gt;</comment>
+        <comment type="line" pos:line="19" pos:column="9">/// &lt;param name="sourceElements"&gt;&lt;/param&gt;</comment>
+        <comment type="line" pos:line="20" pos:column="9">/// &lt;returns&gt;&lt;/returns&gt;</comment>
+        <function_decl><type><name><name pos:line="21" pos:column="9">List</name><argument_list pos:line="21" pos:column="13">&lt;<argument><name pos:line="21" pos:column="14">ProgramElement</name></argument>&gt;</argument_list></name></type> <name pos:line="21" pos:column="30">Parse</name><parameter_list pos:line="21" pos:column="35">(<param><decl><type><name pos:line="21" pos:column="36">string</name></type> <name pos:line="21" pos:column="43">filename</name></decl></param><op:operator pos:line="21" pos:column="51">,</op:operator> <param><decl><type><name pos:line="21" pos:column="53">XElement</name></type> <name pos:line="21" pos:column="62">sourceElements</name></decl></param>)</parameter_list>;</function_decl>
+        <comment type="line" pos:line="22" pos:column="9">// End of code changes</comment>
+    }</block></class>
+}</block></namespace>
+</unit>

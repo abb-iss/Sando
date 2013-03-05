@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\TestFiles\MethodElementTestFiles\ImageCapture.cs" pos:tabs="8"><cpp:region pos:line="1" pos:column="1">#<cpp:directive pos:line="1" pos:column="2">region</cpp:directive> License Information</cpp:region>
+
+<comment type="block" pos:line="3" pos:column="1">/**********************************************************************************
+Shared Source License for Cropper
+Copyright 9/07/2004 Brian Scott
+http://blogs.geekdojo.net/brian
+
+This license governs use of the accompanying software ('Software'), and your
+use of the Software constitutes acceptance of this license.
+
+You may use the Software for any commercial or noncommercial purpose,
+including distributing derivative works.
+
+In return, we simply require that you agree:
+1. Not to remove any copyright or other notices from the Software. 
+2. That if you distribute the Software in source code form you do so only
+   under this license (i.e. you must include a complete copy of this license
+   with your distribution), and if you distribute the Software solely in
+   object form you only do so under a license that complies with this
+   license.
+3. That the Software comes "as is", with no warranties. None whatsoever.
+   This means no express, implied or statutory warranty, including without
+   limitation, warranties of merchantability or fitness for a particular
+   purpose or any warranty of title or non-infringement. Also, you must pass
+   this disclaimer on whenever you distribute the Software or derivative
+   works.
+4. That no contributor to the Software will be liable for any of those types
+   of damages known as indirect, special, consequential, or incidental
+   related to the Software or this license, to the maximum extent the law
+   permits, no matter what legal theory its based on. Also, you must pass
+   this limitation of liability on whenever you distribute the Software or
+   derivative works.
+5. That if you sue anyone over patents that you think may apply to the
+   Software for a person's use of the Software, your license to the Software
+   ends automatically.
+6. That the patent rights, if any, granted in this license only apply to the
+   Software, not to any derivative works you make.
+7. That the Software is subject to U.S. export jurisdiction at the time it
+   is licensed to you, and it may be subject to additional export or import
+   laws in other places.  You agree to comply with all such laws and
+   regulations that may apply to the Software after delivery of the software
+   to you.
+8. That if you are an agency of the U.S. Government, (i) Software provided
+   pursuant to a solicitation issued on or after December 1, 1995, is
+   provided with the commercial license rights set forth in this license,
+   and (ii) Software provided pursuant to a solicitation issued prior to
+   December 1, 1995, is provided with Restricted Rights as set forth in
+   FAR, 48 C.F.R. 52.227-14 (June 1987) or DFAR, 48 C.F.R. 252.227-7013
+   (Oct 1988), as applicable.
+9. That your rights under this License end automatically if you breach it in
+   any way.
+10.That all rights not expressly granted to you in this license are reserved.
+
+**********************************************************************************/</comment>
+
+<cpp:endregion pos:line="56" pos:column="1">#<cpp:directive pos:line="56" pos:column="2">endregion</cpp:directive></cpp:endregion>
+
+<cpp:region pos:line="58" pos:column="1">#<cpp:directive pos:line="58" pos:column="2">region</cpp:directive> Using Directives</cpp:region>
+
+<using pos:line="60" pos:column="1">using <name pos:line="60" pos:column="7">System</name>;</using>
+<using pos:line="61" pos:column="1">using <name><name pos:line="61" pos:column="7">System</name><op:operator pos:line="61" pos:column="13">.</op:operator><name pos:line="61" pos:column="14">ComponentModel</name></name>;</using>
+<using pos:line="62" pos:column="1">using <name><name pos:line="62" pos:column="7">System</name><op:operator pos:line="62" pos:column="13">.</op:operator><name pos:line="62" pos:column="14">Drawing</name></name>;</using>
+<using pos:line="63" pos:column="1">using <name><name pos:line="63" pos:column="7">System</name><op:operator pos:line="63" pos:column="13">.</op:operator><name pos:line="63" pos:column="14">IO</name></name>;</using>
+<using pos:line="64" pos:column="1">using <name><name pos:line="64" pos:column="7">Fusion8</name><op:operator pos:line="64" pos:column="14">.</op:operator><name pos:line="64" pos:column="15">Cropper</name><op:operator pos:line="64" pos:column="22">.</op:operator><name pos:line="64" pos:column="23">Extensibility</name></name>;</using>
+<using pos:line="65" pos:column="1">using <name><name pos:line="65" pos:column="7">System</name><op:operator pos:line="65" pos:column="13">.</op:operator><name pos:line="65" pos:column="14">Windows</name><op:operator pos:line="65" pos:column="21">.</op:operator><name pos:line="65" pos:column="22">Forms</name></name>;</using>
+
+<cpp:endregion pos:line="67" pos:column="1">#<cpp:directive pos:line="67" pos:column="2">endregion</cpp:directive></cpp:endregion>
+
+<namespace pos:line="69" pos:column="1">namespace <name><name pos:line="69" pos:column="11">Fusion8</name><op:operator pos:line="69" pos:column="18">.</op:operator><name pos:line="69" pos:column="19">Cropper</name><op:operator pos:line="69" pos:column="26">.</op:operator><name pos:line="69" pos:column="27">Core</name></name>
+<block pos:line="70" pos:column="1">{
+	<comment type="line" pos:line="71" pos:column="9">/// &lt;summary&gt;</comment>
+	<comment type="line" pos:line="72" pos:column="9">/// Represents a class for managing the capturing and saving of screenshots.</comment>
+	<comment type="line" pos:line="73" pos:column="9">/// &lt;/summary&gt;</comment>
+	<class><specifier pos:line="74" pos:column="9">public</specifier> class <name pos:line="74" pos:column="22">ImageCapture</name> <super pos:line="74" pos:column="35">: <name pos:line="74" pos:column="37">Component</name>, <name pos:line="74" pos:column="48">IPersistableOutput</name></super>
+	<block pos:line="75" pos:column="9">{
+		<comment type="line" pos:line="76" pos:column="17">/// &lt;summary&gt;</comment>
+		<comment type="line" pos:line="77" pos:column="17">/// Retrieves a stream for saving an image.</comment>
+		<comment type="line" pos:line="78" pos:column="17">/// &lt;/summary&gt;</comment>
+		<comment type="line" pos:line="79" pos:column="17">/// &lt;param name="streamHandler"&gt;A &lt;see cref="StreamHandler"/&gt;Delegate containg the method to call </comment>
+		<comment type="line" pos:line="80" pos:column="17">/// when the stream is retrieved and the image to pass to the callback.&lt;/param&gt;</comment>
+		<comment type="line" pos:line="81" pos:column="17">/// &lt;param name="fileName"&gt;The image's file name.&lt;/param&gt;</comment>
+		<comment type="line" pos:line="82" pos:column="17">/// &lt;param name="image"&gt;The image to return to the callback method.&lt;/param&gt;</comment>
+		<function><type><specifier pos:line="83" pos:column="17">public</specifier> <name pos:line="83" pos:column="24">void</name></type> <name pos:line="83" pos:column="29">FetchOutputStream</name><parameter_list pos:line="83" pos:column="46">(<param><decl><type><name pos:line="83" pos:column="47">A</name></type> <name pos:line="83" pos:column="49">B</name></decl></param><op:operator pos:line="83" pos:column="50">,</op:operator> <param><decl><type><name pos:line="83" pos:column="52">string</name></type> <name pos:line="83" pos:column="59">fileName</name></decl></param><op:operator pos:line="83" pos:column="67">,</op:operator> <param><decl><type><name pos:line="83" pos:column="69">Image</name></type> <name pos:line="83" pos:column="75">image</name></decl></param>)</parameter_list>
+		<block pos:line="84" pos:column="17">{
+			<if pos:line="85" pos:column="25">if <condition pos:line="85" pos:column="28">(<expr><name pos:line="85" pos:column="29">a</name> <op:operator pos:line="85" pos:column="31">==</op:operator> <name pos:line="85" pos:column="34">null</name></expr>)</condition><then pos:line="85" pos:column="39">
+				<throw pos:line="86" pos:column="33">throw <expr><op:operator pos:line="86" pos:column="39">new</op:operator> <call><name pos:line="86" pos:column="43">ArgumentNullException</name><argument_list pos:line="86" pos:column="64">(<argument><expr><lit:literal type="string" pos:line="86" pos:column="65">"b"</lit:literal></expr></argument>)</argument_list></call></expr>;</throw></then></if>
+
+			<if pos:line="88" pos:column="25">if <condition pos:line="88" pos:column="28">(<expr><name pos:line="88" pos:column="29">fileName</name> <op:operator pos:line="88" pos:column="38">==</op:operator> <name pos:line="88" pos:column="41">null</name></expr>)</condition><then pos:line="88" pos:column="46">
+				<throw pos:line="89" pos:column="33">throw <expr><op:operator pos:line="89" pos:column="39">new</op:operator> <call><name pos:line="89" pos:column="43">ArgumentNullException</name><argument_list pos:line="89" pos:column="64">(<argument><expr><lit:literal type="string" pos:line="89" pos:column="65">"fileName"</lit:literal></expr></argument>)</argument_list></call></expr>;</throw></then></if>
+
+			<if pos:line="91" pos:column="25">if <condition pos:line="91" pos:column="28">(<expr><name pos:line="91" pos:column="29">image</name> <op:operator pos:line="91" pos:column="35">==</op:operator> <name pos:line="91" pos:column="38">null</name></expr>)</condition><then pos:line="91" pos:column="43">
+				<throw pos:line="92" pos:column="33">throw <expr><op:operator pos:line="92" pos:column="39">new</op:operator> <call><name pos:line="92" pos:column="43">ArgumentNullException</name><argument_list pos:line="92" pos:column="64">(<argument><expr><lit:literal type="string" pos:line="92" pos:column="65">"image"</lit:literal></expr></argument>)</argument_list></call></expr>;</throw></then></if>
+
+			<using pos:line="94" pos:column="25">using (a a = <name><name pos:line="94" pos:column="38">File</name><op:operator pos:line="94" pos:column="42">.</op:operator><name pos:line="94" pos:column="43">Open</name></name><parameter_list pos:line="94" pos:column="47">(<param><decl><type><name pos:line="94" pos:column="48">fileName</name></type></decl></param><op:operator pos:line="94" pos:column="56">,</op:operator> <param><decl><type><name><name pos:line="94" pos:column="58">FileMode</name><op:operator pos:line="94" pos:column="66">.</op:operator><name pos:line="94" pos:column="67">Create</name></name></type></decl></param>)</parameter_list></using>)</block>
+				<specifier pos:line="95" pos:column="33">a</specifier><parameter_list pos:line="95" pos:column="34">(<param><decl><type><name pos:line="95" pos:column="35">a</name></type></decl></param><op:operator pos:line="95" pos:column="36">,</op:operator> <param><decl><type><name pos:line="95" pos:column="38">image</name></type></decl></param>)</parameter_list>;</function>
+		}</block></class>
+	}</block></namespace>
+}
+</unit>

@@ -40,6 +40,10 @@
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
       <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>
+    <Reference Include="ABB.SrcML.VisualStudio.SrcMLService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SrcMLService.dll</HintPath>
+    </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>

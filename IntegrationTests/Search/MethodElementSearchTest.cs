@@ -127,5 +127,9 @@ namespace Sando.IntegrationTests.Search
             return "..\\..\\IntegrationTests\\TestFiles\\MethodElementTestFiles";
         }
 
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(1);
+        }
 	}
 }

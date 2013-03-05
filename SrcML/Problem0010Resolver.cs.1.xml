@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\TestFiles\NAMESWITHNUMBERSTESTFILES\Problem0010Resolver.cs" pos:tabs="8"><using pos:line="1" pos:column="1">using <name pos:line="1" pos:column="7">System</name>;</using>
+<using pos:line="2" pos:column="1">using <name><name pos:line="2" pos:column="7">System</name><op:operator pos:line="2" pos:column="13">.</op:operator><name pos:line="2" pos:column="14">Collections</name><op:operator pos:line="2" pos:column="25">.</op:operator><name pos:line="2" pos:column="26">Generic</name></name>;</using>
+<using pos:line="3" pos:column="1">using <name><name pos:line="3" pos:column="7">System</name><op:operator pos:line="3" pos:column="13">.</op:operator><name pos:line="3" pos:column="14">Linq</name></name>;</using>
+<using pos:line="4" pos:column="1">using <name><name pos:line="4" pos:column="7">System</name><op:operator pos:line="4" pos:column="13">.</op:operator><name pos:line="4" pos:column="14">Text</name></name>;</using>
+
+<namespace pos:line="6" pos:column="1">namespace <name pos:line="6" pos:column="11">Euler</name>
+<block pos:line="7" pos:column="1">{
+	<class><specifier pos:line="8" pos:column="9">public</specifier> class <name pos:line="8" pos:column="22">Problem0010Resolver</name> <super pos:line="8" pos:column="42">: <name pos:line="8" pos:column="44">IResolver</name></super>
+	<block pos:line="9" pos:column="9">{
+		<constructor><specifier pos:line="10" pos:column="17">public</specifier> <name pos:line="10" pos:column="24">Problem0010Resolver</name><parameter_list pos:line="10" pos:column="43">(<param><decl><type><name pos:line="10" pos:column="44">long</name></type> <name pos:line="10" pos:column="49">max</name></decl></param>)</parameter_list>
+		<block pos:line="11" pos:column="17">{
+			<expr_stmt><expr><name><name pos:line="12" pos:column="25">this</name><op:operator pos:line="12" pos:column="29">.</op:operator><name pos:line="12" pos:column="30">max</name></name> <op:operator pos:line="12" pos:column="34">=</op:operator> <name pos:line="12" pos:column="36">max</name></expr>;</expr_stmt>
+		}</block></constructor>
+
+		<function><type><specifier pos:line="15" pos:column="17">public</specifier> <name pos:line="15" pos:column="24">string</name></type> <name pos:line="15" pos:column="31">Resolve</name><parameter_list pos:line="15" pos:column="38">()</parameter_list>
+		<block pos:line="16" pos:column="17">{
+			<decl_stmt><decl><type><name pos:line="17" pos:column="25">var</name></type> <name pos:line="17" pos:column="29">primes</name> =<init pos:line="17" pos:column="37"> <expr><op:operator pos:line="17" pos:column="38">new</op:operator> <call><name><name pos:line="17" pos:column="42">List</name><argument_list pos:line="17" pos:column="46">&lt;<argument><name pos:line="17" pos:column="47">long</name></argument>&gt;</argument_list></name><argument_list pos:line="17" pos:column="52">()</argument_list></call></expr></init></decl>;</decl_stmt>
+			<expr_stmt><expr><call><name><name pos:line="18" pos:column="25">primes</name><op:operator pos:line="18" pos:column="31">.</op:operator><name pos:line="18" pos:column="32">Add</name></name><argument_list pos:line="18" pos:column="35">(<argument><expr><lit:literal type="number" pos:line="18" pos:column="36">2</lit:literal></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+			<decl_stmt><decl><type><name pos:line="19" pos:column="25">long</name></type> <name pos:line="19" pos:column="30">nextPrime</name> =<init pos:line="19" pos:column="41"> <expr><lit:literal type="number" pos:line="19" pos:column="42">3</lit:literal></expr></init></decl>;</decl_stmt>
+			<decl_stmt><decl><type><name pos:line="20" pos:column="25">long</name></type> <name pos:line="20" pos:column="30">result</name> =<init pos:line="20" pos:column="38"> <expr><lit:literal type="number" pos:line="20" pos:column="39">2</lit:literal></expr></init></decl>;</decl_stmt>
+			<while pos:line="21" pos:column="25">while<condition pos:line="21" pos:column="30">(<expr><name pos:line="21" pos:column="31">nextPrime</name> <op:operator pos:line="21" pos:column="41">&lt;</op:operator> <name pos:line="21" pos:column="43">max</name></expr>)</condition>
+			<block pos:line="22" pos:column="25">{
+				<decl_stmt><decl><type><name pos:line="23" pos:column="33">bool</name></type> <name pos:line="23" pos:column="38">primeFound</name> =<init pos:line="23" pos:column="50"> <expr><lit:literal type="boolean" pos:line="23" pos:column="51">false</lit:literal></expr></init></decl>;</decl_stmt>
+				<decl_stmt><decl><type><name pos:line="24" pos:column="33">bool</name></type> <name pos:line="24" pos:column="38">notPrime</name> =<init pos:line="24" pos:column="48"> <expr><lit:literal type="boolean" pos:line="24" pos:column="49">false</lit:literal></expr></init></decl>;</decl_stmt>
+				<while pos:line="25" pos:column="33">while<condition pos:line="25" pos:column="38">(<expr><op:operator pos:line="25" pos:column="39">!</op:operator><name pos:line="25" pos:column="40">primeFound</name> <op:operator pos:line="25" pos:column="51">&amp;&amp;</op:operator> <name pos:line="25" pos:column="54">nextPrime</name> <op:operator pos:line="25" pos:column="64">&lt;</op:operator> <name pos:line="25" pos:column="66">max</name></expr>)</condition>
+				<block pos:line="26" pos:column="33">{
+					<decl_stmt><decl><type><name pos:line="27" pos:column="41">long</name></type> <name pos:line="27" pos:column="46">maxDivisor</name> =<init pos:line="27" pos:column="58"> <expr><op:operator pos:line="27" pos:column="59">(</op:operator><name pos:line="27" pos:column="60">long</name><op:operator pos:line="27" pos:column="64">)</op:operator><call><name><name pos:line="27" pos:column="65">Math</name><op:operator pos:line="27" pos:column="69">.</op:operator><name pos:line="27" pos:column="70">Floor</name></name><argument_list pos:line="27" pos:column="75">(<argument><expr><call><name><name pos:line="27" pos:column="76">Math</name><op:operator pos:line="27" pos:column="80">.</op:operator><name pos:line="27" pos:column="81">Sqrt</name></name><argument_list pos:line="27" pos:column="85">(<argument><expr><name pos:line="27" pos:column="86">nextPrime</name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+					<for pos:line="28" pos:column="41">for(<init><decl><type><name pos:line="28" pos:column="45">int</name></type> <name pos:line="28" pos:column="49">j</name> =<init pos:line="28" pos:column="52"> <expr><lit:literal type="number" pos:line="28" pos:column="53">0</lit:literal></expr></init></decl>;</init> <condition><expr><name><name pos:line="28" pos:column="56">primes</name><index pos:line="28" pos:column="62">[<expr><name pos:line="28" pos:column="63">j</name></expr>]</index></name> <op:operator pos:line="28" pos:column="66">&lt;=</op:operator> <name pos:line="28" pos:column="69">maxDivisor</name></expr>;</condition> <incr><expr><op:operator pos:line="28" pos:column="81">++</op:operator><name pos:line="28" pos:column="83">j</name></expr></incr>)
+					<block pos:line="29" pos:column="41">{
+						<if pos:line="30" pos:column="49">if<condition pos:line="30" pos:column="51">(<expr><name pos:line="30" pos:column="52">nextPrime</name> <op:operator pos:line="30" pos:column="62">%</op:operator> <name><name pos:line="30" pos:column="64">primes</name><index pos:line="30" pos:column="70">[<expr><name pos:line="30" pos:column="71">j</name></expr>]</index></name> <op:operator pos:line="30" pos:column="74">==</op:operator> <lit:literal type="number" pos:line="30" pos:column="77">0</lit:literal></expr>)</condition><then pos:line="30" pos:column="79">
+						<block pos:line="31" pos:column="49">{
+							<expr_stmt><expr><name pos:line="32" pos:column="57">notPrime</name> <op:operator pos:line="32" pos:column="66">=</op:operator> <lit:literal type="boolean" pos:line="32" pos:column="68">true</lit:literal></expr>;</expr_stmt>
+							<break pos:line="33" pos:column="57">break;</break>
+						}</block></then></if>
+					}</block></for>
+					<if pos:line="36" pos:column="41">if<condition pos:line="36" pos:column="43">(<expr><op:operator pos:line="36" pos:column="44">!</op:operator><name pos:line="36" pos:column="45">notPrime</name></expr>)</condition><then pos:line="36" pos:column="54">
+					<block pos:line="37" pos:column="41">{
+						<expr_stmt><expr><name pos:line="38" pos:column="49">primeFound</name> <op:operator pos:line="38" pos:column="60">=</op:operator> <lit:literal type="boolean" pos:line="38" pos:column="62">true</lit:literal></expr>;</expr_stmt>
+						<expr_stmt><expr><call><name><name pos:line="39" pos:column="49">primes</name><op:operator pos:line="39" pos:column="55">.</op:operator><name pos:line="39" pos:column="56">Add</name></name><argument_list pos:line="39" pos:column="59">(<argument><expr><name pos:line="39" pos:column="60">nextPrime</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+						<expr_stmt><expr><name pos:line="40" pos:column="49">result</name> <op:operator pos:line="40" pos:column="56">+=</op:operator> <name pos:line="40" pos:column="59">nextPrime</name></expr>;</expr_stmt>
+						<expr_stmt><expr><name pos:line="41" pos:column="49">nextPrime</name> <op:operator pos:line="41" pos:column="59">+=</op:operator> <lit:literal type="number" pos:line="41" pos:column="62">2</lit:literal></expr>;</expr_stmt>
+					}</block></then>
+					<else pos:line="43" pos:column="41">else
+					<block pos:line="44" pos:column="41">{
+						<expr_stmt><expr><name pos:line="45" pos:column="49">nextPrime</name> <op:operator pos:line="45" pos:column="59">+=</op:operator> <lit:literal type="number" pos:line="45" pos:column="62">2</lit:literal></expr>;</expr_stmt>
+						<expr_stmt><expr><name pos:line="46" pos:column="49">notPrime</name> <op:operator pos:line="46" pos:column="58">=</op:operator> <lit:literal type="boolean" pos:line="46" pos:column="60">false</lit:literal></expr>;</expr_stmt>
+					}</block></else></if>
+				}</block></while>
+			}</block></while>
+			<return pos:line="50" pos:column="25">return <expr><call><name><name pos:line="50" pos:column="32">result</name><op:operator pos:line="50" pos:column="38">.</op:operator><name pos:line="50" pos:column="39">ToString</name></name><argument_list pos:line="50" pos:column="47">()</argument_list></call></expr>;</return>
+		}</block></function>
+
+		<decl_stmt><decl><type><specifier pos:line="53" pos:column="17">private</specifier> <name pos:line="53" pos:column="25">long</name></type> <name pos:line="53" pos:column="30">max</name></decl>;</decl_stmt>
+	}</block></class>
+}</block></namespace>
+</unit>

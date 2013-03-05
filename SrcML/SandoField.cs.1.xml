@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Indexer\Indexer\Documents\SandoField.cs" pos:tabs="8"><namespace pos:line="1" pos:column="1">namespace <name><name pos:line="1" pos:column="11">Sando</name><op:operator pos:line="1" pos:column="16">.</op:operator><name pos:line="1" pos:column="17">Indexer</name><op:operator pos:line="1" pos:column="24">.</op:operator><name pos:line="1" pos:column="25">Documents</name></name>
+<block pos:line="2" pos:column="1">{    
+	<enum><specifier pos:line="3" pos:column="9">public</specifier> enum <name pos:line="3" pos:column="21">SandoField</name>
+	<block pos:line="4" pos:column="9">{
+		<expr><name pos:line="5" pos:column="17">AccessLevel</name></expr><op:operator pos:line="5" pos:column="28">,</op:operator>
+		<expr><name pos:line="6" pos:column="17">Arguments</name></expr><op:operator pos:line="6" pos:column="26">,</op:operator>
+		<expr><name pos:line="7" pos:column="17">Body</name></expr><op:operator pos:line="7" pos:column="21">,</op:operator>
+		<expr><name pos:line="8" pos:column="17">ClassId</name></expr><op:operator pos:line="8" pos:column="24">,</op:operator>
+		<expr><name pos:line="9" pos:column="17">ClassName</name></expr><op:operator pos:line="9" pos:column="26">,</op:operator>
+		<expr><name pos:line="10" pos:column="17">DataType</name></expr><op:operator pos:line="10" pos:column="25">,</op:operator>
+		<expr><name pos:line="11" pos:column="17">DefinitionLineNumber</name></expr><op:operator pos:line="11" pos:column="37">,</op:operator>
+		<expr><name pos:line="12" pos:column="17">DocumentedElementId</name></expr><op:operator pos:line="12" pos:column="36">,</op:operator>
+		<expr><name pos:line="13" pos:column="17">ExtendedClasses</name></expr><op:operator pos:line="13" pos:column="32">,</op:operator>
+        <expr><name pos:line="14" pos:column="9">FileExtension</name></expr><op:operator pos:line="14" pos:column="22">,</op:operator>
+		<expr><name pos:line="15" pos:column="17">FullFilePath</name></expr><op:operator pos:line="15" pos:column="29">,</op:operator>
+		<expr><name pos:line="16" pos:column="17">Id</name></expr><op:operator pos:line="16" pos:column="19">,</op:operator>
+		<expr><name pos:line="17" pos:column="17">ImplementedInterfaces</name></expr><op:operator pos:line="17" pos:column="38">,</op:operator>
+		<expr><name pos:line="18" pos:column="17">InitialValue</name></expr><op:operator pos:line="18" pos:column="29">,</op:operator>
+		<expr><name pos:line="19" pos:column="17">IsConstructor</name></expr><op:operator pos:line="19" pos:column="30">,</op:operator>
+		<expr><name pos:line="20" pos:column="17">Name</name></expr><op:operator pos:line="20" pos:column="21">,</op:operator>
+		<expr><name pos:line="21" pos:column="17">Namespace</name></expr><op:operator pos:line="21" pos:column="26">,</op:operator>
+		<expr><name pos:line="22" pos:column="17">ProgramElementType</name></expr><op:operator pos:line="22" pos:column="35">,</op:operator>
+		<expr><name pos:line="23" pos:column="17">ReturnType</name></expr><op:operator pos:line="23" pos:column="27">,</op:operator>
+		<expr><name pos:line="24" pos:column="17">Source</name></expr><op:operator pos:line="24" pos:column="23">,</op:operator>
+		<expr><name pos:line="25" pos:column="17">Modifiers</name></expr>
+	}</block></enum>
+}</block></namespace>
+</unit>

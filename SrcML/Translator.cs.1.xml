@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Translation\Translation\Translator.cs" pos:tabs="8"><namespace pos:line="1" pos:column="1">namespace <name><name pos:line="1" pos:column="11">Sando</name><op:operator pos:line="1" pos:column="16">.</op:operator><name pos:line="1" pos:column="17">Translation</name></name>
+<block pos:line="2" pos:column="1">{
+	<class><specifier pos:line="3" pos:column="9">public</specifier> <specifier pos:line="3" pos:column="16">static</specifier> class <name pos:line="3" pos:column="29">Translator</name>
+	<block pos:line="4" pos:column="9">{
+		<function><type><specifier pos:line="5" pos:column="17">public</specifier> <specifier pos:line="5" pos:column="24">static</specifier> <name pos:line="5" pos:column="31">string</name></type> <name pos:line="5" pos:column="38">GetTranslation</name><parameter_list pos:line="5" pos:column="52">(<param><decl><type><name pos:line="5" pos:column="53">TranslationCode</name></type> <name pos:line="5" pos:column="69">translationCode</name></decl></param>)</parameter_list>
+		<block pos:line="6" pos:column="17">{
+			<return pos:line="7" pos:column="25">return <expr><call><name><name pos:line="7" pos:column="32">Translations</name><op:operator pos:line="7" pos:column="44">.</op:operator><name pos:line="7" pos:column="45">ResourceManager</name><op:operator pos:line="7" pos:column="60">.</op:operator><name pos:line="7" pos:column="61">GetString</name></name><argument_list pos:line="7" pos:column="70">(<argument><expr><call><name><name pos:line="7" pos:column="71">translationCode</name><op:operator pos:line="7" pos:column="86">.</op:operator><name pos:line="7" pos:column="87">ToString</name></name><argument_list pos:line="7" pos:column="95">()</argument_list></call></expr></argument>)</argument_list></call></expr>;</return>
+		}</block></function>
+	}</block></class>
+}</block></namespace>
+</unit>

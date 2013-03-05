@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Translation\Translation\TranslationCode.cs" pos:tabs="8"><namespace pos:line="1" pos:column="1">namespace <name><name pos:line="1" pos:column="11">Sando</name><op:operator pos:line="1" pos:column="16">.</op:operator><name pos:line="1" pos:column="17">Translation</name></name>
+<block pos:line="2" pos:column="1">{
+	<enum><specifier pos:line="3" pos:column="9">public</specifier> enum <name pos:line="3" pos:column="21">TranslationCode</name>
+	<block pos:line="4" pos:column="9">{
+		<expr><name pos:line="5" pos:column="17">TestResource</name></expr><op:operator pos:line="5" pos:column="29">,</op:operator>
+
+		<comment type="line" pos:line="7" pos:column="17">//Exceptions</comment>
+			<comment type="line" pos:line="8" pos:column="25">//General</comment>
+			<expr><name pos:line="9" pos:column="25">Exception_General_IOException</name></expr><op:operator pos:line="9" pos:column="54">,</op:operator>
+			<expr><name pos:line="10" pos:column="25">Exception_General_UnrecognizedEnumValue</name></expr><op:operator pos:line="10" pos:column="64">,</op:operator>
+			<comment type="line" pos:line="11" pos:column="25">//Indexer</comment>
+			<expr><name pos:line="12" pos:column="25">Exception_Indexer_LuceneIndexIsCorrupt</name></expr><op:operator pos:line="12" pos:column="63">,</op:operator>
+			<expr><name pos:line="13" pos:column="25">Exception_Indexer_LuceneIndexAlreadyOpened</name></expr><op:operator pos:line="13" pos:column="67">,</op:operator>
+			<expr><name pos:line="14" pos:column="25">SearchLabel</name></expr><op:operator pos:line="14" pos:column="36">,</op:operator>
+            <expr><name pos:line="15" pos:column="13">ExpandResultsLabel</name></expr><op:operator pos:line="15" pos:column="31">,</op:operator>
+            <expr><name pos:line="16" pos:column="13">CollapseResultsLabel</name></expr><op:operator pos:line="16" pos:column="33">,</op:operator>
+			<expr><name pos:line="17" pos:column="25">ComboBoxItemCurrentDocument</name></expr><op:operator pos:line="17" pos:column="52">,</op:operator>
+			<expr><name pos:line="18" pos:column="25">ComboBoxItemEntireSolution</name></expr>
+	}</block></enum>
+}</block></namespace>
+</unit>

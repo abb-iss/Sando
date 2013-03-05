@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Configuration\Configuration.UnitTests\Configuration\ConfigurationTest.cs" pos:tabs="8"><using pos:line="1" pos:column="1">using <name><name pos:line="1" pos:column="7">System</name><op:operator pos:line="1" pos:column="13">.</op:operator><name pos:line="1" pos:column="14">Configuration</name></name>;</using>
+<using pos:line="2" pos:column="1">using <name><name pos:line="2" pos:column="7">NUnit</name><op:operator pos:line="2" pos:column="12">.</op:operator><name pos:line="2" pos:column="13">Framework</name></name>;</using>
+<using pos:line="3" pos:column="1">using <name><name pos:line="3" pos:column="7">Sando</name><op:operator pos:line="3" pos:column="12">.</op:operator><name pos:line="3" pos:column="13">Configuration</name></name>;</using>
+
+<namespace pos:line="5" pos:column="1">namespace <name><name pos:line="5" pos:column="11">Sando</name><op:operator pos:line="5" pos:column="16">.</op:operator><name pos:line="5" pos:column="17">Configuration</name><op:operator pos:line="5" pos:column="30">.</op:operator><name pos:line="5" pos:column="31">UnitTests</name></name>
+<block pos:line="6" pos:column="1">{
+	<class><attribute pos:line="7" pos:column="9">[<expr><name pos:line="7" pos:column="10">TestFixture</name></expr>]</attribute>
+	<specifier pos:line="8" pos:column="9">public</specifier> class <name pos:line="8" pos:column="22">ConfigurationTest</name>
+	<block pos:line="9" pos:column="9">{
+		<function><type><attribute pos:line="10" pos:column="17">[<expr><name pos:line="10" pos:column="18">Test</name></expr>]</attribute>
+		<specifier pos:line="11" pos:column="17">public</specifier> <name pos:line="11" pos:column="24">void</name></type> <name pos:line="11" pos:column="29">GetValueTest</name><parameter_list pos:line="11" pos:column="41">()</parameter_list>
+		<block pos:line="12" pos:column="17">{
+			<decl_stmt><decl><type><name pos:line="13" pos:column="25">string</name></type> <name pos:line="13" pos:column="32">settingName</name> =<init pos:line="13" pos:column="45"> <expr><lit:literal type="string" pos:line="13" pos:column="46">"testSetting"</lit:literal></expr></init></decl>;</decl_stmt>
+			<decl_stmt><decl><type><name pos:line="14" pos:column="25">string</name></type> <name pos:line="14" pos:column="32">settingValue</name> =<init pos:line="14" pos:column="46"> <expr><lit:literal type="string" pos:line="14" pos:column="47">"testSettingValue"</lit:literal></expr></init></decl>;</decl_stmt>
+			<expr_stmt><expr><name><name pos:line="15" pos:column="25">ConfigurationManager</name><op:operator pos:line="15" pos:column="45">.</op:operator><name pos:line="15" pos:column="46">AppSettings</name><index pos:line="15" pos:column="57">[<expr><name pos:line="15" pos:column="58">settingName</name></expr>]</index></name> <op:operator pos:line="15" pos:column="71">=</op:operator> <name pos:line="15" pos:column="73">settingValue</name></expr>;</expr_stmt>
+			<expr_stmt><expr><call><name><name pos:line="16" pos:column="25">Assert</name><op:operator pos:line="16" pos:column="31">.</op:operator><name pos:line="16" pos:column="32">True</name></name><argument_list pos:line="16" pos:column="36">(<argument><expr><call><name><name pos:line="16" pos:column="37">Configuration</name><op:operator pos:line="16" pos:column="50">.</op:operator><name pos:line="16" pos:column="51">GetValue</name></name><argument_list pos:line="16" pos:column="59">(<argument><expr><name pos:line="16" pos:column="60">settingName</name></expr></argument>)</argument_list></call> <op:operator pos:line="16" pos:column="73">==</op:operator> <name pos:line="16" pos:column="76">settingValue</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+		}</block></function>
+	}</block></class>
+}</block></namespace>
+</unit>

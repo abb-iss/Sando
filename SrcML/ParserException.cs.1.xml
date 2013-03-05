@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Parser\Parser\ParserException.cs" pos:tabs="8"><using pos:line="1" pos:column="1">using <name pos:line="1" pos:column="7">System</name>;</using>
+<using pos:line="2" pos:column="1">using <name><name pos:line="2" pos:column="7">Sando</name><op:operator pos:line="2" pos:column="12">.</op:operator><name pos:line="2" pos:column="13">Core</name><op:operator pos:line="2" pos:column="17">.</op:operator><name pos:line="2" pos:column="18">Exceptions</name></name>;</using>
+<using pos:line="3" pos:column="1">using <name><name pos:line="3" pos:column="7">Sando</name><op:operator pos:line="3" pos:column="12">.</op:operator><name pos:line="3" pos:column="13">Translation</name></name>;</using>
+
+<namespace pos:line="5" pos:column="1">namespace <name><name pos:line="5" pos:column="11">Sando</name><op:operator pos:line="5" pos:column="16">.</op:operator><name pos:line="5" pos:column="17">Parser</name></name>
+<block pos:line="6" pos:column="1">{
+	<class><specifier pos:line="7" pos:column="9">public</specifier> class <name pos:line="7" pos:column="22">ParserException</name> <super pos:line="7" pos:column="38">: <name pos:line="7" pos:column="40">SandoException</name></super>
+	<block pos:line="8" pos:column="9">{
+		<constructor><specifier pos:line="9" pos:column="17">public</specifier> <name pos:line="9" pos:column="24">ParserException</name><parameter_list pos:line="9" pos:column="39">(<param><decl><type><name pos:line="9" pos:column="40">TranslationCode</name></type> <name pos:line="9" pos:column="56">translationCode</name></decl></param><op:operator pos:line="9" pos:column="71">,</op:operator> <param><decl><type><name pos:line="9" pos:column="73">String</name></type> <name pos:line="9" pos:column="80">exceptionMessageFormatArg</name></decl></param>)</parameter_list>
+			<member_list pos:line="10" pos:column="25">: <call><name pos:line="10" pos:column="27">base</name><argument_list pos:line="10" pos:column="31">(<argument><expr><name pos:line="10" pos:column="32">translationCode</name></expr></argument><op:operator pos:line="10" pos:column="47">,</op:operator> <argument><expr><name pos:line="10" pos:column="49">null</name></expr></argument><op:operator pos:line="10" pos:column="53">,</op:operator> <argument><expr><name pos:line="10" pos:column="55">exceptionMessageFormatArg</name></expr></argument>)</argument_list></call>
+		</member_list><block pos:line="11" pos:column="17">{
+		}</block></constructor>
+	}</block></class>
+}</block></namespace>
+</unit>

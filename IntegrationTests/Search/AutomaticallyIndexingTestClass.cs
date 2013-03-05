@@ -19,10 +19,11 @@ using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using System.Threading;
 using Sando.Core.Tools;
+using ABB.SrcML.VisualStudio.SrcMLService;
 
 namespace Sando.IntegrationTests.Search
 {
-    public class AutomaticallyIndexingTestClass
+    public class AutomaticallyIndexingTestClass : ISrcMLGlobalService
     {
 
         [TestFixtureSetUp]
@@ -43,25 +44,50 @@ namespace Sando.IntegrationTests.Search
 
         private void IndexSpecifiedFiles(string filesInThisDirectory, string indexDirName)
         {
+            filesInThisDirectory = Path.GetFullPath(filesInThisDirectory);
             CreateSystemWideDefaults(indexDirName);
             CreateKey(filesInThisDirectory);
             CreateIndexer();
-////            SolutionMonitorFactory.CreateMonitor();
-            CreateGenerator();
-            CreateArchive(filesInThisDirectory);
-            AddArchiveListeners();
+            CreateArchive(filesInThisDirectory);            
             CreateSwum();
+            AddFilesToIndex(filesInThisDirectory);      
+            WaitForCommit();
+        }
 
-            //start the monitoring and wait for the initial indexing to finish before preceeding
-////            _srcMLArchive.StartWatching();
-            while (ServiceLocator.Resolve<InitialIndexingWatcher>().IsInitialIndexingInProgress())
-            {
-                Thread.Sleep(500);
-            }
+        private void WaitForCommit()
+        {
             if (GetTimeToCommit() != null)
             {
-                Thread.Sleep(Convert.ToInt32(GetTimeToCommit().GetValueOrDefault().TotalMilliseconds));
+                Thread.Sleep(Convert.ToInt32(GetTimeToCommit().GetValueOrDefault().TotalMilliseconds * 2));
             }
+        }
+
+        private void AddFilesToIndex(string filesInThisDirectory)
+        {
+            _handler = new SrcMLArchiveEventsHandlers();
+            var files = GetFileList(filesInThisDirectory);
+            foreach (var file in files)
+            {
+                if (Path.GetExtension(Path.GetFullPath(file)).Equals(".cs") ||
+                    Path.GetExtension(Path.GetFullPath(file)).Equals(".cpp") ||
+                    Path.GetExtension(Path.GetFullPath(file)).Equals(".c") ||
+                    Path.GetExtension(Path.GetFullPath(file)).Equals(".h") ||
+                    Path.GetExtension(Path.GetFullPath(file)).Equals(".cxx")
+                    )
+                    _handler.SourceFileChanged(this, new FileEventRaisedArgs(FileEventType.FileAdded, file));
+            }
+        }
+
+        private List<string> GetFileList(string filesInThisDirectory, List<string> incoming = null)
+        {
+            if (incoming == null)
+                incoming = new List<string>();
+            incoming.AddRange(Directory.EnumerateFiles(filesInThisDirectory));
+            var dirs = new List<string>();
+            dirs.AddRange(Directory.EnumerateDirectories(filesInThisDirectory));
+            foreach (var dir in dirs)
+                GetFileList(dir, incoming);
+            return incoming;
         }
 
         private void CreateSwum()
@@ -70,40 +96,17 @@ namespace Sando.IntegrationTests.Search
             SwumManager.Instance.Archive = _srcMLArchive;
         }
 
-        private void AddArchiveListeners()
-        {
-            var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-////            _srcMLArchive.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-////            _srcMLArchive.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
-////            _srcMLArchive.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
-        }
 
         private void CreateArchive(string filesInThisDirectory)
         {
             var srcMlArchiveFolder = Path.Combine(_indexPath, "archive");
+            var srcMLFolder = Path.Combine(".", "SrcML", "CSharp");
             Directory.CreateDirectory(srcMlArchiveFolder);
-            var fakeFiles = new StaticFileList(new[] {"C:\\Temp\\Temp.txt"});
-            var filesToWatch = new StaticFileList(Path.GetFullPath(filesInThisDirectory));
-
-            //FILTERING LIST TEMPORARILY
-            //DUE TO SRCML.NET BUG
-            var list = filesToWatch.GetMonitoredFiles(null);
-            var filteredList = new List<string>();
-////            var fake = new SrcMLArchive(fakeFiles, srcMlArchiveFolder, _generator);
-            foreach (var file in list)
-            {
-////                if (fake.IsValidFileExtension(file))
-                    filteredList.Add(file);
-            }
-
-////            _srcMLArchive = new SrcMLArchive(new StaticFileList(filteredList.ToArray()), srcMlArchiveFolder, _generator);
+            var generator = new SrcMLGenerator(Path.GetFullPath(srcMLFolder));
+            _srcMLArchive = new SrcMLArchive(Path.GetFullPath(filesInThisDirectory),  false, generator);
         }
 
-        private void CreateGenerator()
-        {
-            string src2SrcmlDir = Path.Combine(".", "LIBS", "SrcML");
-            _generator = new SrcMLGenerator(src2SrcmlDir);
-        }
+
 
         private void CreateIndexer()
         {
@@ -149,7 +152,7 @@ namespace Sando.IntegrationTests.Search
 
         private string _indexPath;
         private SrcMLArchive _srcMLArchive;
-        private SrcMLGenerator _generator;
+        private SrcMLArchiveEventsHandlers _handler;
 
         protected List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
@@ -167,6 +170,41 @@ namespace Sando.IntegrationTests.Search
                           rank);
 
             return codeSearchResults;
+        }
+
+        public System.Xml.Linq.XElement GetXElementForSourceFile(string sourceFilePath)
+        {
+            return _srcMLArchive.GenerateXmlAndXElementForSource(sourceFilePath);
+        }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+        public SrcMLArchive GetSrcMLArchive()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public event EventHandler<EventArgs> MonitoringStopped;
+
+        public event EventHandler<FileEventRaisedArgs> SourceFileChanged;
+
+        public void StartMonitoring(string srcMlArchiveDirectory, bool useExistingSrcML, string srcMLBinaryDirectory)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StartMonitoring()
+        {
+            throw new NotImplementedException();
+        }
+
+        public event EventHandler<EventArgs> StartupCompleted;
+
+
+        public void StopMonitoring()
+        {
+            throw new NotImplementedException();
         }
     }
 }

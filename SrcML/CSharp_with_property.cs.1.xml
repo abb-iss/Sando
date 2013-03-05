@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\Recommender\Recommender.UnitTests\TestFiles\CSharp_with_property.cs" pos:tabs="8"><namespace pos:line="1" pos:column="1">namespace <name pos:line="1" pos:column="11">Test</name> <block pos:line="1" pos:column="16">{
+	<class><specifier pos:line="2" pos:column="9">public</specifier> class <name pos:line="2" pos:column="22">TestClass</name> <block pos:line="2" pos:column="32">{
+		<decl_stmt><decl><type><specifier pos:line="3" pos:column="17">private</specifier> <name pos:line="3" pos:column="25">int</name></type> <name pos:line="3" pos:column="29">foo</name></decl>;</decl_stmt>
+		
+		<constructor><specifier pos:line="5" pos:column="17">public</specifier> <name pos:line="5" pos:column="24">TestClass</name><parameter_list pos:line="5" pos:column="33">()</parameter_list> <block pos:line="5" pos:column="36">{
+			<expr_stmt><expr><name pos:line="6" pos:column="25">foo</name> <op:operator pos:line="6" pos:column="29">=</op:operator> <lit:literal type="number" pos:line="6" pos:column="31">42</lit:literal></expr>;</expr_stmt>
+		}</block></constructor>
+		
+		<decl_stmt><decl><type><specifier pos:line="9" pos:column="17">public</specifier> <name pos:line="9" pos:column="24">string</name></type> <name pos:line="9" pos:column="31">Bar</name> <block pos:line="9" pos:column="35">{<function><name pos:line="9" pos:column="36">get</name>;</function> <function><name pos:line="9" pos:column="41">set</name>;</function>}</block></decl></decl_stmt>
+		
+		<function><type><specifier pos:line="11" pos:column="17">public</specifier> <name pos:line="11" pos:column="24">void</name></type> <name pos:line="11" pos:column="29">DoStuff</name><parameter_list pos:line="11" pos:column="36">(<param><decl><type><name pos:line="11" pos:column="37">string</name></type> <name pos:line="11" pos:column="44">theStuff</name></decl></param><op:operator pos:line="11" pos:column="52">,</op:operator> <param><decl><type><name pos:line="11" pos:column="54">int</name></type> <name pos:line="11" pos:column="58">count</name></decl></param>)</parameter_list> <block pos:line="11" pos:column="65">{
+			<expr_stmt><expr><call><name><name pos:line="12" pos:column="25">System</name><op:operator pos:line="12" pos:column="31">.</op:operator><name pos:line="12" pos:column="32">Console</name><op:operator pos:line="12" pos:column="39">.</op:operator><name pos:line="12" pos:column="40">WriteLine</name></name><argument_list pos:line="12" pos:column="49">(<argument><expr><name pos:line="12" pos:column="50">theStuff</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+		}</block></function>
+		
+		<function><type><specifier pos:line="15" pos:column="17">private</specifier> <name pos:line="15" pos:column="25">int</name></type> <name pos:line="15" pos:column="29">PrivateStuff</name><parameter_list pos:line="15" pos:column="41">(<param><decl><type><name pos:line="15" pos:column="42">int</name></type> <name pos:line="15" pos:column="46">count</name></decl></param>)</parameter_list> <block pos:line="15" pos:column="53">{
+			<for pos:line="16" pos:column="25">for(<init><decl><type><name pos:line="16" pos:column="29">int</name></type> <name pos:line="16" pos:column="33">i</name> =<init pos:line="16" pos:column="36"> <expr><lit:literal type="number" pos:line="16" pos:column="37">0</lit:literal></expr></init></decl>;</init> <condition><expr><name pos:line="16" pos:column="40">i</name> <op:operator pos:line="16" pos:column="42">&lt;</op:operator> <name pos:line="16" pos:column="44">count</name></expr>;</condition> <incr><expr><name pos:line="16" pos:column="51">i</name><op:operator pos:line="16" pos:column="52">++</op:operator></expr></incr>) <block pos:line="16" pos:column="56">{
+				<expr_stmt><expr><call><name><name pos:line="17" pos:column="33">System</name><op:operator pos:line="17" pos:column="39">.</op:operator><name pos:line="17" pos:column="40">Console</name><op:operator pos:line="17" pos:column="47">.</op:operator><name pos:line="17" pos:column="48">Beep</name></name><argument_list pos:line="17" pos:column="52">()</argument_list></call></expr>;</expr_stmt>
+			}</block></for>
+			<return pos:line="19" pos:column="25">return <expr><lit:literal type="number" pos:line="19" pos:column="32">0</lit:literal></expr>;</return>
+		}</block></function>
+	}</block></class>
+}</block></namespace>
+</unit>

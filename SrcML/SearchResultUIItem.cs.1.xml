@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\UI\UI\Model\SearchResultUIItem.cs" pos:tabs="8"><using pos:line="1" pos:column="1">using <name pos:line="1" pos:column="7">System</name>;</using>
+<using pos:line="2" pos:column="1">using <name><name pos:line="2" pos:column="7">System</name><op:operator pos:line="2" pos:column="13">.</op:operator><name pos:line="2" pos:column="14">Reflection</name></name>;</using>
+<using pos:line="3" pos:column="1">using <name><name pos:line="3" pos:column="7">System</name><op:operator pos:line="3" pos:column="13">.</op:operator><name pos:line="3" pos:column="14">Windows</name></name>;</using>
+<using pos:line="4" pos:column="1">using <name><name pos:line="4" pos:column="7">System</name><op:operator pos:line="4" pos:column="13">.</op:operator><name pos:line="4" pos:column="14">Windows</name><op:operator pos:line="4" pos:column="21">.</op:operator><name pos:line="4" pos:column="22">Media</name><op:operator pos:line="4" pos:column="27">.</op:operator><name pos:line="4" pos:column="28">Imaging</name></name>;</using>
+<using pos:line="5" pos:column="1">using <name><name pos:line="5" pos:column="7">Sando</name><op:operator pos:line="5" pos:column="12">.</op:operator><name pos:line="5" pos:column="13">ExtensionContracts</name><op:operator pos:line="5" pos:column="31">.</op:operator><name pos:line="5" pos:column="32">ResultsReordererContracts</name></name>;</using>
+
+<namespace pos:line="7" pos:column="1">namespace <name><name pos:line="7" pos:column="11">Sando</name><op:operator pos:line="7" pos:column="16">.</op:operator><name pos:line="7" pos:column="17">UI</name><op:operator pos:line="7" pos:column="19">.</op:operator><name pos:line="7" pos:column="20">Model</name></name>
+<block pos:line="8" pos:column="1">{
+	<class><specifier pos:line="9" pos:column="9">public</specifier> class <name pos:line="9" pos:column="22">SearchResultUIItem</name>
+	<block pos:line="10" pos:column="9">{
+		<cpp:region pos:line="11" pos:column="17">#<cpp:directive pos:line="11" pos:column="18">region</cpp:directive> Properties Definitions</cpp:region>
+
+		<decl_stmt><decl><type><specifier pos:line="13" pos:column="17">public</specifier> <name pos:line="13" pos:column="24">string</name></type> <name pos:line="13" pos:column="31">Name</name>
+		<block pos:line="14" pos:column="17">{
+			<function><name pos:line="15" pos:column="25">get</name>
+			<block pos:line="16" pos:column="25">{
+				<return pos:line="17" pos:column="33">return <expr><name><name pos:line="17" pos:column="40">CodeSearchResult</name><op:operator pos:line="17" pos:column="56">.</op:operator><name pos:line="17" pos:column="57">Name</name></name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="21" pos:column="17">public</specifier> <name pos:line="21" pos:column="24">string</name></type> <name pos:line="21" pos:column="31">FileName</name>
+		<block pos:line="22" pos:column="17">{
+			<function><name pos:line="23" pos:column="25">get</name>
+			<block pos:line="24" pos:column="25">{
+				<return pos:line="25" pos:column="33">return <expr><name><name pos:line="25" pos:column="40">CodeSearchResult</name><op:operator pos:line="25" pos:column="56">.</op:operator><name pos:line="25" pos:column="57">FileName</name></name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="29" pos:column="17">public</specifier> <name pos:line="29" pos:column="24">string</name></type> <name pos:line="29" pos:column="31">Parent</name>
+		<block pos:line="30" pos:column="17">{
+			<function><name pos:line="31" pos:column="25">get</name>
+			<block pos:line="32" pos:column="25">{
+				<return pos:line="33" pos:column="33">return <expr><name><name pos:line="33" pos:column="40">CodeSearchResult</name><op:operator pos:line="33" pos:column="56">.</op:operator><name pos:line="33" pos:column="57">Parent</name></name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="37" pos:column="17">public</specifier> <name pos:line="37" pos:column="24">string</name></type> <name pos:line="37" pos:column="31">Snippet</name>
+		<block pos:line="38" pos:column="17">{
+			<function><name pos:line="39" pos:column="25">get</name>
+			<block pos:line="40" pos:column="25">{
+				<return pos:line="41" pos:column="33">return <expr><name><name pos:line="41" pos:column="40">CodeSearchResult</name><op:operator pos:line="41" pos:column="56">.</op:operator><name pos:line="41" pos:column="57">Snippet</name></name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="45" pos:column="17">public</specifier> <name pos:line="45" pos:column="24">string</name></type> <name pos:line="45" pos:column="31">ElementType</name>
+		<block pos:line="46" pos:column="17">{
+			<function><name pos:line="47" pos:column="25">get</name>
+			<block pos:line="48" pos:column="25">{
+				<return pos:line="49" pos:column="33">return <expr><name><name pos:line="49" pos:column="40">CodeSearchResult</name><op:operator pos:line="49" pos:column="56">.</op:operator><name pos:line="49" pos:column="57">Type</name></name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="53" pos:column="17">public</specifier> <name pos:line="53" pos:column="24">int</name></type> <name pos:line="53" pos:column="28">DefinitionLineNumber</name>
+		<block pos:line="54" pos:column="17">{
+			<function><name pos:line="55" pos:column="25">get</name>
+			<block pos:line="56" pos:column="25">{
+				<return pos:line="57" pos:column="33">return <expr><name><name pos:line="57" pos:column="40">CodeSearchResult</name><op:operator pos:line="57" pos:column="56">.</op:operator><name pos:line="57" pos:column="57">ProgramElement</name><op:operator pos:line="57" pos:column="71">.</op:operator><name pos:line="57" pos:column="72">DefinitionLineNumber</name></name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="61" pos:column="17">public</specifier> <name pos:line="61" pos:column="24">string</name></type> <name pos:line="61" pos:column="31">AccessLevel</name>
+		<block pos:line="62" pos:column="17">{
+			<function><name pos:line="63" pos:column="25">get</name>
+			<block pos:line="64" pos:column="25">{
+				<decl_stmt><decl><type><name pos:line="65" pos:column="33">string</name></type> <name pos:line="65" pos:column="40">accessLevel</name></decl>;</decl_stmt>
+				<decl_stmt><decl><type><name pos:line="66" pos:column="33">PropertyInfo</name></type> <name pos:line="66" pos:column="46">info</name> =<init pos:line="66" pos:column="52"> <expr><call><name><name pos:line="66" pos:column="53">CodeSearchResult</name><op:operator pos:line="66" pos:column="69">.</op:operator><name pos:line="66" pos:column="70">ProgramElement</name><op:operator pos:line="66" pos:column="84">.</op:operator><name pos:line="66" pos:column="85">GetType</name></name><argument_list pos:line="66" pos:column="92">()</argument_list></call><op:operator pos:line="66" pos:column="94">.</op:operator><call><name pos:line="66" pos:column="95">GetProperty</name><argument_list pos:line="66" pos:column="106">(<argument><expr><lit:literal type="string" pos:line="66" pos:column="107">"AccessLevel"</lit:literal></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+				<if pos:line="67" pos:column="33">if <condition pos:line="67" pos:column="36">(<expr><name pos:line="67" pos:column="37">info</name> <op:operator pos:line="67" pos:column="42">!=</op:operator> <name pos:line="67" pos:column="45">null</name></expr>)</condition><then pos:line="67" pos:column="50">
+				<block pos:line="68" pos:column="33">{
+					<expr_stmt><expr><name pos:line="69" pos:column="41">accessLevel</name> <op:operator pos:line="69" pos:column="53">=</op:operator> <call><name><name pos:line="69" pos:column="55">info</name><op:operator pos:line="69" pos:column="59">.</op:operator><name pos:line="69" pos:column="60">GetValue</name></name><argument_list pos:line="69" pos:column="68">(<argument><expr><name><name pos:line="69" pos:column="69">CodeSearchResult</name><op:operator pos:line="69" pos:column="85">.</op:operator><name pos:line="69" pos:column="86">ProgramElement</name></name></expr></argument><op:operator pos:line="69" pos:column="100">,</op:operator> <argument><expr><name pos:line="69" pos:column="102">null</name></expr></argument>)</argument_list></call><op:operator pos:line="69" pos:column="107">.</op:operator><call><name pos:line="69" pos:column="108">ToString</name><argument_list pos:line="69" pos:column="116">()</argument_list></call></expr>;</expr_stmt>
+				}</block></then>
+				<else pos:line="71" pos:column="33">else
+				<block pos:line="72" pos:column="33">{
+					<expr_stmt><expr><name pos:line="73" pos:column="41">accessLevel</name> <op:operator pos:line="73" pos:column="53">=</op:operator> <name><name pos:line="73" pos:column="55">string</name><op:operator pos:line="73" pos:column="61">.</op:operator><name pos:line="73" pos:column="62">Empty</name></name></expr>;</expr_stmt>
+				}</block></else></if>
+				<return pos:line="75" pos:column="33">return <expr><name pos:line="75" pos:column="40">accessLevel</name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="79" pos:column="17">private</specifier> <name pos:line="79" pos:column="25">string</name></type> <name pos:line="79" pos:column="32">_AccessLevel</name>
+		<block pos:line="80" pos:column="17">{
+			<function><name pos:line="81" pos:column="25">get</name> <block pos:line="81" pos:column="29">{ <return pos:line="81" pos:column="31">return <expr><op:operator pos:line="81" pos:column="38">(</op:operator><name pos:line="81" pos:column="39">AccessLevel</name> <op:operator pos:line="81" pos:column="51">==</op:operator> <name><name pos:line="81" pos:column="54">string</name><op:operator pos:line="81" pos:column="60">.</op:operator><name pos:line="81" pos:column="61">Empty</name> <type:modifier pos:line="81" pos:column="67">?</type:modifier></name> <lit:literal type="string" pos:line="81" pos:column="69">""</lit:literal> <op:operator pos:line="81" pos:column="72">:</op:operator> <lit:literal type="string" pos:line="81" pos:column="74">"_"</lit:literal><op:operator pos:line="81" pos:column="77">)</op:operator> <op:operator pos:line="81" pos:column="79">+</op:operator> <name pos:line="81" pos:column="81">AccessLevel</name></expr>;</return> }</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="84" pos:column="17">public</specifier> <name pos:line="84" pos:column="24">BitmapImage</name></type> <name pos:line="84" pos:column="36">IconSelf</name>
+		<block pos:line="85" pos:column="17">{
+			<function><name pos:line="86" pos:column="25">get</name>
+			<block pos:line="87" pos:column="25">{
+				<decl_stmt><decl><type><name pos:line="88" pos:column="33">ResourceDictionary</name></type> <name pos:line="88" pos:column="52">res</name> =<init pos:line="88" pos:column="57"> <expr><op:operator pos:line="88" pos:column="58">new</op:operator> <call><name pos:line="88" pos:column="62">ResourceDictionary</name><argument_list pos:line="88" pos:column="80">()</argument_list></call></expr></init></decl>;</decl_stmt>
+				
+				<decl_stmt><decl><type><name pos:line="90" pos:column="33">string</name></type> <name pos:line="90" pos:column="40">iconPath</name></decl>;</decl_stmt>
+				
+				<expr_stmt><expr><name pos:line="92" pos:column="33">iconPath</name> <op:operator pos:line="92" pos:column="42">=</op:operator> <call><name><name pos:line="92" pos:column="44">string</name><op:operator pos:line="92" pos:column="50">.</op:operator><name pos:line="92" pos:column="51">Format</name></name><argument_list pos:line="92" pos:column="57">(<argument><expr><lit:literal type="string" pos:line="92" pos:column="58">"VSObject_{0}{1}.png"</lit:literal></expr></argument><op:operator pos:line="92" pos:column="79">,</op:operator> <argument><expr><name pos:line="92" pos:column="81">ElementType</name></expr></argument><op:operator pos:line="92" pos:column="92">,</op:operator> <argument><expr><name pos:line="92" pos:column="94">_AccessLevel</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+				<decl_stmt><decl><type><name pos:line="93" pos:column="33">BitmapImage</name></type> <name pos:line="93" pos:column="45">icon</name> =<init pos:line="93" pos:column="51"> <expr><op:operator pos:line="93" pos:column="52">new</op:operator> <call><name pos:line="93" pos:column="56">BitmapImage</name><argument_list pos:line="93" pos:column="67">(<argument><expr><op:operator pos:line="93" pos:column="68">new</op:operator> <call><name pos:line="93" pos:column="72">Uri</name><argument_list pos:line="93" pos:column="75">(<argument><expr><name pos:line="93" pos:column="76">iconPath</name></expr></argument><op:operator pos:line="93" pos:column="84">,</op:operator> <argument><expr><name><name pos:line="93" pos:column="86">UriKind</name><op:operator pos:line="93" pos:column="93">.</op:operator><name pos:line="93" pos:column="94">Relative</name></name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr></init></decl>;</decl_stmt>
+				<comment type="line" pos:line="94" pos:column="33">//Application.Current.TryFindResource(iconPath) as BitmapImage;</comment>
+				
+				<try pos:line="96" pos:column="33">try
+				<block pos:line="97" pos:column="33">{					
+					<if pos:line="98" pos:column="41">if <condition pos:line="98" pos:column="44">(<expr><name><name pos:line="98" pos:column="45">icon</name><op:operator pos:line="98" pos:column="49">.</op:operator><name pos:line="98" pos:column="50">Height</name></name> <op:operator pos:line="98" pos:column="57">==</op:operator> <lit:literal type="number" pos:line="98" pos:column="60">0</lit:literal></expr>)</condition><then pos:line="98" pos:column="62">
+						<expr_stmt><expr><name pos:line="99" pos:column="49">icon</name> <op:operator pos:line="99" pos:column="54">=</op:operator> <name pos:line="99" pos:column="56">null</name></expr>;</expr_stmt></then></if>
+				}</block>
+				<catch pos:line="101" pos:column="33">catch
+				<block pos:line="102" pos:column="33">{
+					<expr_stmt><expr><name pos:line="103" pos:column="41">iconPath</name> <op:operator pos:line="103" pos:column="50">=</op:operator> <call><name><name pos:line="103" pos:column="52">string</name><op:operator pos:line="103" pos:column="58">.</op:operator><name pos:line="103" pos:column="59">Format</name></name><argument_list pos:line="103" pos:column="65">(<argument><expr><lit:literal type="string" pos:line="103" pos:column="66">"{0}VSObject_{1}.png"</lit:literal></expr></argument><op:operator pos:line="103" pos:column="87">,</op:operator> <argument><expr><name><name pos:line="103" pos:column="89">Constant</name><op:operator pos:line="103" pos:column="97">.</op:operator><name pos:line="103" pos:column="98">IconPath</name></name></expr></argument><op:operator pos:line="103" pos:column="106">,</op:operator> <argument><expr><name pos:line="103" pos:column="108">ElementType</name></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+					<expr_stmt><expr><name pos:line="104" pos:column="41">icon</name> <op:operator pos:line="104" pos:column="46">=</op:operator> <op:operator pos:line="104" pos:column="48">new</op:operator> <call><name pos:line="104" pos:column="52">BitmapImage</name><argument_list pos:line="104" pos:column="63">(<argument><expr><op:operator pos:line="104" pos:column="64">new</op:operator> <call><name pos:line="104" pos:column="68">Uri</name><argument_list pos:line="104" pos:column="71">(<argument><expr><name pos:line="104" pos:column="72">iconPath</name></expr></argument><op:operator pos:line="104" pos:column="80">,</op:operator> <argument><expr><name><name pos:line="104" pos:column="82">UriKind</name><op:operator pos:line="104" pos:column="89">.</op:operator><name pos:line="104" pos:column="90">Relative</name></name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+					<try pos:line="105" pos:column="41">try
+					<block pos:line="106" pos:column="41">{
+						<if pos:line="107" pos:column="49">if <condition pos:line="107" pos:column="52">(<expr><name><name pos:line="107" pos:column="53">icon</name><op:operator pos:line="107" pos:column="57">.</op:operator><name pos:line="107" pos:column="58">Height</name></name> <op:operator pos:line="107" pos:column="65">==</op:operator> <lit:literal type="number" pos:line="107" pos:column="68">0</lit:literal></expr>)</condition><then pos:line="107" pos:column="70">
+							<expr_stmt><expr><name pos:line="108" pos:column="57">icon</name> <op:operator pos:line="108" pos:column="62">=</op:operator> <name pos:line="108" pos:column="64">null</name></expr>;</expr_stmt></then></if>
+					}</block>
+					<catch pos:line="110" pos:column="41">catch
+					<block pos:line="111" pos:column="41">{
+						<expr_stmt><expr><name pos:line="112" pos:column="49">iconPath</name> <op:operator pos:line="112" pos:column="58">=</op:operator> <name><name pos:line="112" pos:column="60">Constant</name><op:operator pos:line="112" pos:column="68">.</op:operator><name pos:line="112" pos:column="69">DefaultIcon</name></name></expr>;</expr_stmt>
+						<expr_stmt><expr><name pos:line="113" pos:column="49">icon</name> <op:operator pos:line="113" pos:column="54">=</op:operator> <op:operator pos:line="113" pos:column="56">new</op:operator> <call><name pos:line="113" pos:column="60">BitmapImage</name><argument_list pos:line="113" pos:column="71">(<argument><expr><op:operator pos:line="113" pos:column="72">new</op:operator> <call><name pos:line="113" pos:column="76">Uri</name><argument_list pos:line="113" pos:column="79">(<argument><expr><name pos:line="113" pos:column="80">iconPath</name></expr></argument><op:operator pos:line="113" pos:column="88">,</op:operator> <argument><expr><name><name pos:line="113" pos:column="90">UriKind</name><op:operator pos:line="113" pos:column="97">.</op:operator><name pos:line="113" pos:column="98">Relative</name></name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr>;</expr_stmt>
+					}</block></catch></try>
+				}</block></catch></try>
+				<return pos:line="116" pos:column="33">return <expr><name pos:line="116" pos:column="40">icon</name></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="120" pos:column="17">public</specifier> <name pos:line="120" pos:column="24">BitmapImage</name></type> <name pos:line="120" pos:column="36">IconFile</name>
+		<block pos:line="121" pos:column="17">{
+			<function><name pos:line="122" pos:column="25">get</name>
+			<block pos:line="123" pos:column="25">{
+				<return pos:line="124" pos:column="33">return <expr><op:operator pos:line="124" pos:column="40">new</op:operator> <call><name pos:line="124" pos:column="44">BitmapImage</name><argument_list pos:line="124" pos:column="55">(<argument><expr><op:operator pos:line="124" pos:column="56">new</op:operator> <call><name pos:line="124" pos:column="60">Uri</name><argument_list pos:line="124" pos:column="63">(<argument><expr><name><name pos:line="124" pos:column="64">Constant</name><op:operator pos:line="124" pos:column="72">.</op:operator><name pos:line="124" pos:column="73">IconFile</name></name></expr></argument><op:operator pos:line="124" pos:column="81">,</op:operator> <argument><expr><name><name pos:line="124" pos:column="83">UriKind</name><op:operator pos:line="124" pos:column="90">.</op:operator><name pos:line="124" pos:column="91">Relative</name></name></expr></argument>)</argument_list></call></expr></argument>)</argument_list></call></expr>;</return>
+			}</block></function>
+		}</block></decl></decl_stmt>
+
+		<cpp:endregion pos:line="128" pos:column="17">#<cpp:directive pos:line="128" pos:column="18">endregion</cpp:directive></cpp:endregion>
+
+		<cpp:region pos:line="130" pos:column="17">#<cpp:directive pos:line="130" pos:column="18">region</cpp:directive> Constructor</cpp:region>
+
+		<constructor><specifier pos:line="132" pos:column="17">public</specifier> <name pos:line="132" pos:column="24">SearchResultUIItem</name><parameter_list pos:line="132" pos:column="42">(<param><decl><type><name pos:line="132" pos:column="43">CodeSearchResult</name></type> <name pos:line="132" pos:column="60">codeSearchResult</name></decl></param>)</parameter_list>
+		<block pos:line="133" pos:column="17">{
+			<expr_stmt><expr><name><name pos:line="134" pos:column="25">this</name><op:operator pos:line="134" pos:column="29">.</op:operator><name pos:line="134" pos:column="30">CodeSearchResult</name></name> <op:operator pos:line="134" pos:column="47">=</op:operator> <name pos:line="134" pos:column="49">codeSearchResult</name></expr>;</expr_stmt>
+		}</block></constructor>
+
+		<cpp:endregion pos:line="137" pos:column="17">#<cpp:directive pos:line="137" pos:column="18">endregion</cpp:directive></cpp:endregion>
+
+		<cpp:region pos:line="139" pos:column="17">#<cpp:directive pos:line="139" pos:column="18">region</cpp:directive> members</cpp:region>
+
+		<decl_stmt><decl><type><specifier pos:line="141" pos:column="17">public</specifier> <name pos:line="141" pos:column="24">CodeSearchResult</name></type> <name pos:line="141" pos:column="41">CodeSearchResult</name>
+		<block pos:line="142" pos:column="17">{
+			<function><name pos:line="143" pos:column="25">get</name>;</function>
+			private <function><name pos:line="144" pos:column="33">set</name>;</function>
+		}</block></decl></decl_stmt>
+
+		<cpp:endregion pos:line="147" pos:column="17">#<cpp:directive pos:line="147" pos:column="18">endregion</cpp:directive></cpp:endregion>
+	}</block></class>
+
+	<class pos:line="150" pos:column="9">class <name pos:line="150" pos:column="15">Constant</name>
+	<block pos:line="151" pos:column="9">{
+		<decl_stmt><decl><type><specifier pos:line="152" pos:column="17">public</specifier> <specifier pos:line="152" pos:column="24">static</specifier> <name pos:line="152" pos:column="31">string</name></type> <name pos:line="152" pos:column="38">ResourcePath</name>
+		<block pos:line="153" pos:column="17">{
+			<function><name pos:line="154" pos:column="25">get</name> <block pos:line="154" pos:column="29">{ <return pos:line="154" pos:column="31">return <expr><lit:literal type="string" pos:line="154" pos:column="38">"../Resources/"</lit:literal></expr>;</return> }</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="157" pos:column="17">public</specifier> <specifier pos:line="157" pos:column="24">static</specifier> <name pos:line="157" pos:column="31">string</name></type> <name pos:line="157" pos:column="38">IconPath</name>
+		<block pos:line="158" pos:column="17">{
+			<function><name pos:line="159" pos:column="25">get</name> <block pos:line="159" pos:column="29">{ <return pos:line="159" pos:column="31">return <expr><name pos:line="159" pos:column="38">ResourcePath</name> <op:operator pos:line="159" pos:column="51">+</op:operator> <lit:literal type="string" pos:line="159" pos:column="53">"VS2010Icons/"</lit:literal></expr>;</return> }</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="162" pos:column="17">public</specifier> <specifier pos:line="162" pos:column="24">static</specifier> <name pos:line="162" pos:column="31">string</name></type> <name pos:line="162" pos:column="38">DefaultIcon</name>
+		<block pos:line="163" pos:column="17">{
+			<function><name pos:line="164" pos:column="25">get</name> <block pos:line="164" pos:column="29">{ <return pos:line="164" pos:column="31">return <expr><name pos:line="164" pos:column="38">IconPath</name> <op:operator pos:line="164" pos:column="47">+</op:operator> <lit:literal type="string" pos:line="164" pos:column="49">"VSObject_Object.png"</lit:literal></expr>;</return> }</block></function>
+		}</block></decl></decl_stmt>
+
+		<decl_stmt><decl><type><specifier pos:line="167" pos:column="17">public</specifier> <specifier pos:line="167" pos:column="24">static</specifier> <name pos:line="167" pos:column="31">string</name></type> <name pos:line="167" pos:column="38">IconFile</name>
+		<block pos:line="168" pos:column="17">{
+			<function><name pos:line="169" pos:column="25">get</name> <block pos:line="169" pos:column="29">{ <return pos:line="169" pos:column="31">return <expr><name pos:line="169" pos:column="38">ResourcePath</name> <op:operator pos:line="169" pos:column="51">+</op:operator> <lit:literal type="string" pos:line="169" pos:column="53">"IconFile.png"</lit:literal></expr>;</return> }</block></function>
+		}</block></decl></decl_stmt>
+	}</block></class>
+}</block></namespace>
+</unit>

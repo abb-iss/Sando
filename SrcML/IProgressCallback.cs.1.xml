@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C#" filename="C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\IProgressCallback.cs" pos:tabs="8"><using pos:line="1" pos:column="1">using <name pos:line="1" pos:column="7">System</name>;</using>
+
+<namespace pos:line="3" pos:column="1">namespace <name><name pos:line="3" pos:column="11">Sando</name><op:operator pos:line="3" pos:column="16">.</op:operator><name pos:line="3" pos:column="17">IntegrationTests</name></name>
+<block pos:line="4" pos:column="1">{
+    <comment type="line" pos:line="5" pos:column="5">/// &lt;summary&gt;</comment>
+    <comment type="line" pos:line="6" pos:column="5">/// This defines an interface which can be implemented by UI elements</comment>
+    <comment type="line" pos:line="7" pos:column="5">/// which indicate the progress of a long operation.</comment>
+    <comment type="line" pos:line="8" pos:column="5">/// (See ProgressWindow for a typical implementation)</comment>
+    <comment type="line" pos:line="9" pos:column="5">/// &lt;/summary&gt;</comment>
+    <class type="interface"><specifier pos:line="10" pos:column="5">public</specifier> interface <name pos:line="10" pos:column="22">IProgressCallback</name> <super pos:line="10" pos:column="40">: <name pos:line="10" pos:column="42">IInvoker</name></super>
+    <block pos:line="11" pos:column="5">{
+        <comment type="line" pos:line="12" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="13" pos:column="9">/// Call this method from the worker thread to initialize</comment>
+        <comment type="line" pos:line="14" pos:column="9">/// the progress callback.</comment>
+        <comment type="line" pos:line="15" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="16" pos:column="9">/// &lt;param name="minimum"&gt;The minimum value in the progress range (e.g. 0)&lt;/param&gt;</comment>
+        <comment type="line" pos:line="17" pos:column="9">/// &lt;param name="maximum"&gt;The maximum value in the progress range (e.g. 100)&lt;/param&gt;</comment>
+        <function_decl><type><name pos:line="18" pos:column="9">void</name></type> <name pos:line="18" pos:column="14">Begin</name><parameter_list pos:line="18" pos:column="19">(<param><decl><type><name pos:line="18" pos:column="20">int</name></type> <name pos:line="18" pos:column="24">minimum</name></decl></param><op:operator pos:line="18" pos:column="31">,</op:operator> <param><decl><type><name pos:line="18" pos:column="33">int</name></type> <name pos:line="18" pos:column="37">maximum</name></decl></param>)</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="20" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="21" pos:column="9">/// Call this method from the worker thread to initialize</comment>
+        <comment type="line" pos:line="22" pos:column="9">/// the progress callback, without setting the range</comment>
+        <comment type="line" pos:line="23" pos:column="9">/// &lt;/summary&gt;</comment>
+        <function_decl><type><name pos:line="24" pos:column="9">void</name></type> <name pos:line="24" pos:column="14">Begin</name><parameter_list pos:line="24" pos:column="19">()</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="26" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="27" pos:column="9">/// Call this method from the worker thread to reset the range in the progress callback</comment>
+        <comment type="line" pos:line="28" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="29" pos:column="9">/// &lt;param name="minimum"&gt;The minimum value in the progress range (e.g. 0)&lt;/param&gt;</comment>
+        <comment type="line" pos:line="30" pos:column="9">/// &lt;param name="maximum"&gt;The maximum value in the progress range (e.g. 100)&lt;/param&gt;</comment>
+        <comment type="line" pos:line="31" pos:column="9">/// &lt;remarks&gt;You must have called one of the Begin() methods prior to this call.&lt;/remarks&gt;</comment>
+        <function_decl><type><name pos:line="32" pos:column="9">void</name></type> <name pos:line="32" pos:column="14">SetRange</name><parameter_list pos:line="32" pos:column="22">(<param><decl><type><name pos:line="32" pos:column="23">int</name></type> <name pos:line="32" pos:column="27">minimum</name></decl></param><op:operator pos:line="32" pos:column="34">,</op:operator> <param><decl><type><name pos:line="32" pos:column="36">int</name></type> <name pos:line="32" pos:column="40">maximum</name></decl></param>)</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="34" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="35" pos:column="9">/// Call this method from the worker thread to update the progress text.</comment>
+        <comment type="line" pos:line="36" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="37" pos:column="9">/// &lt;param name="text"&gt;The progress text to display&lt;/param&gt;</comment>
+        <comment type="line" pos:line="38" pos:column="9">/// &lt;remarks&gt;You must have called one of the Begin() methods prior to this call.&lt;/remarks&gt;</comment>
+        <function_decl><type><name pos:line="39" pos:column="9">void</name></type> <name pos:line="39" pos:column="14">SetText</name><parameter_list pos:line="39" pos:column="21">(<param><decl><type><name pos:line="39" pos:column="22">String</name></type> <name pos:line="39" pos:column="29">text</name></decl></param>)</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="41" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="42" pos:column="9">/// Call this method from the worker thread to increase the progress counter by a specified value.</comment>
+        <comment type="line" pos:line="43" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="44" pos:column="9">/// &lt;param name="val"&gt;The amount by which to increment the progress indicator&lt;/param&gt;</comment>
+        <comment type="line" pos:line="45" pos:column="9">/// &lt;remarks&gt;You must have called one of the Begin() methods prior to this call.&lt;/remarks&gt;</comment>
+        <function_decl><type><name pos:line="46" pos:column="9">void</name></type> <name pos:line="46" pos:column="14">StepTo</name><parameter_list pos:line="46" pos:column="20">(<param><decl><type><name pos:line="46" pos:column="21">int</name></type> <name pos:line="46" pos:column="25">val</name></decl></param>)</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="48" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="49" pos:column="9">/// Call this method from the worker thread to step the progress meter to a particular value.</comment>
+        <comment type="line" pos:line="50" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="51" pos:column="9">/// &lt;param name="val"&gt;The value to which to step the meter&lt;/param&gt;</comment>
+        <comment type="line" pos:line="52" pos:column="9">/// &lt;remarks&gt;You must have called one of the Begin() methods prior to this call.&lt;/remarks&gt;</comment>
+        <function_decl><type><name pos:line="53" pos:column="9">void</name></type> <name pos:line="53" pos:column="14">Increment</name><parameter_list pos:line="53" pos:column="23">(<param><decl><type><name pos:line="53" pos:column="24">int</name></type> <name pos:line="53" pos:column="28">val</name></decl></param>)</parameter_list>;</function_decl>
+
+        <comment type="line" pos:line="55" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="56" pos:column="9">/// If this property is true, then you should abort work</comment>
+        <comment type="line" pos:line="57" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="58" pos:column="9">/// &lt;remarks&gt;You must have called one of the Begin() methods prior to this call.&lt;/remarks&gt;</comment>
+        <decl_stmt><decl><type><name pos:line="59" pos:column="9">bool</name></type> <name pos:line="59" pos:column="14">IsAborting</name>
+        <block pos:line="60" pos:column="9">{
+            <function><name pos:line="61" pos:column="13">get</name>;</function>
+        }</block></decl></decl_stmt>
+
+        <comment type="line" pos:line="64" pos:column="9">/// &lt;summary&gt;</comment>
+        <comment type="line" pos:line="65" pos:column="9">/// Call this method from the worker thread to finalize the progress meter</comment>
+        <comment type="line" pos:line="66" pos:column="9">/// &lt;/summary&gt;</comment>
+        <comment type="line" pos:line="67" pos:column="9">/// &lt;remarks&gt;You must have called one of the Begin() methods prior to this call.&lt;/remarks&gt;</comment>
+        <function_decl><type><name pos:line="68" pos:column="9">void</name></type> <name pos:line="68" pos:column="14">End</name><parameter_list pos:line="68" pos:column="17">()</parameter_list>;</function_decl>
+
+        <function_decl><type><name pos:line="70" pos:column="9">void</name></type> <name pos:line="70" pos:column="14">Invoke</name><parameter_list pos:line="70" pos:column="20">(<param><decl><type><name><name pos:line="70" pos:column="21">global</name><op:operator pos:line="70" pos:column="27">::</op:operator><name pos:line="70" pos:column="29">System</name><op:operator pos:line="70" pos:column="35">.</op:operator><name pos:line="70" pos:column="36">Windows</name><op:operator pos:line="70" pos:column="43">.</op:operator><name pos:line="70" pos:column="44">Forms</name><op:operator pos:line="70" pos:column="49">.</op:operator><name pos:line="70" pos:column="50">MethodInvoker</name></name></type> <name pos:line="70" pos:column="64">globalSystemWindowsFormsMethodInvoker</name></decl></param>)</parameter_list>;</function_decl>
+
+        <function_decl><type><name pos:line="72" pos:column="9">void</name></type> <name pos:line="72" pos:column="14">ShowDialog</name><parameter_list pos:line="72" pos:column="24">()</parameter_list>;</function_decl>
+
+        <function_decl><type><name pos:line="74" pos:column="9">void</name></type> <name pos:line="74" pos:column="14">Close</name><parameter_list pos:line="74" pos:column="19">()</parameter_list>;</function_decl>
+
+        <function_decl><type><name pos:line="76" pos:column="9">void</name></type> <name pos:line="76" pos:column="14">Invoke</name><parameter_list pos:line="76" pos:column="20">(<param><decl><type><name><name pos:line="76" pos:column="21">System</name><op:operator pos:line="76" pos:column="27">.</op:operator><name pos:line="76" pos:column="28">Windows</name><op:operator pos:line="76" pos:column="35">.</op:operator><name pos:line="76" pos:column="36">Forms</name><op:operator pos:line="76" pos:column="41">.</op:operator><name pos:line="76" pos:column="42">MethodInvoker</name></name></type> <name pos:line="76" pos:column="56">methodInvoker</name></decl></param><op:operator pos:line="76" pos:column="69">,</op:operator> <param><decl><type><name pos:line="76" pos:column="71">bool</name></type> <name pos:line="76" pos:column="76">forceUi</name></decl></param>)</parameter_list>;</function_decl>
+    }</block></class>
+}</block></namespace>
+</unit>
