@@ -95,6 +95,7 @@
     <Compile Include="Search\LexicalSelfSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="Search\OpenAndCloseIndexTest.cs" />
     <Compile Include="Search\SelfSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
