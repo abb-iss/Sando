@@ -32,6 +32,7 @@ using Sando.UI.View;
 using Sando.Indexer.IndexState;
 using Sando.Recommender;
 using System.Reflection;
+using System.Threading.Tasks;
 
 
 
@@ -79,6 +80,7 @@ namespace Sando.UI
         private ViewManager _viewManager;
 		private SolutionReloadEventListener _listener;
         private WindowEvents _windowEvents;
+        private bool SetupHandlers = false;
 
         /// <summary>
         /// Default constructor of the package.
@@ -350,8 +352,6 @@ namespace Sando.UI
 
                 ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
 
-               
-                
                 // JZ: SrcMLService Integration
                 // Get the SrcML Service.
                 srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
@@ -361,9 +361,13 @@ namespace Sando.UI
 
                 // Register all types of events from the SrcML Service.
                 SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-                srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-                srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
-                srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
+                if (!SetupHandlers)
+                {
+                    SetupHandlers = true;
+                    srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
+                    srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
+                    srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
+                }
 
                 //This is done here because some extension points require data that isn't set until the solution is opened, e.g. the solution key or the srcml archive
                 //However, registration must happen before file monitoring begins below.
@@ -382,6 +386,8 @@ namespace Sando.UI
                 // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
                 // the directory of storing srcML archives and whether to use existing srcML archives.
                 srcMLService.StartMonitoring(srcMlArchiveFolder, useExistingSrcML, src2SrcmlDir);
+                if (isIndexRecreationRequired)
+                    ReAddFilesInBackground(srcMLService, srcMLArchiveEventsHandlers);
                 
                 // End of code changes
             }
@@ -389,6 +395,15 @@ namespace Sando.UI
             {
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
             }    
+        }
+
+        private void ReAddFilesInBackground(ISrcMLGlobalService srcMLService, SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers)
+        {
+            var fileList = srcMLService.GetSrcMLArchive().GetFiles();
+            Parallel.ForEach(fileList, file =>
+            {
+                srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileAdded, file));
+            });
         }
 
         #endregion
