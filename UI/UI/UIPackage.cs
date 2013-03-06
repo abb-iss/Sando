@@ -391,20 +391,6 @@ namespace Sando.UI
             }    
         }
 
-        // JZ: SrcMLService Integration
-        /* // obsolete
-        private void RespondToSolutionMonitorEvent(object sender, ABB.SrcML.FileEventRaisedArgs eventArgs)
-        {
-            FileLogger.DefaultLogger.Info("Sando: RespondToSolutionMonitorEvent(), File = " + eventArgs.FilePath + ", EventType = " + eventArgs.EventType);
-            // Ignore files that can be parsed by SrcML.NET. Those files are processed by _srcMLArchive.SourceFileChanged event handler.
-            if(!_srcMLArchive.IsValidFileExtension(eventArgs.FilePath))
-            {
-                var srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
-                srcMLArchiveEventsHandlers.SourceFileChanged(null, eventArgs);
-            }
-        }
-        */
-        // End of code changes
         #endregion
 
 
