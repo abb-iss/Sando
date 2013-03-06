@@ -103,7 +103,7 @@ namespace Sando.IntegrationTests.Search
             var srcMLFolder = Path.Combine(".", "SrcML", "CSharp");
             Directory.CreateDirectory(srcMlArchiveFolder);
             var generator = new SrcMLGenerator(Path.GetFullPath(srcMLFolder));
-            _srcMLArchive = new SrcMLArchive(Path.GetFullPath(filesInThisDirectory),  false, generator);
+            _srcMLArchive = new SrcMLArchive(_indexPath,  false, generator);
         }
 
 
