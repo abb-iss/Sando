@@ -50,15 +50,19 @@ namespace Sando.IntegrationTests.Search
             CreateIndexer();
             CreateArchive(filesInThisDirectory);            
             CreateSwum();
-            AddFilesToIndex(filesInThisDirectory);      
-            WaitForCommit();
+            AddFilesToIndex(filesInThisDirectory);
+            WaitForCommit(filesInThisDirectory);
         }
 
-        private void WaitForCommit()
-        {
-            if (GetTimeToCommit() != null)
+        private void WaitForCommit(string filesInThisDirectory)
+        {            
+            int numFiles = 0;
+            int updatedFiles = -1;
+            while (updatedFiles != numFiles)
             {
-                Thread.Sleep(Convert.ToInt32(GetTimeToCommit().GetValueOrDefault().TotalMilliseconds * 2));
+                Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds*1.5+""));
+                numFiles = updatedFiles;
+                updatedFiles = ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments();
             }
         }
 
@@ -146,7 +150,7 @@ namespace Sando.IntegrationTests.Search
         {
             _srcMLArchive.Dispose();
             ServiceLocator.Resolve<IndexFilterManager>().Dispose();
-            ServiceLocator.Resolve<DocumentIndexer>().Dispose();
+            ServiceLocator.Resolve<DocumentIndexer>().Dispose();            
             Directory.Delete(_indexPath, true);
         }
 
