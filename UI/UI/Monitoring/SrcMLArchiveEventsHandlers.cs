@@ -22,8 +22,7 @@ namespace Sando.UI.Monitoring
         {
 
             System.Threading.Tasks.Task.Factory.StartNew(() =>
-            {
-                FileLogger.DefaultLogger.Info("Sando: SourceFileChanged(), File = " + args.FilePath + ", OldFile = " + args.OldFilePath + ", EventType = " + args.EventType + ", HasSrcML = " + args.HasSrcML);
+            {             
                 // Ignore files that can not be indexed by Sando.
                 var fileExtension = Path.GetExtension(args.FilePath);
                 if (fileExtension != null && !fileExtension.Equals(String.Empty))

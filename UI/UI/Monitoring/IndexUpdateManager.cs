@@ -22,8 +22,7 @@ namespace Sando.UI.Monitoring
 
         public void Update(string filePath, XElement xElement)
         {
-            var fileInfo = new FileInfo(filePath);
-            FileLogger.DefaultLogger.Info("IndexUpdateManager.Update(): " + filePath + " [" + fileInfo.Extension + "]");
+            var fileInfo = new FileInfo(filePath);            
             try
             {
                 var parsed = ExtensionPointsRepository.Instance.GetParserImplementation(fileInfo.Extension).Parse(filePath, xElement);

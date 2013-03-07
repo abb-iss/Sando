@@ -334,8 +334,7 @@ namespace Sando.UI
                 ServiceLocator.RegisterInstance(key);
                 ServiceLocator.RegisterInstance(new IndexFilterManager());                
 
-                var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
-                FileLogger.DefaultLogger.Info("extensionPointsDirectory: " + sandoOptions.ExtensionPointsPluginDirectoryPath);
+                var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
 
                 ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));

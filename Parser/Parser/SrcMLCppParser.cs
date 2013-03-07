@@ -66,8 +66,7 @@ namespace Sando.Parser
         /// <param name="sourceElements"></param>
         /// <returns></returns>
         public List<ProgramElement> Parse(string fileName, XElement sourceElements)
-        {
-            writeLog( "SrcMLCppParser.Parse(" + fileName + ", XElement)");
+        {            
             var programElements = new List<ProgramElement>();
 
             //classes and structs have to parsed first
@@ -446,16 +445,5 @@ namespace Sando.Parser
             return accessLevel;
         }
 
-        // Code changed by JZ: solution monitor integration
-        /// <summary>
-        /// For debugging.
-        /// </summary>
-        /// <param name="logFile"></param>
-        /// <param name="str"></param>
-        private void writeLog(string str)
-        {
-            FileLogger.DefaultLogger.Info(str);
-        }
-        // End of code changes
     }
 }
