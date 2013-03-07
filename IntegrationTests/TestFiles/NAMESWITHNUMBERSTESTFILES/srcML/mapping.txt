@@ -1,1 +1,0 @@
-C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\TestFiles\NamesWithNumbersTestFiles\Problem0010Resolver.cs|C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\TestFiles\NamesWithNumbersTestFiles\srcML\Problem0010Resolver.cs.1.xml

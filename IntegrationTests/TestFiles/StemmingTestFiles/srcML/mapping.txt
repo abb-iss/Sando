@@ -1,1 +1,0 @@
-C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\TestFiles\StemmingTestFiles\FileNameTemplate.cs|C:\Users\USDASHE1\Documents\Visual Studio 2012\Projects\sandoHead\IntegrationTests\TestFiles\StemmingTestFiles\srcML\FileNameTemplate.cs.1.xml

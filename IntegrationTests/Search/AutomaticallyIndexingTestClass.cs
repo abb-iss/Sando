@@ -150,8 +150,15 @@ namespace Sando.IntegrationTests.Search
         {
             _srcMLArchive.Dispose();
             ServiceLocator.Resolve<IndexFilterManager>().Dispose();
-            ServiceLocator.Resolve<DocumentIndexer>().Dispose();            
-            Directory.Delete(_indexPath, true);
+            ServiceLocator.Resolve<DocumentIndexer>().Dispose();
+            try
+            {
+                Directory.Delete(_indexPath, true);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(false, "Trying to delete this path: " + _indexPath);
+            }
         }
 
         private string _indexPath;
