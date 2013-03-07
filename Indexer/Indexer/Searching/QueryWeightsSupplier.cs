@@ -9,9 +9,7 @@ namespace Sando.Indexer.Searching
 	public class QueryWeightsSupplier : IQueryWeightsSupplier
 	{
 		public Dictionary<string, float> GetQueryWeightsValues()
-		{
-			Contract.Ensures(Contract.Result<Dictionary<string, float>>() != null, "QueryWeightsSupplier:GetQueryWeightsValues - an object must be returned from this method!");
-
+		{			
 			Dictionary<string, float> currentWeigths = new Dictionary<string, float>();
 			foreach(string name in Enum.GetNames(typeof(SandoField)))
 			{
