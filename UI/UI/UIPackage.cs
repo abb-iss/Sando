@@ -380,13 +380,11 @@ namespace Sando.UI
                 string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "SrcML");
                 string srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());                
                 // Sando may decide whether to use existing srcML archives
-                bool useExistingSrcML = true;
+                bool useExistingSrcML = !isIndexRecreationRequired;
 
                 // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
                 // the directory of storing srcML archives and whether to use existing srcML archives.
                 srcMLService.StartMonitoring(srcMlArchiveFolder, useExistingSrcML, src2SrcmlDir);
-                if (isIndexRecreationRequired)
-                    ReAddFilesInBackground(srcMLService, srcMLArchiveEventsHandlers);
                 
                 // End of code changes
             }
@@ -395,15 +393,7 @@ namespace Sando.UI
                 FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
             }    
         }
-
-        private void ReAddFilesInBackground(ISrcMLGlobalService srcMLService, SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers)
-        {
-            var fileList = srcMLService.GetSrcMLArchive().GetFiles();
-            Parallel.ForEach(fileList, file =>
-            {
-                srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileAdded, file));
-            });
-        }
+ 
 
         #endregion
 
