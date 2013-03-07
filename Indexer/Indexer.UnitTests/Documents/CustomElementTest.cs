@@ -70,7 +70,7 @@ namespace Sando.Indexer.UnitTests.Documents
         public static void InitializeExtensionPoints()
         {
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-            var generator = new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML");
+            var generator = new ABB.SrcML.SrcMLGenerator(@"SrcML");
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(generator));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser(generator));
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());           

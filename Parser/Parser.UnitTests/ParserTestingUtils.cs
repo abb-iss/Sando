@@ -10,7 +10,7 @@ namespace Sando.Parser.UnitTests
     public class ParserTestingUtils
     {
         public static List<ProgramElement> ParseCsharpFile(string filePath) {
-            SrcMLCSharpParser parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"LIBS\SrcML"));
+            SrcMLCSharpParser parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"SrcML"));
             var elements = parser.Parse(filePath);
             return elements;
         }

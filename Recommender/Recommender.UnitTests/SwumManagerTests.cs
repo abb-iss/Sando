@@ -15,7 +15,7 @@ namespace Sando.Recommender.UnitTests {
 
         [TestFixtureSetUp]
         public void FixtureSetup() {
-            manager.Generator = new SrcMLGenerator(@"LIBS\SrcML");
+            manager.Generator = new SrcMLGenerator(@"SrcML");
         }
 
         [TearDown]
