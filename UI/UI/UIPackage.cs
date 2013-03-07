@@ -384,7 +384,7 @@ namespace Sando.UI
 
                 // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
                 // the directory of storing srcML archives and whether to use existing srcML archives.
-                srcMLService.StartMonitoring(srcMlArchiveFolder, useExistingSrcML, src2SrcmlDir);
+                srcMLService.StartMonitoring(srcMLService.GetSrcMLArchive().ArchivePath, useExistingSrcML, src2SrcmlDir);
                 
                 // End of code changes
             }
