@@ -32,6 +32,5 @@
   <Content>
     <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
     <VsPackage>ABB.SrcML.VisualStudio.SrcMLService.pkgdef</VsPackage>
-    <MefComponent>|%CurrentProject%|</MefComponent>
   </Content>
 </Vsix>

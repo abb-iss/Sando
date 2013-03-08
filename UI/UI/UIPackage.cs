@@ -33,8 +33,6 @@ using Sando.Indexer.IndexState;
 using Sando.Recommender;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Sando.UI.Actions;
 
 
 
@@ -126,9 +124,6 @@ namespace Sando.UI
                 _viewManager = ServiceLocator.Resolve<ViewManager>();
                 AddCommand();                
                 SetUpLifeCycleEvents();
-                //var provider = new HighlightWordTaggerProvider();
-                //var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
-                //provider.Setup(componentModel);
             }
             catch(Exception e)
             {
