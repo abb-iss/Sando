@@ -71,9 +71,10 @@ namespace Sando.IntegrationTests.Search
             {
                 Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds*1.5+""));
                 numFiles = updatedFiles;
+                ServiceLocator.Resolve<DocumentIndexer>().ForceReaderRefresh();
                 updatedFiles = ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments();
             }
-            Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds * 2 + ""));
+            Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds * 10 + ""));
         }
 
         private void AddFilesToIndex(string filesInThisDirectory)
@@ -128,7 +129,7 @@ namespace Sando.IntegrationTests.Search
         {
             ServiceLocator.RegisterInstance(new IndexFilterManager());
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-            var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(1), GetTimeToCommit());
+            var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), GetTimeToCommit());
             ServiceLocator.RegisterInstance(currentIndexer);
             ServiceLocator.RegisterInstance(new IndexUpdateManager());
             currentIndexer.ClearIndex();            

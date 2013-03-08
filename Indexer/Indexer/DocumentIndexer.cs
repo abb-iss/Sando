@@ -118,7 +118,7 @@ namespace Sando.Indexer
         {
             lock (_lock)
             {
-                UpdateSearcher();
+                CommitChanges();
             }
         }
 
