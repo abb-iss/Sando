@@ -8,21 +8,42 @@ using Sando.DependencyInjection;
 using Sando.Indexer;
 using Sando.Indexer.IndexFiltering;
 using Sando.Recommender;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+
 
 namespace Sando.UI.Monitoring
 {
     public class SrcMLArchiveEventsHandlers
     {
+
+        private ConcurrentBag<Task> tasks = new ConcurrentBag<Task>();
+
         public void SourceFileChanged(object sender, FileEventRaisedArgs args)
         {
             SourceFileChanged(sender, args, false);
         }
 
+        public void WaitForIndexing()
+        {
+            bool running = true;
+            while (running)
+            {
+                Thread.Sleep(500);
+                lock (tasksTrackerLock)
+                {
+                    running = tasks.Count > 0;
+                }
+            }            
+        }
+
         public void SourceFileChanged(object sender, FileEventRaisedArgs args, bool commitImmediately = false)
         {
 
-            System.Threading.Tasks.Task.Factory.StartNew(() =>
-            {             
+            var task = System.Threading.Tasks.Task.Factory.StartNew(() =>
+            {
                 // Ignore files that can not be indexed by Sando.
                 var fileExtension = Path.GetExtension(args.FilePath);
                 if (fileExtension != null && !fileExtension.Equals(String.Empty))
@@ -71,10 +92,24 @@ namespace Sando.UI.Monitoring
                     }
                 }
             });
+            lock (tasksTrackerLock)
+            {
+                tasks.Add(task);
+            }
+            task.ContinueWith(removeTask => RemoveTask(task));
         }
+
+        private void RemoveTask(Task task)
+        {
+            lock (tasksTrackerLock)
+                tasks.TryTake(out task);            
+        }
+
+        private object tasksTrackerLock = new object();
 
         public void StartupCompleted(object sender, EventArgs args)
         {
+            ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>().WaitForIndexing();            
             ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
             SwumManager.Instance.PrintSwumCache();
         }

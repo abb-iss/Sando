@@ -64,17 +64,8 @@ namespace Sando.IntegrationTests.Search
         }
 
         private void WaitForAllFilesToBeCommitted(string filesInThisDirectory)
-        {            
-            int numFiles = 0;
-            int updatedFiles = -1;
-            while (updatedFiles != numFiles && numFiles <=0)
-            {
-                Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds*1.5+""));
-                numFiles = updatedFiles;
-                ServiceLocator.Resolve<DocumentIndexer>().ForceReaderRefresh();
-                updatedFiles = ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments();
-            }
-            Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds * 10 + ""));
+        {
+            _handler.WaitForIndexing();
         }
 
         private void AddFilesToIndex(string filesInThisDirectory)
