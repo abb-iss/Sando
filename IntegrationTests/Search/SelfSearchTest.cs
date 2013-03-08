@@ -120,7 +120,7 @@ namespace Sando.IntegrationTests.Search
 
         public override TimeSpan? GetTimeToCommit()
         {
-            return TimeSpan.FromSeconds(10);
+            return TimeSpan.FromSeconds(4);
         }
         
 

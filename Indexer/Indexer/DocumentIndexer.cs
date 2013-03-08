@@ -114,6 +114,14 @@ namespace Sando.Indexer
 		    }
 		}
 
+        public void ForceReaderRefresh()
+        {
+            lock (_lock)
+            {
+                UpdateSearcher();
+            }
+        }
+
         public List<Tuple<Document, float>> Search(Query query, TopScoreDocCollector collector)
         {
             lock (_lock)

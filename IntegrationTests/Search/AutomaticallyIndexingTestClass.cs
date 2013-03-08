@@ -20,16 +20,23 @@ using ABB.SrcML;
 using System.Threading;
 using Sando.Core.Tools;
 using ABB.SrcML.VisualStudio.SrcMLService;
+using Sando.UI.View;
+using System.Diagnostics;
 
 namespace Sando.IntegrationTests.Search
 {
-    public class AutomaticallyIndexingTestClass : ISrcMLGlobalService
+    public class AutomaticallyIndexingTestClass : ISrcMLGlobalService, ISearchResultListener
     {
 
         [TestFixtureSetUp]
         public void Setup()
         {
             IndexSpecifiedFiles(GetFilesDirectory(), GetIndexDirName());
+        }
+
+        public virtual TimeSpan? GetTimeToCommit()
+        {
+            return null;
         }
 
         public virtual string GetIndexDirName()
@@ -51,19 +58,21 @@ namespace Sando.IntegrationTests.Search
             CreateArchive(filesInThisDirectory);            
             CreateSwum();
             AddFilesToIndex(filesInThisDirectory);
-            WaitForCommit(filesInThisDirectory);
+            WaitForAllFilesToBeCommitted(filesInThisDirectory);
+            ServiceLocator.Resolve<DocumentIndexer>().ForceReaderRefresh();
         }
 
-        private void WaitForCommit(string filesInThisDirectory)
+        private void WaitForAllFilesToBeCommitted(string filesInThisDirectory)
         {            
             int numFiles = 0;
             int updatedFiles = -1;
-            while (updatedFiles != numFiles)
+            while (updatedFiles != numFiles && numFiles <=0)
             {
                 Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds*1.5+""));
                 numFiles = updatedFiles;
                 updatedFiles = ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments();
             }
+            Thread.Sleep(int.Parse(GetTimeToCommit().Value.TotalMilliseconds * 2 + ""));
         }
 
         private void AddFilesToIndex(string filesInThisDirectory)
@@ -78,12 +87,14 @@ namespace Sando.IntegrationTests.Search
                     Path.GetExtension(Path.GetFullPath(file)).Equals(".h") ||
                     Path.GetExtension(Path.GetFullPath(file)).Equals(".cxx")
                     )
-                    _handler.SourceFileChanged(this, new FileEventRaisedArgs(FileEventType.FileAdded, file));
+                        _handler.SourceFileChanged(this, new FileEventRaisedArgs(FileEventType.FileAdded, file));  
             }
         }
 
         private List<string> GetFileList(string filesInThisDirectory, List<string> incoming = null)
         {
+            if(filesInThisDirectory.EndsWith("LIBS"))
+                return incoming;
             if (incoming == null)
                 incoming = new List<string>();
             incoming.AddRange(Directory.EnumerateFiles(filesInThisDirectory));
@@ -116,17 +127,14 @@ namespace Sando.IntegrationTests.Search
         {
             ServiceLocator.RegisterInstance(new IndexFilterManager());
             ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-            var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), GetTimeToCommit());
+            var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(1), GetTimeToCommit());
             ServiceLocator.RegisterInstance(currentIndexer);
             ServiceLocator.RegisterInstance(new IndexUpdateManager());
             currentIndexer.ClearIndex();            
             ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
         }
 
-        public virtual TimeSpan? GetTimeToCommit()
-        {
-            return null;
-        }
+
 
         private void CreateKey(string filesInThisDirectory)
         {
@@ -139,7 +147,7 @@ namespace Sando.IntegrationTests.Search
         {
             _indexPath = Path.Combine(Path.GetTempPath(), indexDirName);
             TestUtils.InitializeDefaultExtensionPoints();
-            ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new SandoOptionsProvider());
+            ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new FakeOptionsProvider(_indexPath,40));
             ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
             ServiceLocator.RegisterInstance(new InitialIndexingWatcher());
         }
@@ -151,13 +159,23 @@ namespace Sando.IntegrationTests.Search
             _srcMLArchive.Dispose();
             ServiceLocator.Resolve<IndexFilterManager>().Dispose();
             ServiceLocator.Resolve<DocumentIndexer>().Dispose();
-            try
+            DeleteTestDirectoryContents();
+        }
+
+        private void DeleteTestDirectoryContents()
+        {
+            var deleted = false;
+            while (!deleted)
             {
-                Directory.Delete(_indexPath, true);
-            }
-            catch (Exception e)
-            {
-                Assert.IsTrue(false, "Trying to delete this path: " + _indexPath);
+                try
+                {
+                    Directory.Delete(_indexPath, true);
+                    deleted = true;
+                }
+                catch (Exception e)
+                {
+                    Thread.Sleep(1000);
+                }
             }
         }
 
@@ -167,28 +185,44 @@ namespace Sando.IntegrationTests.Search
 
         protected List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
-            var codeSearcher = new CodeSearcher(new IndexerSearcher());
-            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-            var methodSearchResult = codeSearchResults.Find(predicate);
+            _results = GetResults(keywords);
+            var methodSearchResult = CheckExistance(keywords, predicate);
+            CheckRanking(keywords, expectedLowestRank, methodSearchResult);
+            return _results;
+        }
+
+        private void CheckRanking(string keywords, int expectedLowestRank, CodeSearchResult methodSearchResult)
+        {
+            var rank = _results.IndexOf(methodSearchResult) + 1;
+            Assert.IsTrue(rank <= expectedLowestRank,
+                          "Searching for " + keywords + " doesn't return a result in the top " + expectedLowestRank + "; rank=" +
+                          rank);
+        }
+
+        private CodeSearchResult CheckExistance(string keywords, Predicate<CodeSearchResult> predicate)
+        {
+            var methodSearchResult = _results.Find(predicate);
             if (methodSearchResult == null)
             {
                 Assert.Fail("Failed to find relevant search result for search: " + keywords);
             }
+            return methodSearchResult;
+        }
 
-            var rank = codeSearchResults.IndexOf(methodSearchResult) + 1;
-            Assert.IsTrue(rank <= expectedLowestRank,
-                          "Searching for " + keywords + " doesn't return a result in the top " + expectedLowestRank + "; rank=" +
-                          rank);
-
-            return codeSearchResults;
+        private List<CodeSearchResult> GetResults(string keywords)
+        {
+            SearchManager manager = new SearchManager(this);
+            _results = null;
+            manager.Search(keywords);
+            while (_results == null)
+                Thread.Sleep(50);
+            return _results;
         }
 
         public System.Xml.Linq.XElement GetXElementForSourceFile(string sourceFilePath)
         {
             return _srcMLArchive.GenerateXmlAndXElementForSource(sourceFilePath);
         }
-
-////////////////////////////////////////////////////////////////////////////////////////////////
 
         public SrcMLArchive GetSrcMLArchive()
         {
@@ -211,11 +245,42 @@ namespace Sando.IntegrationTests.Search
         }
 
         public event EventHandler<EventArgs> StartupCompleted;
+        private List<CodeSearchResult> _results;
 
 
         public void StopMonitoring()
         {
             throw new NotImplementedException();
+        }
+
+        public void Update(System.Linq.IQueryable<CodeSearchResult> results)
+        {
+            var newResults = new List<CodeSearchResult>();
+            foreach(var result in results)
+                 newResults.Add(result);
+            _results = newResults;
+        }
+
+        public void UpdateMessage(string message)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public class FakeOptionsProvider : ISandoOptionsProvider
+        {
+            private string _myIndex;
+            private int _myResultsNumber;
+
+            public FakeOptionsProvider(string index, int num)
+            {
+                _myIndex = index;
+                _myResultsNumber = num;
+            }
+
+            public SandoOptions GetSandoOptions()
+            {
+                return new SandoOptions(_myIndex,_myResultsNumber);
+            }
         }
     }
 }

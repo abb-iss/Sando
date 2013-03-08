@@ -22,8 +22,7 @@ namespace Sando.IntegrationTests.Search
 	public class LexicalSelfSearchTest :AutomaticallyIndexingTestClass
 	{
 		[Test]
-		public void ExactLexMatchSearch1()
-		{
+		public void ExactLexMatchSearch1(){
             string keywords = "LexicalSelfSearchTest";
 		    var expectedLowestRank = 1;
 			Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "LexicalSelfSearchTest");
@@ -130,7 +129,7 @@ namespace Sando.IntegrationTests.Search
 
         public override TimeSpan? GetTimeToCommit()
         {
-            return TimeSpan.FromSeconds(10);
+            return TimeSpan.FromSeconds(5);
         }
 
         //[TestFixtureSetUp]
