@@ -249,11 +249,13 @@ namespace Sando.Parser
 			}
 
             body = builder.ToString();
-            body = body.TrimEnd();
-			//body = Regex.Replace(body, "\\W", " ");
-            body = body.Replace("\\W", " ");
+            body = body.TrimEnd();			
+            body = replaceWhitespace.Replace(body," ");
 			return body;
 		}
+
+        private static Regex replaceWhitespace = new Regex("\\W", RegexOptions.Compiled);
+
 
 		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber)
 		{
