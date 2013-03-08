@@ -94,7 +94,7 @@ namespace Sando.IntegrationTests.Search
 
         private List<string> GetFileList(string filesInThisDirectory, List<string> incoming = null)
         {
-            if(filesInThisDirectory.EndsWith("LIBS"))
+            if (filesInThisDirectory.EndsWith("LIBS") || filesInThisDirectory.EndsWith("bin") || filesInThisDirectory.EndsWith("Debug"))
                 return incoming;
             if (incoming == null)
                 incoming = new List<string>();
