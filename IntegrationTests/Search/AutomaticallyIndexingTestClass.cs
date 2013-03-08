@@ -22,6 +22,7 @@ using Sando.Core.Tools;
 using ABB.SrcML.VisualStudio.SrcMLService;
 using Sando.UI.View;
 using System.Diagnostics;
+using System.Text;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -204,9 +205,22 @@ namespace Sando.IntegrationTests.Search
             var methodSearchResult = _results.Find(predicate);
             if (methodSearchResult == null)
             {
-                Assert.Fail("Failed to find relevant search result for search: " + keywords);
+                string info = PrintFailInformation();
+                Assert.Fail("Failed to find relevant search result for search: " + keywords+"\n"+info);
             }
             return methodSearchResult;
+        }
+
+        private string PrintFailInformation()
+        {
+            StringBuilder info = new StringBuilder();
+            info.AppendLine("Indexed Documents: "+ ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments());
+            foreach(var file in GetFileList(GetFilesDirectory()))
+                info.AppendLine("file: "+file);
+            if (_results != null)
+                foreach (var result in _results)
+                    info.AppendLine(result.Name+" in "+ result.FileName);
+            return info.ToString();
         }
 
         private List<CodeSearchResult> GetResults(string keywords)
