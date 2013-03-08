@@ -11,8 +11,11 @@ namespace Sando.Core.Tools
     {
         public string[] ExtractWords(string word)
         {
-            word = Regex.Replace(word, @"([A-Z][a-z]+)", "_$1");
-            word = Regex.Replace(word, @"([A-Z]+|[0-9]+)", "_$1");
+            //Zhao, for compiled regular expression
+            //word = Regex.Replace(word, @"([A-Z][a-z]+)", "_$1");
+            word = _patternChars.Replace(word, "_$1");
+            //word = Regex.Replace(word, @"([A-Z]+|[0-9]+)", "_$1");
+            word = _patternCharDigit.Replace(word, "_$1");
             word = word.Replace(" _", "_");
             var delimiters = new[] { '_', ':' };
             return word.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
@@ -90,5 +93,9 @@ namespace Sando.Core.Tools
         private const string Pattern = "[^a-zA-Z0-9\\s\\*\\-]";
         private const string QuotesPattern = "-{0,1}\"[^\"]+\"";
         private const string FileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
+        //Zhao Compliled regular express
+        private Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
+        private Regex _patternCharDigit = new Regex(@"([A-Z]+|[0-9]+)", RegexOptions.Compiled);
+        private Regex _patternSpace = new Regex(" _", RegexOptions.Compiled);
     }
 }

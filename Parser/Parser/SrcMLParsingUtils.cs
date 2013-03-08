@@ -203,6 +203,8 @@ namespace Sando.Parser
 	    public static string ParseBody(XElement function)
 		{
 			string body = String.Empty;
+            StringBuilder builder = new StringBuilder();
+
 			XElement block = function.Element(SRC.Block);
 			if(block != null)
 			{
@@ -212,7 +214,9 @@ namespace Sando.Parser
 					select el;
 				foreach(XElement elem in comments)
 				{
-					body += String.Join(" ", elem.Value) + " ";
+					//body += String.Join(" ", elem.Value) + " ";
+                    builder.Append(elem.Value).Append(" ");
+
 				}
 
 				//Expressions should also include all names, but we need to verify this...
@@ -221,7 +225,8 @@ namespace Sando.Parser
 						select el;
 				foreach(XElement elem in expressions)
 				{
-					body += String.Join(" ", elem.Value) + " ";
+					//body += String.Join(" ", elem.Value) + " ";
+                    builder.Append(elem.Value).Append(" ");
 				}
                 //need to also add a names from declarations
                 IEnumerable<XElement> declarations =
@@ -235,12 +240,18 @@ namespace Sando.Parser
                                     select el;
                     foreach (XElement elem in declNames)
                     {
-                        body += String.Join(" ", elem.Value) + " ";
+                        //body += String.Join(" ", elem.Value) + " ";
+                        builder.Append(elem.Value).Append(" ");
                     }			        
 			    }
-				body = body.TrimEnd();
+
+				//body = body.TrimEnd();
 			}
-			body = Regex.Replace(body, "\\W", " ");
+
+            body = builder.ToString();
+            body = body.TrimEnd();
+			//body = Regex.Replace(body, "\\W", " ");
+            body = body.Replace("\\W", " ");
 			return body;
 		}
 
