@@ -13,7 +13,6 @@ namespace LocalSearch
 {
     public class Context 
     {
-
         private GraphBuilder graph;
         private string filePath;
         private CodeSearchResult _currentElement;
@@ -30,7 +29,6 @@ namespace LocalSearch
             get;
         }
  
-
         public List<List<CodeNavigationResult>> droppedPaths
         {
             set; //when the user drop a path (by returning to an ealier state), set it
@@ -59,10 +57,15 @@ namespace LocalSearch
             filePath = srcPath;
         }
 
-        public void RankRelatedInfo(ref List<CodeNavigationResult> RelatedProgramElements, UInt16 heuristic = 4)
+        public void RankRelatedInfo(ref List<CodeNavigationResult> RelatedProgramElements, 
+            UInt16 heuristic = 4)
         {
             if (RelatedProgramElements.Count() == 0)
                 return;
+            
+            //restore scores
+            foreach (var programelement in RelatedProgramElements)
+                programelement.Score = 1.0;
 
             //score setting
             switch (heuristic)
@@ -109,9 +112,22 @@ namespace LocalSearch
                         EditDistanceHeuristicInPath(ref RelatedProgramElements, 2, 1);
                         break;
                     }
+                case 8: //single heuristic
+                    {
+                        CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
+                        TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, 1);
+                        break;
+                    }
                 default:
                     break;
             }
+
+            //backup current scores in current path
+            //for (int i = 0; i < RelatedProgramElements.Count() - 1; i++)
+            //{
+            //    CodeNavigationResult temp = RelatedProgramElements[i];
+            //    temp.scorehistory.Add(temp.Score);
+            //}
 
             //bubble ranking
             for (int i = 0; i < RelatedProgramElements.Count() - 1; i++)
@@ -152,7 +168,7 @@ namespace LocalSearch
             }
         }
 
-        private void AmongInitialSearchResultsHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, int step)
+        private void AmongInitialSearchResultsHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, int steps)
         {
             if (InitialSearchResults.Count() == 0)
                 return;
@@ -161,7 +177,7 @@ namespace LocalSearch
 
             List<double> weights = new List<double>();
             weights.Add(1);
-            for (double i = 2; i <= step; i++)
+            for (double i = 2; i <= steps; i++)
             {
                 weights.Add(1 / (2 * (i - 1)));
             }
@@ -180,7 +196,7 @@ namespace LocalSearch
             AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]);
 
             //while((step >=1) && (isExisting == false))
-            for (int i = 2; i <= step; i++)
+            for (int i = 2; i <= steps; i++)
             {
                 foreach (var relatedProgramElement in RelatedProgramElements)
                 {
@@ -553,7 +569,7 @@ namespace LocalSearch
         {            
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
-            RankRelatedInfo(ref recommendations, 6);
+            RankRelatedInfo(ref recommendations, 7);
 
             return recommendations;
         }

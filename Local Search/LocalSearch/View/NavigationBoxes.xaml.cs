@@ -61,6 +61,22 @@ namespace LocalSearch.View
             InitializeComponent();            
         }
 
+        public NavigationBoxes(ushort heuristic)
+        {
+            this.DataContext = this;
+            FirstProgramElements = new ObservableCollection<CodeSearchResult>();
+            SecondProgramElements = new ObservableCollection<CodeNavigationResult>();
+            ThirdProgramElements = new ObservableCollection<CodeNavigationResult>();
+            FourthProgramElements = new ObservableCollection<CodeNavigationResult>();
+            FifthProgramElements = new ObservableCollection<CodeNavigationResult>();
+            SixthProgramElements = new ObservableCollection<CodeNavigationResult>();
+            SeventhProgramElements = new ObservableCollection<CodeNavigationResult>();
+            SelectedElements = new List<CodeSearchResult>();
+            rankingHeuristic = heuristic;
+            InitializeComponent();
+        }
+
+
         public void Search(string s)
         {
             try
@@ -82,6 +98,8 @@ namespace LocalSearch.View
                 //only in unit tests?
             }
         }
+
+        private ushort rankingHeuristic;
 
         public static readonly DependencyProperty FirstProgramElementsProperty =
                 DependencyProperty.Register("FirstProgramElements", typeof(ObservableCollection<CodeSearchResult>), typeof(NavigationBoxes), new UIPropertyMetadata(null));
@@ -221,7 +239,8 @@ namespace LocalSearch.View
             }
         }
 
-        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, ObservableCollection<CodeNavigationResult> relatedInfo, int currentPos)
+        private void ClearGetAndShow(System.Windows.Controls.ListView currentNavigationBox, 
+            ObservableCollection<CodeNavigationResult> relatedInfo, int currentPos)
         {
 
             ClearSelectedElements(currentPos);
@@ -246,7 +265,9 @@ namespace LocalSearch.View
 
                 RelationSequence = ShowSequenceOfSelects();
 
-                var relatedmembers = InformationSource.GetRecommendations(selected);
+                //var relatedmembers = InformationSource.GetRecommendations(selected);
+                var relatedmembers = InformationSource.GetBasicRecommendations(selected);
+                InformationSource.RankRelatedInfo(ref relatedmembers, rankingHeuristic);
                 foreach (var member in relatedmembers)
                 {
                     relatedInfo.Add(member);
@@ -263,13 +284,33 @@ namespace LocalSearch.View
             {
                 SelectedElements.RemoveRange(currentPos, SelectedNum - currentPos);
 
+                //for (int i = currentPos; i <= (SelectedNum - currentPos); i++)
+                //{
+                //    CodeNavigationResult programelementInPath = InformationSource.CurrentPath[i] as CodeNavigationResult;
+                //    if (programelementInPath != null)
+                //        RestoreHistoryScores(ref programelementInPath, currentPos);
+                //}
+
                 InformationSource.CurrentPath.RemoveRange(currentPos, SelectedNum - currentPos); // set context
+            }
+        }
+
+        private void RestoreHistoryScores(ref CodeNavigationResult programelement, 
+            int currentPos)
+        {
+            int lenofhistory = programelement.scorehistory.Count();
+            if (lenofhistory > currentPos)
+            {
+                programelement.Score = programelement.scorehistory[currentPos];
+                programelement.scorehistory.RemoveRange(currentPos, lenofhistory - currentPos - 1);
             }
         }
 
         private String ShowSequenceOfSelects()
         {
             String strbuilder = "";
+            InformationSource.CurrentPath.Clear();
+
             int count = SelectedElements.Count;
 
             if (count == 0)

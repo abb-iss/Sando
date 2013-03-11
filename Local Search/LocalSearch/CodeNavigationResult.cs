@@ -82,6 +82,8 @@ namespace LocalSearch
 
         public XElement RelationCode { get; set; }
 
+        public List<double> scorehistory;
+
         public String RelationCodeAsString
         {
             get { return RelationCode.ToSource(); }
@@ -90,11 +92,13 @@ namespace LocalSearch
         public CodeNavigationResult(ProgramElement element, double score, XElement code):
             base(element, score)
 	   {           
-		   //this.ProgramElementRelation = relation;
            this.ProgramElementRelation = ProgramElementRelation.Other;
 
            this.RelationLineNumber = new List<int>();
            this.RelationLineNumber.Add(Convert.ToInt32(this.ProgramElement.DefinitionLineNumber));
+
+           this.scorehistory = new List<double>();
+           this.scorehistory.Add(score);
 
            this.RelationCode = new XElement(code);
            if (element.ProgramElementType == ProgramElementType.Method) 
