@@ -10,28 +10,33 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Sando.UI.Actions
 {
     public class RecommendationShower
     {
-        private ListView listBox;
         private string fileName;
         private Dispatcher dispatcher;
         private Context context;
-        private double Y=0;
         private RelatedItemsWindow myWindow;
         private RelatedItems itemsView;
+        private CodeSearchResult starter;
+        private Point point;
 
-        public RecommendationShower(ListView listBox, string fileName, Dispatcher dispatcher)
+   
+
+        public RecommendationShower(CodeSearchResult starter, string fileName, Dispatcher dispatcher, Point point)
         {
             // TODO: Complete member initialization
-            this.listBox = listBox;
+            this.starter = starter;
             this.fileName = fileName;
             this.dispatcher = dispatcher;
+            this.point = point;
         }
 
         public void Show()
@@ -39,26 +44,26 @@ namespace Sando.UI.Actions
             if (context == null)
             {
                 context = new Context();
-                context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\SrcML\\CSharp"));
+                context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\srcML-Win-cSharp"));
             }
             else
             {
                 context = context.Copy();
             }
-
-            var selected = listBox.SelectedItem as CodeSearchResult;                                    
+            
             myWindow = new RelatedItemsWindow();
             itemsView = myWindow.Content as RelatedItems;
-            RecommendAsync(context, selected, itemsView);
-            itemsView.Context = context.Copy();                        
-            var point = (listBox.ItemContainerGenerator.ContainerFromIndex(listBox.SelectedIndex) as ListViewItem).PointToScreen(new Point(0, 0));
-            myWindow.Left = point.X - myWindow.Width -10;
-            if(Y!=0)
-                myWindow.Top = Y;
-            else
-                myWindow.Top = point.Y;
-            myWindow.Show();
+            itemsView.FileName = fileName;            
+            RecommendAsync(context, starter, itemsView);
+            itemsView.Context = context.Copy();
+
+            myWindow.Left = point.X - 170;
+            myWindow.Top = point.Y;
+
+            myWindow.ShowDialog();
         }
+
+    
 
         private void RecommendAsync(Context context, CodeSearchResult selected, RelatedItems related)
         {
@@ -90,7 +95,12 @@ namespace Sando.UI.Actions
         {
             foreach (var item in relatedmembers)
                 itemsView.relatedItems.Add(item);
-        }
+            var first = relatedmembers.First();          
+            itemsView.CurrentSearchResult = first;                                       
+       }
+
+  
+
 
         private class RecommendParameters
         {
@@ -101,18 +111,18 @@ namespace Sando.UI.Actions
 
         public static RecommendationShower Create(ListView listBox, string fileName, Dispatcher dispatcher)
         {
-            return new RecommendationShower(listBox, fileName, dispatcher);
+            var point = (listBox.ItemContainerGenerator.ContainerFromIndex(listBox.SelectedIndex) as ListViewItem).PointToScreen(new Point(-10, 0)); ;
+            return new RecommendationShower(listBox.SelectedItem as CodeSearchResult, fileName, dispatcher,point);
+        }
+
+        public static RecommendationShower Create(CodeSearchResult selected, string fileName, Dispatcher dispatcher, Point point)
+        {            
+            return new RecommendationShower(selected, fileName, dispatcher, point);
         }
 
         public RecommendationShower SetContext(Context Context)
         {
             this.context = Context;
-            return this;
-        }
-
-        public RecommendationShower SetY(double Y)
-        {
-            this.Y = Y;
             return this;
         }
 

@@ -1,6 +1,9 @@
-﻿using NUnit.Framework;
+﻿using LocalSearch;
+using NUnit.Framework;
+using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.UI.Actions;
 using Sando.UI.View;
 using Sando.UI.View.Navigator;
 using System;
@@ -8,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
+using UnitTestHelpers;
 
 
 namespace Sando.UI.UnitTests
@@ -35,6 +40,22 @@ namespace Sando.UI.UnitTests
               w.WindowStyle = WindowStyle.None;
               w.ShowDialog();
         }
+
+        [Test]
+        [STAThread]
+        public void TestUiAgain()
+        {
+            PathManager.Create(@"..\..\");
+
+            Context gbuilder = new Context();
+            var fileName = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\CreatureManager.cs";
+            gbuilder.Intialize(fileName);
+            var elements = gbuilder.GetRecommendations();
+
+            var recommenderDialog = RecommendationShower.Create(elements.First(), fileName, Dispatcher.CurrentDispatcher,new Point(0,0));
+            recommenderDialog.Show();
+        }
+
 
 
     }

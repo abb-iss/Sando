@@ -10,8 +10,10 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -33,6 +35,7 @@ namespace Sando.UI.View.Navigator
             relatedItems = new ObservableCollection<CodeSearchResult>();
             InitializeComponent();
             NeedsElement = true;
+            relatedItemsListbox.ItemContainerGenerator.StatusChanged += OnListViewItemsStatusChanged;
         }
 
         public ObservableCollection<CodeSearchResult> relatedItems
@@ -54,31 +57,54 @@ namespace Sando.UI.View.Navigator
                 lastOne.Dispose();
             }
             var listBox = relatedItemsListbox;
-            var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
-            var fileName = "";
-            if (active != null)
-            {
-                fileName = Path.Combine(active.Path, active.Name);
-            }
-            Window parentWindow = Window.GetWindow(this);
-            lastOne = RecommendationShower.Create(listBox, fileName, Dispatcher).SetContext(Context).SetY(parentWindow.Top);
-            lastOne.Show();
             SetCurrent(listBox.SelectedItem as CodeSearchResult);
-            ShowItem();            
+            ShowItem();                      
+        }
+
+        private void OnListViewItemsStatusChanged(object sender, EventArgs e)
+        {
+            if (relatedItemsListbox.ItemContainerGenerator.Status == GeneratorStatus.ContainersGenerated)
+            {                
+                ((UIElement)relatedItemsListbox.ItemContainerGenerator.ContainerFromItem(relatedItemsListbox.SelectedItem)).Focus();
+            }
+        }
+
+        private string GetFileName()
+        {
+            if (FileName == null)
+            {
+                var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
+                var fileName = "";
+                if (active != null)
+                {
+                    fileName = Path.Combine(active.Path, active.Name);
+                }
+                return fileName;
+            }
+            else return FileName;
+        }
+
+        private void ShowNext()
+        {
+            Window parentWindow = Window.GetWindow(this);
+            lastOne = RecommendationShower.Create(relatedItemsListbox.SelectedItem as CodeSearchResult, GetFileName(), Dispatcher, new Point(parentWindow.Left,parentWindow.Top)).SetContext(Context);
+            lastOne.Show();
         }
 
         private void ShowItem()
-        {            
-            var navigationResult = relatedItemsListbox.SelectedItem as CodeNavigationResult;
-            if (navigationResult != null)
-            {
-                FileOpener.OpenFile(navigationResult.ProgramElement.FullFilePath, navigationResult.RelationLineNumber[0], "", true);                
-            }
-            else
-            {
-                var searchResult = relatedItemsListbox.SelectedItem as CodeSearchResult;
-                FileOpener.OpenItem(searchResult, "", true);
-            }
+        {
+            Task.Factory.StartNew(() => {
+                var navigationResult = relatedItemsListbox.SelectedItem as CodeNavigationResult;
+                if (navigationResult != null)
+                {
+                    FileOpener.OpenFile(navigationResult.ProgramElement.FullFilePath, navigationResult.RelationLineNumber[0], "", true);                
+                }
+                else
+                {
+                    var searchResult = relatedItemsListbox.SelectedItem as CodeSearchResult;
+                    FileOpener.OpenItem(searchResult, "", true);
+                }
+            });
         }
 
         public string CurrentName
@@ -91,6 +117,14 @@ namespace Sando.UI.View.Navigator
             DependencyProperty.Register("CurrentName", typeof(string), typeof(RelatedItems), new UIPropertyMetadata(null));
 
 
+        
+
+        public CodeSearchResult CurrentSearchResult
+        {
+            get { return (CodeSearchResult)GetValue(CurrentSearchResultProperty); }
+            set { SetValue(CurrentSearchResultProperty, value); }
+        }
+
         public ProgramElement CurrentElement
         {
             get { return (ProgramElement)GetValue(CurrentElementProperty); }
@@ -100,11 +134,14 @@ namespace Sando.UI.View.Navigator
         public static readonly DependencyProperty CurrentElementProperty =
             DependencyProperty.Register("CurrentElement", typeof(ProgramElement), typeof(RelatedItems), new UIPropertyMetadata(null));
 
+        public static readonly DependencyProperty CurrentSearchResultProperty =
+            DependencyProperty.Register("CurrentSearchResult", typeof(CodeSearchResult), typeof(RelatedItems), new UIPropertyMetadata(null));
+
 
         public bool NeedsElement
         {
             get { return (bool)GetValue(NeedsElementProperty); }
-            private set { SetValue(NeedsElementProperty, value); }
+            set { SetValue(NeedsElementProperty, value); }
         }
 
         public static readonly DependencyProperty NeedsElementProperty =
@@ -120,16 +157,17 @@ namespace Sando.UI.View.Navigator
         public static readonly DependencyProperty CurrentRelationProperty =
             DependencyProperty.Register("CurrentRelation", typeof(string), typeof(RelatedItems), new UIPropertyMetadata(null));
         private RecommendationShower lastOne;
+        public string FileName;
 
 
 
         public void SetCurrent(CodeSearchResult cs1)
         {
+            CurrentSearchResult = cs1;
             CurrentElement = cs1.ProgramElement;
             CurrentName = cs1.Name;
             if (cs1 as CodeNavigationResult != null)
-                CurrentRelation = (cs1 as CodeNavigationResult).ProgramElementRelationString;
-            NeedsElement = false;
+                CurrentRelation = (cs1 as CodeNavigationResult).ProgramElementRelationString;            
         }
 
         internal void Dispose()
@@ -137,6 +175,22 @@ namespace Sando.UI.View.Navigator
             if (lastOne != null)
                 lastOne.Dispose();
         }
+
+    
+
+        private void relatedItemsListbox_KeyDown_1(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter||e.Key==Key.Left)
+                ShowNext();
+            if (e.Key==Key.Right)
+                Window.GetWindow(this).Close();       
+        }
+
+        private void UserControl_Loaded_1(object sender, RoutedEventArgs e)
+        {
+            //relatedItemsListbox.Focus();
+        }
+
 
 
     }

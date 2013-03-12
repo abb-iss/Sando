@@ -10,6 +10,7 @@
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
              BorderBrush="DarkGray"
              d:DesignHeight="400" d:DesignWidth="150" 
+             Loaded="UserControl_Loaded_1"
              >    
     <UserControl.Resources>
         <converters:ProgramElementToRelationConverter x:Key="ProgramElementToRelation"/>
@@ -46,10 +47,11 @@
             </Grid>
         <Expander IsExpanded="{Binding Mode=OneWay, Path=NeedsElement}">
         <ListView BorderBrush="Transparent" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DockPanel.Dock="Bottom"
-                  Name="relatedItemsListbox"  ItemsSource="{Binding Path=relatedItems}" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="relatedItemsListbox_SelectionChanged_1">
+                  Name="relatedItemsListbox" ItemsSource="{Binding Path=relatedItems}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="relatedItemsListbox_SelectionChanged_1" KeyDown="relatedItemsListbox_KeyDown_1"
+                  SelectedItem="{Binding CurrentSearchResult}" >
             <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Template">
+                <Style TargetType="ListViewItem">                        
+                        <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListViewItem}">
                                 <Grid Margin="0,0,0,0" Grid.Row="0" Grid.Column="0" >
