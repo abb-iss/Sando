@@ -6,7 +6,10 @@
         WindowStyle="None"
         Topmost="True"
         Focusable="True"
-        SizeToContent="Height"    >
-    <view:RelatedItems >        
+        SizeToContent="Height" 
+        Activated="Window_GotFocus_1"
+        Deactivated="Window_LostFocus_1"
+        KeyDown="RelatedItems_KeyDown_1" MouseDown="Window_MouseDown" MouseMove="Window_MouseMove" Loaded="Window_Loaded" >
+    <view:RelatedItems>        
     </view:RelatedItems>
 </Window>
