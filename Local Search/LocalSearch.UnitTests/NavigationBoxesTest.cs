@@ -125,10 +125,36 @@ namespace LocalSearch.UnitTests
 
         [Test]
         [STAThread]
-        public void ShowUI_TopologyHeuristicTest()
+        public void ShowUI_EditDistanceAndShowBeforeTest()
         {
             Context gbuilder = new Context();
             gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\CreatureManager.cs");
+            var elements = gbuilder.GetRecommendations();
+
+            var boxes = new NavigationBoxes(3);
+            boxes.InformationSource = gbuilder;
+            foreach (var element in elements)
+            {
+                int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
+                CodeNavigationResult element2 = new CodeNavigationResult(element.ProgramElement, element.Score, gbuilder.GetXElementFromLineNum(number));
+                boxes.FirstProgramElements.Add(element2);
+            }
+            Window window = new Window
+            {
+                Title = "My User Control Dialog",
+                Content = boxes
+            };
+            window.ShowDialog();
+            window.Close();
+            Dispatcher.CurrentDispatcher.InvokeShutdown();
+        }
+
+        [Test]
+        [STAThread]
+        public void ShowUI_TopologyHeuristicTest() //ParseMethod
+        {
+            Context gbuilder = new Context();
+            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SrcMLCSharpParser.cs");
             var elements = gbuilder.GetRecommendations();
 
             var boxes = new NavigationBoxes(8);
