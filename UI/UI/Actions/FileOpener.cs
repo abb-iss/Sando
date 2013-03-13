@@ -31,7 +31,7 @@ namespace Sando.UI.Actions
                     if (IsLiteralSearchString(text))
                         FocusOnLiteralString(text);
                     else
-                        HighlightTerms(text);
+                        HighlightLine(lineNumber);
     			}
     			catch (Exception e)
     			{
@@ -39,6 +39,14 @@ namespace Sando.UI.Actions
     				//ignore, we don't want this feature ever causing a crash
     			}
     		}
+
+            private static void HighlightLine(int lineNumber)
+            {
+                var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
+                objSel.MoveToLineAndOffset(System.Convert.ToInt32
+                    (lineNumber), System.Convert.ToInt32(1), true);
+                objSel.SelectLine();
+            }
 
             private static void HighlightTerms(string text)
             {

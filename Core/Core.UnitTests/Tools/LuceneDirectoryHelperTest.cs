@@ -87,11 +87,20 @@ namespace Sando.Core.UnitTests
             Assert.IsTrue(Directory.Exists(solutionDirectoryPath), "Solution srcMlArchives directory path must be a valid directory path: "+ solutionDirectoryPath);
         }
 
+        [Test]
+        public void MakeSureFolderIsHashedOnEntirePath()
+        {
+            var dir = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(_solPath, Path.GetTempPath());
+            var dir2 = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(_solPath2, Path.GetTempPath());
+            Assert.AreNotEqual(dir, dir2, "Paths should be different (have a different hash value)\n"+dir+"\n"+dir2);
+        }
+
         [TestFixtureSetUp]
         public void SetUp()
         {
             const string solutionName = "sol.sln";
             _solPath = Path.Combine(Path.GetTempPath(), solutionName);
+            _solPath2 = Path.Combine(Path.GetTempPath(), "junk", solutionName);
             _hash = solutionName.GetHashCode();
             if(!File.Exists(_solPath))
                 File.WriteAllText(_solPath, "content");
@@ -106,5 +115,6 @@ namespace Sando.Core.UnitTests
 
         private string _solPath;
         private int _hash;
+        private string _solPath2;
     }
 }

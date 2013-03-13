@@ -240,15 +240,6 @@ namespace Sando.IntegrationTests.Search
 
         public event EventHandler<FileEventRaisedArgs> SourceFileChanged;
 
-        public void StartMonitoring(string srcMlArchiveDirectory, bool useExistingSrcML, string srcMLBinaryDirectory)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void StartMonitoring()
-        {
-            throw new NotImplementedException();
-        }
 
         public event EventHandler<EventArgs> StartupCompleted;
         private List<CodeSearchResult> _results;
@@ -287,6 +278,18 @@ namespace Sando.IntegrationTests.Search
             {
                 return new SandoOptions(_myIndex,_myResultsNumber);
             }
+        }
+
+
+        public void StartMonitoring(bool useExistingSrcML, string srcMLBinaryDirectory)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void StartMonitoring()
+        {
+            throw new NotImplementedException();
         }
     }
 }

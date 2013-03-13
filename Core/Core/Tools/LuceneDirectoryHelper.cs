@@ -17,7 +17,7 @@ namespace Sando.Core.Tools
                 return String.Empty;
 
             var solutionName = Path.GetFileNameWithoutExtension(solutionFullName) ?? Guid.NewGuid().ToString();
-            var solutionNameHash = solutionName.GetHashCode();
+            var solutionNameHash = solutionFullName.GetHashCode();
             var totalName = solutionName + "-" + solutionNameHash;
 
             var luceneDirectoryPath = Path.Combine(luceneDirectoryParentPath, folderName, totalName.ToString(CultureInfo.InvariantCulture));
