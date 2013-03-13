@@ -77,8 +77,7 @@ namespace Sando.UI
     	private SolutionEvents _solutionEvents;
 		private ExtensionPointsConfiguration _extensionPointsConfiguration;
         private DTEEvents _dteEvents;
-        private ViewManager _viewManager;
-		private SolutionReloadEventListener _listener;
+        private ViewManager _viewManager;		
         private WindowEvents _windowEvents;
         private bool SetupHandlers = false;
 
@@ -216,12 +215,6 @@ namespace Sando.UI
                 _solutionEvents.BeforeClosing += SolutionAboutToClose;
             }
 
-			_listener = new SolutionReloadEventListener();
-			_listener.OnQueryUnloadProject += () =>
-			{
-				SolutionAboutToClose();
-				SolutionHasBeenOpened();
-			};
         }
 
          
