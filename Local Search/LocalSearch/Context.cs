@@ -90,8 +90,9 @@ namespace LocalSearch
                 case 3: //partially selected heuristics 
                     {
                         CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-                        EditDistanceHeuristicInPath(ref RelatedProgramElements, 1, 1);
-                        UseLocationHeuristic(ref RelatedProgramElements);
+                        EditDistanceHeuristicInPath(ref RelatedProgramElements, 2, 1);
+                        ShowBeforeHeuristic(ref RelatedProgramElements);
+                        //UseLocationHeuristic(ref RelatedProgramElements);
                         break;
                     }
                 case 4: //no heuristics
@@ -571,7 +572,7 @@ namespace LocalSearch
         {            
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
-            RankRelatedInfo(ref recommendations, 7);
+            RankRelatedInfo(ref recommendations, 2);
 
             return recommendations;
         }
