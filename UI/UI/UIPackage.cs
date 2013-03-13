@@ -332,13 +332,15 @@ namespace Sando.UI
                 var solutionPath = openSolution.FileName;
                 var key = new SolutionKey(solutionId, solutionPath);              
                 ServiceLocator.RegisterInstance(key);
-                ServiceLocator.RegisterInstance(new IndexFilterManager());                
+                
 
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
+                isIndexRecreationRequired = isIndexRecreationRequired || !PathManager.Instance.IndexPathExists(key);
+                
+                ServiceLocator.RegisterInstance(new IndexFilterManager());                
 
                 ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
-
                 var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(4));
                 ServiceLocator.RegisterInstance(currentIndexer);
 
@@ -377,8 +379,7 @@ namespace Sando.UI
                 
                 // SrcML Service starts monitoring the opened solution.
                 // Sando may define the directory of storing srcML archives
-                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "SrcML");
-                string srcMlArchiveFolder = LuceneDirectoryHelper.GetOrCreateSrcMlArchivesDirectoryForSolution(openSolution.FullName, PathManager.Instance.GetExtensionRoot());                
+                string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "SrcML");                
                 // Sando may decide whether to use existing srcML archives
                 bool useExistingSrcML = !isIndexRecreationRequired;
 
