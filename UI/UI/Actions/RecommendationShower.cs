@@ -43,8 +43,7 @@ namespace Sando.UI.Actions
         {
             if (context == null)
             {
-                context = new Context();
-                context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\srcML-Win-cSharp"));
+                context = new Context();           
             }
             else
             {
@@ -76,6 +75,17 @@ namespace Sando.UI.Actions
         private void sandoWorker_DoRecommend(object sender, DoWorkEventArgs e)
         {
             var context = (e.Argument as RecommendParameters).CurrentContext;
+            if (!context.IsInitialized())
+            {
+                try
+                {
+                    context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\SrcML\\CSharp"));
+                }
+                catch (Exception ee)
+                {
+                    context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\srcML-Win-cSharp"));
+                }
+            }
             var selected = (e.Argument as RecommendParameters).Item;
             var itemsView = (e.Argument as RecommendParameters).MyView;
             context.CurrentPath.Add(selected);

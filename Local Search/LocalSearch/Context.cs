@@ -16,6 +16,7 @@ namespace LocalSearch
         private GraphBuilder graph;
         private string filePath;
         private CodeSearchResult _currentElement;
+        private bool _isInitialized = false;
 
         public String query { set;  get; }
 
@@ -55,6 +56,7 @@ namespace LocalSearch
             graph = new GraphBuilder(srcPath, srcMLPath);
             graph.Initialize();
             filePath = srcPath;
+            _isInitialized = true;
         }
 
         public void RankRelatedInfo(ref List<CodeNavigationResult> RelatedProgramElements, 
@@ -655,5 +657,10 @@ namespace LocalSearch
 
         
         #endregion public APIs
+
+          public bool IsInitialized()
+          {
+              return _isInitialized;
+          }
     }
 }
