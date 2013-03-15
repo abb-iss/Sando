@@ -9,7 +9,7 @@ using System.Text;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 
 
 namespace Sando.Recommender {

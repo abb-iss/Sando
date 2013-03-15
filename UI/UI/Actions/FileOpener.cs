@@ -3,7 +3,7 @@ using EnvDTE;
 using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 
 namespace Sando.UI.Actions
 {

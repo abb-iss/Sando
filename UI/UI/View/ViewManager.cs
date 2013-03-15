@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Sando.Core;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.Core.Tools;
 

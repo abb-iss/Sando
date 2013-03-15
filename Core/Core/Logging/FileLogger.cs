@@ -8,7 +8,7 @@ using log4net.Config;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 
-namespace Sando.Core.Extensions.Logging
+namespace Sando.Core.Logging
 {
 	public class FileLogger
     {

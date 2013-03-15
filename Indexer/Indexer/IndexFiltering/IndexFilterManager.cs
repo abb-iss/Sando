@@ -5,7 +5,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Sando.Core;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.IndexerContracts;
 using System.Linq;

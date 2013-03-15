@@ -10,7 +10,7 @@ using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 

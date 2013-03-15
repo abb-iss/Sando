@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;

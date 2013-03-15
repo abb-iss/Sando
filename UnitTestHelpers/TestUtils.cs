@@ -10,7 +10,7 @@ using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 
 namespace UnitTestHelpers
 {

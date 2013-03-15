@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using ABB.SrcML;
 

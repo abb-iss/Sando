@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using System.Linq;
 
 namespace Sando.Core.UnitTests.Extensions.Logging

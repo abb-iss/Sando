@@ -22,7 +22,7 @@ using Sando.UI.Options;
 using Microsoft.VisualStudio.Shell;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching;
 using Sando.Parser;

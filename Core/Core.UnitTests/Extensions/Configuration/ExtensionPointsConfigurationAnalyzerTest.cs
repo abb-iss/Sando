@@ -7,7 +7,7 @@ using log4net;
 using NUnit.Framework;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.QueryContracts;
