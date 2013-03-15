@@ -79,13 +79,15 @@ namespace Sando.Indexer
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
 
+            Document tempDoc = sandoDocument.GetDocument();
+            IndexWriter.AddDocument(tempDoc);
             lock (_lock)
             {
-                IndexWriter.AddDocument(sandoDocument.GetDocument());
-                if(_synchronousCommits)
+                if (_synchronousCommits)
                     CommitChanges();
                 else
-                    _hasIndexChanged = true;
+                    if (!_hasIndexChanged) //if _hasIndexChanged is false, then turn it into true
+                        _hasIndexChanged = true;
             }
 		}
 
@@ -94,13 +96,14 @@ namespace Sando.Indexer
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
             var term = new Term("FullFilePath", ConverterFromHitToProgramElement.StandardizeFilePath(fullFilePath));
+            IndexWriter.DeleteDocuments(new TermQuery(term));
             lock (_lock)
             {
-                IndexWriter.DeleteDocuments(new TermQuery(term));
                 if (_synchronousCommits || commitImmediately)
                     CommitChanges();
                 else
-                    _hasIndexChanged = true;
+                    if (!_hasIndexChanged) //if _hasIndexChanged is false, then turn it into true
+                        _hasIndexChanged = true;
             }
         }
 
