@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
+
 namespace LocalSearch.UnitTests
 {
     [TestFixture]
@@ -76,5 +77,6 @@ namespace LocalSearch.UnitTests
             int distance = obj.LevenshteinDistance(a,b);
             Assert.AreEqual(distance, 3);
         }
+
     }
 }
