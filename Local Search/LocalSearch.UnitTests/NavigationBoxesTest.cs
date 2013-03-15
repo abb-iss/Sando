@@ -1,4 +1,4 @@
-﻿using LocalSearch.View;
+﻿using Sando.LocalSearch.View;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 
-namespace LocalSearch.UnitTests
+namespace Sando.LocalSearch.UnitTests
 {
     [TestFixture]
     public class NavigationBoxesTest

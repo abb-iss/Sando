@@ -39,7 +39,7 @@ using System.ComponentModel.Composition;
 using Sando.DependencyInjection;
 
 
-namespace LocalSearch.View
+namespace Sando.LocalSearch.View
 {
     /// <summary>
     /// Interaction logic for NavigationBoxes.xaml

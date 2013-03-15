@@ -10,7 +10,7 @@ using System.ComponentModel;
 using System.Xml.Linq;
 using ABB.SrcML;
 
-namespace LocalSearch
+namespace Sando.LocalSearch
 {
     public class CodeNavigationResult : CodeSearchResult
     {

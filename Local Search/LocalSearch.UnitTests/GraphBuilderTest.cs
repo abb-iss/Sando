@@ -8,7 +8,7 @@ using ABB.SrcML;
 using NUnit.Framework;
 using System.Xml.Linq;
 
-namespace LocalSearch.UnitTests
+namespace Sando.LocalSearch.UnitTests
 {
     [TestFixture]
     public class GraphBuilderTest

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace LocalSearch
+namespace Sando.LocalSearch
 {
     /*
 	   Porter stemmer in CSharp, based on the Java port. The original paper is in

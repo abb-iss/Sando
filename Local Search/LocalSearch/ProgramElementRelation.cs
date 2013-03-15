@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LocalSearch
+namespace Sando.LocalSearch
 {
     public enum ProgramElementRelation
     {

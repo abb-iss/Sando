@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace LocalSearch
+namespace Sando.LocalSearch
 {
     public class XElementToProgramElementConverter
     {

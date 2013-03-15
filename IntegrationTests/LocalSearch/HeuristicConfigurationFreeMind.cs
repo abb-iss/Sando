@@ -9,6 +9,8 @@ using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
+using Sando.LocalSearch;
+
 using System.Collections.Generic;
 
 namespace Sando.IntegrationTests.LocalSearch
@@ -22,6 +24,8 @@ namespace Sando.IntegrationTests.LocalSearch
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
             string keywords = "fetch output stream";
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+
+            
         }
 
         public override string GetIndexDirName()
@@ -31,7 +35,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\FreeMindTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\LocaSearchTestFiles\\FreeMindTestFiles";
         }
     }
 }

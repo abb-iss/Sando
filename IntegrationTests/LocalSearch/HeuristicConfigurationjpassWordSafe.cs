@@ -10,6 +10,7 @@ using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
 using System.Collections.Generic;
+using Sando.LocalSearch;
 
 namespace Sando.IntegrationTests.LocalSearch
 {
@@ -31,7 +32,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\jpassWordSafeTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\LocaSearchTestFiles\\jpassWordSafeTestFiles";
         }
     }
 }

@@ -9,7 +9,7 @@ using ABB.SrcML;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace LocalSearch
+namespace Sando.LocalSearch
 {
     public class Context 
     {

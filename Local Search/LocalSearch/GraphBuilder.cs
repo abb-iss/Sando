@@ -13,7 +13,7 @@ using System.Diagnostics.Contracts;
 using System.Xml;
 using System.Text.RegularExpressions;
 
-namespace LocalSearch
+namespace Sando.LocalSearch
 {   
     public class GraphBuilder
     {
