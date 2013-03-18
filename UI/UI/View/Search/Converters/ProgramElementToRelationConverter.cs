@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using Sando.ExtensionContracts.ProgramElementContracts;
-using LocalSearch;
+using Sando.LocalSearch;
 
 namespace Sando.UI.View.Search.Converters
 {

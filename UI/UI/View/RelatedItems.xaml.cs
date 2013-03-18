@@ -1,5 +1,5 @@
 ﻿using EnvDTE80;
-using LocalSearch;
+using Sando.LocalSearch;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;

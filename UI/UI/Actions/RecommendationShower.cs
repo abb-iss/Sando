@@ -1,4 +1,4 @@
-﻿using LocalSearch;
+﻿using Sando.LocalSearch;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.UI.View;

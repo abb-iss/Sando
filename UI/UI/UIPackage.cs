@@ -32,8 +32,8 @@ using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
 using System.Xml.Linq;
 using ABB.SrcML;
-using LocalSearch;
-using LocalSearch.View;
+using Sando.LocalSearch;
+using Sando.LocalSearch.View;
 
 namespace Sando.UI
 {

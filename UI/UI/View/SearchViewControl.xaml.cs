@@ -21,7 +21,7 @@ using Sando.UI.Actions;
 using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.UI.View.Navigator;
-using LocalSearch;
+using Sando.LocalSearch;
 using System.IO;
 using Sando.Core.Tools;
 

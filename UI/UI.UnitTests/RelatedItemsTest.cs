@@ -1,4 +1,4 @@
-﻿using LocalSearch;
+﻿using Sando.LocalSearch;
 using NUnit.Framework;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ProgramElementContracts;
