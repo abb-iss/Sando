@@ -31,7 +31,7 @@ namespace Sando.IntegrationTests.Search
 		public void MethodElementReturnedFromSearchContainsAllFields()
 		{
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
-			string keywords = "fetch output stream";
+            string keywords = "fetch output stream";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 5, "Invalid results number");
 			var methodSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && el.ProgramElement.Name == "FetchOutputStream");

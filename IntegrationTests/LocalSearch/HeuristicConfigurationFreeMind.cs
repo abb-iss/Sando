@@ -22,10 +22,10 @@ namespace Sando.IntegrationTests.LocalSearch
         public void FreeMindTest()
         {
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
-            string keywords = "fetch output stream";
+            string keywords = "Saving Failed";
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-
             
+
         }
 
         public override string GetIndexDirName()
@@ -35,7 +35,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\LocaSearchTestFiles\\FreeMindTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\LocalSearchTestFiles\\FreeMindTestFiles";
         }
     }
 }

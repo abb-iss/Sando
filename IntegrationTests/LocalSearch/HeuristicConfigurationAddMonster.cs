@@ -9,41 +9,41 @@ using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.SearchEngine;
-using System.Collections.Generic;
 using Sando.LocalSearch;
-using System.Linq;
+using System.IO;
+
+using System.Collections.Generic;
 
 namespace Sando.IntegrationTests.LocalSearch
 {
     [TestFixture]
-    public class HeuristicConfigurationRachota : AutomaticallyIndexingTestClass
-    {        
+    public class HeuristicConfigurationAddMonster : AutomaticallyIndexingTestClass
+    {
         [Test]
-        public void rachotaTest()
+        public void AddMonsterTest()
         {
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
-            string keywords = "fetch output stream";
+            string keywords = "Add";
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+            int a = codeSearchResults.Count;
 
-            Context gbuilder = new Context();
-            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\SrcMLCSharpParser.cs");
-            
-            if(codeSearchResults.Count == 0)
-                codeSearchResults = gbuilder.GetRecommendations().ToList();
 
-            foreach (var searchRes in codeSearchResults)
-                gbuilder.InitialSearchResults.Add(Tuple.Create(searchRes, 0));
 
         }
 
         public override string GetIndexDirName()
         {
-            return "HeuristicConfigurationRachota";
+            return "HeuristicConfigurationAddMonster";
         }
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\LocalSearchTestFiles\\RachotaTestFiles";
+            return Path.GetFullPath("..\\..\\IntegrationTests\\TestFiles\\LocalSearchTestFiles\\AddMonsterTestFiles");
+        }
+
+        public override TimeSpan? GetTimeToCommit()
+        {
+            return TimeSpan.FromSeconds(1);
         }
     }
 }
