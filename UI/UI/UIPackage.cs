@@ -34,6 +34,7 @@ using System.Xml.Linq;
 using ABB.SrcML;
 using Sando.LocalSearch;
 using Sando.LocalSearch.View;
+using Sando.UI.View.Search.Converters;
 
 namespace Sando.UI
 {
@@ -173,36 +174,7 @@ namespace Sando.UI
                 var toolwndCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.sandoSearch);
                 var menuToolWin = new MenuCommand(_viewManager.ShowToolWindow, toolwndCommandID);
                 mcs.AddCommand(menuToolWin);
-
-                var menuCommandID = new CommandID(GuidList.guidUICmdSet, (int)PkgCmdIDList.localSandoSearch);
-                var menuItem = new MenuCommand((sender, evt) => TriggerLocalSearch(), menuCommandID);
-                mcs.AddCommand(menuItem);
-            }
-        }
-
-        private void TriggerLocalSearch()
-        {
-            var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
-            if (active != null)
-            {
-                var fileName = Path.Combine(active.Path, active.Name);
-                Context context = new Context();
-                context.Intialize(fileName, Path.Combine(PathManager.Instance.GetExtensionRoot(), "LIBS\\SrcML\\CSharp"));
-                var boxes = new NavigationBoxes();
-                boxes.InformationSource = context;
-                foreach (var element in context.GetRecommendations())
-                {
-                    int number = Convert.ToInt32(element.ProgramElement.DefinitionLineNumber);
-                    CodeNavigationResult element2 = new CodeNavigationResult(element.ProgramElement, element.Score, context.GetXElementFromLineNum(number));
-                    boxes.FirstProgramElements.Add(element2);
-                }
-                System.Windows.Window window = new System.Windows.Window
-                {
-                    Title = "Single File Search",
-                    Content = boxes
-                };
-                window.ShowDialog();
-                window.Close();
+   
             }
         }
 
@@ -335,6 +307,7 @@ namespace Sando.UI
         {
             try
             {
+                ServiceLocator.RegisterInstance(new RecommendationGetter());
                 //TODO if solution is reopen - the guid should be read from file - future change
                 var solutionId = Guid.NewGuid();
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;

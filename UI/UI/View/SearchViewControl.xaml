@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
+             xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"             
              xmlns:SearchEngine="clr-namespace:Sando.SearchEngine;assembly=SearchEngine"
              xmlns:converters="clr-namespace:Sando.UI.View.Search.Converters"
              xmlns:local="clr-namespace:Sando.UI" xmlns:view="clr-namespace:Sando.UI.View" mc:Ignorable="d" 
              xmlns:ExContract="clr-namespace:Sando.ExtensionContracts.ProgramElementContracts;assembly=SandoExtensionContracts"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              xmlns:Drawing="clr-namespace:System.Drawing;assembly=System.Drawing" d:DesignWidth="300" d:DesignHeight="400"
-             xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+             xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"                          
              Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" KeyboardNavigation.IsTabStop="False" xmlns:my="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
              xmlns:search="clr-namespace:Sando.UI.View.Search">
@@ -36,6 +36,8 @@
             
         </Style>
         <converters:ElementToIcon x:Key="ElementToIcon"/>
+        
+        
         <converters:FileTypeToIcon x:Key="FileTypeToIcon"/>
         <converters:NullableBoolToBool x:Key="NullableBoolToBool"/>
         <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
@@ -295,7 +297,7 @@
                 </ListView.ContextMenu>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Style.Triggers>
+                        <Style.Triggers>                            
                             <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
                                 <Setter Property="Height" Value="24"/>
                             </DataTrigger>
@@ -303,7 +305,7 @@
                                 <Setter Property="Height" Value="89"/>
                             </DataTrigger>
                         </Style.Triggers>
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />                        
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>
                         <Setter Property="Height" Value="24"/>
@@ -343,6 +345,11 @@
                                                 <RowDefinition Height="20"/>
                                                 <RowDefinition Height="1"/>
                                             </Grid.RowDefinitions>
+                                            <Popup PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" 
+                                                   Placement="Left" StaysOpen="True" 
+                                                   IsOpen="{Binding Mode=OneWay, Path=ShowPopups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SearchViewControl}}}">
+                                                    <Label Background="AntiqueWhite" Width="Auto" Content="{Binding IsAsync=True, Mode=OneWay, Path=FirstRecommendation, FallbackValue=loading...}"></Label>       
+                                            </Popup>
                                             <Canvas Width="Auto" Height="0" Margin="-7,-2,0,0" Grid.Row="0" Grid.Column="0">
                                                 <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
                                             </Canvas>

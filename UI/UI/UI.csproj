@@ -245,6 +245,8 @@
     <Compile Include="View\RelatedItemsWindow.xaml.cs">
       <DependentUpon>RelatedItemsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Search\CodeSearchResultWrapper.cs" />
+    <Compile Include="View\Search\Converters\RecommendationGetter.cs" />
     <Compile Include="View\Search\Converters\ProgramElementToRelationConverter.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\ISearchResultListener.cs" />

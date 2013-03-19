@@ -24,6 +24,10 @@ using Sando.UI.View.Navigator;
 using Sando.LocalSearch;
 using System.IO;
 using Sando.Core.Tools;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Sando.UI.View
 {
@@ -31,6 +35,7 @@ namespace Sando.UI.View
     {
         public SearchViewControl()
         {
+            ServiceLocator.RegisterInstance(this);
             DataContext = this; //so we can show results
             InitializeComponent();
 
@@ -186,7 +191,7 @@ namespace Sando.UI.View
 
         private void BeginSearch(string searchString, bool localSearch = false)
         {
-            lastSearchWasLocal = localSearch;
+            LastSearchLocal = localSearch;
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
             {
@@ -248,6 +253,8 @@ namespace Sando.UI.View
         {
             var searchParams = (WorkerSearchParameters)e.Argument;
             _searchManager.Search(searchParams.Query, searchParams.Criteria);
+            if (LastSearchLocal)
+                ShowPopups = true;
         }
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -297,8 +304,13 @@ namespace Sando.UI.View
             SearchResults.Clear();
             foreach (var codeSearchResult in results)
             {
-                SearchResults.Add(codeSearchResult);
+                if (LastSearchLocal)
+                    SearchResults.Add(CodeSearchResultWrapper.Wrap(codeSearchResult));
+                else
+                    SearchResults.Add(codeSearchResult);
             }
+            if(LastSearchLocal)
+                ShowPopups = true;
         }
 
         public void UpdateMessage(string message)
@@ -374,28 +386,53 @@ namespace Sando.UI.View
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateExpansionState(searchResultListbox);
-            if (lastSearchWasLocal)
+            if (LastSearchLocal)
             {
-                if (lastOne != null)
-                    lastOne.Dispose();
-
-                var listBox = searchResultListbox;
-                var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
-                var fileName = "";
-                if (active != null)
-                {
-                    fileName = Path.Combine(active.Path, active.Name);
-                }
-                lastOne = RecommendationShower.Create(listBox, fileName, Dispatcher);
-                lastOne.Show();
+                ShowPopups = false;
+                Dispatcher.Invoke((Action)(() => ShowRecommendations()));
+  
             }
+        }
+
+        private void ShowRecommendations()
+        {
+            if (lastOne != null)
+                lastOne.Dispose();
+
+            var listBox = searchResultListbox;
+            var active = ServiceLocator.Resolve<DTE2>().ActiveDocument;
+            var fileName = "";
+            if (active != null)
+            {
+                fileName = Path.Combine(active.Path, active.Name);
+            }
+            lastOne = RecommendationShower.Create(listBox, fileName, Dispatcher);
+            lastOne.Show();
+            ShowPopups = true;
         }
 
 
 
         private void Toggled(object sender, RoutedEventArgs e)
         {
-            UpdateExpansionState(searchResultListbox);
+            Task.Factory.StartNew(() =>
+            {
+                Dispatcher.BeginInvoke((Action)(() => HidePopups()));                
+                Dispatcher.Invoke((Action)(() => UpdateExpansionState(searchResultListbox)));
+                Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, (Action)(() => ReShowPopups()));
+            });
+            
+        }
+
+
+        private void HidePopups()
+        {
+            ShowPopups = false;
+        }
+
+        private void ReShowPopups()
+        {
+            ShowPopups = true;
         }
 
         private void UpdateRecommendations(IEnumerable<string> recommendations, string query)
@@ -431,6 +468,25 @@ namespace Sando.UI.View
                 SelectionPopup.IsOpen = true;
         }
 
+        public bool LastSearchLocal
+        {
+            get { return (bool)GetValue(LastSearchLocalProperty); }
+            private set { SetValue(LastSearchLocalProperty, value); }
+        }
+
+        public bool ShowPopups
+        {
+            get { return (bool)GetValue(ShowPopupsProperty); }
+            private set { SetValue(ShowPopupsProperty, value); }
+        }
+
+        public static readonly DependencyProperty ShowPopupsProperty =
+             DependencyProperty.Register("ShowPopups", typeof(bool), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
+
+        public static readonly DependencyProperty LastSearchLocalProperty =
+             DependencyProperty.Register("LastSearchLocal", typeof(bool), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
 
         public static readonly DependencyProperty AccessLevelsProperty =
             DependencyProperty.Register("AccessLevels", typeof(ObservableCollection<AccessWrapper>), typeof(SearchViewControl), new UIPropertyMetadata(null));
@@ -456,8 +512,7 @@ namespace Sando.UI.View
         private const string FileNotFoundPopupTitle = "File opening error";
 
         private readonly SearchManager _searchManager;
-        private readonly QueryRecommender _recommender;
-        private bool lastSearchWasLocal;
+        private readonly QueryRecommender _recommender;      
         private RecommendationShower lastOne;
 
         private void Remove_Click_1(object sender, RoutedEventArgs e)
@@ -480,6 +535,8 @@ namespace Sando.UI.View
         {
             BeginSearch(searchBox.Text, true);
         }
+
+   
     
     }
 }
