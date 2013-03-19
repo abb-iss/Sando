@@ -27,6 +27,7 @@ namespace Sando.UI.Actions
         private RelatedItems itemsView;
         private CodeSearchResult starter;
         private Point point;
+        private Window ParentWindow;
 
    
 
@@ -49,8 +50,11 @@ namespace Sando.UI.Actions
             {
                 context = context.Copy();
             }
+
             
             myWindow = new RelatedItemsWindow();
+            if (ParentWindow != null)
+                myWindow.Owner = ParentWindow;
             itemsView = myWindow.Content as RelatedItems;
             itemsView.FileName = fileName;            
             RecommendAsync(context, starter, itemsView);
@@ -122,7 +126,7 @@ namespace Sando.UI.Actions
         public static RecommendationShower Create(ListView listBox, string fileName, Dispatcher dispatcher)
         {
             var point = (listBox.ItemContainerGenerator.ContainerFromIndex(listBox.SelectedIndex) as ListViewItem).PointToScreen(new Point(-10, 0)); ;
-            return new RecommendationShower(listBox.SelectedItem as CodeSearchResult, fileName, dispatcher,point);
+            return new RecommendationShower(listBox.SelectedItem as CodeSearchResult, fileName, dispatcher,point).SetParentWindow(Window.GetWindow(listBox));
         }
 
         public static RecommendationShower Create(CodeSearchResult selected, string fileName, Dispatcher dispatcher, Point point)
@@ -143,6 +147,12 @@ namespace Sando.UI.Actions
                 itemsView.Dispose();
                 myWindow.Close();
             }
+        }
+
+        internal RecommendationShower SetParentWindow(Window parentWindow)
+        {
+            ParentWindow = parentWindow;
+            return this;
         }
     }
 }

@@ -48,7 +48,7 @@
         <Expander IsExpanded="{Binding Mode=OneWay, Path=NeedsElement}">
         <ListView BorderBrush="Transparent" Width="Auto" Height="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" DockPanel.Dock="Bottom"
                   Name="relatedItemsListbox" ItemsSource="{Binding Path=relatedItems}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectionChanged="relatedItemsListbox_SelectionChanged_1" KeyDown="relatedItemsListbox_KeyDown_1"
-                  SelectedItem="{Binding CurrentSearchResult}" >
+                  SelectedItem="{Binding CurrentSearchResult}"  >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">                        
                         <Setter Property="Template">

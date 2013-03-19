@@ -39,12 +39,18 @@ namespace Sando.UI.View
         {
             if (e.Key == Key.Escape)
                 CloseWindow();
+            System.Windows.Input.Mouse.Capture(this, System.Windows.Input.CaptureMode.SubTree);                        
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {            
+        {
             if (posX < 0 || posX > this.Width || posY < 0 || posY > this.Height)
                 this.Close();
+            else
+            {
+                (this.Content as RelatedItems).UpdateCurrent();
+                System.Windows.Input.Mouse.Capture(this, System.Windows.Input.CaptureMode.SubTree);
+            }
         }
 
 
@@ -68,8 +74,16 @@ namespace Sando.UI.View
 
         private void Window_GotFocus_1(object sender, EventArgs e)
         {
-            (this.Content as RelatedItems).NeedsElement = true;            
+            (this.Content as RelatedItems).NeedsElement = true;
+            System.Windows.Input.Mouse.Capture(this, System.Windows.Input.CaptureMode.SubTree);                        
         }
+
+        private void Window_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            (this.Content as RelatedItems).relatedItemsListbox_MouseDoubleClick_1(null,null);
+        }
+
+  
 
      
 

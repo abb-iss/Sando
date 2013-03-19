@@ -87,13 +87,12 @@ namespace Sando.UI.View.Navigator
         private void ShowNext()
         {
             Window parentWindow = Window.GetWindow(this);
-            lastOne = RecommendationShower.Create(relatedItemsListbox.SelectedItem as CodeSearchResult, GetFileName(), Dispatcher, new Point(parentWindow.Left,parentWindow.Top)).SetContext(Context);
+            lastOne = RecommendationShower.Create(relatedItemsListbox.SelectedItem as CodeSearchResult, GetFileName(), Dispatcher, new Point(parentWindow.Left,parentWindow.Top)).SetContext(Context).SetParentWindow(parentWindow);
             lastOne.Show();
         }
 
         private void ShowItem()
-        {
-            Task.Factory.StartNew(() => {
+        {            
                 var navigationResult = relatedItemsListbox.SelectedItem as CodeNavigationResult;
                 if (navigationResult != null)
                 {
@@ -103,8 +102,7 @@ namespace Sando.UI.View.Navigator
                 {
                     var searchResult = relatedItemsListbox.SelectedItem as CodeSearchResult;
                     FileOpener.OpenItem(searchResult, "", true);
-                }
-            });
+                }            
         }
 
         public string CurrentName
@@ -191,7 +189,17 @@ namespace Sando.UI.View.Navigator
             //relatedItemsListbox.Focus();
         }
 
+  
+
+        internal void relatedItemsListbox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            ShowNext();
+        }
 
 
+        internal void UpdateCurrent()
+        {
+            relatedItemsListbox_SelectionChanged_1(null, null);
+        }
     }
 }

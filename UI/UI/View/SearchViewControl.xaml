@@ -285,7 +285,7 @@
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
                         VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
                        SelectionChanged="searchResultListbox_SelectionChanged"
-                       
+                       MouseDown="searchResultListbox_Mouse"
                        >
                 <ListView.ContextMenu>
                     <ContextMenu Name="SearchResultMenu" StaysOpen="true">
@@ -348,7 +348,7 @@
                                             <Popup PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}" 
                                                    Placement="Left" StaysOpen="True" 
                                                    IsOpen="{Binding Mode=OneWay, Path=ShowPopups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type view:SearchViewControl}}}">
-                                                    <Label Background="AntiqueWhite" Width="Auto" Content="{Binding IsAsync=True, Mode=OneWay, Path=FirstRecommendation, FallbackValue=loading...}"></Label>       
+                                                    <Label IsEnabled="False" Background="LightGray" Foreground="DarkBlue" BorderThickness="1" BorderBrush="DarkBlue" Width="Auto" FontSize="10" Content="{Binding IsAsync=True, Mode=OneWay, Path=FirstRecommendation, FallbackValue=loading...}" Height="25"></Label>       
                                             </Popup>
                                             <Canvas Width="Auto" Height="0" Margin="-7,-2,0,0" Grid.Row="0" Grid.Column="0">
                                                 <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>

@@ -536,6 +536,13 @@ namespace Sando.UI.View
             BeginSearch(searchBox.Text, true);
         }
 
+        private void searchResultListbox_Mouse(object sender, MouseButtonEventArgs e)
+        {
+            searchResultListbox_SelectionChanged(null,null);
+        }
+
+   
+
    
     
     }
