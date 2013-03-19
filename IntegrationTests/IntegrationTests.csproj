@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticallyIndexingTestClass.cs" />
+    <Compile Include="LocalSearch\HeuristicConfigurationAddMonster.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationFreeMind.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationjpassWordSafe.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationRachota.cs" />
@@ -101,6 +102,9 @@
     <Compile Include="Search\NameWithNumbersSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <None Include="TestFiles\LocalSearchTestFiles\AddMonsterTestFiles\CreatureManager.cs" />
+    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\ControllerAdapter.java" />
+    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\MindMapMapModel.java" />
     <Content Include="TestFiles\MethodElementTestFiles\Hello.cpp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -175,7 +179,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\" />
     <Folder Include="TestFiles\LocalSearchTestFiles\jpassWordSafeTestFiles\" />
     <Folder Include="TestFiles\LocalSearchTestFiles\RachotaTestFiles\" />
     <Folder Include="TestFiles\SolutionMonitorTestFiles\" />

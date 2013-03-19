@@ -32,7 +32,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\LocaSearchTestFiles\\jpassWordSafeTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\LocalSearchTestFiles\\jpassWordSafeTestFiles";
         }
     }
 }
