@@ -107,7 +107,7 @@ namespace Sando.LocalSearch
                     }
                 case 6: //single heuristic
                     {
-                        AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 2);
+                        AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 2, 1);
                         break;
                     }
                 case 7: //single heuristic
@@ -145,6 +145,37 @@ namespace Sando.LocalSearch
                 }
         }
 
+        public void RankRelatedInfoWithWeights(ref List<CodeNavigationResult> RelatedProgramElements,
+            int searchResultsLookahead, double AmongSearchResWeight, double TopologyWeight, 
+            int editDistanceLookback, double EditDistanceWeight)
+        {
+            if (RelatedProgramElements.Count() == 0)
+                return;
+
+            //restore scores
+            foreach (var programelement in RelatedProgramElements)
+                programelement.Score = 1.0;
+
+            //score setting
+            CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
+            ShowBeforeHeuristic(ref RelatedProgramElements);
+            AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight);
+            TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight);
+            EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight);
+            //UseLocationHeuristic(ref RelatedProgramElements);                        
+
+            //bubble ranking
+            for (int i = 0; i < RelatedProgramElements.Count() - 1; i++)
+                for (int j = i + 1; j < RelatedProgramElements.Count(); j++)
+                {
+                    if (RelatedProgramElements[j].Score > RelatedProgramElements[i].Score)
+                    {
+                        CodeNavigationResult temp = RelatedProgramElements[j];
+                        RelatedProgramElements[j] = RelatedProgramElements[i];
+                        RelatedProgramElements[i] = temp;
+                    }
+                }
+        }
 
         #region ranking heuristics
                  
@@ -152,7 +183,7 @@ namespace Sando.LocalSearch
         {
             ShowBeforeHeuristic(ref RelatedProgramElements);
 
-            AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 1);
+            AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 1, 1);
         }
 
         private void ShowBeforeHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
@@ -171,7 +202,7 @@ namespace Sando.LocalSearch
             }
         }
 
-        private void AmongInitialSearchResultsHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, int steps)
+        private void AmongInitialSearchResultsHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, int steps, double baseweight)
         {
             if (InitialSearchResults.Count() == 0)
                 return;
@@ -196,7 +227,7 @@ namespace Sando.LocalSearch
                 relatedElementsInSteps[relatedProgramElement] = relatedElements;
             }
 
-            AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]);
+            AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]*baseweight);
 
             //while((step >=1) && (isExisting == false))
             for (int i = 2; i <= steps; i++)
@@ -217,7 +248,7 @@ namespace Sando.LocalSearch
                     }
                 }
 
-                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i-1]);
+                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i-1]*baseweight);
             }
         }
 
@@ -295,7 +326,7 @@ namespace Sando.LocalSearch
         }
         
         private void TopologyHeuristic(CodeSearchResult sourceProgramElement,
-            ref List<CodeNavigationResult> RelatedProgramElements, double weight)
+            ref List<CodeNavigationResult> RelatedProgramElements, double baseweight)
         {
             double numberOfCallers = 0;
             double numberOfCalls = 0;
@@ -359,12 +390,12 @@ namespace Sando.LocalSearch
             NormalizeScoreByMax(ref listOfDegree);
 
             for (int i = 0; i < RelatedProgramElements.Count(); i++)
-                RelatedProgramElements[i].Score += listOfDegree[i] * weight;            
+                RelatedProgramElements[i].Score += listOfDegree[i] * baseweight;            
         }
 
 
         private void EditDistanceHeuristicInPath(ref List<CodeNavigationResult> relatedProgramElements, 
-            int steps, double weight)
+            int steps, double baseweight)
         {
             if(CurrentPath.Count < steps)
                 steps = CurrentPath.Count;
@@ -382,7 +413,7 @@ namespace Sando.LocalSearch
             for (int i = 1; i <= steps; i++)
             {
                 CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
-                double absoluteweight = listOfDegree[i - 1] * weight;
+                double absoluteweight = listOfDegree[i - 1] * baseweight;
                 EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, absoluteweight);
             }
         }
@@ -573,6 +604,18 @@ namespace Sando.LocalSearch
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
             RankRelatedInfo(ref recommendations, 2);
+
+            return recommendations;
+        }
+
+        public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult,
+            int searchResLookahead, double AmongSearchResW, double TopologyW,
+            int editDistanceLookback, double EditDistanceW)
+        {
+            List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
+
+            RankRelatedInfoWithWeights(ref recommendations, searchResLookahead, AmongSearchResW,
+                TopologyW, editDistanceLookback, EditDistanceW);
 
             return recommendations;
         }
