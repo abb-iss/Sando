@@ -29,6 +29,15 @@ namespace Sando.Recommender.UnitTests {
         }
 
         [Test]
+        public void QueryRecommenderTest()
+        {
+            Assert.IsTrue((int)(10 / QueryRecommender.Distance("Add", "findAndAddRelevantFilesToIndexState")) < (int)(10 / QueryRecommender.Distance("Add", "addError")));
+            Assert.IsTrue(QueryRecommender.Distance("AddFiles", "Add") < QueryRecommender.Distance("AddFiles", "AddAndDoOtherStuff"));
+            Assert.IsTrue(QueryRecommender.Distance("AddFiles", "AddFile") < QueryRecommender.Distance("AddFiles", "AddFilesYeah"));
+            Assert.IsTrue(QueryRecommender.Distance("Add", "AddFilesAndDoStuff") < QueryRecommender.Distance("Add", "FilesAndDoStuffAdd"));            
+        }
+
+        [Test]
         public void TestRoundTrip_FileNames() {
             var a1 = new WordNode("DB", PartOfSpeechTag.Preamble);
             var a2 = new WordNode("Get", PartOfSpeechTag.Verb);
