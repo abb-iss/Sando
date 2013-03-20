@@ -40,6 +40,15 @@ namespace Sando.IntegrationTests.Search
         }
 
         [Test]
+        public void FileTypeH()
+        {
+            string keywords = "session file info filetype:h";
+            var expectedLowestRank = 3;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Struct && (el.ProgramElement.Name == "sessionFileInfo");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
+
+        [Test]
         public void FileTypeSearch()
         {
             string keywords = "XmlMatchedTagsHighlighter filetype:cs";

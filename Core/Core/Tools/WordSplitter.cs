@@ -69,6 +69,14 @@ namespace Sando.Core.Tools
             //2a.add filetype extensions
             var matchCollection = Regex.Matches(searchTerms, FileExtensionPattern);
             var matches = new SortedSet<string>();
+            searchTerms = GetMatches(searchTerms, matchCollection, matches);
+            matchCollection = Regex.Matches(searchTerms, FileExtensionPatternTwo);
+            searchTerms = GetMatches(searchTerms, matchCollection, matches);
+            return matches;
+        }
+
+        private static string GetMatches(string searchTerms, MatchCollection matchCollection, SortedSet<string> matches)
+        {
             foreach (Match match in matchCollection)
             {
                 string currentMatch = match.Value;//.Trim('"', ' ');
@@ -78,7 +86,7 @@ namespace Sando.Core.Tools
                     matches.Add(currentMatch.Substring(currentMatch.IndexOf(':')+1));                    
                 }
             }
-            return matches;
+            return searchTerms;
         }
 
         public static bool InvalidCharactersFound(string searchTerms)
@@ -101,12 +109,19 @@ namespace Sando.Core.Tools
             {
                 searchTerms = searchTerms.Replace(match.Value, " ");
             }
+            collection = Regex.Matches(searchTerms, FileExtensionPatternTwo);
+            foreach (Match match in collection)
+            {
+                searchTerms = searchTerms.Replace(match.Value, " ");
+            }
+
             return searchTerms;
         }
 
         private const string Pattern = "[^a-zA-Z0-9\\s\\*\\-]";
         private const string QuotesPattern = "-{0,1}\"[^\"]+\"";
         private const string FileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
+        private const string FileExtensionPatternTwo = "filetype\\:([a-zA-Z]+\\Z)";        
         //Zhao Compliled regular express
         private Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
         private Regex _patternCharDigit = new Regex(@"([A-Z]+|[0-9]+)", RegexOptions.Compiled);

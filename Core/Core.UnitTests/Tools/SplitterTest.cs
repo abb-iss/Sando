@@ -210,6 +210,15 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void ParsingQuery()
+        {
+            bool invalidCharactersFound = WordSplitter.InvalidCharactersFound("session file info filetype:h");
+            Assert.IsFalse(invalidCharactersFound);
+            var terms = WordSplitter.ExtractSearchTerms("session file info filetype:h");
+            WordSplitter.GetFileExtensions("session file info filetype:h");
+        }
+
+        [Test]
         public void InvalidCharactersFound_ReturnsFalseWhenInvalidCharactersUsedInQuotes()
         {
             bool invalidCharactersFound = WordSplitter.InvalidCharactersFound("\"???\"");
