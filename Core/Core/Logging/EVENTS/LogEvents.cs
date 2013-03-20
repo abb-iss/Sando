@@ -7,14 +7,6 @@ namespace Sando.Core.Logging.Events
 {
 	public class LogEvents
 	{
-		/*
-		public class StringEventArgs : EventArgs
-		{
-			StringEventArgs(string str) { this.str = str; }
-			public string str { get; private set; }
-		}
-		*/
-
 		public static event EventHandler Event_MonitoringStopped;
 		public static event EventHandler Event_TestLogging;
 

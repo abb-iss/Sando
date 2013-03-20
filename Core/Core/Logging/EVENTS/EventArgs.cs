@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Sando.Core.Logging.Events
 {
-	public class EventArgs<T> : EventArgs
+	public class EventArgs<T> : System.EventArgs
 	{
 		public EventArgs(T value)
 		{
