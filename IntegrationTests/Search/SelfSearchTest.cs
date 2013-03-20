@@ -31,6 +31,19 @@ namespace Sando.IntegrationTests.Search
 		}
 
         [Test]
+        public void UnderscoreSearch()
+        {
+            string keywords = "solutionEvents";
+            var expectedLowestRank = 3;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Field && (el.ProgramElement.Name == "_solutionEvents");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            keywords = "_solutionEvents";
+            predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Field && (el.ProgramElement.Name == "_solutionEvents");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+
+        }
+
+        [Test]
         public void FileTypeWithTerm()
         {
             string keywords = "hello filetype:cs";

@@ -156,6 +156,7 @@ namespace Sando.Recommender {
             try {
                 if(sourceXml != null) {
                     AddSwumForMethodDefinitions(sourceXml, sourcePath);
+                    AddSwumForFieldDefinitions(sourceXml, sourcePath);
                 }
             } catch(Exception e) {
                 FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
@@ -327,6 +328,32 @@ namespace Sando.Recommender {
         } 
 
         #region Protected methods
+
+        protected void AddSwumForFieldDefinitions(XElement file, string fileName)
+        {
+            //compute SWUM on each field
+            foreach (var fieldDecl in (from declStmt in file.Descendants(SRC.DeclarationStatement)
+                                       where !declStmt.Ancestors().Any(n => functionTypes.Contains(n.Name))
+                                       select declStmt.Element(SRC.Declaration)))
+            {
+
+                int declPos = 1;
+                foreach (var nameElement in fieldDecl.Elements(SRC.Name))
+                {
+
+                    string fieldName = nameElement.Elements(SRC.Name).Any() ? nameElement.Elements(SRC.Name).Last().Value : nameElement.Value;
+
+                    FieldDeclarationNode fdn = new FieldDeclarationNode(fieldName, ContextBuilder.BuildFieldContext(fieldDecl));
+                    builder.ApplyRules(fdn);
+                    var signature = string.Format("{0}:{1}:{2}", fileName, fieldDecl.Value, declPos);
+                    var swumData = ProcessSwumNode(fdn);
+                    swumData.FileNames.Add(fileName);
+                    signaturesToSwum[signature] = swumData;
+                }
+            }
+        }
+
+
         /// <summary>
         /// Constructs SWUMs for each of the methods defined in <paramref name="unitElement"/> and adds them to the cache.
         /// </summary>
@@ -431,6 +458,15 @@ namespace Sando.Recommender {
             sig.Append(")");
             return sig.ToString().TrimStart(' ');
         }
+
+                /// <returns>A SwumDataRecord containing <paramref name="swumNode"/> and various data extracted from it.</returns>
+        protected SwumDataRecord ProcessSwumNode(FieldDeclarationNode swumNode)
+        {
+            var record = new SwumDataRecord();
+            record.SwumNode = swumNode;
+            return record;
+        }
+
 
         /// <summary>
         /// Performs additional processing on a MethodDeclarationNode to put the data in the right format for the Comment Generator.

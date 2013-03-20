@@ -9,7 +9,7 @@ namespace Sando.Recommender {
     /// Contains various data determined by constructing SWUM on a method.
     /// </summary>
     public class SwumDataRecord {
-        public MethodDeclarationNode SwumNode { get; set; }
+        public ProgramElementNode SwumNode { get; set; }
         public string Action { get; set; }
         public PhraseNode ParsedAction { get; set; }
         public string Theme { get; set; }

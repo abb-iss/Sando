@@ -24,24 +24,31 @@ namespace Sando.Recommender {
             if(string.IsNullOrEmpty(query)) {
                 return new string[0];
             }
-            var recommendations = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-            
+            try
+            {
+                var recommendations = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 
-            //TODO: split query into words, search each one? Already implemented for plain method names            
 
-            //WeightByFrequency(query);
-            //WeightBySameField(query);
-            //WeightBySameField_WordsInOrder(query);
-            WeightByPartOfSpeech(query,recommendations);
+                //TODO: split query into words, search each one? Already implemented for plain method names            
 
-            //return the recommendations sorted by score in descending order
-            List<KeyValuePair<string, int>> listForSorting = recommendations.ToList();
-            listForSorting.Sort((firstPair, nextPair) =>
-                {
-                    return nextPair.Value.CompareTo(firstPair.Value);
-                }
-            );
-            return listForSorting.Select(kvp => kvp.Key).ToArray();
+                //WeightByFrequency(query);
+                //WeightBySameField(query);
+                //WeightBySameField_WordsInOrder(query);
+                WeightByPartOfSpeech(query, recommendations);
+
+                //return the recommendations sorted by score in descending order
+                List<KeyValuePair<string, int>> listForSorting = recommendations.ToList();
+                listForSorting.Sort((firstPair, nextPair) =>
+                    {
+                        return nextPair.Value.CompareTo(firstPair.Value);
+                    }
+                );
+                return listForSorting.Select(kvp => kvp.Key).ToArray();
+            }
+            catch (Exception e)
+            {
+                return new string[0];
+            }
         }
 
 

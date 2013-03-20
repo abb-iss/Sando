@@ -118,7 +118,7 @@ namespace Sando.Core.Tools
             return searchTerms;
         }
 
-        private const string Pattern = "[^a-zA-Z0-9\\s\\*\\-]";
+        private const string Pattern = "[^a-zA-Z0-9_\\s\\*\\-]";
         private const string QuotesPattern = "-{0,1}\"[^\"]+\"";
         private const string FileExtensionPattern = "filetype\\:([a-zA-Z]\\w+)";
         private const string FileExtensionPatternTwo = "filetype\\:([a-zA-Z]+\\Z)";        
