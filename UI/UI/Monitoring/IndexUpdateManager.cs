@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
 using Sando.Core.Logging;
+using Sando.Core.Logging.Persistence;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;

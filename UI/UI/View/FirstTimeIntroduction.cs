@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Sando.Core.Logging;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.UI.View
 {

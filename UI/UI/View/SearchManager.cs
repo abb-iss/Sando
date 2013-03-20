@@ -13,6 +13,7 @@ using Sando.Core.Tools;
 using Sando.Core.Logging;
 using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.UI.View
 {

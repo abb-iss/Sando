@@ -4,6 +4,7 @@ using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Core.Logging;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.UI.Actions
 {

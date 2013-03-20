@@ -18,6 +18,7 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.UI.View
 {

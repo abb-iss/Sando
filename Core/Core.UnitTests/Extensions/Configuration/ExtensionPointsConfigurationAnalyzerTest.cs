@@ -15,6 +15,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.Core.UnitTests.Extensions.Configuration
 {

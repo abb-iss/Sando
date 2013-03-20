@@ -10,6 +10,7 @@ using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
 using Sando.Core.Logging;
+using Sando.Core.Logging.Persistence;
 
 
 namespace Sando.Recommender {

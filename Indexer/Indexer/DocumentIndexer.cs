@@ -19,6 +19,7 @@ using System.Linq;
 using Sando.Indexer.Documents.Converters;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.Indexer
 {

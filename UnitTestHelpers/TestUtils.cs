@@ -11,6 +11,7 @@ using Sando.Parser;
 using Sando.SearchEngine;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Logging;
+using Sando.Core.Logging.Persistence;
 
 namespace UnitTestHelpers
 {
@@ -30,7 +31,7 @@ namespace UnitTestHelpers
 
 		public static void InitializeDefaultExtensionPoints()
 		{
-            FileLogger.SetupDefautlFileLogger(Path.GetTempPath());
+            FileLogger.SetupDefaultFileLogger(Path.GetTempPath());
 			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
             PathManager.Create(Path.GetTempPath());            
             var generator = new ABB.SrcML.SrcMLGenerator(@"SrcML");

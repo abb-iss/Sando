@@ -8,6 +8,7 @@ using Sando.Core;
 using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.Core.Tools;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.UI.View
 {
