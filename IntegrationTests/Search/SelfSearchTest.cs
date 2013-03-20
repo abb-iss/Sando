@@ -30,7 +30,22 @@ namespace Sando.IntegrationTests.Search
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
-
+        [Test]
+        public void FileTypeSearch()
+        {
+            string keywords = "XmlMatchedTagsHighlighter filetype:cs";
+            var expectedLowestRank = 10;
+            try
+            {
+                Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "getXmlMatchedTagsPos");
+                EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+                Assert.IsTrue(false, "Should never reach this point. If it does, then it is finding a .cpp file when searching for only cs files");
+            }
+            catch (Exception e)
+            {
+                //expected to fail
+            }
+        }
 
 	    [Test]
         public void TestSandoSearch()

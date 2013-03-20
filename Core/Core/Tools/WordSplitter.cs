@@ -81,6 +81,12 @@ namespace Sando.Core.Tools
 
         public static bool InvalidCharactersFound(string searchTerms)
         {
+            var collection = Regex.Matches(searchTerms, FileExtensionPattern);
+            foreach (Match match in collection)
+            {                
+                searchTerms = searchTerms.Replace(match.Value, " ");
+            }
+
             MatchCollection matchCollection = Regex.Matches(searchTerms, QuotesPattern);
             foreach(Match match in matchCollection)
             {
