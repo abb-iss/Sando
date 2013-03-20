@@ -37,6 +37,8 @@ namespace Sando.Core.Tools
                     matches.Add(currentMatch);
             }
 
+            searchTerms = RemoveFiletype(searchTerms);
+
 			//2.add unsplit terms
 			var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			foreach(string term in splitTerms)
@@ -81,11 +83,7 @@ namespace Sando.Core.Tools
 
         public static bool InvalidCharactersFound(string searchTerms)
         {
-            var collection = Regex.Matches(searchTerms, FileExtensionPattern);
-            foreach (Match match in collection)
-            {                
-                searchTerms = searchTerms.Replace(match.Value, " ");
-            }
+            searchTerms = RemoveFiletype(searchTerms);
 
             MatchCollection matchCollection = Regex.Matches(searchTerms, QuotesPattern);
             foreach(Match match in matchCollection)
@@ -94,6 +92,16 @@ namespace Sando.Core.Tools
             }
             searchTerms = searchTerms.Replace("\"", " ");
             return Regex.IsMatch(searchTerms, Pattern);
+        }
+
+        private static string RemoveFiletype(string searchTerms)
+        {
+            var collection = Regex.Matches(searchTerms, FileExtensionPattern);
+            foreach (Match match in collection)
+            {
+                searchTerms = searchTerms.Replace(match.Value, " ");
+            }
+            return searchTerms;
         }
 
         private const string Pattern = "[^a-zA-Z0-9\\s\\*\\-]";

@@ -31,6 +31,15 @@ namespace Sando.IntegrationTests.Search
 		}
 
         [Test]
+        public void FileTypeWithTerm()
+        {
+            string keywords = "hello filetype:cs";
+            var expectedLowestRank = 3;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "WeirdStructTest");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);                
+        }
+
+        [Test]
         public void FileTypeSearch()
         {
             string keywords = "XmlMatchedTagsHighlighter filetype:cs";
