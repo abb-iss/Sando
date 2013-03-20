@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Xml.Linq;
 
 
 namespace Sando.UI.Monitoring
@@ -57,8 +58,10 @@ namespace Sando.UI.Monitoring
                         {
                             // Get SrcMLService and use its API to get the XElement
                             var srcMLService = (sender as ISrcMLGlobalService);
-                            var xelement = srcMLService.GetXElementForSourceFile(args.FilePath);
-                            //var xelement = args.SrcMLXElement;
+                            
+                            XElement xelement = null;
+                            if (!args.EventType.Equals(FileEventType.FileDeleted))
+                                xelement= srcMLService.GetXElementForSourceFile(args.FilePath);                            
 
                             var indexUpdateManager = ServiceLocator.Resolve<IndexUpdateManager>();
 
@@ -79,9 +82,10 @@ namespace Sando.UI.Monitoring
                                     SwumManager.Instance.RemoveSourceFile(sourceFilePath);
                                     break;
                                 case FileEventType.FileRenamed: // FileRenamed is actually never raised.
-                                    documentIndexer.DeleteDocuments(oldSourceFilePath);
-                                    indexUpdateManager.Update(sourceFilePath, xelement);
-                                    SwumManager.Instance.UpdateSourceFile(sourceFilePath, xelement);
+                                    throw new NotImplementedException();
+                                    //documentIndexer.DeleteDocuments(oldSourceFilePath);
+                                    //indexUpdateManager.Update(sourceFilePath, xelement);
+                                    //SwumManager.Instance.UpdateSourceFile(sourceFilePath, xelement);
                                     break;
                             }
                         }
