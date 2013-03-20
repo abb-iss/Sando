@@ -8,11 +8,11 @@ using log4net.Config;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 
-namespace Sando.Core.Logging
+namespace Sando.Core.Logging.Persistence
 {
 	public class FileLogger
     {
-        public static void SetupDefautlFileLogger(string directoryPath)
+        public static void SetupDefaultFileLogger(string directoryPath)
         {
             var defaultLogPath = Path.Combine(directoryPath, "Sando " + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
             CreateDefaultLogger(defaultLogPath);
