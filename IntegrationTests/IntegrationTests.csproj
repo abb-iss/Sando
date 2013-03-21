@@ -92,6 +92,9 @@
     <Compile Include="IInvoker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\AutomaticallyIndexingTestClass.cs" />
+    <Compile Include="Search\TestFilesSearchingTest.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="Search\LexicalSelfSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
@@ -106,6 +109,7 @@
     <Content Include="TestFiles\MethodElementTestFiles\Hello.cpp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="TestFiles\TestFieldParsing.cs" />
     <Shadow Include="Test References\UI.UnitTests.accessor" />
     <None Include="TestFiles\StemmingTestFiles\FileNameTemplate.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
