@@ -117,8 +117,7 @@ namespace Sando.UI.Monitoring
 
         public void MonitoringStopped(object sender, EventArgs args)
         {
-            //FileLogger.DefaultLogger.Info("Sando: MonitoringStopped()");
-			LogEvents.MonitoringStopped();
+			LogEvents.MonitoringStopped(this);
 
             var currentIndexer = ServiceLocator.ResolveOptional<DocumentIndexer>();
             if (currentIndexer != null)

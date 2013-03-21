@@ -15,7 +15,7 @@ namespace Sando.Core.UnitTests.Logging
         {
             FileLogger.SetupDefaultFileLogger(_directoryPath);
 			SimpleLogEventHandlers.RegisterLogEventHandlers();
-			LogEvents.TestLogging();
+			LogEvents.TestLogging(this);
             var logFiles = Directory.GetFiles(_directoryPath).AsEnumerable().Where(f => f.Contains("Sando") && f.EndsWith(".log")).ToList();
             Assert.IsTrue(logFiles.Any(), "There should be log file created!");
             var content = File.ReadAllText(logFiles.First());
