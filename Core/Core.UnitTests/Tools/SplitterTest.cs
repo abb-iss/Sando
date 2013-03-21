@@ -90,8 +90,8 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("\"words inside quotes\"*word*another", String.Join("*", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("\"words inside quotes\"*word*another_word*another", String.Join("*", parts));
         }
 
         [Test]
@@ -170,16 +170,16 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUnderscoreUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file_open_now");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("file open now", String.Join(" ", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("file_open_now file open now", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word words inside quotes another_word");
-            Assert.AreEqual(5, parts.Count);
-            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another");
+            Assert.AreEqual(6, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another_word*another");
         }
 
         [Test]

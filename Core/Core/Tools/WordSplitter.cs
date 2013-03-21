@@ -55,15 +55,14 @@ namespace Sando.Core.Tools
             searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");
 
             searchTerms = searchTerms.Replace("\"", " ");
+            searchTerms = searchTerms.Replace("_", " ");
             matches.AddRange(searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            //for (int i = 0; i < matches.Count; ++i)
-            //{
-            //    string lower = matches[i].Trim().ToLower();
-            //    matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
-            //}
-            
-    
-
+            for (int i = 0; i < matches.Count; ++i)
+            {
+                string lower = matches[i].Trim().ToLower();
+                matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
+            }
+              
             return matches.Distinct().ToList();
         }
 
