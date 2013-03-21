@@ -25,7 +25,7 @@ namespace Sando.Core.UnitTests.Tools
         {
             var parts = WordSplitter.ExtractSearchTerms("_solutionEvents");
             Assert.AreEqual(parts.Count, 3);
-            Assert.IsTrue(parts.Contains("_solutionEvents"));
+            Assert.IsTrue(parts.Contains("_solutionevents"));
         }
 
         
