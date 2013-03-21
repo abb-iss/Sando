@@ -13,24 +13,25 @@ namespace Sando.LocalSearch.UnitTests
     [TestFixture]
     public class GraphBuilderTest
     {
-        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\DatabaseMenuCommands.cs";
-        private static String callsSrcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestingFile.cs";
-        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\DatabaseMenuCommands.XML";
+        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.cs";
+        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.XML";
 
+        private static String callsSrcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestingFile.cs";
+        
         private static String singlemethodPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestMethod.cs";
 
-        //[Test]
-        //public void ConvertSrcToXMLTest()
-        //{
-        //    Src2SrcMLRunner srcmlConverter;
-        //    String fileExt = Path.GetExtension(srcPath);
-        //    if (fileExt.Equals(".cs"))
-        //        srcmlConverter = new Src2SrcMLRunner(@"C:\WORK-XIAO\sando\LIBS\srcML-Win-cSharp");
-        //    else
-        //        srcmlConverter = new Src2SrcMLRunner(@"C:\WORK-XIAO\sando\LIBS\srcML-Win");
+        [Test]
+        public void ConvertSrcToXMLTest()
+        {
+            Src2SrcMLRunner srcmlConverter;
+            String fileExt = Path.GetExtension(srcPath);
+            if (fileExt.Equals(".cs"))
+                srcmlConverter = new Src2SrcMLRunner(@"C:\WORK-XIAO\sando\LIBS\srcML-Win-cSharp");
+            else
+                srcmlConverter = new Src2SrcMLRunner(@"C:\WORK-XIAO\sando\LIBS\srcML-Win");
 
-        //    var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, xmlPath);
-        //}
+            var tempSrcMLFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, xmlPath);
+        }
 
         [Test]
         public void GetFieldNamesTest()

@@ -17,14 +17,15 @@ namespace Sando.IntegrationTests.LocalSearch
 {
     //target:
     /*
-     * 1. MindMapModel.java
+     * 1. MindMapMapModel.java
      * "Saving Failed" --> save (definition, 245) --> SaveInternal (callby, 250)
      *                 --> getXml (callby, 260) --> getXml (callby, 303)
      *                 --> getXml (callby, 286) --> getXml (callby, 298)
      *                 
      * 2. ControllerAdaptor.java
      * "Saving Failed" --> (search result) --> mc.Save(control-dependent 969)
-     *                 --> Save(definition, 373) --> Save(getModel().getFile) (callby, 378)
+     *                 --> Save(definition, 373, same file, different class) 
+     *                 --> Save(getModel().getFile) (callby, 378)
      *                 --> Save(definition, 560)
     */
 

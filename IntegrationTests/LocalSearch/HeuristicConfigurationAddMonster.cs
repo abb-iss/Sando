@@ -43,10 +43,10 @@ namespace Sando.IntegrationTests.LocalSearch
 
             //List<NTree<CodeNavigationResult>> recommendTrees = new List<NTree<CodeNavigationResult>>();
 
-            for(int lookahead = 1; lookahead <= 1; lookahead++)
+            for(int lookahead = 1; lookahead <= 2; lookahead++)
                 for(double w1 = 1; w1 <=1; w1++)
                     for(double w2 = 1; w2 <=1; w2++)
-                        for(int lookback = 1; lookback <=1; lookback++)
+                        for(int lookback = 1; lookback <=2; lookback++)
                             for (double w3 = 1; w3 <= 1; w3++)
                             {
                                 heuristicWeightComb configuration =
