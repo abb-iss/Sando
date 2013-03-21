@@ -39,15 +39,15 @@ namespace Sando.Core.Tools
 
             searchTerms = RemoveFiletype(searchTerms);
 
-			//2.add unsplit terms
-			var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			foreach(string term in splitTerms)
-			{
-				if(term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c)))
-				{
-					matches.Add(term);
-				}
-			}
+            //2.add unsplit terms
+            var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string term in splitTerms)
+            {
+                if (term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c) || c.Equals('_')))
+                {
+                    matches.Add(term);
+                }
+            }
 
 			//3.do rest...
             searchTerms = Regex.Replace(searchTerms, Pattern, " ");
@@ -56,11 +56,14 @@ namespace Sando.Core.Tools
 
             searchTerms = searchTerms.Replace("\"", " ");
             matches.AddRange(searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            for(int i = 0; i < matches.Count; ++i)
-            {
-                string lower = matches[i].Trim().ToLower();
-                matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
-            }
+            //for (int i = 0; i < matches.Count; ++i)
+            //{
+            //    string lower = matches[i].Trim().ToLower();
+            //    matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
+            //}
+            
+    
+
             return matches.Distinct().ToList();
         }
 

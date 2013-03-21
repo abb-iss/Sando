@@ -21,6 +21,16 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void ExtractSearchTermsTestLeaveCompleteTerm()
+        {
+            var parts = WordSplitter.ExtractSearchTerms("_solutionEvents");
+            Assert.AreEqual(parts.Count, 3);
+            Assert.IsTrue(parts.Contains("_solutionEvents"));
+        }
+
+        
+
+        [Test]
         public void TestSplitUnderscores()
         {
             string[] parts = wordSplitter.ExtractWords("a_name_separated_by_lots_of_underscores");
