@@ -60,11 +60,8 @@ namespace Sando.Indexer.Searching
             int collectionSize = _criteria.AccessLevels.Count;
             foreach (AccessLevel accessLevel in _criteria.AccessLevels)
             {
-                stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
-                if(accessLevel.Equals(AccessLevel.Private))
-                    stringBuilder.Append(accessLevel.ToString().TrimEnd('e')+"*");
-                else
-                    stringBuilder.Append(accessLevel.ToString()+"*");
+                stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");             
+                stringBuilder.Append(accessLevel.ToString()+"*");
                 AppendBoostFactor(stringBuilder, SandoField.AccessLevel.ToString());
                 if (collectionSize > 1)
                 {

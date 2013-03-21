@@ -21,7 +21,7 @@ namespace Sando.Indexer.Documents
 		{
             List<Field> fields = new List<Field>();
 			MethodElement methodElement = (MethodElement)programElement;
-            fields.Add(new Field(SandoField.AccessLevel.ToString(), methodElement.AccessLevel.ToString(), Field.Store.YES, Field.Index.ANALYZED));
+            fields.Add(new Field(SandoField.AccessLevel.ToString(), methodElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
             fields.Add(new Field(SandoField.Arguments.ToString(), methodElement.Arguments.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
             fields.Add(new Field(SandoField.Body.ToString(), methodElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
             fields.Add(new Field(SandoField.ClassId.ToString(), methodElement.ClassId.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
