@@ -25,7 +25,7 @@ namespace Sando.Indexer.Searching
         {
             _queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
             var stringBuilder = new StringBuilder();
-            if (_criteria.SearchByAccessLevel)
+            if (_criteria.SearchByAccessLevel && (!_criteria.SearchByProgramElementType || !_criteria.ProgramElementTypes.Contains(ProgramElementType.Comment)))
             {
                 AccessLevelCriteriaToString(stringBuilder);
             }
