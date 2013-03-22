@@ -233,12 +233,14 @@ namespace Sando.Indexer
 
         public void Dispose()
         {
+            _disposingInProcess = true;
             Dispose(false);
         }
 
 
 		public void Dispose(bool killReaders)
         {
+            _disposingInProcess = true;
 		    lock (_lock)
 		    {
                 try
@@ -256,6 +258,7 @@ namespace Sando.Indexer
 		
 		protected virtual void Dispose(bool disposing, bool killReaders)
         {
+            _disposingInProcess = true;
             if(!_disposed)
             {
                 if(disposing)
@@ -290,5 +293,11 @@ namespace Sando.Indexer
 	    private IndexSearcher _indexSearcher;
         private readonly bool _synchronousCommits;
 	    private readonly object _lock = new object();
-	}
+        private bool _disposingInProcess = false;
+
+        public bool IsDisposingOrDisposed()
+        {
+            return _disposingInProcess || _disposed;
+        }
+    }
 }
