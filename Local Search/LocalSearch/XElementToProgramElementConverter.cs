@@ -15,19 +15,40 @@ namespace Sando.LocalSearch
         {
             var definitionLineNumber = fullmethod.Element(SRC.Name).GetSrcLineNumber();            
             var block = fullmethod.Element(SRC.Block);
-            var snippet = "";
+            var snippet = "{ }";
             if (block != null)
-                snippet = fullmethod.Element(SRC.Block).ToSource(); //todo: only show related lines  
-            //var relation = ProgramElementRelation.Other; //by default
+                snippet = fullmethod.Element(SRC.Block).ToSource(); //todo: only show related lines 
 
+            bool isconstructor = false;
+            if (fullmethod.Element(SRC.Constructor) != null)
+                isconstructor = true;
+
+            var returnType = String.Empty;
+            if (!isconstructor)
+            {
+                try
+                {
+                    var type = fullmethod.Element(SRC.Type);
+                    returnType = type.Element(SRC.Name).Value;
+                }
+                catch (NullReferenceException nre)
+                {
+                    //TODO: handle properties, add, get, etc.
+                    returnType = "not handling property issue";
+                }
+            }
+            
             AccessLevel accessLevel = AccessLevel.Internal; //by default
-            var specifier = fullmethod.Elements(SRC.Specifier); //for constructor (no return type/value)
             try
             {
-                if (specifier.Count() == 0)
-                    specifier = fullmethod.Element(SRC.Type).Elements(SRC.Specifier); //for other functions
+                IEnumerable<XElement> specifier;
+                if (isconstructor) //for constructor (no return type/value)
+                    specifier = fullmethod.Elements(SRC.Specifier); 
+                else //for other functions
+                    specifier = fullmethod.Element(SRC.Type).Elements(SRC.Specifier); 
+                
                 if (specifier.Count() != 0)
-                {
+                { //only care about AccessLevel
                     foreach (var temp in specifier)
                     {
                         try
@@ -44,17 +65,8 @@ namespace Sando.LocalSearch
             catch (NullReferenceException nre)
             {
                 //TODO: handle properties, add, get, etc.
-            }
-
-            var returnType = String.Empty;
-            bool isconstructor = true;
-            var type = fullmethod.Element(SRC.Type);
-            if (type != null)
-            {
-                returnType = type.Element(SRC.Name).Value;
-                isconstructor = false;
-            }
-
+            }                       
+            
             var classId = Guid.Empty;
             var className = String.Empty;
             var myParams = fullmethod.Element(SRC.ParameterList);

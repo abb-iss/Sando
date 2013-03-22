@@ -55,7 +55,6 @@ namespace Sando.LocalSearch
                 srcmlFile = srcmlConverter.GenerateSrcMLFromFile(srcPath, tmpFile);
             }
 
-            //Initialize();
         }
 
         public void Initialize()
@@ -81,7 +80,7 @@ namespace Sando.LocalSearch
                 var allCalls = SrcMLHelper.GetCallsFromFunction(method);
                 foreach (var call in allCalls)
                 {
-                    var methodCallAsDeclaration = GetMethod(call);
+                    var methodCallAsDeclaration = GetMethodFromCall(call);
                     if (methodCallAsDeclaration != null)
                     {
                         List<Tuple<XElement,int>> calls = null;
@@ -156,7 +155,7 @@ namespace Sando.LocalSearch
         }
 
         //find a method call's definition if it is defined in the same class
-        public XElement GetMethod(XElement call)
+        public XElement GetMethodFromCall(XElement call)
         {
             //XElement[] allmethods = GetFullMethods();
             XElement[] allmethods = FullMethods;
@@ -171,6 +170,34 @@ namespace Sando.LocalSearch
 
         private bool Matches(XElement call, XElement methodElement)
         {
+            //first make sure the call and the method is in the same class
+            var callclasses = call.Ancestors(SRC.Class);
+            var methodclasses = methodElement.Ancestors(SRC.Class);
+            String callclassname = "";
+            String methodclassname = "";
+            try
+            {                
+                callclassname = callclasses.First().Element(SRC.Name).Value;
+            }
+            catch(NullReferenceException e)
+            {
+                //anonymous class
+                callclassname = "anonymous";
+            }
+            try
+            {                
+                methodclassname = methodclasses.First().Element(SRC.Name).Value;
+            }
+            catch (NullReferenceException e)
+            {
+                //anonymous class
+                methodclassname = "anonymous";
+            }
+
+            //TODO: this may not be right for Java
+            if (callclassname != methodclassname)
+                return false;
+
             var name = "";
 
             var names = call.Element(SRC.Name).Elements(SRC.Name);
@@ -223,6 +250,7 @@ namespace Sando.LocalSearch
             
             foreach (var method in allmethods)
             {
+                //line number is checked, no need to worry about different class issue
                 if ((programElement.DefinitionLineNumber == method.GetSrcLineNumber())
                     && (programElement.Name == method.Element(SRC.Name).Value))
                     return method;
@@ -240,7 +268,9 @@ namespace Sando.LocalSearch
                 foreach (var method in FullMethods)
                 {
                     List<int> linenumbers = new List<int>();
-                    bool used = ifFieldUsedinMethod(method, field.Element(SRC.Name).Value, ref linenumbers);
+                    var fieldclasses = field.Ancestors(SRC.Class);
+                    String fieldclassname = fieldclasses.First().Element(SRC.Name).Value;
+                    bool used = ifFieldUsedinMethod(method, field.Element(SRC.Name).Value, fieldclassname, ref linenumbers);
                     
                     if (used) //linenumbers.Count() > 0
                     {   
@@ -320,6 +350,7 @@ namespace Sando.LocalSearch
         {
             foreach (var field in FieldDecs)
             {
+                //by checking the line number, it avoids referring to a different class
                 if ((programElement.DefinitionLineNumber == field.GetSrcLineNumber())
                     && (programElement.Name == field.Element(SRC.Name).Value))
                     return field;
@@ -354,11 +385,13 @@ namespace Sando.LocalSearch
         {
             var elements = new List<CodeSearchResult>();
 
-            var methods = GetMethodNames();
+            //var methods = GetMethodNames();
+            var fullmethods = FullMethods;
 
-            foreach (XElement method in methods)
+            //foreach (XElement method in methods)
+            foreach(XElement fullmethod in fullmethods)
             {
-                var fullmethod = GetFullMethodFromName(method);
+                //var fullmethod = GetFullMethodFromName(method);
                 var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(fullmethod, origPath);
                 CodeSearchResult result = methodaselement as CodeSearchResult;
                 elements.Add(result);
@@ -576,8 +609,23 @@ namespace Sando.LocalSearch
         /// <param name="fieldname">field NAME in String</param>
         /// <returns>true if it is used.</returns>
         /// <retruns name="UsedLineNumber"> number of line on which the field is used </retruns>
-        public bool ifFieldUsedinMethod(XElement method, String fieldname, ref List<int> UsedLineNumber)
+        public bool ifFieldUsedinMethod(XElement method, String fieldname, String fieldclassname, ref List<int> UsedLineNumber)
         {
+            var methodclass = method.Ancestors(SRC.Class);
+            //make sure the "first" element is the direct class
+            String methodclassname = "";
+            try
+            {
+                methodclassname = methodclass.First().Element(SRC.Name).Value;
+            }
+            catch
+            {
+                methodclassname = "anonymous";
+            }
+            //TODO: this may not be true
+            if (methodclassname != fieldclassname)
+                return false;
+            
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
                 return false;
@@ -645,7 +693,7 @@ namespace Sando.LocalSearch
                 if (eletype2.Equals(ProgramElementType.Method))
                 {
                     var methodDeclaration = GetMethod(element2.ProgramElement as MethodElement);
-                    if (ifFieldUsedinMethod(methodDeclaration, element1.Name, ref UsedLineNumber))
+                    if (ifFieldUsedinMethod(methodDeclaration, element1.Name, element1.Parent, ref UsedLineNumber))
                     {
                         relation = ProgramElementRelation.UseBy;
                         return relation;
@@ -697,7 +745,7 @@ namespace Sando.LocalSearch
                 else //eletype2.Equals(ProgramElementType.Field)
                 {
                     var methodDeclaration = GetMethod(element1.ProgramElement as MethodElement);
-                    if (ifFieldUsedinMethod(methodDeclaration, element2.Name, ref UsedLineNumber))
+                    if (ifFieldUsedinMethod(methodDeclaration, element2.Name, element2.Parent, ref UsedLineNumber))
                     {
                         relation = ProgramElementRelation.Use;
                         return relation;

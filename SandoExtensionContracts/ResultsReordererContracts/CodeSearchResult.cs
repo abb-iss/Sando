@@ -113,7 +113,14 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             get
             {
                 var method = ProgramElement as MethodElement;
-                return method != null ? method.ClassName : String.Empty;
+                //return method != null ? method.ClassName : String.Empty;
+                if (method != null) return method.ClassName;
+                else
+                {
+                    var field = ProgramElement as FieldElement;
+                    return field != null ? field.ClassName : String.Empty;
+                }
+
             }
         }
 

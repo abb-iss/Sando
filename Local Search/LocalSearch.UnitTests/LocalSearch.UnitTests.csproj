@@ -100,6 +100,7 @@
     <Content Include="TestFiles\ConfigManip.XML" />
     <Content Include="TestFiles\MindMapMapModel.java" />
     <Content Include="TestFiles\TestMethod.xml" />
+    <Content Include="TestFiles\TreeViewHelper.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

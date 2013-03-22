@@ -638,7 +638,7 @@ namespace Sando.LocalSearch
                 listFiledRelated.Add(XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(fieldDeclaration, filePath));
             }
 
-            //relation 1: get methods that use this field
+            //relation 1: get methods that use this field (if there are in the same class)
             //listFiledRelated.AddRange(GetMethodElementsUseField(fieldname));
             listFiledRelated.AddRange(graph.GetFieldUsers(codeSearchResult));
 

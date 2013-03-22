@@ -106,9 +106,9 @@ public class MindMapMapModel extends MapAdapter  {
         readOnly = false;
         // automatic save: start timer after the map is completely loaded
         EventQueue.invokeLater(new Runnable(){
-
+	   
 			public void run() {
-		        scheduleTimerForAutomaticSaving();
+		       scheduleTimerForAutomaticSaving();
 			}});
     }
 

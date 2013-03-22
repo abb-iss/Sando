@@ -13,8 +13,8 @@ namespace Sando.LocalSearch.UnitTests
     [TestFixture]
     public class GraphBuilderTest
     {
-        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.cs";
-        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TreeViewHelper.XML";
+        private static String srcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\MindMapMapModel.java";
+        private static String xmlPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\MindMapMapModel.XML";
 
         private static String callsSrcPath = @"..\..\Local Search\LocalSearch.UnitTests\TestFiles\TestingFile.cs";
         

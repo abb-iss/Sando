@@ -104,14 +104,14 @@ namespace Sando.LocalSearch
            if (element.ProgramElementType == ProgramElementType.Method) 
            {
                XElement body = this.RelationCode.Element(SRC.Block);
-               //try [todo -- uncomment when release, now leave for detecting bug]
+               try // [todo -- uncomment when release, now leave for detecting bug]
                {
                    body.Remove();
                }
-               //catch (NullReferenceException e)
-               //{
-               //    //do nothing
-               //}
+               catch (NullReferenceException e)
+               {
+                   //do nothing
+               }
            }
            
 	   }
