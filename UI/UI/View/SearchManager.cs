@@ -13,6 +13,7 @@ using Sando.Core.Tools;
 using Sando.Core.Extensions.Logging;
 using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
+using Sando.Indexer;
 
 namespace Sando.UI.View
 {
@@ -26,7 +27,10 @@ namespace Sando.UI.View
         }
 
         public void Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
-        {
+        {            
+            if (!EnsureSolutionOpen())
+                return;
+                        
             try
             {
                 var codeSearcher = new CodeSearcher(new IndexerSearcher());
@@ -74,6 +78,29 @@ namespace Sando.UI.View
                 _searchResultListener.UpdateMessage("Sando is experiencing difficulties. See log file for details.");
                 FileLogger.DefaultLogger.Error(e.Message, e);
             }
+        }
+
+        private bool EnsureSolutionOpen()
+        {
+            DocumentIndexer indexer = null;
+            var isOpen = true;
+            try
+            {
+                indexer = ServiceLocator.Resolve<DocumentIndexer>();
+                if (indexer == null || indexer.IsDisposingOrDisposed())
+                {
+                    _searchResultListener.UpdateMessage("Sando searches only the currently open Solution.  Please open a Solution and try again.");
+                    isOpen = false;
+                }
+            }
+            catch (Exception e)
+            {
+                _searchResultListener.UpdateMessage("Sando searches only the currently open Solution.  Please open a Solution and try again.");
+                if (indexer != null)
+                    FileLogger.DefaultLogger.Error(e.Message, e);
+                isOpen = false;
+            }
+            return isOpen;
         }
 
         private static SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)

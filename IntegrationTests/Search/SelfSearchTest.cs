@@ -21,6 +21,17 @@ namespace Sando.IntegrationTests.Search
 	[TestFixture]
 	public class SelfSearchTest : AutomaticallyIndexingTestClass
 	{
+
+        [Test]
+        public void QuotedSearchNoResults()
+        {
+            string keywords = "\"frigging"+"NoResultsMahn\"";
+            var expectedLowestRank = 0;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "CppHeaderElementResolver");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+            Assert.IsTrue(_myMessage.Contains("No results"));
+        }
+
 		[Test]
 		public void ElementNameSearchesInTop3()
 		{

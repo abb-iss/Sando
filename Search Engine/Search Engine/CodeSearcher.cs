@@ -30,10 +30,22 @@ namespace Sando.SearchEngine
             Contract.Requires(searchCriteria != null, "CodeSearcher:Search - searchCriteria cannot be null!");
 
             var searchResults = _searcher.Search(searchCriteria).ToList();
-		    if (!searchResults.Any() && rerunWithWildcardIfNoResults)
+		    if (!searchResults.Any() && rerunWithWildcardIfNoResults && !QuotesInQuery(searchCriteria))
 		        searchResults = RerunQueryWithWildcardAtTheEnd(searchCriteria, searchResults);
 			return searchResults;
 		}
+
+        private bool QuotesInQuery(SearchCriteria searchCriteria)
+        {
+            var simple = searchCriteria as SimpleSearchCriteria;
+            if (simple != null)
+            {
+                foreach (var term in simple.SearchTerms)
+                    if (term.Contains("\""))
+                        return true;
+            }
+            return false;    
+        }
 
         private List<CodeSearchResult> RerunQueryWithWildcardAtTheEnd(SearchCriteria searchCriteria, List<CodeSearchResult> searchResults)
         {
