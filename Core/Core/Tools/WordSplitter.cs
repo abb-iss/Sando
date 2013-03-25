@@ -26,41 +26,56 @@ namespace Sando.Core.Tools
         {
             Contract.Requires(searchTerms != null, "WordSplitter:ExtractSearchTerms - searchTerms cannot be null!");
 
-			//1.handle quotes
-            var matchCollection = Regex.Matches(searchTerms, QuotesPattern);
             var matches = new List<string>();
-            foreach (Match match in matchCollection)
+
+            searchTerms = searchTerms.Trim();
+            if (searchTerms.StartsWith("\"") && searchTerms.EndsWith("\""))
             {
-                string currentMatch = match.Value;//.Trim('"', ' ');
-                searchTerms = searchTerms.Replace(match.Value, "");
-                if (!String.IsNullOrWhiteSpace(currentMatch))
-                    matches.Add(currentMatch);
+                //handle case where quote is whole search term, works if quote contians double quotes
+                searchTerms = searchTerms.Substring(1).Substring(0, searchTerms.Length - 2);
+                searchTerms = searchTerms.Replace("\"","\\\"");
+                matches.Add("\"" + searchTerms + "\"");
             }
-
-            searchTerms = RemoveFiletype(searchTerms);
-
-            //2.add unsplit terms
-            var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string term in splitTerms)
+            else
             {
-                if (term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c) || c.Equals('_')))
+
+                //1.handle case where quote is just part of search terms, doesn't work if quote contains double quotes
+                var matchCollection = Regex.Matches(searchTerms, QuotesPattern); 
+                foreach (Match match in matchCollection)
                 {
-                    matches.Add(term);
+                    string currentMatch = match.Value;//.Trim('"', ' ');
+                    searchTerms = searchTerms.Replace(match.Value, "");
+                    if (!String.IsNullOrWhiteSpace(currentMatch))
+                        matches.Add(currentMatch);
                 }
-            }
 
-			//3.do rest...
-            searchTerms = Regex.Replace(searchTerms, Pattern, " ");
-            searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z][a-z]+)", " $1$2");
-            searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");
+                searchTerms = RemoveFiletype(searchTerms);
 
-            searchTerms = searchTerms.Replace("\"", " ");
-            searchTerms = searchTerms.Replace("_", " ");
-            matches.AddRange(searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-            for (int i = 0; i < matches.Count; ++i)
-            {
-                string lower = matches[i].Trim().ToLower();
-                matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
+                //2.add unsplit terms
+                var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string term in splitTerms)
+                {
+                    if (term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c) || c.Equals('_')))
+                    {
+                        matches.Add(term);
+                    }
+                }
+
+                //3.do rest...
+                searchTerms = Regex.Replace(searchTerms, Pattern, " ");
+                searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z][a-z]+)", " $1$2");
+                searchTerms = Regex.Replace(searchTerms, @"(-{0,1})([A-Z]+|[0-9]+)", " $1$2");
+
+                searchTerms = searchTerms.Replace("\"", " ");
+                searchTerms = searchTerms.Replace("_", " ");
+                matches.AddRange(searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+
+
+                for (int i = 0; i < matches.Count; ++i)
+                {
+                    string lower = matches[i].Trim().ToLower();
+                    matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
+                }
             }
               
             return matches.Distinct().ToList();
@@ -93,6 +108,14 @@ namespace Sando.Core.Tools
 
         public static bool InvalidCharactersFound(string searchTerms)
         {
+
+            searchTerms = searchTerms.Trim();
+            if (searchTerms.StartsWith("\"") && searchTerms.EndsWith("\""))
+            {
+                //handle case where quote is whole search term, so anything goes
+                return false;
+            }
+
             searchTerms = RemoveFiletype(searchTerms);
 
             MatchCollection matchCollection = Regex.Matches(searchTerms, QuotesPattern);

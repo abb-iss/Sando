@@ -95,6 +95,16 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedInsideQuotes()
+        {
+            Assert.IsFalse(WordSplitter.InvalidCharactersFound("\"wordSplitter.ExtractWords(\"IInUnderscore\")\""));
+            Assert.IsFalse(WordSplitter.InvalidCharactersFound("\"Assert.IsNotNull(wordSplitter, \"Default word splitter should be used!\");\""));
+            Assert.IsNotNull(WordSplitter.ExtractSearchTerms("\"Assert.IsNotNull(wordSplitter, \"Default word splitter should be used!\");\""));            
+            List<string> parts = WordSplitter.ExtractSearchTerms("\"wordSplitter.ExtractWords(\"IInUnderscore\")\"");
+            Assert.AreEqual(1, parts.Count);            
+        }
+
+        [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedWithInvalidQuote()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another\"word");
