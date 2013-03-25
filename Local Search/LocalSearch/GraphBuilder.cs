@@ -22,6 +22,7 @@ namespace Sando.LocalSearch
         private SrcMLFile srcmlFile;
         protected XElement[] FieldDecs;
         protected XElement[] FullMethods;
+        protected String[] ClassNames;
         protected Dictionary<int, List<Tuple<XElement, int>>> Calls = new Dictionary<int, List<Tuple<XElement, int>>>();
         protected Dictionary<int, List<Tuple<XElement, int>>> Callers = new Dictionary<int, List<Tuple<XElement, int>>>();
         protected Dictionary<int, List<Tuple<XElement, int>>> FieldUses = new Dictionary<int, List<Tuple<XElement, int>>>();
@@ -59,6 +60,8 @@ namespace Sando.LocalSearch
 
         public void Initialize()
         {
+            ClassNames = GetClassNames(); 
+            
             FullMethods = GetFullMethods();
 
             FieldDecs = GetFieldDecs();
@@ -170,45 +173,47 @@ namespace Sando.LocalSearch
 
         private bool Matches(XElement call, XElement methodElement)
         {
-            //first make sure the call and the method is in the same class
-            var callclasses = call.Ancestors(SRC.Class);
-            var methodclasses = methodElement.Ancestors(SRC.Class);
-            String callclassname = "";
-            String methodclassname = "";
-            try
-            {                
-                callclassname = callclasses.First().Element(SRC.Name).Value;
-            }
-            catch(NullReferenceException e)
-            {
-                //anonymous class
-                callclassname = "anonymous";
-            }
-            try
-            {                
-                methodclassname = methodclasses.First().Element(SRC.Name).Value;
-            }
-            catch (NullReferenceException e)
-            {
-                //anonymous class
-                methodclassname = "anonymous";
-            }
+            ////first make sure the call and the method is in the same class
+            ////TODO: this may not too restrict (false negative)
+            //var callclasses = call.Ancestors(SRC.Class);
+            //var methodclasses = methodElement.Ancestors(SRC.Class);
+            //String callclassname = "";
+            //String methodclassname = "";
+            //try
+            //{                
+            //    callclassname = callclasses.First().Element(SRC.Name).Value;
+            //}
+            //catch(NullReferenceException e)
+            //{
+            //    //anonymous class
+            //    callclassname = "anonymous";
+            //}
+            //try
+            //{                
+            //    methodclassname = methodclasses.First().Element(SRC.Name).Value;
+            //}
+            //catch (NullReferenceException e)
+            //{
+            //    //anonymous class
+            //    methodclassname = "anonymous";
+            //}
 
-            //TODO: this may not be right for Java
-            if (callclassname != methodclassname)
-                return false;
+            ////if (callclassname != methodclassname)
+            ////    return false;
 
             var name = "";
 
             var names = call.Element(SRC.Name).Elements(SRC.Name);
             if (names.Count() != 0)
             {
-                name = names.Last().Value;
+                name = names.Last().Value;                
                 int count = names.Count();
-                if (count > 1) //x.method but x is not "this"
+                if (count > 1) 
                 {
                     var dec = names.ElementAt(count - 2).Value;
-                    if (!dec.Equals("this"))
+                    var obj = names.ElementAt(0).Value;
+                    if ((!dec.Equals("this")) //x.method --> though x is"this"
+                        && !(isDefinedLocally(obj))) //an instance of class defined in the same file or it is a class name
                         return false;
                 }
             }
@@ -240,6 +245,29 @@ namespace Sando.LocalSearch
                 return true;
             else
                 return false;
+        }
+
+        //if an object is defined in the local file 
+        //1. an instance of a locally defined class
+        //2. a class
+        bool isDefinedLocally(String obj)
+        {   
+            if (ClassNames.Contains(obj))
+                return true;
+
+            foreach (var field in FieldDecs)
+            {
+                String type = field.Element(SRC.Type).Element(SRC.Name).Value;
+                String name = field.Element(SRC.Name).Value;
+
+                if (name.Equals(obj))
+                {
+                    if(ClassNames.Contains(type))
+                        return true;
+                }                   
+            }
+
+            return false;
         }
 
         //return MethodElement as its definition in full method XElement
@@ -512,6 +540,26 @@ namespace Sando.LocalSearch
         }
 
         /// <summary>
+        /// Get all class names in the source file.
+        /// </summary>
+        /// <returns>An array of all the class names in String.</returns>
+        public String[] GetClassNames()
+        {
+            List<String> listClassNames = new List<string>();
+            foreach (XElement file in srcmlFile.FileUnits)
+            {
+                var classes = from classdef in file.Descendants()
+                              where classdef.Name.Equals(SRC.Class)
+                              select classdef.Element(SRC.Name).Value;
+
+                if (classes != null)
+                    listClassNames.AddRange(classes);
+            }
+
+            return listClassNames.ToArray();
+        }
+
+        /// <summary>
         /// Get all methods (including constructor and destructor) in the source file.
         /// </summary>
         /// <returns>An array of all the FULL methods/constructors/destructors in XElement.</returns>
@@ -611,41 +659,73 @@ namespace Sando.LocalSearch
         /// <retruns name="UsedLineNumber"> number of line on which the field is used </retruns>
         public bool ifFieldUsedinMethod(XElement method, String fieldname, String fieldclassname, ref List<int> UsedLineNumber)
         {
-            var methodclass = method.Ancestors(SRC.Class);
-            //make sure the "first" element is the direct class
-            String methodclassname = "";
-            try
-            {
-                methodclassname = methodclass.First().Element(SRC.Name).Value;
-            }
-            catch
-            {
-                methodclassname = "anonymous";
-            }
-            //TODO: this may not be true
-            if (methodclassname != fieldclassname)
-                return false;
-            
+            //var methodclass = method.Ancestors(SRC.Class);
+            //String methodclassname = "";
+            //try
+            //{
+            //    methodclassname = methodclass.First().Element(SRC.Name).Value;
+            //}
+            //catch
+            //{
+            //    methodclassname = "anonymous";
+            //}
+
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
                 return false;
 
-            //get all "Names" that appear in the method body
-            //except: Name of Type
+             //get all "Names" that appear in the method body
+             //except: Name of Type
             var allnames = from name in methodbody.Descendants(SRC.Name)
-                           where !name.Ancestors(SRC.Type).Any()
-                           select name; 
+                            where !name.Ancestors(SRC.Type).Any()
+                            select name;
 
+            //var allexprs = from expr in methodbody.Descendants(SRC.Expression)
+            //                where !expr.Ancestors(SRC.Type).Any()
+            //                select expr;
+
+            if (allnames.Count() == 0) 
+                //&& (allexprs.Count() == 0))
+                 return false;
+
+            bool res = false;
+            
             var localvars = GetAllLocalVarsinMethod(method);
             var paras = GetAllParametersinMethod(method);
 
             List<String> listNames = new List<String>();
             List<XElement> listNameElements = new List<XElement>();
+            List<XElement> ListExprElements = new List<XElement>();
             foreach (var name in allnames)
             {
-                listNameElements.Add(name);
-                listNames.Add(name.Value);
+                if (! ( name.Parent.Name.Equals(SRC.Expression)
+                     && name.Parent.Elements(SRC.Name).Count() > 1))
+                {
+                    listNameElements.Add(name);
+                    listNames.Add(name.Value);
+                }
+                else
+                {
+                    var expr = name.Parent;
+                    ListExprElements.Add(expr);
+                    
+                    //case of field.xxx
+                    listNameElements.Add(expr.Element(SRC.Name));
+                    listNames.Add(expr.Element(SRC.Name).Value);                    
+                }
             }
+            //foreach (var expr in allexprs) //case of field.xxx
+            //{
+            //    if (expr.Elements(SRC.Name).Count() > 0)
+            //    {
+            //        listNameElements.Add(expr.Element(SRC.Name));
+            //        listNames.Add(expr.Element(SRC.Name).Value);
+            //    }
+            //    else
+            //    {
+            //        expr.ToSource();
+            //    }
+            //}
 
             List<String> listLocalVars = new List<string>();
             foreach (var localvar in localvars)
@@ -653,11 +733,10 @@ namespace Sando.LocalSearch
 
             List<String> listParas = new List<string>();
             foreach (var para in paras)
-                listParas.Add(para.Value);
-
-            if (listNames.Contains(fieldname) &&
-                !(listLocalVars.Contains(fieldname)) &&
-                !(listParas.Contains(fieldname)))
+                listParas.Add(para.Value);            
+            
+            if (listNames.Contains(fieldname) 
+            && ! ( listLocalVars.Contains(fieldname) || listParas.Contains(fieldname))) 
             {
                 int index = 0;
                 while (index < listNames.Count())
@@ -666,15 +745,45 @@ namespace Sando.LocalSearch
                     if (index == -1)
                         break;
                     int line = listNameElements[index].GetSrcLineNumber();
-                    if (!UsedLineNumber.Contains(line)) //avoid adding field uses that happen on the same line
+                    if (!UsedLineNumber.Contains(line)) //avoid adding multiple uses on the same line
                         UsedLineNumber.Add(line);
                     index++;
                 }
-
-                return true;
+                res = true;                
             }
-            else
-                return false;
+
+            foreach (var expr in ListExprElements)
+            {
+                String exprAsString = expr.Value;
+                if (!exprAsString.Contains("."))
+                    continue;
+
+                expr.Element(SRC.OP) //TODO
+                var xxx = expr.Descendants();
+                String[] exprStrings = exprAsString.Split('.');
+                String type = exprStrings[0];
+                String dec = "";
+                for(int i=1; i<exprStrings.Count(); i++)
+                {
+                    if (exprStrings[i] == fieldname)
+                    {
+                        dec = exprStrings[i - 1];
+                        if (isDefinedLocally(type) || (dec == "this"))
+                        {
+                            int line = expr.GetSrcLineNumber();
+                            if (!UsedLineNumber.Contains(line))
+                                UsedLineNumber.Add(line);
+                            res = true;
+                        }
+                        break;
+                    }
+                }                
+            }
+
+            return res;
+
+
+
         }
 
         #endregion basic information collection

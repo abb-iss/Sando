@@ -22,7 +22,7 @@ namespace Sando.LocalSearch.UnitTests
         public void ShowUI()
         {
             Context gbuilder = new Context();
-            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\MindMapMapModel.java");
+            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\InnerClassTest.java");
             var elements = gbuilder.GetRecommendations();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

@@ -55,6 +55,7 @@
     <Compile Include="GraphBuilderTest.cs" />
     <Compile Include="NavigationBoxesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="TestFiles\InnerClassTest.java" />
     <None Include="TestFiles\CreatureManager.cs" />
     <None Include="TestFiles\DatabaseMenuCommands.cs" />
     <None Include="TestFiles\DataConnectionHelper.cs" />
