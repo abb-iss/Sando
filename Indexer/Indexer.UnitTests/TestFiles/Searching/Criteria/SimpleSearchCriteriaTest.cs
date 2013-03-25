@@ -418,7 +418,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 				SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms("\"Class Simple\""))
 			};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(" + SandoField.Name.ToString() + ":\"class simple\"^4)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.Name.ToString() + ":\"Class Simple\"^4)", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
