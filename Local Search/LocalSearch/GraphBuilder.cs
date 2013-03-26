@@ -75,7 +75,6 @@ namespace Sando.LocalSearch
         #region callgraph related
         private void CreateCallGraph()
         {
-            //XElement[] allmethods = GetFullMethods();
             XElement[] allmethods = FullMethods;
             
             foreach (var method in allmethods)
@@ -157,10 +156,9 @@ namespace Sando.LocalSearch
             return listCallers;
         }
 
-        //find a method call's definition if it is defined in the same class
+        //find a method call's definition if it is defined in the same file
         public XElement GetMethodFromCall(XElement call)
         {
-            //XElement[] allmethods = GetFullMethods();
             XElement[] allmethods = FullMethods;
 
             foreach (var method in allmethods)
@@ -173,33 +171,29 @@ namespace Sando.LocalSearch
 
         private bool Matches(XElement call, XElement methodElement)
         {
-            ////first make sure the call and the method is in the same class
-            ////TODO: this may not too restrict (false negative)
-            //var callclasses = call.Ancestors(SRC.Class);
-            //var methodclasses = methodElement.Ancestors(SRC.Class);
-            //String callclassname = "";
-            //String methodclassname = "";
-            //try
-            //{                
-            //    callclassname = callclasses.First().Element(SRC.Name).Value;
-            //}
-            //catch(NullReferenceException e)
-            //{
-            //    //anonymous class
-            //    callclassname = "anonymous";
-            //}
-            //try
-            //{                
-            //    methodclassname = methodclasses.First().Element(SRC.Name).Value;
-            //}
-            //catch (NullReferenceException e)
-            //{
-            //    //anonymous class
-            //    methodclassname = "anonymous";
-            //}
-
-            ////if (callclassname != methodclassname)
-            ////    return false;
+            //first make sure the call and the method is in the same class
+            var callclasses = call.Ancestors(SRC.Class);
+            var methodclasses = methodElement.Ancestors(SRC.Class);
+            String callhappenclassname = "";
+            String methodclassname = "";
+            try
+            {
+                callhappenclassname = callclasses.First().Element(SRC.Name).Value;
+            }
+            catch (NullReferenceException e)
+            {
+                //anonymous class
+                callhappenclassname = "anonymous";
+            }
+            try
+            {
+                methodclassname = methodclasses.First().Element(SRC.Name).Value;
+            }
+            catch (NullReferenceException e)
+            {
+                //anonymous class
+                methodclassname = "anonymous";
+            }
 
             var name = "";
 
@@ -212,8 +206,14 @@ namespace Sando.LocalSearch
                 {
                     var dec = names.ElementAt(count - 2).Value;
                     var obj = names.ElementAt(0).Value;
-                    if ((!dec.Equals("this")) //x.method --> though x is"this"
-                        && !(isDefinedLocally(obj))) //an instance of class defined in the same file or it is a class name
+                    String realcallclassname = "";
+
+                    if (obj.Equals("this"))
+                        realcallclassname = callhappenclassname;
+                    else
+                        realcallclassname = GetClassName(obj);
+
+                    if(realcallclassname != methodclassname)    
                         return false;
                 }
             }
@@ -268,6 +268,26 @@ namespace Sando.LocalSearch
             }
 
             return false;
+        }
+
+        String GetClassName(String obj)
+        {
+            if (ClassNames.Contains(obj))
+                return obj;
+
+            foreach (var field in FieldDecs)
+            {
+                String type = field.Element(SRC.Type).Element(SRC.Name).Value;
+                String name = field.Element(SRC.Name).Value;
+
+                if (name.Equals(obj))
+                {
+                    return type;
+                }
+            }
+
+            return "";
+
         }
 
         //return MethodElement as its definition in full method XElement
@@ -659,16 +679,16 @@ namespace Sando.LocalSearch
         /// <retruns name="UsedLineNumber"> number of line on which the field is used </retruns>
         public bool ifFieldUsedinMethod(XElement method, String fieldname, String fieldclassname, ref List<int> UsedLineNumber)
         {
-            //var methodclass = method.Ancestors(SRC.Class);
-            //String methodclassname = "";
-            //try
-            //{
-            //    methodclassname = methodclass.First().Element(SRC.Name).Value;
-            //}
-            //catch
-            //{
-            //    methodclassname = "anonymous";
-            //}
+            var methodclass = method.Ancestors(SRC.Class);
+            String methodclassname = "";
+            try
+            {
+                methodclassname = methodclass.First().Element(SRC.Name).Value;
+            }
+            catch
+            {
+                methodclassname = "anonymous";
+            }
 
             XElement methodbody = method.Element(SRC.Block);
             if (methodbody == null)
@@ -680,12 +700,7 @@ namespace Sando.LocalSearch
                             where !name.Ancestors(SRC.Type).Any()
                             select name;
 
-            //var allexprs = from expr in methodbody.Descendants(SRC.Expression)
-            //                where !expr.Ancestors(SRC.Type).Any()
-            //                select expr;
-
             if (allnames.Count() == 0) 
-                //&& (allexprs.Count() == 0))
                  return false;
 
             bool res = false;
@@ -693,40 +708,42 @@ namespace Sando.LocalSearch
             var localvars = GetAllLocalVarsinMethod(method);
             var paras = GetAllParametersinMethod(method);
 
-            List<String> listNames = new List<String>();
-            List<XElement> listNameElements = new List<XElement>();
-            List<XElement> ListExprElements = new List<XElement>();
+            List<String> NameStrings = new List<String>();
+            List<XElement> NameElements = new List<XElement>();
+            List<XElement> OrigExprElements = new List<XElement>();
+            List<XElement> ExprNameElements = new List<XElement>();
+
             foreach (var name in allnames)
             {
-                if (! ( name.Parent.Name.Equals(SRC.Expression)
-                     && name.Parent.Elements(SRC.Name).Count() > 1))
+                if (!name.Parent.Name.Equals(SRC.Expression)) //single name element
                 {
-                    listNameElements.Add(name);
-                    listNames.Add(name.Value);
+                    NameElements.Add(name);
+                    NameStrings.Add(name.Value);
                 }
-                else
+                else //name elements wrapped in expression 
                 {
                     var expr = name.Parent;
-                    ListExprElements.Add(expr);
-                    
-                    //case of field.xxx
-                    listNameElements.Add(expr.Element(SRC.Name));
-                    listNames.Add(expr.Element(SRC.Name).Value);                    
+                    if (!OrigExprElements.Contains(expr))
+                    {
+                        OrigExprElements.Add(expr);
+
+                        var separateNameExprs = GetSeparateNamesInExpression(expr);
+                        foreach (var nameExpr in separateNameExprs)
+                        {
+                            String fullname = nameExpr.Value;
+
+                            //single name element wrapped in expression
+                            // or case of field.xxx
+                            NameElements.Add(nameExpr.Element(SRC.Name));
+                            NameStrings.Add(nameExpr.Element(SRC.Name).Value);
+
+                            if (fullname.IndexOf('.') > 0)
+                                ExprNameElements.Add(nameExpr);                            
+                        }
+                    }
                 }
             }
-            //foreach (var expr in allexprs) //case of field.xxx
-            //{
-            //    if (expr.Elements(SRC.Name).Count() > 0)
-            //    {
-            //        listNameElements.Add(expr.Element(SRC.Name));
-            //        listNames.Add(expr.Element(SRC.Name).Value);
-            //    }
-            //    else
-            //    {
-            //        expr.ToSource();
-            //    }
-            //}
-
+            
             List<String> listLocalVars = new List<string>();
             foreach (var localvar in localvars)
                 listLocalVars.Add(localvar.Value);
@@ -735,16 +752,19 @@ namespace Sando.LocalSearch
             foreach (var para in paras)
                 listParas.Add(para.Value);            
             
-            if (listNames.Contains(fieldname) 
+            //handle single names
+            if (NameStrings.Contains(fieldname) 
             && ! ( listLocalVars.Contains(fieldname) || listParas.Contains(fieldname))) 
             {
                 int index = 0;
-                while (index < listNames.Count())
+                while (index < NameStrings.Count())
                 {
-                    index = listNames.FindIndex(index, name => name == fieldname);
+                    index = NameStrings.FindIndex(index, name => name == fieldname);
                     if (index == -1)
                         break;
-                    int line = listNameElements[index].GetSrcLineNumber();
+                    int line = NameElements[index].GetSrcLineNumber();
+                    if (line == -1)
+                        line = Convert.ToInt32(NameElements[index].Attribute(POS.Line).Value);
                     if (!UsedLineNumber.Contains(line)) //avoid adding multiple uses on the same line
                         UsedLineNumber.Add(line);
                     index++;
@@ -752,38 +772,83 @@ namespace Sando.LocalSearch
                 res = true;                
             }
 
-            foreach (var expr in ListExprElements)
+            //handle names wrapped in expressions
+            foreach (var expr in ExprNameElements)
             {
-                String exprAsString = expr.Value;
-                if (!exprAsString.Contains("."))
-                    continue;
+                var separatenames = expr.Elements(SRC.Name);
 
-                expr.Element(SRC.OP) //TODO
-                var xxx = expr.Descendants();
-                String[] exprStrings = exprAsString.Split('.');
-                String type = exprStrings[0];
-                String dec = "";
-                for(int i=1; i<exprStrings.Count(); i++)
+                String type = separatenames.ElementAt(0).Value;
+                String rootname = separatenames.ElementAt(separatenames.Count() - 1).Value;
+                String dec = separatenames.ElementAt(separatenames.Count() - 2).Value;
+
+                String fielduseclassname = "";
+
+                if (rootname == fieldname)
                 {
-                    if (exprStrings[i] == fieldname)
+                    if (type == "this")
+                        fielduseclassname = methodclassname;
+                    else
+                        fielduseclassname = GetClassName(type);
+
+                    if (fielduseclassname == fieldclassname)
                     {
-                        dec = exprStrings[i - 1];
-                        if (isDefinedLocally(type) || (dec == "this"))
-                        {
-                            int line = expr.GetSrcLineNumber();
-                            if (!UsedLineNumber.Contains(line))
-                                UsedLineNumber.Add(line);
-                            res = true;
-                        }
-                        break;
+                        XElement rootelement = separatenames.ElementAt(separatenames.Count() - 1);
+                        int line = Convert.ToInt32(rootelement.Attribute(POS.Line).Value); //rootelement.GetSrcLineNumber();
+                        if (!UsedLineNumber.Contains(line))
+                            UsedLineNumber.Add(line);
+
+                        res = true;
                     }
-                }                
+                }
             }
 
             return res;
+        }
 
+        //pull out full names as "x (or x.y.z)" from the whole expression
+        XElement[] GetSeparateNamesInExpression(XElement expr)
+        {
+            List<XElement> separateNames = new List<XElement>();
 
+            var allelements = expr.Elements();
+            List<XElement> singleNames = new List<XElement>();
+            foreach (var eachelement in allelements)
+            {
+                if (eachelement.Name.Equals(SRC.Name))
+                {
+                    singleNames.Add(eachelement);
+                    continue;
+                }
 
+                if (eachelement.Name.Equals(OP.Operator) && (eachelement.Value == "."))
+                {
+                    singleNames.Add(eachelement);
+                    continue;
+                }
+
+                XElement mergeName = MergeSeparateNames(singleNames);
+                if(mergeName != null)
+                    separateNames.Add(mergeName);
+                singleNames.Clear();
+            }
+
+            XElement lastmergeName = MergeSeparateNames(singleNames);
+            if (lastmergeName != null)
+                separateNames.Add(lastmergeName);
+
+            return separateNames.ToArray();
+        }
+
+        XElement MergeSeparateNames(List<XElement> separatenames)
+        {
+            if (separatenames.Count() == 0)
+                return null;
+
+            XElement mergedName = new XElement(SRC.Expression);
+
+            mergedName.Add(separatenames);
+
+            return mergedName;            
         }
 
         #endregion basic information collection

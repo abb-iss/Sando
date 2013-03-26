@@ -16,8 +16,22 @@
 			int x;
             Example.this.doSomething(a,b);
 			Example.this.doSomething(x, Example.this.x);
-			if(this.a == 0)
+			if(this.a == Example.this.x)
 			    b = 0;
+			if(x == b)
+				x++;
         }
     }
+
+	public class Mix
+	{
+		public int c;
+		Request obj;
+
+		public void doSomething(int x)
+		{
+			obj.doSomething();		
+		}
+
+	}
 }
