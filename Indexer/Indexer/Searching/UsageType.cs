@@ -10,6 +10,7 @@
 		MethodReturnTypes,
 		NamespaceNames,
 		PropertyOrFieldTypes,
-		RawSourceCode
+		RawSourceCode,
+        ClassName
 	}
 }

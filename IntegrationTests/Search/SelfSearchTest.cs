@@ -32,6 +32,21 @@ namespace Sando.IntegrationTests.Search
             Assert.IsTrue(_myMessage.Contains("No results"));
         }
 
+        [Test]
+        public void ExcludeTestIfClassNameHasTest()
+        {
+            string keywords = "reorder search results -test";
+            var expectedLowestRank = 20;
+            try{
+                Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "ReorderSearchResults") && (el.ProgramElement.FullFilePath.Contains("Test"));
+                EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);                
+            }catch(Exception e){
+                //expected
+                return;
+            }
+            Assert.IsTrue(false, "Should fail to find this method");
+        }        
+
 		[Test]
 		public void ElementNameSearchesInTop3()
 		{

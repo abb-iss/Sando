@@ -38,6 +38,6 @@ namespace Sando.Indexer.Documents
 			return result;
 		}
 
-	    public const string Delimiter = "✉∞";
+	    public const string Delimiter = " ✉∞ ";
 	}
 }
