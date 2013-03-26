@@ -173,8 +173,8 @@ namespace Sando.IntegrationTests.Search
             expectedLowestRank = 3;
             predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "GetTranslation");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
-            keywords = "register extension points";
-            expectedLowestRank = 12;
+            keywords = "RegisterExtensionPoints";
+            expectedLowestRank = 1;
             predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "RegisterExtensionPoints");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
         }
