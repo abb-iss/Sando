@@ -42,7 +42,7 @@ namespace Sando.Parser
             }
             catch (Exception e)
             {
-                LogEvents.ParsingFileGenericError(this, filename);
+                LogEvents.ParserGenericFileError(this, filename);
             }
             return list;
         }

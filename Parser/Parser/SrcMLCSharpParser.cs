@@ -37,7 +37,7 @@ namespace Sando.Parser
                 if(sourceElements != null) {
                     programElements = Parse(fileName, sourceElements);
                 } else {
-                    LogEvents.FileNotFoundInArchiveError(this, fileName);
+                    LogEvents.ParserFileNotFoundInArchiveError(this, fileName);
                 }
             } else if(Generator != null) {
                 string outFile = Path.GetTempFileName();

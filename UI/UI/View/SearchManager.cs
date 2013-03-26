@@ -14,6 +14,7 @@ using Sando.Core.Logging;
 using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Indexer;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.UI.View
 {

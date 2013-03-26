@@ -10,59 +10,68 @@ namespace Sando.Core.Logging.Events
 	{
 		public static void RegisterLogEventHandlers()
 		{
-			LogEvents.Event_MonitoringStopped += new EventHandler(Handler_MonitoringStopped);
+			LogEvents.Event_UIMonitoringStopped += new EventHandler(Handler_UIMonitoringStopped);
 			LogEvents.Event_TestLogging += new EventHandler(Handler_TestLogging);
 
-            LogEvents.Event_FileNotFoundInArchiveError += new EventHandler<EventArgs<string>>(Handler_FileNotFoundInArchiveError);
-            LogEvents.Event_ParsingFileGenericError += new EventHandler<EventArgs<string>>(Handler_ParsingFileGenericError);
+            LogEvents.Event_ParserFileNotFoundInArchiveError += new EventHandler<EventArgs<string>>(Handler_ParserFileNotFoundInArchiveError);
+            LogEvents.Event_ParserGenericFileError += new EventHandler<EventArgs<string>>(Handler_ParserGenericFileError);
 
-            LogEvents.Event_CorruptIndexError += new EventHandler<EventArgs<Exception>>(Handler_CorruptIndexError);
-            LogEvents.Event_LockObtainFailedError += new EventHandler<EventArgs<Exception>>(Handler_LockObtainFailedError);
-            LogEvents.Event_IndexerIOError += new EventHandler<EventArgs<Exception>>(Handler_IndexerIOError);
+            LogEvents.Event_IndexCorruptError += new EventHandler<EventArgs<Exception>>(Handler_IndexCorruptError);
+            LogEvents.Event_IndexLockObtainFailed += new EventHandler<EventArgs<Exception>>(Handler_IndexLockObtainFailed);
+            LogEvents.Event_IndexIOError += new EventHandler<EventArgs<Exception>>(Handler_IndexIOError);
 
 			LogEvents.Event_S3UploadStarted += new EventHandler<EventArgs<string>>(Handler_S3UploadStarted);
 			LogEvents.Event_S3NoCredentials += new EventHandler(Handler_S3NoCredentials);
 			LogEvents.Event_S3Error += new EventHandler<EventArgs<Exception>>(Handler_S3Error);
+
+			LogEvents.Event_SwumCacheFileNotExist += new EventHandler<EventArgs<string>>(Handler_SwumCacheFileNotExist);
 		}
 
 		public static void UnregisterLogEventHandlers()
 		{
-			LogEvents.Event_MonitoringStopped -= new EventHandler(Handler_MonitoringStopped);
+			LogEvents.Event_UIMonitoringStopped -= new EventHandler(Handler_UIMonitoringStopped);
 			LogEvents.Event_TestLogging -= new EventHandler(Handler_TestLogging);
 
-            LogEvents.Event_FileNotFoundInArchiveError -= new EventHandler<EventArgs<string>>(Handler_FileNotFoundInArchiveError);
-            LogEvents.Event_ParsingFileGenericError -= new EventHandler<EventArgs<string>>(Handler_ParsingFileGenericError);
+            LogEvents.Event_ParserFileNotFoundInArchiveError -= new EventHandler<EventArgs<string>>(Handler_ParserFileNotFoundInArchiveError);
+            LogEvents.Event_ParserGenericFileError -= new EventHandler<EventArgs<string>>(Handler_ParserGenericFileError);
 
-            LogEvents.Event_CorruptIndexError -= new EventHandler<EventArgs<Exception>>(Handler_CorruptIndexError);
-            LogEvents.Event_LockObtainFailedError -= new EventHandler<EventArgs<Exception>>(Handler_LockObtainFailedError);
-            LogEvents.Event_IndexerIOError -= new EventHandler<EventArgs<Exception>>(Handler_IndexerIOError);
+            LogEvents.Event_IndexCorruptError -= new EventHandler<EventArgs<Exception>>(Handler_IndexCorruptError);
+            LogEvents.Event_IndexLockObtainFailed -= new EventHandler<EventArgs<Exception>>(Handler_IndexLockObtainFailed);
+            LogEvents.Event_IndexIOError -= new EventHandler<EventArgs<Exception>>(Handler_IndexIOError);
 
 			LogEvents.Event_S3UploadStarted -= new EventHandler<EventArgs<string>>(Handler_S3UploadStarted);
 			LogEvents.Event_S3NoCredentials -= new EventHandler(Handler_S3NoCredentials);
 			LogEvents.Event_S3Error -= new EventHandler<EventArgs<Exception>>(Handler_S3Error);
+
+			LogEvents.Event_SwumCacheFileNotExist -= new EventHandler<EventArgs<string>>(Handler_SwumCacheFileNotExist);
 		}
 
-        private static void Handler_ParsingFileGenericError(object sender, EventArgs<string> fileNameArg)
+		private static void Handler_SwumCacheFileNotExist(Object sender, EventArgs<string> cachePathArg)
+		{
+            WriteInfoLogMessage(sender.GetType().ToString(), "Cache file does not exist: " + cachePathArg.Value);
+		}
+
+        private static void Handler_ParserGenericFileError(object sender, EventArgs<string> fileNameArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "The file could not be read: " + fileNameArg.Value);
         }
 
-        private static void Handler_FileNotFoundInArchiveError(object sender, EventArgs<string> fileNameArg)
+        private static void Handler_ParserFileNotFoundInArchiveError(object sender, EventArgs<string> fileNameArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "File not found in archive: " + fileNameArg.Value);
         }
 
-        private static void Handler_IndexerIOError(object sender, EventArgs<Exception> ioExArg)
+        private static void Handler_IndexIOError(object sender, EventArgs<Exception> ioExArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "", ioExArg.Value);
         }
 
-        private static void Handler_LockObtainFailedError(object sender, EventArgs<Exception> lockObtainFailedExArg)
+        private static void Handler_IndexLockObtainFailed(object sender, EventArgs<Exception> lockObtainFailedExArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "", lockObtainFailedExArg.Value);
         }
 
-        private static void Handler_CorruptIndexError(Object sender, EventArgs<Exception> corruptIndexExArg)
+        private static void Handler_IndexCorruptError(Object sender, EventArgs<Exception> corruptIndexExArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "", corruptIndexExArg.Value);
         }
@@ -82,7 +91,7 @@ namespace Sando.Core.Logging.Events
             WriteInfoLogMessage(sender.GetType().ToString(), "Beginning to put file=" + filePathArgs.Value);
 		}
 
-		private static void Handler_MonitoringStopped(object sender, EventArgs e)
+		private static void Handler_UIMonitoringStopped(object sender, EventArgs e)
 		{
             WriteInfoLogMessage(sender.GetType().ToString(), "Monitoring stopped");
 		}

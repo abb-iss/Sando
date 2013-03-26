@@ -61,17 +61,17 @@ namespace Sando.Indexer
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
-                LogEvents.CorruptIndexError(this, corruptIndexEx);
+                LogEvents.IndexCorruptError(this, corruptIndexEx);
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexIsCorrupt, corruptIndexEx);
 			}
 			catch(LockObtainFailedException lockObtainFailedEx)
 			{
-                LogEvents.LockObtainFailedError(this, lockObtainFailedEx);
+                LogEvents.IndexLockObtainFailed(this, lockObtainFailedEx);
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexAlreadyOpened, lockObtainFailedEx);
 			}
 			catch(System.IO.IOException ioEx)
 			{
-                LogEvents.IndexerIOError(this, ioEx);
+                LogEvents.IndexIOError(this, ioEx);
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
 		}

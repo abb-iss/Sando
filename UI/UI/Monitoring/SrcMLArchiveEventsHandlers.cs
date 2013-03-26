@@ -13,6 +13,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
+using Sando.Core.Logging.Events;
 
 
 namespace Sando.UI.Monitoring
@@ -120,7 +121,7 @@ namespace Sando.UI.Monitoring
 
         public void MonitoringStopped(object sender, EventArgs args)
         {
-            FileLogger.DefaultLogger.Info("Sando: MonitoringStopped()");
+			LogEvents.UIMonitoringStopped(this);
             var currentIndexer = ServiceLocator.ResolveOptional<DocumentIndexer>();
             if (currentIndexer != null)
             {

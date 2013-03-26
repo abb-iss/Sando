@@ -11,6 +11,7 @@ using ABB.Swum.Nodes;
 using ABB.SrcML;
 using Sando.Core.Logging;
 using Sando.Core.Logging.Persistence;
+using Sando.Core.Logging.Events;
 
 
 namespace Sando.Recommender {
@@ -95,7 +96,7 @@ namespace Sando.Recommender {
 
             if(useCache) {
                 if(!File.Exists(CachePath)) {
-                    FileLogger.DefaultLogger.InfoFormat("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
+					LogEvents.SwumCacheFileNotExist(this, CachePath);
                     return;
                 }
                 ReadSwumCache(CachePath);

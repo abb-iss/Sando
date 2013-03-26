@@ -16,51 +16,51 @@ namespace Sando.Core.Logging.Events
 
         #region ParserEvents
 
-        public static event EventHandler<EventArgs<string>> Event_FileNotFoundInArchiveError;
-        public static event EventHandler<EventArgs<string>> Event_ParsingFileGenericError;
+        public static event EventHandler<EventArgs<string>> Event_ParserFileNotFoundInArchiveError;
+        public static event EventHandler<EventArgs<string>> Event_ParserGenericFileError;
 
-        public static void FileNotFoundInArchiveError(Object sender, string fileName)
+        public static void ParserFileNotFoundInArchiveError(Object sender, string fileName)
         {
-            if (Event_FileNotFoundInArchiveError != null) Event_FileNotFoundInArchiveError(sender, new EventArgs<string>(fileName));
+            if (Event_ParserFileNotFoundInArchiveError != null) Event_ParserFileNotFoundInArchiveError(sender, new EventArgs<string>(fileName));
         }
 
-        public static void ParsingFileGenericError(Object sender, string fileName)
+        public static void ParserGenericFileError(Object sender, string fileName)
         {
-            if (Event_ParsingFileGenericError != null) Event_ParsingFileGenericError(sender, new EventArgs<string>(fileName));
+            if (Event_ParserGenericFileError != null) Event_ParserGenericFileError(sender, new EventArgs<string>(fileName));
         }
 
         #endregion
 
         #region UIEvents
 
-        public static event EventHandler Event_MonitoringStopped;
+        public static event EventHandler Event_UIMonitoringStopped;
 
-		public static void MonitoringStopped(Object sender)
+		public static void UIMonitoringStopped(Object sender)
 		{
-			if(Event_MonitoringStopped != null) Event_MonitoringStopped(sender, EventArgs.Empty);
+			if(Event_UIMonitoringStopped != null) Event_UIMonitoringStopped(sender, EventArgs.Empty);
 		}
 
         #endregion
 
         #region IndexerEvents
 
-        public static event EventHandler<EventArgs<Exception>> Event_CorruptIndexError;
-        public static event EventHandler<EventArgs<Exception>> Event_LockObtainFailedError;
-        public static event EventHandler<EventArgs<Exception>> Event_IndexerIOError;
+        public static event EventHandler<EventArgs<Exception>> Event_IndexCorruptError;
+        public static event EventHandler<EventArgs<Exception>> Event_IndexLockObtainFailed;
+        public static event EventHandler<EventArgs<Exception>> Event_IndexIOError;
 
-        public static void LockObtainFailedError(Object sender, Exception lockFailedEx)
+        public static void IndexLockObtainFailed(Object sender, Exception lockFailedEx)
         {
-            if (Event_LockObtainFailedError != null) Event_LockObtainFailedError(sender, new EventArgs<Exception>(lockFailedEx));
+            if (Event_IndexLockObtainFailed != null) Event_IndexLockObtainFailed(sender, new EventArgs<Exception>(lockFailedEx));
         }
 
-        public static void CorruptIndexError(Object sender, Exception corruptIndexEx)
+        public static void IndexCorruptError(Object sender, Exception corruptIndexEx)
         {
-            if (Event_CorruptIndexError != null) Event_CorruptIndexError(sender, new EventArgs<Exception>(corruptIndexEx));
+            if (Event_IndexCorruptError != null) Event_IndexCorruptError(sender, new EventArgs<Exception>(corruptIndexEx));
         }
 
-        public static void IndexerIOError(Object sender, Exception ioEx)
+        public static void IndexIOError(Object sender, Exception ioEx)
         {
-            if (Event_IndexerIOError != null) Event_IndexerIOError(sender, new EventArgs<Exception>(ioEx));
+            if (Event_IndexIOError != null) Event_IndexIOError(sender, new EventArgs<Exception>(ioEx));
         }
 
         #endregion
@@ -86,8 +86,20 @@ namespace Sando.Core.Logging.Events
 			if(Event_S3UploadStarted != null) Event_S3UploadStarted(sender, new EventArgs<string>(filePath));
 		}
 
-	#endregion
+		#endregion
+
+		#region RecommenderEvents
+
+		public static event EventHandler<EventArgs<string>> Event_SwumCacheFileNotExist;
+		public static event EventHandler<EventArgs<string>> Event_SwumFileNotFoundInArchive;
+
+        public static void SwumCacheFileNotExist(Object sender, string cachePath)
+        {
+			if(Event_SwumCacheFileNotExist != null) Event_SwumCacheFileNotExist(sender, new EventArgs<string>(cachePath));
+        }
 
 
+
+		#endregion
 	}
 }
