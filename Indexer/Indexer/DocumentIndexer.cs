@@ -80,13 +80,15 @@ namespace Sando.Indexer
 		{
 			Contract.Requires(sandoDocument != null, "DocumentIndexer:AddDocument - sandoDocument cannot be null!");
 
+            Document tempDoc = sandoDocument.GetDocument();
+            IndexWriter.AddDocument(tempDoc);
             lock (_lock)
             {
-                IndexWriter.AddDocument(sandoDocument.GetDocument());
-                if(_synchronousCommits)
+                if (_synchronousCommits)
                     CommitChanges();
                 else
-                    _hasIndexChanged = true;
+                    if (!_hasIndexChanged) //if _hasIndexChanged is false, then turn it into true
+                        _hasIndexChanged = true;
             }
 		}
 
@@ -95,13 +97,14 @@ namespace Sando.Indexer
             if (String.IsNullOrWhiteSpace(fullFilePath))
                 return;
             var term = new Term("FullFilePath", ConverterFromHitToProgramElement.StandardizeFilePath(fullFilePath));
+            IndexWriter.DeleteDocuments(new TermQuery(term));
             lock (_lock)
             {
-                IndexWriter.DeleteDocuments(new TermQuery(term));
                 if (_synchronousCommits || commitImmediately)
                     CommitChanges();
                 else
-                    _hasIndexChanged = true;
+                    if (!_hasIndexChanged) //if _hasIndexChanged is false, then turn it into true
+                        _hasIndexChanged = true;
             }
         }
 
@@ -231,12 +234,14 @@ namespace Sando.Indexer
 
         public void Dispose()
         {
+            _disposingInProcess = true;
             Dispose(false);
         }
 
 
 		public void Dispose(bool killReaders)
         {
+            _disposingInProcess = true;
 		    lock (_lock)
 		    {
                 try
@@ -254,6 +259,7 @@ namespace Sando.Indexer
 		
 		protected virtual void Dispose(bool disposing, bool killReaders)
         {
+            _disposingInProcess = true;
             if(!_disposed)
             {
                 if(disposing)
@@ -288,5 +294,11 @@ namespace Sando.Indexer
 	    private IndexSearcher _indexSearcher;
         private readonly bool _synchronousCommits;
 	    private readonly object _lock = new object();
-	}
+        private bool _disposingInProcess = false;
+
+        public bool IsDisposingOrDisposed()
+        {
+            return _disposingInProcess || _disposed;
+        }
+    }
 }

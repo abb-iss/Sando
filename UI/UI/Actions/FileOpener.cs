@@ -20,7 +20,7 @@ namespace Sando.UI.Actions
     			}
     		}
 
-    		public static void OpenFile(string filePath, int lineNumber, string text)
+    		public static void OpenFile(string filePath, int lineNumber, string text) 
     		{
     			InitDte2();
     			_dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);

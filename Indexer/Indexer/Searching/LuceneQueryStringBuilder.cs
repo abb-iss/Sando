@@ -25,7 +25,7 @@ namespace Sando.Indexer.Searching
         {
             _queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
             var stringBuilder = new StringBuilder();
-            if (_criteria.SearchByAccessLevel)
+            if (_criteria.SearchByAccessLevel && (!_criteria.SearchByProgramElementType || !_criteria.ProgramElementTypes.Contains(ProgramElementType.Comment)))
             {
                 AccessLevelCriteriaToString(stringBuilder);
             }
@@ -60,8 +60,8 @@ namespace Sando.Indexer.Searching
             int collectionSize = _criteria.AccessLevels.Count;
             foreach (AccessLevel accessLevel in _criteria.AccessLevels)
             {
-                stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
-                stringBuilder.Append(accessLevel.ToString());
+                stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");             
+                stringBuilder.Append(accessLevel.ToString()+"*");
                 AppendBoostFactor(stringBuilder, SandoField.AccessLevel.ToString());
                 if (collectionSize > 1)
                 {
@@ -262,6 +262,11 @@ namespace Sando.Indexer.Searching
                     stringBuilder.Append(SandoField.Source.ToString() + ":");
                     stringBuilder.Append(searchTerm);
                     AppendBoostFactor(stringBuilder, SandoField.Source.ToString());
+                    break;
+                case UsageType.ClassName:
+                    stringBuilder.Append(SandoField.ClassName.ToString() + ":");
+                    stringBuilder.Append(searchTerm);
+                    AppendBoostFactor(stringBuilder, SandoField.ClassName.ToString());
                     break;
                 default:
                     throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");

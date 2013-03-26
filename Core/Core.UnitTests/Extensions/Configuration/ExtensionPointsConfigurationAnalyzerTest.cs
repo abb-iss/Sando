@@ -168,7 +168,7 @@ namespace Sando.Core.UnitTests.Extensions.Configuration
             ExtensionPointsConfigurationAnalyzer.FindAndRegisterValidExtensionPoints(extensionPointsConfiguration, logger);
 
             IWordSplitter wordSplitter = ExtensionPointsRepository.Instance.GetWordSplitterImplementation();
-            Assert.IsNotNull(wordSplitter, "Default word splitter should be used!");
+            Assert.IsNotNull(wordSplitter, "Default word splitter should x used!!");
             Assert.AreEqual(wordSplitter.GetType().FullName, "Sando.Core.Tools.WordSplitter", "Invalid word splitter returned!");
 
             string logFileContent = File.ReadAllText(logFilePath);

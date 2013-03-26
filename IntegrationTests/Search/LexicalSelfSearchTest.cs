@@ -116,6 +116,17 @@ namespace Sando.IntegrationTests.Search
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}
 
+        //"Assert.IsNotNull(wordSplitter, "Default word splitter should be used!");"
+
+
+        [Test]
+        public void QuotedExactQueryWithQuotesInItMindBlownTest()
+        {
+            string keywords = "\"Assert.IsNotNull(wordSplitter, \"Default word splitter should x used!!\");\"";
+            var expectedLowestRank = 3;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "FindAndRegisterValidExtensionPoints_RemovesInvalidCustomWordSplitterConfiguration");
+            List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
 
         public override string GetIndexDirName()
         {

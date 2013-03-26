@@ -26,7 +26,7 @@ namespace Sando.IntegrationTests.Search
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
 			string keywords = "problem";
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
+			Assert.AreEqual(codeSearchResults.Count, 4, "Invalid results number");
 			var classSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && el.ProgramElement.Name == "Problem0010Resolver");
 			if(classSearchResult == null)
 			{

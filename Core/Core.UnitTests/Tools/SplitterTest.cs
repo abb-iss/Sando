@@ -21,6 +21,16 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void ExtractSearchTermsTestLeaveCompleteTerm()
+        {
+            var parts = WordSplitter.ExtractSearchTerms("_solutionEvents");
+            Assert.AreEqual(parts.Count, 3);
+            Assert.IsTrue(parts.Contains("_solutionevents"));
+        }
+
+        
+
+        [Test]
         public void TestSplitUnderscores()
         {
             string[] parts = wordSplitter.ExtractWords("a_name_separated_by_lots_of_underscores");
@@ -80,8 +90,18 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("\"words inside quotes\"*word*another", String.Join("*", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("\"words inside quotes\"*word*another_word*another", String.Join("*", parts));
+        }
+
+        [Test]
+        public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedInsideQuotes()
+        {
+            Assert.IsFalse(WordSplitter.InvalidCharactersFound("\"wordSplitter.ExtractWords(\"IInUnderscore\")\""));
+            Assert.IsFalse(WordSplitter.InvalidCharactersFound("\"Assert.IsNotNull(wordSplitter, \"Default word splitter should be used!\");\""));
+            Assert.IsNotNull(WordSplitter.ExtractSearchTerms("\"Assert.IsNotNull(wordSplitter, \"Default word splitter should be used!\");\""));            
+            List<string> parts = WordSplitter.ExtractSearchTerms("\"wordSplitter.ExtractWords(\"IInUnderscore\")\"");
+            Assert.AreEqual(1, parts.Count);            
         }
 
         [Test]
@@ -160,16 +180,16 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUnderscoreUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file_open_now");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("file open now", String.Join(" ", parts));
+            Assert.AreEqual(4, parts.Count);
+            Assert.AreEqual("file_open_now file open now", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word words inside quotes another_word");
-            Assert.AreEqual(5, parts.Count);
-            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another");
+            Assert.AreEqual(6, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another_word*another");
         }
 
         [Test]
@@ -207,6 +227,15 @@ namespace Sando.Core.UnitTests.Tools
         {
             bool invalidCharactersFound = WordSplitter.InvalidCharactersFound("???");
             Assert.IsTrue(invalidCharactersFound);
+        }
+
+        [Test]
+        public void ParsingQuery()
+        {
+            bool invalidCharactersFound = WordSplitter.InvalidCharactersFound("session file info filetype:h");
+            Assert.IsFalse(invalidCharactersFound);
+            var terms = WordSplitter.ExtractSearchTerms("session file info filetype:h");
+            WordSplitter.GetFileExtensions("session file info filetype:h");
         }
 
         [Test]

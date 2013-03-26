@@ -179,8 +179,11 @@ namespace Sando.IntegrationTests.Search
         protected List<CodeSearchResult> EnsureRankingPrettyGood(string keywords, Predicate<CodeSearchResult> predicate, int expectedLowestRank)
         {
             _results = GetResults(keywords);
-            var methodSearchResult = CheckExistance(keywords, predicate);
-            CheckRanking(keywords, expectedLowestRank, methodSearchResult);
+            if (expectedLowestRank > 0)
+            {
+                var methodSearchResult = CheckExistance(keywords, predicate);
+                CheckRanking(keywords, expectedLowestRank, methodSearchResult);
+            }
             return _results;
         }
 
@@ -243,6 +246,7 @@ namespace Sando.IntegrationTests.Search
 
         public event EventHandler<EventArgs> StartupCompleted;
         private List<CodeSearchResult> _results;
+        protected string _myMessage;
 
 
         public void StopMonitoring()
@@ -260,7 +264,7 @@ namespace Sando.IntegrationTests.Search
 
         public void UpdateMessage(string message)
         {
-            //throw new NotImplementedException();
+            _myMessage = message;
         }
 
         public class FakeOptionsProvider : ISandoOptionsProvider

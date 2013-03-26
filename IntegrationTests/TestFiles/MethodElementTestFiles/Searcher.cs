@@ -138,7 +138,7 @@ namespace Sando.Indexer.Searching.Criteria
             stringBuilder.Append(")");
         }
 
-        private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType)
+        internal void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType)
         {
             int collectionSize = SearchTerms.Count;
             foreach (string searchTerm in SearchTerms)
