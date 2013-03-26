@@ -263,6 +263,11 @@ namespace Sando.Indexer.Searching
                     stringBuilder.Append(searchTerm);
                     AppendBoostFactor(stringBuilder, SandoField.Source.ToString());
                     break;
+                case UsageType.ClassName:
+                    stringBuilder.Append(SandoField.ClassName.ToString() + ":");
+                    stringBuilder.Append(searchTerm);
+                    AppendBoostFactor(stringBuilder, SandoField.ClassName.ToString());
+                    break;
                 default:
                     throw new IndexerException(TranslationCode.Exception_General_UnrecognizedEnumValue, null, "UsageType");
             }
