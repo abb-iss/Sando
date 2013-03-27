@@ -777,9 +777,12 @@ namespace Sando.LocalSearch
             {
                 var separatenames = expr.Elements(SRC.Name);
 
+                if (separatenames.Count() == 1) //TODO: shouldn't happen
+                    continue;
+
                 String type = separatenames.ElementAt(0).Value;
                 String rootname = separatenames.ElementAt(separatenames.Count() - 1).Value;
-                String dec = separatenames.ElementAt(separatenames.Count() - 2).Value;
+                //String dec = separatenames.ElementAt(separatenames.Count() - 2).Value;
 
                 String fielduseclassname = "";
 
@@ -810,19 +813,27 @@ namespace Sando.LocalSearch
         {
             List<XElement> separateNames = new List<XElement>();
 
-            var allelements = expr.Elements();
+            //var allelements = expr.Elements();
+            var allelements = from element in expr.Descendants()
+                              where !element.Elements().Any()
+                              select element;
+
             List<XElement> singleNames = new List<XElement>();
+            int flag = 0;
             foreach (var eachelement in allelements)
             {
-                if (eachelement.Name.Equals(SRC.Name))
+                if (eachelement.Name.Equals(SRC.Name) && (flag == 0))
                 {
                     singleNames.Add(eachelement);
+                    flag = 1;
                     continue;
                 }
 
-                if (eachelement.Name.Equals(OP.Operator) && (eachelement.Value == "."))
+                if (eachelement.Name.Equals(OP.Operator) 
+                    && (eachelement.Value == ".") && (flag == 1))
                 {
                     singleNames.Add(eachelement);
+                    flag = 0;
                     continue;
                 }
 
@@ -830,6 +841,7 @@ namespace Sando.LocalSearch
                 if(mergeName != null)
                     separateNames.Add(mergeName);
                 singleNames.Clear();
+                flag = 0; //reset flag
             }
 
             XElement lastmergeName = MergeSeparateNames(singleNames);

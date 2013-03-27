@@ -295,11 +295,11 @@ namespace Sando.LocalSearch
             }
             else
             {
-                foreach (var programelement in source)
+                foreach (var eachSelectedElement in source)
                 {
-                    if (programelement.Name.Equals(target.Name)
-                    && programelement.ProgramElementType.Equals(target.ProgramElementType)
-                    && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
+                    if (eachSelectedElement.Name.Equals(target.Name)
+                    && eachSelectedElement.ProgramElementType.Equals(target.ProgramElementType)
+                    && eachSelectedElement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
                         return true;
                 }
 
