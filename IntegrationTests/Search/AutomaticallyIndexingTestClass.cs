@@ -60,6 +60,7 @@ namespace Sando.IntegrationTests.Search
             CreateSwum();
             AddFilesToIndex(filesInThisDirectory);
             WaitForAllFilesToBeCommitted(filesInThisDirectory);
+            Thread.Sleep((int)GetTimeToCommit().Value.TotalMilliseconds);
             ServiceLocator.Resolve<DocumentIndexer>().ForceReaderRefresh();
         }
 
@@ -201,7 +202,7 @@ namespace Sando.IntegrationTests.Search
             if (methodSearchResult == null)
             {
                 string info = PrintFailInformation();
-                Assert.Fail("Failed to find relevant search result for search: " + keywords+"\n"+info);
+                Assert.Fail("Failed to find relevant search result for search: " + keywords+"\n"+info);                
             }
             return methodSearchResult;
         }
