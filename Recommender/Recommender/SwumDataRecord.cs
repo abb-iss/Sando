@@ -36,7 +36,8 @@ namespace Sando.Recommender {
         /// Returns a string representation of the object.
         /// </summary>
         public override string ToString() {
-            return string.Format("{0}|{1}|{2}|{3}", ParsedAction, ParsedTheme, ParsedIndirectObject, string.Join(";", FileNames));
+            var name = SwumNode == null ? "" : SwumNode.Name;
+            return string.Format("{0}|{1}|{2}|{3}|{4}", ParsedAction, ParsedTheme, ParsedIndirectObject, string.Join(";", FileNames),name);
         }
 
         /// <summary>
@@ -50,10 +51,10 @@ namespace Sando.Recommender {
             }
 
             string[] fields = source.Split('|');
-            if(fields.Length != 4) {
+            if(fields.Length != 5) {
                 throw new FormatException(string.Format("Wrong number of |-separated fields. Expected 4, saw {0}", fields.Length));
             }
-            var sdr = new SwumDataRecord();
+            var sdr = new SwumDataRecord();            
             if(!string.IsNullOrWhiteSpace(fields[0])) {
                 sdr.ParsedAction = PhraseNode.Parse(fields[0].Trim());
                 sdr.Action = sdr.ParsedAction.ToPlainString();
@@ -70,6 +71,10 @@ namespace Sando.Recommender {
                 foreach(var file in fields[3].Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
                     sdr.FileNames.Add(file);
                 }
+            }
+            if (!string.IsNullOrWhiteSpace(fields[4]))
+            {
+                sdr.SwumNode = new MethodDeclarationNode(fields[4]);
             }
             return sdr;
         }
