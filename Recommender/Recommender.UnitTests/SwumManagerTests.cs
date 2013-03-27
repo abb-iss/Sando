@@ -23,6 +23,17 @@ namespace Sando.Recommender.UnitTests {
             manager.Clear();
         }
 
+
+        [Test]
+        public void TestReadingRealCache()
+        {
+            manager.ReadSwumCache(@"..\..\Recommender\Recommender.UnitTests\TestFiles\swum-cache.txt");
+            var datas = manager.GetSwumData();
+            Assert.IsTrue(datas.Count > 400);
+            foreach (var data in datas)
+                Assert.IsTrue(data.Value.SwumNode != null);
+        }
+
         [Test]
         public void TestCacheRoundTrip() {
             manager.AddSrcMLFile(new SrcMLFile(@"TestFiles\json_reader.cpp.xml"));

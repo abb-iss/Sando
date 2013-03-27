@@ -336,19 +336,19 @@ namespace Sando.Recommender {
                                        where !declStmt.Ancestors().Any(n => functionTypes.Contains(n.Name))
                                        select declStmt.Element(SRC.Declaration)))
             {
-
                 int declPos = 1;
                 foreach (var nameElement in fieldDecl.Elements(SRC.Name))
                 {
-
                     string fieldName = nameElement.Elements(SRC.Name).Any() ? nameElement.Elements(SRC.Name).Last().Value : nameElement.Value;
 
                     FieldDeclarationNode fdn = new FieldDeclarationNode(fieldName, ContextBuilder.BuildFieldContext(fieldDecl));
                     builder.ApplyRules(fdn);
-                    var signature = string.Format("{0}:{1}:{2}", fileName, fieldDecl.Value, declPos);
+                    //var signature = string.Format("{0}:{1}:{2}", fileName, fieldDecl.Value, declPos);
+                    var signature = nameElement.GetXPath(false);
                     var swumData = ProcessSwumNode(fdn);
                     swumData.FileNames.Add(fileName);
                     signaturesToSwum[signature] = swumData;
+                    declPos++;
                 }
             }
         }
@@ -516,6 +516,7 @@ namespace Sando.Recommender {
 
             return record;
         }
+
         #endregion Protected methods
     }
 }
