@@ -34,6 +34,48 @@ namespace Sando.Core.Logging.Events
         #region UIEvents
 
         public static event EventHandler Event_UIMonitoringStopped;
+        public static event EventHandler<EventArgs<Exception>> Event_UIOpenFileError;
+        public static event EventHandler<EventArgs<Exception>> Event_UIIndexUpdateError;
+        public static event EventHandler Event_UISandoInitialize;
+        public static event EventHandler<EventArgs<Exception>> Event_UISandoInitializationError;
+        public static event EventHandler<EventArgs<Exception>> Event_UISandoWindowActivationError;
+        public static event EventHandler<EventArgs<Exception>> Event_UISolutionClosingError;
+        public static event EventHandler<EventArgs<Exception>> Event_UIRespondToSolutionOpeningError;
+
+        public static void UIRespondToSolutionOpeningError(Object sender, Exception ex)
+        {
+            if (Event_UIRespondToSolutionOpeningError != null) Event_UIRespondToSolutionOpeningError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UISolutionClosingError(Object sender, Exception ex)
+        {
+            if (Event_UISolutionClosingError != null) Event_UISolutionClosingError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UISandoWindowActivationError(Object sender, Exception ex)
+        {
+            if (Event_UISandoWindowActivationError != null) Event_UISandoWindowActivationError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UISandoInitializationError(Object sender, Exception ex)
+        {
+            if (Event_UISandoInitializationError != null) Event_UISandoInitializationError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UISandoInitialize(Object sender)
+        {
+            if (Event_UISandoInitialize != null) Event_UISandoInitialize(sender, EventArgs.Empty);
+        }
+
+        public static void UIIndexUpdateError(Object sender, Exception ex)
+        {
+            if (Event_UIIndexUpdateError != null) Event_UIIndexUpdateError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UIOpenFileError(Object sender, Exception ex)
+        {
+            if (Event_UIOpenFileError != null) Event_UIOpenFileError(sender, new EventArgs<Exception>(ex));
+        }
 
 		public static void UIMonitoringStopped(Object sender)
 		{
@@ -92,6 +134,23 @@ namespace Sando.Core.Logging.Events
 
 		public static event EventHandler<EventArgs<string>> Event_SwumCacheFileNotExist;
 		public static event EventHandler<EventArgs<string>> Event_SwumFileNotFoundInArchive;
+        public static event EventHandler<EventArgs<string>> Event_SwumErrorGeneratingSrcML;
+        public static event EventHandler<EventArgs<string, Exception>> Event_SwumErrorCreatingSwum;
+
+        public static void SwumErrorCreatingSwum(Object sender, string sourcePath, Exception ex)
+        {
+            if (Event_SwumErrorCreatingSwum != null) Event_SwumErrorCreatingSwum(sender, new EventArgs<string, Exception>(sourcePath, ex));
+        }
+
+        public static void SwumErrorGeneratingSrcML(Object sender, string sourcePath)
+        {
+            if (Event_SwumErrorGeneratingSrcML != null) Event_SwumErrorGeneratingSrcML(sender, new EventArgs<string>(sourcePath));
+        }
+
+        public static void SwumFileNotFoundInArchive(Object sender, string sourcePath)
+        {
+            if (Event_SwumFileNotFoundInArchive != null) Event_SwumFileNotFoundInArchive(sender, new EventArgs<string>(sourcePath));
+        }
 
         public static void SwumCacheFileNotExist(Object sender, string cachePath)
         {

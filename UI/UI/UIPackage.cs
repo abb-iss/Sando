@@ -22,7 +22,6 @@ using Sando.UI.Options;
 using Microsoft.VisualStudio.Shell;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
-using Sando.Core.Logging;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching;
 using Sando.Parser;
@@ -33,6 +32,7 @@ using Sando.Indexer.IndexState;
 using Sando.Recommender;
 using System.Reflection;
 using System.Threading.Tasks;
+using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
 
 
@@ -115,8 +115,8 @@ namespace Sando.UI
         {
             try
             {
-                base.Initialize();                
-                FileLogger.DefaultLogger.Info("Sando initialization started.");
+                base.Initialize();
+                LogEvents.UISandoInitialize(this);
                 base.Initialize();
 
                 SetupDependencyInjectionObjects();
@@ -127,7 +127,7 @@ namespace Sando.UI
             }
             catch(Exception e)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
+                LogEvents.UISandoInitializationError(this, e);
             }
         }
 
@@ -163,7 +163,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                LogEvents.UISandoWindowActivationError(this, e);
             }
             
         }
@@ -301,7 +301,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                LogEvents.UISolutionClosingError(this, e);
             }
 		}
 
@@ -385,7 +385,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
+                LogEvents.UIRespondToSolutionOpeningError(this, e);
             }    
         }
  

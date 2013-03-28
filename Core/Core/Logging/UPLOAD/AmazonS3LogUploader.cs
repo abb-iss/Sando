@@ -19,12 +19,13 @@ namespace Sando.Core.Logging.Upload
 
 		public static bool WriteLogFile(string filePath)
 		{
-			LogEvents.S3UploadStarted(null, filePath);
+            Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+			LogEvents.S3UploadStarted(t, filePath);
 			try
 			{
 				if(ReadS3Credentials() == false)
 				{
-					LogEvents.S3NoCredentials(null);
+                    LogEvents.S3NoCredentials(t);
 					return false;
 				}
 				AmazonS3 client = Amazon.AWSClientFactory.CreateAmazonS3Client(_accessKeyId, _secretAccessKey);
@@ -36,7 +37,7 @@ namespace Sando.Core.Logging.Upload
 			}
 			catch (AmazonS3Exception amazonS3Exception)
 			{
-				LogEvents.S3Error(null, amazonS3Exception);				
+				LogEvents.S3Error(t, amazonS3Exception);				
 				return false;
 			}
 		}

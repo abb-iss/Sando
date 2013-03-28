@@ -121,7 +121,7 @@ namespace Sando.Recommender {
             if(Archive != null) {
                 fileElement = Archive.GetXElementForSourceFile(sourcePath);
                 if(fileElement == null) {
-                    FileLogger.DefaultLogger.ErrorFormat("SwumManager: File not found in archive: {0}", sourcePath);
+                    LogEvents.SwumFileNotFoundInArchive(this, sourcePath);
                 }
             } else if(Generator != null) {
                 string outFile = Path.GetTempFileName();
@@ -129,7 +129,7 @@ namespace Sando.Recommender {
                     var srcmlfile = Generator.GenerateSrcMLFromFile(sourcePath, outFile);
                     fileElement = srcmlfile.FileUnits.FirstOrDefault();
                     if(fileElement == null) {
-                        FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error converting file to SrcML, no file unit found: {0}", sourcePath);
+                        LogEvents.SwumErrorGeneratingSrcML(this, sourcePath);
                     }
                 } finally {
                     File.Delete(outFile);
@@ -143,9 +143,7 @@ namespace Sando.Recommender {
                     AddSwumForMethodDefinitions(fileElement, sourcePath);
                 }
             } catch(Exception e) {
-                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
-                FileLogger.DefaultLogger.Error(e.Message);
-                FileLogger.DefaultLogger.Error(e.StackTrace);
+                LogEvents.SwumErrorCreatingSwum(this, sourcePath, e);
             }
         }
 
@@ -161,9 +159,7 @@ namespace Sando.Recommender {
                     AddSwumForFieldDefinitions(sourceXml, sourcePath);
                 }
             } catch(Exception e) {
-                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
-                FileLogger.DefaultLogger.Error(e.Message);
-                FileLogger.DefaultLogger.Error(e.StackTrace);
+                LogEvents.SwumErrorCreatingSwum(this, sourcePath, e);
             }
         }
 
