@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
+using Sando.Core.Logging;
 
 
 
@@ -92,11 +93,8 @@ namespace Sando.UI
         public UIPackage()
         {            
             PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
-            FileLogger.SetupDefaultFileLogger(PathManager.Instance.GetExtensionRoot());
-            FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
+            SandoLogManager.StartBaseLogging(PathManager.Instance.GetExtensionRoot());
         }
-
-
 
         public SandoDialogPage GetSandoDialogPage()
         {

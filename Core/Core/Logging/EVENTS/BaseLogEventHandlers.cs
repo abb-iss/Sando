@@ -6,7 +6,7 @@ using Sando.Core.Logging.Persistence;
 
 namespace Sando.Core.Logging.Events
 {
-	public class SimpleLogEventHandlers
+	public class BaseLogEventHandlers
 	{
 		public static void RegisterLogEventHandlers()
 		{
