@@ -36,7 +36,7 @@ namespace Sando.Core.Logging.Events
         public static event EventHandler Event_UIMonitoringStopped;
         public static event EventHandler<EventArgs<Exception>> Event_UIOpenFileError;
         public static event EventHandler<EventArgs<Exception>> Event_UIIndexUpdateError;
-        public static event EventHandler Event_UISandoInitialize;
+        public static event EventHandler Event_UISandoBeginInitialization;
         public static event EventHandler<EventArgs<Exception>> Event_UISandoInitializationError;
         public static event EventHandler<EventArgs<Exception>> Event_UISandoWindowActivationError;
         public static event EventHandler<EventArgs<Exception>> Event_UISolutionClosingError;
@@ -62,9 +62,9 @@ namespace Sando.Core.Logging.Events
             if (Event_UISandoInitializationError != null) Event_UISandoInitializationError(sender, new EventArgs<Exception>(ex));
         }
 
-        public static void UISandoInitialize(Object sender)
+		public static void UISandoBeginInitialization(Object sender)
         {
-            if (Event_UISandoInitialize != null) Event_UISandoInitialize(sender, EventArgs.Empty);
+            if (Event_UISandoBeginInitialization != null) Event_UISandoBeginInitialization(sender, EventArgs.Empty);
         }
 
         public static void UIIndexUpdateError(Object sender, Exception ex)

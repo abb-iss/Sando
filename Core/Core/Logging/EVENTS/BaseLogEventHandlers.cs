@@ -15,7 +15,7 @@ namespace Sando.Core.Logging.Events
 			LogEvents.Event_UIMonitoringStopped += new EventHandler(Handler_UIMonitoringStopped);
             LogEvents.Event_UIOpenFileError += new EventHandler<EventArgs<Exception>>(Handler_UIOpenFileError);
             LogEvents.Event_UIIndexUpdateError += new EventHandler<EventArgs<Exception>>(Handler_UIIndexUpdateError);
-            LogEvents.Event_UISandoInitialize += new EventHandler(Handler_UISandoInitialize);
+			LogEvents.Event_UISandoBeginInitialization += new EventHandler(Handler_UISandoBeginInitialization);
             LogEvents.Event_UISandoInitializationError += new EventHandler<EventArgs<Exception>>(Handler_UISandoInitializationError);
             LogEvents.Event_UISandoWindowActivationError += new EventHandler<EventArgs<Exception>>(Handler_UISandoWindowActivationError);
             LogEvents.Event_UISolutionClosingError += new EventHandler<EventArgs<Exception>>(Handler_UISolutionClosingError);
@@ -45,7 +45,7 @@ namespace Sando.Core.Logging.Events
             LogEvents.Event_UIMonitoringStopped -= new EventHandler(Handler_UIMonitoringStopped);
             LogEvents.Event_UIOpenFileError -= new EventHandler<EventArgs<Exception>>(Handler_UIOpenFileError);
             LogEvents.Event_UIIndexUpdateError -= new EventHandler<EventArgs<Exception>>(Handler_UIIndexUpdateError);
-            LogEvents.Event_UISandoInitialize -= new EventHandler(Handler_UISandoInitialize);
+			LogEvents.Event_UISandoBeginInitialization -= new EventHandler(Handler_UISandoBeginInitialization);
             LogEvents.Event_UISandoInitializationError -= new EventHandler<EventArgs<Exception>>(Handler_UISandoInitializationError);
             LogEvents.Event_UISandoWindowActivationError -= new EventHandler<EventArgs<Exception>>(Handler_UISandoWindowActivationError);
             LogEvents.Event_UISolutionClosingError -= new EventHandler<EventArgs<Exception>>(Handler_UISolutionClosingError);
@@ -88,7 +88,7 @@ namespace Sando.Core.Logging.Events
             WriteErrorLogMessage(sender.GetType().ToString(), "", exArg.Value);
         }
 
-        private static void Handler_UISandoInitialize(object sender, EventArgs e)
+		private static void Handler_UISandoBeginInitialization(object sender, EventArgs e)
         {
             WriteInfoLogMessage(sender.GetType().ToString(), "Sando initialization started");
         }

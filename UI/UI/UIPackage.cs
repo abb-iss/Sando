@@ -114,7 +114,7 @@ namespace Sando.UI
             try
             {
                 base.Initialize();
-                LogEvents.UISandoInitialize(this);
+                LogEvents.UISandoBeginInitialization(this);
                 base.Initialize();
 
                 SetupDependencyInjectionObjects();
@@ -349,7 +349,7 @@ namespace Sando.UI
                 // Get the SrcML Service.
                 srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
                 if(null == srcMLService) {
-                    FileLogger.DefaultLogger.Error("Can not get the SrcML global service.");
+                    throw new Exception("Can not get the SrcML global service.");
                 }
 
                 // Register all types of events from the SrcML Service.
