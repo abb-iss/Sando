@@ -18,7 +18,7 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
-using Sando.Core.Logging.Persistence;
+using Sando.Core.Logging.Events;
 
 namespace Sando.UI.View
 {
@@ -249,7 +249,7 @@ namespace Sando.UI.View
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
                 MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
             }
         }
@@ -427,7 +427,7 @@ namespace Sando.UI.View
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
             }
         }
 

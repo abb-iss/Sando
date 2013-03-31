@@ -29,14 +29,7 @@ namespace Sando.UI.View
 
         public void Introduced()
         {
-            try
-            {
-                File.Create(_directoryPath + Intro);
-            }
-            catch (Exception e)
-            {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
-            }
+            File.Create(_directoryPath + Intro);
             Update();
         }
 
@@ -47,14 +40,7 @@ namespace Sando.UI.View
                 string path = _directoryPath + Intro;
                 if (File.Exists(path))
                 {
-                    try
-                    {
-                        File.SetLastWriteTimeUtc(path, DateTime.UtcNow);
-                    }
-                    catch (Exception e)
-                    {
-                        FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
-                    }
+                    File.SetLastWriteTimeUtc(path, DateTime.UtcNow);
                     _updatedDuringThisRun = true;
                 }
             }

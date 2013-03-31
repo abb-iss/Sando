@@ -19,7 +19,9 @@ namespace Sando.Core.Logging.Events
             LogEvents.Event_UISandoInitializationError += new EventHandler<EventArgs<Exception>>(Handler_UISandoInitializationError);
             LogEvents.Event_UISandoWindowActivationError += new EventHandler<EventArgs<Exception>>(Handler_UISandoWindowActivationError);
             LogEvents.Event_UISolutionClosingError += new EventHandler<EventArgs<Exception>>(Handler_UISolutionClosingError);
+            LogEvents.Event_UIGenericError += new EventHandler<EventArgs<Exception>>(Handler_UIGenericError);
             LogEvents.Event_UIRespondToSolutionOpeningError += new EventHandler<EventArgs<Exception>>(Handler_UIRespondToSolutionOpeningError);
+            LogEvents.Event_UISandoSearchingError += new EventHandler<EventArgs<Exception>>(Handler_UISandoSearchingError);
 
             LogEvents.Event_ParserFileNotFoundInArchiveError += new EventHandler<EventArgs<string>>(Handler_ParserFileNotFoundInArchiveError);
             LogEvents.Event_ParserGenericFileError += new EventHandler<EventArgs<string>>(Handler_ParserGenericFileError);
@@ -49,7 +51,10 @@ namespace Sando.Core.Logging.Events
             LogEvents.Event_UISandoInitializationError -= new EventHandler<EventArgs<Exception>>(Handler_UISandoInitializationError);
             LogEvents.Event_UISandoWindowActivationError -= new EventHandler<EventArgs<Exception>>(Handler_UISandoWindowActivationError);
             LogEvents.Event_UISolutionClosingError -= new EventHandler<EventArgs<Exception>>(Handler_UISolutionClosingError);
+            LogEvents.Event_UISolutionOpeningError -= new EventHandler<EventArgs<Exception>>(Handler_UISolutionOpeningError);
+            LogEvents.Event_UIGenericError -= new EventHandler<EventArgs<Exception>>(Handler_UIGenericError);
             LogEvents.Event_UIRespondToSolutionOpeningError -= new EventHandler<EventArgs<Exception>>(Handler_UIRespondToSolutionOpeningError);
+            LogEvents.Event_UISandoSearchingError -= new EventHandler<EventArgs<Exception>>(Handler_UISandoSearchingError);
 
             LogEvents.Event_ParserFileNotFoundInArchiveError -= new EventHandler<EventArgs<string>>(Handler_ParserFileNotFoundInArchiveError);
             LogEvents.Event_ParserGenericFileError -= new EventHandler<EventArgs<string>>(Handler_ParserGenericFileError);
@@ -68,12 +73,27 @@ namespace Sando.Core.Logging.Events
             LogEvents.Event_SwumErrorCreatingSwum += new EventHandler<EventArgs<string, Exception>>(Handler_SwumErrorCreatingSwum);
 		}
 
+        private static void Handler_UIGenericError(object sender, EventArgs<Exception> exArg)
+        {
+            WriteErrorLogMessage(sender.GetType().ToString(), "", exArg.Value);
+        }
+
+        private static void Handler_UISandoSearchingError(object sender, EventArgs<Exception> exArg)
+        {
+            WriteErrorLogMessage(sender.GetType().ToString(), "", exArg.Value);
+        }
+
         private static void Handler_UIRespondToSolutionOpeningError(object sender, EventArgs<Exception> exArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "", exArg.Value);
         }
 
         private static void Handler_UISolutionClosingError(object sender, EventArgs<Exception> exArg)
+        {
+            WriteErrorLogMessage(sender.GetType().ToString(), "", exArg.Value);
+        }
+
+        private static void Handler_UISolutionOpeningError(object sender, EventArgs<Exception> exArg)
         {
             WriteErrorLogMessage(sender.GetType().ToString(), "", exArg.Value);
         }

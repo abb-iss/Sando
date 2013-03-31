@@ -181,27 +181,34 @@ namespace Sando.UI
         
         private void StartupCompleted()
         {
-        	if (_viewManager.ShouldShow())
-        	{
-        		_viewManager.ShowSando();
-        		_viewManager.ShowToolbar();
-        	}
+            try
+            {
+                if (_viewManager.ShouldShow())
+                {
+                    _viewManager.ShowSando();
+                    _viewManager.ShowToolbar();
+                }
 
-            if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
-        	{
-				//only need to do this in VS2010, and it breaks things in VS2012
-        		Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
+                if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
+                {
+                    //only need to do this in VS2010, and it breaks things in VS2012
+                    Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
 
-                // JZ: SrcMLService Integration
-                ////if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
-                if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName))
-                // End of code changes
-        		{
-        			SolutionHasBeenOpened();
-        		}
-        	}
+                    // JZ: SrcMLService Integration
+                    ////if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+                    if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName))
+                    // End of code changes
+                    {
+                        SolutionHasBeenOpened();
+                    }
+                }
 
-        	RegisterSolutionEvents();
+                RegisterSolutionEvents();
+            }
+            catch (Exception e)
+            {
+                //startupcompletederrorevent
+            }
         }  
 
         private void RegisterSolutionEvents()

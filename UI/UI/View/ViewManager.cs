@@ -71,14 +71,7 @@ namespace Sando.UI.View
             // Dock Sando to the bottom of Visual Studio.
             windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);            
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
-            try
-            {
-                File.Create(GetFullIntroduceSandoFlagPath());
-            }
-            catch (IOException e)
-            {
-                FileLogger.DefaultLogger.Error(e);
-            }
+            File.Create(GetFullIntroduceSandoFlagPath());
         }
 
         public bool ShouldShow()
@@ -88,16 +81,10 @@ namespace Sando.UI.View
 
         public void ShowToolbar()
         {
-            try
-            {
-                var dte = ServiceLocator.Resolve<DTE2>();
-                var cbs = ((CommandBars) dte.CommandBars);
-                CommandBar cb = cbs["Sando Toolbar"];
-                cb.Visible = true;
-            }catch(Exception e)
-            {
-                FileLogger.DefaultLogger.Error(e);
-            }
+            var dte = ServiceLocator.Resolve<DTE2>();
+            var cbs = ((CommandBars) dte.CommandBars);
+            CommandBar cb = cbs["Sando Toolbar"];
+            cb.Visible = true;
         }
 
         private string GetFullIntroduceSandoFlagPath()

@@ -40,11 +40,29 @@ namespace Sando.Core.Logging.Events
         public static event EventHandler<EventArgs<Exception>> Event_UISandoInitializationError;
         public static event EventHandler<EventArgs<Exception>> Event_UISandoWindowActivationError;
         public static event EventHandler<EventArgs<Exception>> Event_UISolutionClosingError;
+        public static event EventHandler<EventArgs<Exception>> Event_UISolutionOpeningError;
+        public static event EventHandler<EventArgs<Exception>> Event_UIGenericError;
         public static event EventHandler<EventArgs<Exception>> Event_UIRespondToSolutionOpeningError;
+        public static event EventHandler<EventArgs<Exception>> Event_UISandoSearchingError;
+
+        public static void UIGenericError(Object sender, Exception ex)
+        {
+            if (Event_UIGenericError != null) Event_UIGenericError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UISandoSearchingError(Object sender, Exception ex)
+        {
+            if (Event_UISandoSearchingError != null) Event_UISandoSearchingError(sender, new EventArgs<Exception>(ex));
+        }
 
         public static void UIRespondToSolutionOpeningError(Object sender, Exception ex)
         {
             if (Event_UIRespondToSolutionOpeningError != null) Event_UIRespondToSolutionOpeningError(sender, new EventArgs<Exception>(ex));
+        }
+
+        public static void UISolutionOpeningError(Object sender, Exception ex)
+        {
+            if (Event_UISolutionOpeningError != null) Event_UISolutionOpeningError(sender, new EventArgs<Exception>(ex));
         }
 
         public static void UISolutionClosingError(Object sender, Exception ex)
