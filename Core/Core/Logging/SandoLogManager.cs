@@ -10,18 +10,18 @@ namespace Sando.Core.Logging
 {
     public static class SandoLogManager
     {
-        private static bool baseLoggingOn = false;
+        private static bool defaultLoggingOn = false;
 
-        public static void StartBaseLogging(string logPath)
+        public static void StartDefaultLogging(string logPath)
         {
             FileLogger.SetupDefaultFileLogger(PathManager.Instance.GetExtensionRoot());
             DefaultLogEventHandler.RegisterLogEventHandlers();
-            baseLoggingOn = true;
+            defaultLoggingOn = true;
         }
 
         public static void StopAllLogging()
         {
-            if (baseLoggingOn)
+            if (defaultLoggingOn)
             {
                 DefaultLogEventHandler.UnregisterLogEventHandlers();
             }

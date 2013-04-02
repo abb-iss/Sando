@@ -31,7 +31,7 @@ namespace Sando.Core.Logging.Persistence
             get
             {
                 if (_isDefaultLoggerInitialized)
-                    return LogManager.GetLogger("DefaultLogger");
+                    return LogManager.GetLogger("DefaultSandoLogger");
                 return LogManager.GetLogger(Assembly.GetCallingAssembly(), "Logger");
             }
         }
@@ -77,14 +77,13 @@ namespace Sando.Core.Logging.Persistence
 						<file value='" + defaultLoggerLogFile + @"' />
 						<appendToFile value='false' />
 						<lockingModel type='log4net.Appender.FileAppender+MinimalLock' />
-						<maximumFileSize value='100KB' />
 						<layout type='log4net.Layout.PatternLayout'>
 							<conversionPattern value='%date %-5level %logger - %message%newline' />
 						</layout>
 					</appender>
 
-                    <logger name='DefaultLogger' additivity='false'>
-                        <level value='ALL' />
+                    <logger name='DefaultSandoLogger' additivity='false'>
+                        <level value='DEBUG' />
                         <appender-ref ref='DefaultFileAppender' />
                     </logger>
     
