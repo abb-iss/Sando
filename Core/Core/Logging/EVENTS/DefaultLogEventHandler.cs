@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sando.Core.Logging.Persistence;
+using log4net;
 
 namespace Sando.Core.Logging.Events
 {
-	public class BaseLogEventHandlers
+	public class DefaultLogEventHandler
 	{
 		public static void RegisterLogEventHandlers()
 		{

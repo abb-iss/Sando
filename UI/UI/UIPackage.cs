@@ -207,7 +207,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                //startupcompletederrorevent
+                LogEvents.UIGenericError(this, e);
             }
         }  
 

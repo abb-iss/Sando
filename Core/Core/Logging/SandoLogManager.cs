@@ -15,7 +15,7 @@ namespace Sando.Core.Logging
         public static void StartBaseLogging(string logPath)
         {
             FileLogger.SetupDefaultFileLogger(PathManager.Instance.GetExtensionRoot());
-            BaseLogEventHandlers.RegisterLogEventHandlers();
+            DefaultLogEventHandler.RegisterLogEventHandlers();
             baseLoggingOn = true;
         }
 
@@ -23,7 +23,7 @@ namespace Sando.Core.Logging
         {
             if (baseLoggingOn)
             {
-                BaseLogEventHandlers.UnregisterLogEventHandlers();
+                DefaultLogEventHandler.UnregisterLogEventHandlers();
             }
         }
 

@@ -114,7 +114,7 @@
     <Compile Include="Logging\Persistence\FileLogger.cs" />
     <Compile Include="Logging\Upload\AmazonS3LogUploader.cs" />
     <Compile Include="Logging\Events\LogEvents.cs" />
-    <Compile Include="Logging\Events\BaseLogEventHandlers.cs" />
+    <Compile Include="Logging\Events\DefaultLogEventHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\LuceneDirectoryHelper.cs" />
     <Compile Include="Tools\PathManager.cs" />
