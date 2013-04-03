@@ -7,7 +7,7 @@ using log4net;
 
 namespace Sando.Core.Logging.Events
 {
-	public class DefaultLogEventHandler
+	public class DefaultLogEventHandlers
 	{
 		public static void RegisterLogEventHandlers()
 		{
