@@ -9,19 +9,26 @@ namespace Sando.Core.Logging.Events
 {
     public static class DataCollectionLogEventHandlers
     {
+        static DataCollectionLogEventHandlers()
+        {
+            _initialized = false;
+        }
+
         public static void InitializeLogFile(ILog logger)
         {
             Logger = logger;
+            _initialized = true;
         }
 
         public static void WriteInfoLogMessage(string sendingType, string message)
         {
-            if (SandoLogManager.DataCollectionOn)
+            if (SandoLogManager.DataCollectionOn && _initialized)
             {
                 Logger.Info(sendingType + ": " + message);
             }
         }
 
         private static ILog Logger;
+        private static bool _initialized;
     }
 }

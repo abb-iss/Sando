@@ -28,6 +28,11 @@ namespace Sando.Core.Logging.Events
 
         #region UIEvents
 
+        public static void SolutionOpened(Object sender, string solutionName)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Message from the logger");
+        }
+
         public static void UIGenericError(Object sender, Exception ex)
         {
             DefaultLogEventHandlers.WriteErrorLogMessage(sender.GetType().ToString(), "", ex);

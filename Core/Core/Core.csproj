@@ -109,7 +109,6 @@
     <Compile Include="Extensions\Configuration\ExtensionPointsConfiguration.cs" />
     <Compile Include="Extensions\ExtensionPointsRepository.cs" />
     <Compile Include="Logging\Events\DataCollectionLogEventHandlers.cs" />
-    <Compile Include="Logging\Events\DataCollectionLogEvents.cs" />
     <Compile Include="Logging\SandoLogManager.cs" />
     <Compile Include="Logging\Persistence\ExceptionFormatter.cs" />
     <Compile Include="Logging\Persistence\FileLogger.cs" />

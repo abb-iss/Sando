@@ -332,7 +332,7 @@ namespace Sando.UI
                 var key = new SolutionKey(solutionId, solutionPath);              
                 ServiceLocator.RegisterInstance(key);
 
-                DataCollectionLogEvents.SolutionOpened(this, solutionPath);
+                LogEvents.SolutionOpened(this, solutionPath);
 
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
