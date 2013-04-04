@@ -11,36 +11,33 @@ namespace Sando.Core.Logging
 {
     public static class SandoLogManager
     {
-        private static bool defaultLoggingOn = false;
-        private static bool dataCollectionOn = false;
+        static SandoLogManager()
+        {
+            DefaultLoggingOn = false;
+            DataCollectionOn = false;
+        }
 
         public static void StartDefaultLogging(string logPath)
         {
-            FileLogger.SetupDefaultFileLogger(PathManager.Instance.GetExtensionRoot());
-            DefaultLogEventHandlers.RegisterLogEventHandlers();
-            defaultLoggingOn = true;
+            FileLogger.SetupDefaultFileLogger(logPath);
+            DefaultLoggingOn = true;
         }
 
         public static void StartDataCollectionLogging(string logPath)
         {
-            var dataFileName = Path.Combine(PathManager.Instance.GetExtensionRoot(), "SandoData-" + Environment.MachineName + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
+            var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
             var logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
             DataCollectionLogEventHandlers.InitializeLogFile(logger);
-            DataCollectionLogEventHandlers.RegisterLogEventHandlers();
-            dataCollectionOn = true;
+            DataCollectionOn = true;
         }
 
         public static void StopAllLogging()
         {
-            if (defaultLoggingOn)
-            {
-                DefaultLogEventHandlers.UnregisterLogEventHandlers();
-            }
-            if (dataCollectionOn)
-            {
-                DataCollectionLogEventHandlers.UnregisterLogEventHandlers();
-            }
+            DefaultLoggingOn = false;
+            DataCollectionOn = false;
         }
 
+        public static bool DefaultLoggingOn { get; private set; }
+        public static bool DataCollectionOn { get; private set; }
     }
 }
