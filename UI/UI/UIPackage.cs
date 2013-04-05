@@ -333,8 +333,6 @@ namespace Sando.UI
                 var key = new SolutionKey(solutionId, solutionPath);              
                 ServiceLocator.RegisterInstance(key);
 
-                LogEvents.SolutionOpened(this, solutionPath);
-
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
                 isIndexRecreationRequired = isIndexRecreationRequired || !PathManager.Instance.IndexPathExists(key);
@@ -389,6 +387,8 @@ namespace Sando.UI
                 srcMLService.StartMonitoring(useExistingSrcML, src2SrcmlDir);
                 
                 // End of code changes
+
+				LogEvents.SolutionOpened(this, solutionPath);
             }
             catch (Exception e)
             {

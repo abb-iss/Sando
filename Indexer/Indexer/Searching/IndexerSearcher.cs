@@ -5,7 +5,6 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
 using System.Linq;
 using Sando.Indexer.Documents.Converters;
-using Sando.Core.Logging.Events;
 
 namespace Sando.Indexer.Searching
 {
@@ -24,9 +23,6 @@ namespace Sando.Indexer.Searching
 			var collector = TopScoreDocCollector.create(hitsPerPage, true);
 			var documentTuples = _documentIndexer.Search(query, collector);
 		    var searchResults = documentTuples.Select(d => new CodeSearchResult(ConverterFromHitToProgramElement.Create(d.Item1).Convert(), d.Item2));
-
-            LogEvents.PerformedSearch(this, searchResults.Count());
-
 			return searchResults;
 		}
 

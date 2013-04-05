@@ -98,7 +98,12 @@ namespace Sando.Core.Logging.Events
 
         #region IndexerEvents
 
-        public static void PerformedSearch(Object sender, int numOfResults)
+		public static void PreSearch(Object sender, double avgidf)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre search avgidf=" + avgidf);
+		}
+
+        public static void PostSearch(Object sender, int numOfResults)
         {
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search performed with " + numOfResults + " results");
         }

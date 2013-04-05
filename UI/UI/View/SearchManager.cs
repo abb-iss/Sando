@@ -15,6 +15,7 @@ using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Indexer;
 using Sando.Core.Logging.Events;
+using Sando.Indexer.Searching.Metrics;
 
 namespace Sando.UI.View
 {
@@ -53,6 +54,9 @@ namespace Sando.UI.View
                     return;
                 }
 
+				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().IndexReader);
+				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString));
+
                 var criteria = GetCriteria(searchString, searchCriteria);
                 var results = codeSearcher.Search(criteria, true).AsQueryable();
                 var resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
@@ -73,6 +77,9 @@ namespace Sando.UI.View
                 }
                 _searchResultListener.Update(results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
+
+				//calculate and log post retrival metrics?
+				LogEvents.PostSearch(this, results.Count());
             }
             catch (Exception e)
             {
