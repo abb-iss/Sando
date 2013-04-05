@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Core.Logging.Events
 {
@@ -28,9 +29,14 @@ namespace Sando.Core.Logging.Events
 
         #region UIEvents
 
+        public static void OpeningCodeSearchResult(ProgramElementType programElementType)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", programElementType.ToString() + " was double clicked");
+        }
+
         public static void SolutionOpened(Object sender, string solutionName)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Message from the logger");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "A solution was opened");
         }
 
         public static void UIGenericError(Object sender, Exception ex)
@@ -91,6 +97,11 @@ namespace Sando.Core.Logging.Events
         #endregion
 
         #region IndexerEvents
+
+        public static void PerformedSearch(Object sender, int numOfResults)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search performed with " + numOfResults + " results");
+        }
 
         public static void IndexLockObtainFailed(Object sender, Exception lockFailedEx)
         {

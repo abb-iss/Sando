@@ -15,6 +15,7 @@ namespace Sando.UI.Actions
     		{
     			if(result != null)
     			{
+                    LogEvents.OpeningCodeSearchResult(result.ProgramElementType);
 					OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text);
     			}
     		}

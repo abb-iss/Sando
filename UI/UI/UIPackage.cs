@@ -94,6 +94,7 @@ namespace Sando.UI
         {            
             PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
             SandoLogManager.StartDefaultLogging(PathManager.Instance.GetExtensionRoot());
+            SandoLogManager.StartDataCollectionLogging(PathManager.Instance.GetExtensionRoot());
         }
 
         public SandoDialogPage GetSandoDialogPage()
