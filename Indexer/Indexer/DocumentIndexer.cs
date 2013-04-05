@@ -10,7 +10,7 @@ using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Sando.Core;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
@@ -19,6 +19,7 @@ using System.Linq;
 using Sando.Indexer.Documents.Converters;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
+using Sando.Core.Logging.Events;
 
 namespace Sando.Indexer
 {
@@ -60,17 +61,17 @@ namespace Sando.Indexer
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(corruptIndexEx));
+                LogEvents.IndexCorruptError(this, corruptIndexEx);
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexIsCorrupt, corruptIndexEx);
 			}
 			catch(LockObtainFailedException lockObtainFailedEx)
 			{
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(lockObtainFailedEx));
+                LogEvents.IndexLockObtainFailed(this, lockObtainFailedEx);
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexAlreadyOpened, lockObtainFailedEx);
 			}
 			catch(System.IO.IOException ioEx)
 			{
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(ioEx));
+                LogEvents.IndexIOError(this, ioEx);
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
 		}

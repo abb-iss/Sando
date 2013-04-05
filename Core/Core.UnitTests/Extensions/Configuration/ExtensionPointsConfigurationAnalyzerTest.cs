@@ -7,7 +7,7 @@ using log4net;
 using NUnit.Framework;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.QueryContracts;
@@ -15,6 +15,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.Core.UnitTests.Extensions.Configuration
 {

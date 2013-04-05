@@ -2,12 +2,12 @@
 using System.IO;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
-using Sando.Core.Extensions.Logging;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
+using Sando.Core.Logging.Events;
 
 namespace Sando.UI.Monitoring
 {
@@ -60,7 +60,7 @@ namespace Sando.UI.Monitoring
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Info("Exception in IndexUpdateManager.Update() " + e.Message + "\n" + e.StackTrace);
+                LogEvents.UIIndexUpdateError(this, e);
             }
         }
 	}

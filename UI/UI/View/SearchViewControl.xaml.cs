@@ -9,7 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
@@ -18,6 +18,7 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
+using Sando.Core.Logging.Events;
 
 namespace Sando.UI.View
 {
@@ -248,7 +249,7 @@ namespace Sando.UI.View
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
                 MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
             }
         }
@@ -426,7 +427,7 @@ namespace Sando.UI.View
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
             }
         }
 

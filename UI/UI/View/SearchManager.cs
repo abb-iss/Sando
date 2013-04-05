@@ -10,10 +10,11 @@ using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Indexer;
+using Sando.Core.Logging.Events;
 
 namespace Sando.UI.View
 {
@@ -76,7 +77,7 @@ namespace Sando.UI.View
             catch (Exception e)
             {
                 _searchResultListener.UpdateMessage("Sando is experiencing difficulties. See log file for details.");
-                FileLogger.DefaultLogger.Error(e.Message, e);
+                LogEvents.UISandoSearchingError(this, e);
             }
         }
 
@@ -97,7 +98,7 @@ namespace Sando.UI.View
             {
                 _searchResultListener.UpdateMessage("Sando searches only the currently open Solution.  Please open a Solution and try again.");
                 if (indexer != null)
-                    FileLogger.DefaultLogger.Error(e.Message, e);
+                    LogEvents.UISolutionOpeningError(this, e);
                 isOpen = false;
             }
             return isOpen;
