@@ -34,8 +34,8 @@ namespace Sando.Indexer
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = ServiceLocator.Resolve<Analyzer>();
                 IndexWriter = new IndexWriter(LuceneIndexesDirectory, Analyzer, IndexWriter.MaxFieldLength.LIMITED);
-			    IndexReader = IndexWriter.GetReader();
-				_indexSearcher = new IndexSearcher(IndexReader);
+			    Reader = IndexWriter.GetReader();
+				_indexSearcher = new IndexSearcher(Reader);
                 QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 
 			    if (!refreshIndexSearcherThreadInterval.HasValue) 
@@ -144,7 +144,7 @@ namespace Sando.Indexer
 
         public int GetNumberOfIndexedDocuments()
         {
-            return IndexReader.NumDocs();
+            return Reader.NumDocs();
         }
 
 	    private List<Tuple<Document, float>> RunSearch(Query query, TopScoreDocCollector collector)
@@ -168,18 +168,18 @@ namespace Sando.Indexer
 		{
 		    try
 		    {
-				var oldReader = IndexReader;
-		        var newReader = IndexReader.Reopen(true);
-		        if (newReader != oldReader)
+				var oldReader = Reader;
+		        Reader = Reader.Reopen(true);
+		        if (Reader != oldReader)
 		        {
 		            //_indexSearcher.Close(); - don't need this, because we create IndexSearcher by passing the IndexReader to it, so Close do nothing
 		            oldReader.Close();
-		            _indexSearcher = new IndexSearcher(newReader);
+		            _indexSearcher = new IndexSearcher(Reader);
 		        }
 		    }
             catch (AlreadyClosedException)
 		    {
-                _indexSearcher = new IndexSearcher(IndexReader);
+                _indexSearcher = new IndexSearcher(Reader);
 		    }
 		}
 
@@ -285,7 +285,7 @@ namespace Sando.Indexer
 
 	    public Directory LuceneIndexesDirectory { get; set; }
 		public QueryParser QueryParser { get; protected set; }
-		public IndexReader IndexReader { get; private set; }
+		public IndexReader Reader { get; private set; }
 		protected Analyzer Analyzer { get; set; }
 		protected IndexWriter IndexWriter { get; set; }
 

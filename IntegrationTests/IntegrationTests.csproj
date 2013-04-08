@@ -92,6 +92,7 @@
     <Compile Include="IInvoker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Search\AutomaticallyIndexingTestClass.cs" />
+    <Compile Include="Search\RetrievalMetricsTest.cs" />
     <Compile Include="Search\TestFilesSearchingTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>

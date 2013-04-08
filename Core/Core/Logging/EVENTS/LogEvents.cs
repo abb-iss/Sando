@@ -98,14 +98,14 @@ namespace Sando.Core.Logging.Events
 
         #region IndexerEvents
 
-		public static void PreSearch(Object sender, double avgidf)
+		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
 		{
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre search avgidf=" + avgidf);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre search metrics: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
 		}
 
         public static void PostSearch(Object sender, int numOfResults)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search performed with " + numOfResults + " results");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search returned " + numOfResults + " results");
         }
 
         public static void IndexLockObtainFailed(Object sender, Exception lockFailedEx)

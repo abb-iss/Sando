@@ -54,8 +54,8 @@ namespace Sando.UI.View
                     return;
                 }
 
-				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().IndexReader);
-				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString));
+				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader);
+				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString), preMetrics.AvgSqc(searchString), preMetrics.AvgVar(searchString));
 
                 var criteria = GetCriteria(searchString, searchCriteria);
                 var results = codeSearcher.Search(criteria, true).AsQueryable();
