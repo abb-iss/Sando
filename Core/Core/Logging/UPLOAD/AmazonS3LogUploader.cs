@@ -15,23 +15,21 @@ namespace Sando.Core.Logging.Upload
 		private static string _secretAccessKey;
 		private static string _bucketName;
 
-		public static string S3CredentialDirectory; 
-
-		public static bool WriteLogFile(string filePath)
+		public static bool WriteLogFile(string uploadFilePath, string credentialFilePath)
 		{
             Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-			LogEvents.S3UploadStarted(t, filePath);
+			LogEvents.S3UploadStarted(t, uploadFilePath);
 			try
 			{
-				if(ReadS3Credentials() == false)
+				if(ReadS3Credentials(credentialFilePath) == false)
 				{
                     LogEvents.S3NoCredentials(t);
 					return false;
 				}
 				AmazonS3 client = Amazon.AWSClientFactory.CreateAmazonS3Client(_accessKeyId, _secretAccessKey);
 				PutObjectRequest request = new PutObjectRequest();
-				string fileName = System.IO.Path.GetFileName(filePath);
-				request.WithFilePath(filePath).WithBucketName(_bucketName).WithKey(fileName);
+				string fileName = System.IO.Path.GetFileName(uploadFilePath);
+				request.WithFilePath(uploadFilePath).WithBucketName(_bucketName).WithKey(fileName);
 				S3Response responseWithMetadata = client.PutObject(request);
 				return true;
 			}
@@ -42,15 +40,13 @@ namespace Sando.Core.Logging.Upload
 			}
 		}
 
-		private static bool ReadS3Credentials()
+		private static bool ReadS3Credentials(string s3CredentialFile)
 		{
-			string s3CredentialFileLocation = S3CredentialDirectory + "\\S3Credentials.txt";
-
-			if (! System.IO.File.Exists(s3CredentialFileLocation))
+			if (! System.IO.File.Exists(s3CredentialFile))
 			{
 				return false;				
 			}
-			string[] lines = System.IO.File.ReadAllLines(s3CredentialFileLocation);
+			string[] lines = System.IO.File.ReadAllLines(s3CredentialFile);
 			if (lines.Length < 3)
 			{
 				return false;

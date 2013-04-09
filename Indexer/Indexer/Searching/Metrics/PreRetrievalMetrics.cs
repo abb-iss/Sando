@@ -4,15 +4,19 @@ using System.Linq;
 using System.Text;
 using Lucene.Net.Index;
 using Sando.Indexer.Documents;
+using Lucene.Net.Analysis;
+using System.IO;
+using Lucene.Net.Analysis.Tokenattributes;
 
 
 namespace Sando.Indexer.Searching.Metrics
 {
 	public class PreRetrievalMetrics
 	{
-		public PreRetrievalMetrics(IndexReader indexReader)
+		public PreRetrievalMetrics(IndexReader indexReader, Analyzer analyzer)
 		{
 			Reader = indexReader;
+            Stemmer = analyzer;
 		}
 
 		#region specificity
@@ -20,7 +24,8 @@ namespace Sando.Indexer.Searching.Metrics
 		public double AvgIdf(string query)
 		{
 			double SumIdf = 0.0;
-			string[] splitQ = query.Split(' ');
+            query = StemText(query);
+            string[] splitQ = query.Split(' ');
 			foreach(var qTerm in splitQ)
 			{
 				SumIdf += Idf(qTerm);
@@ -32,6 +37,7 @@ namespace Sando.Indexer.Searching.Metrics
 		public double DevIdf(string query)
 		{
 			double diff = 0.0;
+            query = StemText(query);
 			double avgIdf = AvgIdf(query);
 			string[] splitQ = query.Split(' ');
 			foreach(var qTerm in splitQ)
@@ -48,6 +54,7 @@ namespace Sando.Indexer.Searching.Metrics
 		public double AvgSqc(string query)
 		{
 			double SumSqc = 0.0;
+            query = StemText(query);
 			string[] splitQ = query.Split(' ');
 			foreach(var qTerm in splitQ)
 			{
@@ -72,6 +79,7 @@ namespace Sando.Indexer.Searching.Metrics
 		public double AvgVar(string query)
 		{
 			double AvgVar = 0.0;
+            query = StemText(query);
 			string[] splitQ = query.Split(' ');
 			foreach(var qTerm in splitQ)
 			{
@@ -80,44 +88,44 @@ namespace Sando.Indexer.Searching.Metrics
 			return (AvgVar / splitQ.Length);
 		}
 
-		private double Var(string term)
-		{
-			int num_docs = 0;
-			List<double> freqs = new List<double>();
-			TermDocs termDocs = Reader.TermDocs(new Term(SandoField.Name.ToString(), term));
-			if(termDocs != null)
-			{
-				while(termDocs.Next())
-				{
-					num_docs++;
-					freqs.Add(termDocs.Freq());
-				}
-			}
+        private double Var(string term)
+        {
+            int num_docs = 0;
+            List<double> freqs = new List<double>();
+            TermDocs termDocs = Reader.TermDocs(new Term(SandoField.Name.ToString(), term));
+            if (termDocs != null)
+            {
+                while (termDocs.Next())
+                {
+                    num_docs++;
+                    freqs.Add(termDocs.Freq());
+                }
+            }
 
-			double var = 0.0;
-			if(freqs.Count > 0)
-			{
-				List<double> weights = new List<double>();
-				foreach(var freq in freqs)
-				{
-					weights.Add((Math.Log(1 + freq) * Idf(term)) / num_docs);
-				}
+            double var = 0.0;
+            if (freqs.Count > 0)
+            {
+                List<double> weights = new List<double>();
+                foreach (var freq in freqs)
+                {
+                    weights.Add((Math.Log(1 + freq) * Idf(term)) / num_docs);
+                }
 
-				double avg_w = 0.0;
-				foreach(var w in weights)
-				{
-					avg_w += w;
-				}
-				avg_w = avg_w / num_docs;
+                double avg_w = 0.0;
+                foreach (var w in weights)
+                {
+                    avg_w += w;
+                }
+                avg_w = avg_w / num_docs;
 
-				foreach(var w in weights)
-				{
-					var += Math.Abs(w - avg_w);
-				}
-				var = var / num_docs;
-			}
-			return var;
-		}
+                foreach (var w in weights)
+                {
+                    var += Math.Abs(w - avg_w);
+                }
+                var = var / num_docs;
+            }
+            return var;
+        }
 
 		#endregion
 
@@ -149,6 +157,20 @@ namespace Sando.Indexer.Searching.Metrics
 			return idf;
 		}
 
+        public string StemText(string text) 
+        {
+            string result = "";
+            TokenStream stream  = Stemmer.TokenStream(null, new StringReader(text));
+
+            while(stream.IncrementToken()) {
+                TermAttribute termAttr = (TermAttribute) stream.GetAttribute(typeof(TermAttribute));
+                result = result + termAttr.Term() + " "; 
+            }
+            
+            return result.Trim();
+        }  
+
 		private IndexReader Reader;
+        private Analyzer Stemmer;
 	}
 }

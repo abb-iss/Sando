@@ -16,6 +16,7 @@ using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Indexer;
 using Sando.Core.Logging.Events;
 using Sando.Indexer.Searching.Metrics;
+using Lucene.Net.Analysis;
 
 namespace Sando.UI.View
 {
@@ -54,7 +55,7 @@ namespace Sando.UI.View
                     return;
                 }
 
-				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader);
+				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader, ServiceLocator.Resolve<Analyzer>());
 				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString), preMetrics.AvgSqc(searchString), preMetrics.AvgVar(searchString));
 
                 var criteria = GetCriteria(searchString, searchCriteria);

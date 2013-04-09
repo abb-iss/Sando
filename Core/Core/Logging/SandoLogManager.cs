@@ -1,8 +1,10 @@
 ﻿using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
+using Sando.Core.Logging.Upload;
 using Sando.Core.Tools;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,12 +31,42 @@ namespace Sando.Core.Logging
             var logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
             DataCollectionLogEventHandlers.InitializeLogFile(logger);
             DataCollectionOn = true;
+
+            //Upload old data to S3 (randomly with p=0.33)
+            Random random = new Random();
+            if (random.Next(0, 3) == 0)
+            {
+                var s3UploadWorker = new BackgroundWorker();
+                s3UploadWorker.DoWork += new DoWorkEventHandler(s3UploadWorker_DoWork);
+                s3UploadWorker.RunWorkerAsync(logPath);
+            }
         }
 
         public static void StopAllLogging()
         {
             DefaultLoggingOn = false;
             DataCollectionOn = false;
+        }
+
+        private static void s3UploadWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            string logPath = (string) e.Argument;
+            string s3CredsPath = logPath + "//S3Credentials";
+            string[] files = Directory.GetFiles(logPath);
+            foreach (var file in files)
+            {
+                string fullPath = Path.GetFullPath(file);
+                string fileName = Path.GetFileName(fullPath);
+
+                if (fileName.StartsWith("SandoData-") && fileName.EndsWith("log"))
+                {
+                    bool success = AmazonS3LogUploader.WriteLogFile(fullPath, s3CredsPath);
+                    if (success == true)
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+            }
         }
 
         public static bool DefaultLoggingOn { get; private set; }

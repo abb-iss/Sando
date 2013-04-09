@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Lucene.Net.Analysis;
+using NUnit.Framework;
 using Sando.DependencyInjection;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
@@ -14,24 +15,39 @@ namespace Sando.IntegrationTests.Search
     [TestFixture]
     public class RetrievalMetricsTest : AutomaticallyIndexingTestClass
     {
-        //Todo: these terms are already stemmed. To get this working for real, we need to apply a stemmer to the query (somehow)
-        private static List<string> queries = new List<string>() { "sando", "search", "index", "potato chip", "solution close", "add tooltip to sando search bar" };
+        [Test]
+        public void TestStemmingForMetricsCalculation()
+        {
+            var documentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
+            var analyzer = ServiceLocator.Resolve<Analyzer>();
+
+            PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(documentIndexer.Reader, analyzer);
+            Assert.AreEqual(preMetrics.StemText("searching"), "search");
+            Assert.AreEqual(preMetrics.StemText("search"), "search");
+            Assert.AreEqual(preMetrics.StemText("solution closing"), "solut close");
+            Assert.AreEqual(preMetrics.StemText("indexer"), "index");
+        }
 
         [Test]
         public void TestSpecificityMetrics()
         {
             var documentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
-            PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(documentIndexer.Reader);
+            var analyzer = ServiceLocator.Resolve<Analyzer>();
 
-            foreach (var query in queries)
-            {
-                Console.WriteLine("for query='" + query + "', AvgIDF=" + preMetrics.AvgIdf(query));
-            }
-            foreach (var query in queries)
-            {
-                Console.WriteLine("for query='" + query + "', DevIDF=" + preMetrics.DevIdf(query));
-            }
-            
+            PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(documentIndexer.Reader, analyzer);
+            Assert.IsTrue(preMetrics.AvgIdf("splitting") > preMetrics.AvgIdf("searching"));
+            Assert.IsTrue(preMetrics.AvgIdf("solution closing") > preMetrics.AvgIdf("indexer"));
+        }
+
+        [Test]
+        public void TestSimilarityMetrics()
+        {
+            var documentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
+            var analyzer = ServiceLocator.Resolve<Analyzer>();
+
+            PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(documentIndexer.Reader, analyzer);
+            Assert.IsTrue(preMetrics.AvgSqc("indexer") > preMetrics.AvgSqc("potato chip"));
+            Assert.IsTrue(preMetrics.AvgSqc("indexer") > preMetrics.AvgSqc("soda pop"));
         }
 
         public override string GetFilesDirectory()
