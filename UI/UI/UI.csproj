@@ -258,6 +258,7 @@
   <ItemGroup>
     <Content Include="S3Credentials">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="sandoKey.snk" />
     <None Include="source.extension.vsixmanifest">

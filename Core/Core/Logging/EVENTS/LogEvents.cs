@@ -127,6 +127,11 @@ namespace Sando.Core.Logging.Events
 
         #region S3Events
 
+        public static void NoS3UploadDueToChance(Object sender, int rand)
+        {
+            DefaultLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Rolled a " + rand.ToString() + " (0). No S3 upload this VS run");
+        }
+
         public static void S3Error(Object sender, Exception awsException)
 		{
             DefaultLogEventHandlers.WriteErrorLogMessage(sender.GetType().ToString(), "AWS Error occurred when writing an object", awsException);

@@ -34,11 +34,17 @@ namespace Sando.Core.Logging
 
             //Upload old data to S3 (randomly with p=0.33)
             Random random = new Random();
-            if (random.Next(0, 3) == 0)
+            int rand = random.Next(0, 3);
+            if (rand == 0)
             {
                 var s3UploadWorker = new BackgroundWorker();
                 s3UploadWorker.DoWork += new DoWorkEventHandler(s3UploadWorker_DoWork);
                 s3UploadWorker.RunWorkerAsync(logPath);
+            }
+            else
+            {
+                Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+                LogEvents.NoS3UploadDueToChance(t, rand);
             }
         }
 
