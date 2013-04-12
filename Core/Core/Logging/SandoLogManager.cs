@@ -27,11 +27,6 @@ namespace Sando.Core.Logging
 
         public static void StartDataCollectionLogging(string logPath)
         {
-            var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
-            var logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
-            DataCollectionLogEventHandlers.InitializeLogFile(logger);
-            DataCollectionOn = true;
-
             //Upload old data to S3 (randomly with p=0.33)
             Random random = new Random();
             int rand = random.Next(0, 3);
@@ -46,6 +41,11 @@ namespace Sando.Core.Logging
                 Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
                 LogEvents.NoS3UploadDueToChance(t, rand);
             }
+
+            var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
+            var logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
+            DataCollectionLogEventHandlers.InitializeLogFile(logger);
+            DataCollectionOn = true;
         }
 
         public static void StopAllLogging()
