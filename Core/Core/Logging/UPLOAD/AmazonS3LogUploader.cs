@@ -40,6 +40,29 @@ namespace Sando.Core.Logging.Upload
 			}
 		}
 
+        public static bool ReadLogFile(string s3FileName, string credentialFilePath)
+        {
+            Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+            try
+            {
+                if (ReadS3Credentials(credentialFilePath) == false)
+                {
+                    LogEvents.S3NoCredentials(t);
+                    return false;
+                }
+                AmazonS3 client = Amazon.AWSClientFactory.CreateAmazonS3Client(_accessKeyId, _secretAccessKey);
+                GetObjectRequest request = new GetObjectRequest();
+                request.WithBucketName(_bucketName).WithKey(s3FileName);
+                S3Response responseWithMetadata = client.GetObject(request);
+                return true;
+            }
+            catch (AmazonS3Exception amazonS3Exception)
+            {
+                LogEvents.S3Error(t, amazonS3Exception);
+                return false;
+            }
+        }
+
 		private static bool ReadS3Credentials(string s3CredentialFile)
 		{
 			if (! System.IO.File.Exists(s3CredentialFile))
