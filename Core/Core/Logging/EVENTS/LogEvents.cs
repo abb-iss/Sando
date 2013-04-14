@@ -98,6 +98,11 @@ namespace Sando.Core.Logging.Events
 
         #region IndexerEvents
 
+        public static void PreSearchQueryAnalysis(Object sender, int numTerms, int numCamel, bool quoted)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted: NumTerms=" + numTerms + ", CamelCaseTerms=" + numCamel + ", Quoted=" + quoted);
+        }
+
 		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
 		{
 			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre search metrics: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
