@@ -180,7 +180,8 @@ namespace Sando.LocalSearch
             {
                 callhappenclassname = callclasses.First().Element(SRC.Name).Value;
             }
-            catch (NullReferenceException e)
+            //catch (NullReferenceException e)
+            catch (Exception e)
             {
                 //anonymous class
                 callhappenclassname = "anonymous";
@@ -189,7 +190,7 @@ namespace Sando.LocalSearch
             {
                 methodclassname = methodclasses.First().Element(SRC.Name).Value;
             }
-            catch (NullReferenceException e)
+            catch (Exception e)
             {
                 //anonymous class
                 methodclassname = "anonymous";
@@ -565,18 +566,29 @@ namespace Sando.LocalSearch
         /// <returns>An array of all the class names in String.</returns>
         public String[] GetClassNames()
         {
-            List<String> listClassNames = new List<string>();
+            //List<String> listClassNames = new List<string>();
+            List<XElement> listClassNames = new List<XElement>();
+            List<String> nameStrings = new List<string>();
+
             foreach (XElement file in srcmlFile.FileUnits)
             {
                 var classes = from classdef in file.Descendants()
                               where classdef.Name.Equals(SRC.Class)
-                              select classdef.Element(SRC.Name).Value;
+                              select classdef.Element(SRC.Name);
 
                 if (classes != null)
                     listClassNames.AddRange(classes);
-            }
 
-            return listClassNames.ToArray();
+                foreach (var classname in listClassNames)
+                {
+                    if (classname == null)
+                        continue;
+                    String classnameStr = classname.Value;
+                    nameStrings.Add(classnameStr);
+                }
+            }            
+
+            return nameStrings.ToArray();
         }
 
         /// <summary>

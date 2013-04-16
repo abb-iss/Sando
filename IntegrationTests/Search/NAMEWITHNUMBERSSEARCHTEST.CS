@@ -24,7 +24,7 @@ namespace Sando.IntegrationTests.Search
 		public void SearchReturnsElementsWithNumbersInNames()
 		{
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
-			string keywords = "problem";
+            string keywords = "problem"; //problem
 			List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 			Assert.AreEqual(codeSearchResults.Count, 2, "Invalid results number");
 			var classSearchResult = codeSearchResults.Find(el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && el.ProgramElement.Name == "Problem0010Resolver");
@@ -67,7 +67,7 @@ namespace Sando.IntegrationTests.Search
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\NamesWithNumbersTestFiles"; //NamesWithNumbersTestFiles
         }
 
         //[TestFixtureSetUp]

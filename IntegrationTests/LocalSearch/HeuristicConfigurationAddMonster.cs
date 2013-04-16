@@ -19,18 +19,18 @@ namespace Sando.IntegrationTests.LocalSearch
     [TestFixture]
     public class HeuristicConfigurationAddMonster : AutomaticallyIndexingTestClass
     {
-        static targetProgramElement target = 
-            new targetProgramElement(98, "AddMonster", ProgramElementRelation.CallBy);
-
-        static int numberOfNavigation = 0;
-
-        static bool targetFound = false;
-
         [Test]
         public void AddMonsterTest()
         {
+            targetProgramElement target = 
+                new targetProgramElement(98, "AddMonster", ProgramElementRelation.CallBy);
+
+            int numberOfNavigation = 0;
+
+            bool targetFound = false;
+            
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
-            string keywords = "Add";
+            string keywords = "Add"; 
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             
             Context gbuilder = new Context(keywords);
@@ -67,7 +67,8 @@ namespace Sando.IntegrationTests.LocalSearch
 
                                     //recommendTrees.Add(rootTreeNode);
 
-                                    TreeBuild(ref rootTreeNode, gbuilder, 0, configuration);
+                                    TreeBuild(ref rootTreeNode, gbuilder, 0, configuration,
+                                        ref targetFound, ref numberOfNavigation, ref target);
                                 }
 
                                 Console.WriteLine("Number of Navigation of (" 
@@ -121,8 +122,9 @@ namespace Sando.IntegrationTests.LocalSearch
 
         }
         
-        public void TreeBuild(ref NTree<CodeNavigationResult> rootNode, Context gbuilder, 
-            int depth, heuristicWeightComb config)
+        private void TreeBuild(ref NTree<CodeNavigationResult> rootNode, Context gbuilder,
+            int depth, heuristicWeightComb config, ref bool targetFound, ref int numberOfNavigation,
+            ref targetProgramElement target)
         {
             //target found
             if (targetFound == true)
@@ -169,7 +171,8 @@ namespace Sando.IntegrationTests.LocalSearch
             for (int i = 0; i < rootNode.getChildNumber(); i++)
             {
                 NTree<CodeNavigationResult> newrootNode = rootNode.getChild(i);
-                TreeBuild(ref newrootNode, gbuilder, depth, config);
+                TreeBuild(ref newrootNode, gbuilder, depth, config, ref targetFound, 
+                    ref numberOfNavigation, ref target);
             }
 
             //gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count-1);
@@ -183,7 +186,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\LocalSearchTestFiles\\AddMonsterTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\AddMonsterTestFiles"; //AddMonsterTestFiles
         }
 
         public override TimeSpan? GetTimeToCommit()
@@ -191,40 +194,5 @@ namespace Sando.IntegrationTests.LocalSearch
             return TimeSpan.FromSeconds(5);
         }
     }
-
-
-    public class NTree<T>
-    {
-        T data;
-        LinkedList<NTree<T>> children;
-
-        public NTree(T data)
-        {
-            this.data = data;
-            children = new LinkedList<NTree<T>>();
-        }
-
-        public T getData()
-        {
-            return this.data;
-        }
-
-        public void addChild(T data)
-        {
-            children.AddLast(new NTree<T>(data));
-        }
-
-        public NTree<T> getChild(int i)
-        {
-            foreach (NTree<T> n in children)
-                if (i-- == 0) return n;
-            return null;            
-        }
-
-        public int getChildNumber()
-        {
-            return children.Count;
-        }
         
-    }
 }

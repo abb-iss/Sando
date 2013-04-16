@@ -12,15 +12,16 @@ using Sando.SearchEngine;
 using Sando.LocalSearch;
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sando.IntegrationTests.LocalSearch
 {
     //target:
     /*
      * 1. MindMapMapModel.java
-     * "Saving Failed" --> save (definition, 245) --> SaveInternal (callby, 250)
-     *                 --> getXml (callby, 260) --> getXml (callby, 303)
-     *                 --> getXml (callby, 286) --> getXml (callby, 298)
+     * "Saving Failed" --> save (definition, 245) --> SaveInternal (definition, 250)
+     *                 --> getXml (callby, 260) --> getXml (definition, 304)
+     *                 --> getXml (callby, 287) --> getXml (definition, 293)
      *                 
      * 2. ControllerAdaptor.java
      * "Saving Failed" --> (search result) --> mc.Save(control-dependent 969)
@@ -32,24 +33,76 @@ namespace Sando.IntegrationTests.LocalSearch
     [TestFixture]
     public class HeuristicConfigurationFreeMind : AutomaticallyIndexingTestClass
     {
-        static List<targetProgramElement> targetSet = new List<targetProgramElement>();
-        static List<int> numberOfNavigation= new List<int>();
-        static List<bool> targetFound = new List<bool>();
-        static string keywords = "Saving Failed";
-        static string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles\MindMapMapModel.java";
-        static int treeDepth = 3;
-        static int stopLine = 10;
+        //List<targetProgramElement> targetSet = new List<targetProgramElement>();
+        //List<int> numberOfNavigation= new List<int>();
+        //List<bool> targetFound = new List<bool>();
+        //string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles\MindMapMapModel.cs";
+        //int treeDepthThreshold = 3;
+        //int stopLine = 10;
 
-        public void SetTargetSet()
+        //private void SetTargetSet()
+        //{
+        //    int[] linenumber = {245, 250, 260, 304, 287, 293};
+        //    String[] elements = { "save", "SaveInternal", "getXml", "getXml", "getXml", "getXml" };
+        //    ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
+        //                                           ProgramElementRelation.Other,
+        //                                           ProgramElementRelation.CallBy,
+        //                                           ProgramElementRelation.Other,
+        //                                           ProgramElementRelation.CallBy,
+        //                                           ProgramElementRelation.Other };
+
+        //    for (int i = 0; i < linenumber.Length; i++)
+        //    {
+        //        targetProgramElement target =
+        //        new targetProgramElement(linenumber[i], elements[i], relations[i]);
+
+        //        targetSet.Add(target);
+        //        numberOfNavigation.Add(0);
+        //        targetFound.Add(false);
+        //    }
+        //}
+        
+
+        [Test]
+        public void FreeMindTest()
         {
-            int[] linenumber = {245, 250, 260, 303, 286, 298};
+            //SetTargetSet();
+            
+            string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\MindMapMapModel.java";
+            int treeDepthThreshold = 5;
+            int stopLine = 30;
+
+            string keywords = "Saving Failed"; //"Saving Failed";
+            var codeSearcher = new CodeSearcher(new IndexerSearcher());            
+            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+
+            Context gbuilder = new Context(keywords);
+            gbuilder.Intialize(testfilePath);
+
+            if (codeSearchResults.Count == 0)
+                codeSearchResults = gbuilder.GetRecommendations().ToList();
+
+            foreach (var initialSearchRes in codeSearchResults)
+            {
+                if ((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
+                {
+                    gbuilder.InitialSearchResults.Add(Tuple.Create(initialSearchRes, 1));
+                    Console.WriteLine(initialSearchRes.Name); //debugging
+                }
+            }
+
+
+            List<targetProgramElement> targetSet = new List<targetProgramElement>();
+            List<int> numberOfNavigation = new List<int>();
+            List<bool> targetFound = new List<bool>();
+            int[] linenumber = { 245, 250, 260, 304, 287, 293 };
             String[] elements = { "save", "SaveInternal", "getXml", "getXml", "getXml", "getXml" };
             ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
+                                                   ProgramElementRelation.Other,
                                                    ProgramElementRelation.CallBy,
+                                                   ProgramElementRelation.Other,
                                                    ProgramElementRelation.CallBy,
-                                                   ProgramElementRelation.CallBy,
-                                                   ProgramElementRelation.CallBy,
-                                                   ProgramElementRelation.CallBy };
+                                                   ProgramElementRelation.Other };
 
             for (int i = 0; i < linenumber.Length; i++)
             {
@@ -60,31 +113,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 numberOfNavigation.Add(0);
                 targetFound.Add(false);
             }
-        }
-        
 
-        [Test]
-        public void FreeMindTest()
-        {
-            SetTargetSet();
-
-            var codeSearcher = new CodeSearcher(new IndexerSearcher());            
-            List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
-
-            Context gbuilder = new Context(keywords);
-            gbuilder.Intialize(testfilePath);
-            foreach (var initialSearchRes in codeSearchResults)
-            {
-                if ((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
-                    gbuilder.InitialSearchResults.Add(Tuple.Create(initialSearchRes, 1));
-            }
-
-            //List<NTree<CodeNavigationResult>> recommendTrees = new List<NTree<CodeNavigationResult>>();
-
-            for (int lookahead = 1; lookahead <= 2; lookahead++)
+            for (int lookahead = 1; lookahead <= 1; lookahead++)
                 for (double w1 = 1; w1 <= 1; w1++)
                     for (double w2 = 1; w2 <= 1; w2++)
-                        for (int lookback = 1; lookback <= 2; lookback++)
+                        for (int lookback = 1; lookback <=1; lookback++)
                             for (double w3 = 1; w3 <= 1; w3++)
                             {
                                 heuristicWeightComb configuration =
@@ -93,8 +126,23 @@ namespace Sando.IntegrationTests.LocalSearch
                                 //recommendation trees building
                                 foreach (var searchresult in codeSearchResults)
                                 {
-                                    //if (targetFound == true)
-                                    //    break;
+                                    if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
+                                        break;
+
+                                    for (int i = 0; i < targetSet.Count; i++)
+                                    {
+                                        targetProgramElement target = targetSet[i];
+                                        if (targetFound[i] == true)
+                                            continue;
+
+                                        if (target.relationName == ProgramElementRelation.Other
+                                            && searchresult.ProgramElement.DefinitionLineNumber == target.relationLine
+                                            && searchresult.Name == target.elementName)
+                                        {
+                                            targetFound[i] = true;
+                                            break; //can't be another target
+                                        }
+                                    }
 
                                     if ((searchresult.Type != "Method") && (searchresult.Type != "Field"))
                                         continue;
@@ -105,16 +153,24 @@ namespace Sando.IntegrationTests.LocalSearch
 
                                     //recommendTrees.Add(rootTreeNode);
 
-                                    TreeBuild(ref rootTreeNode, gbuilder, 0, configuration);
+                                    TreeBuild(ref rootTreeNode, gbuilder, 0, configuration, ref targetFound,
+                                        ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);
                                 }
 
-                                Console.WriteLine("Number of Navigation of ("
+                                String outputStr = "Number of Navigation of ("
                                     + lookahead.ToString() + " "
                                     + w1.ToString() + " "
                                     + w2.ToString() + " "
                                     + lookback.ToString() + " "
-                                    + w3.ToString() + "):"
-                                    + numberOfNavigation.ToString());
+                                    + w3.ToString() + "):";
+
+                                for (int i = 0; i < numberOfNavigation.Count; i++)
+                                {
+                                    outputStr += numberOfNavigation[i].ToString() + " ";
+                                }
+
+                                Console.Write(outputStr);
+
                             }
 
         }
@@ -132,12 +188,6 @@ namespace Sando.IntegrationTests.LocalSearch
                 relationName = relation;
             }
 
-            //public static bool operator ==(targetProgramElement t1, targetProgramElement t2)
-            //{
-            //    return t1.relationLine == t2.relationLine 
-            //        && t1.elementName == t2.elementName 
-            //        && t1.relationName == t2.relationName;
-            //}
         }
 
         public struct heuristicWeightComb
@@ -159,7 +209,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         }
 
-        public bool targetSatisfied()
+        public bool targetSatisfied(List<bool> targetFound) //configurable
         {
             foreach (bool status in targetFound)
             {
@@ -170,27 +220,29 @@ namespace Sando.IntegrationTests.LocalSearch
             return true;
         }
 
-        public bool stopCriteriaSatisfied()
+        public bool stopCriteriaSatisfied(List<int> numberOfNavigation, int stopLine)
         {
             foreach (int cumulativeRank in numberOfNavigation)
             {
                 if (cumulativeRank > stopLine)
-                    return false;
+                    return true;
             }
 
-            return true;
+            return false;
         }
 
         public void TreeBuild(ref NTree<CodeNavigationResult> rootNode, Context gbuilder,
-            int depth, heuristicWeightComb config)
+            int depth, heuristicWeightComb config, ref List<bool> targetFound,
+            ref List<int> numberOfNavigation, ref List<targetProgramElement> targetSet,
+            int treeDepthThreshold, int stopLine)
         {
             //target found
-            if (targetSatisfied() || stopCriteriaSatisfied())
+            if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
                 return;
 
             for (int i = 0; i < numberOfNavigation.Count; i++)
             {
-                if(targetFound[i] == false)
+                if (targetFound[i] == false)
                     numberOfNavigation[i]++;
             }
 
@@ -201,8 +253,8 @@ namespace Sando.IntegrationTests.LocalSearch
                 if (targetFound[i] == true)
                     continue;
 
-                if (rootElement.RelationLineNumber[0] == target.relationLine
-                    && rootElement.Name == target.elementName
+                if (//rootElement.RelationLineNumber[0] == target.relationLine &&
+                     rootElement.Name == target.elementName
                     && rootElement.ProgramElementRelation == target.relationName)
                 {
                     targetFound[i] = true;
@@ -213,7 +265,7 @@ namespace Sando.IntegrationTests.LocalSearch
             gbuilder.CurrentPath.Add(rootElement as CodeSearchResult);
             depth++;
 
-            if (depth >= treeDepth)
+            if (depth >= treeDepthThreshold)
             {
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
                 depth--;
@@ -240,7 +292,8 @@ namespace Sando.IntegrationTests.LocalSearch
             for (int i = 0; i < rootNode.getChildNumber(); i++)
             {
                 NTree<CodeNavigationResult> newrootNode = rootNode.getChild(i);
-                TreeBuild(ref newrootNode, gbuilder, depth, config);
+                TreeBuild(ref newrootNode, gbuilder, depth, config, ref targetFound, ref numberOfNavigation,
+                    ref targetSet, treeDepthThreshold, stopLine);
             }
 
             //gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count-1);
@@ -255,13 +308,14 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\LocalSearchTestFiles\\FreeMindTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\FreeMindTestFiles";
         }
 
         public override TimeSpan? GetTimeToCommit()
         {
             return TimeSpan.FromSeconds(5);
         }
-    }
-    
-}
+
+    } //class end
+     
+} //namespace

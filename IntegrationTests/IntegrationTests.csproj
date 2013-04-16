@@ -84,7 +84,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticallyIndexingTestClass.cs" />
-    <Compile Include="LocalSearch\HeuristicConfigurationAddMonster.cs" />
+    <Compile Include="LocalSearch\NTree.cs" />
+    <Compile Include="LocalSearch\HeuristicConfigurationAddMonster.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
     <Compile Include="LocalSearch\HeuristicConfigurationFreeMind.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationjpassWordSafe.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationRachota.cs" />
@@ -102,9 +105,20 @@
     <Compile Include="Search\NameWithNumbersSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
-    <None Include="TestFiles\LocalSearchTestFiles\AddMonsterTestFiles\CreatureManager.cs" />
-    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\ControllerAdapter.java" />
-    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\MindMapMapModel.java" />
+    <Content Include="TestFiles\AddMonsterTestFiles\CreatureManager.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\FreeMindTestFiles\MindMapMapModel.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\MindMapMapModel.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="TestFiles\LocalSearchTestFiles\AddMonsterTestFiles\CreatureManager.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\ControllerAdapter.java" />
+    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\MindMapMapModel.java" />
     <Content Include="TestFiles\MethodElementTestFiles\Hello.cpp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
