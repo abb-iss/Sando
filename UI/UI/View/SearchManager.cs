@@ -52,11 +52,12 @@ namespace Sando.UI.View
                 if (searchStringContainedInvalidCharacters)
                 {
                     _searchResultListener.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
+                    LogEvents.InvalidCharactersInQuery(this);
                     return;
                 }
 
-                QueryTypeMetrics queryMetrics = new QueryTypeMetrics(searchString);
-                LogEvents.PreSearchQueryAnalysis(this, queryMetrics.NumberOfTerms(), queryMetrics.NumberOfCamelCaseTerms(), queryMetrics.IsQuoted());
+                //QueryMetrics queryMetrics = new QueryMetrics(searchString);
+                //LogEvents.PreSearchQueryAnalysis(this, queryMetrics.NumberOfTerms(), queryMetrics.NumberOfTermsInCamelCase(), queryMetrics.IsQuoted());
 				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader, ServiceLocator.Resolve<Analyzer>());
 				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString), preMetrics.AvgSqc(searchString), preMetrics.AvgVar(searchString));
 

@@ -29,9 +29,14 @@ namespace Sando.Core.Logging.Events
 
         #region UIEvents
 
+        public static void InvalidCharactersInQuery(Object sender)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Invalid characters found in query. Search aborted.");
+        }
+
         public static void OpeningCodeSearchResult(ProgramElementType programElementType)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", programElementType.ToString() + " was double clicked");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", programElementType.ToString() + " was opened in VS editor (double-click)");
         }
 
         public static void SolutionOpened(Object sender, string solutionName)

@@ -130,7 +130,8 @@
     <Compile Include="Searching\IndexerSearcher.cs" />
     <Compile Include="Searching\LuceneQueryStringBuilder.cs" />
     <Compile Include="Searching\Metrics\PreRetrievalMetrics.cs" />
-    <Compile Include="Searching\Metrics\QueryTypeMetrics.cs" />
+    <Compile Include="Searching\Metrics\QueryTermType.cs" />
+    <Compile Include="Searching\Metrics\QueryMetrics.cs" />
     <Compile Include="Searching\QueryWeightsSupplier.cs" />
     <Compile Include="Searching\UsageType.cs" />
   </ItemGroup>
