@@ -129,9 +129,9 @@
     <Compile Include="Searching\Criteria\SearchCriteria.cs" />
     <Compile Include="Searching\IndexerSearcher.cs" />
     <Compile Include="Searching\LuceneQueryStringBuilder.cs" />
-    <Compile Include="Searching\Metrics\PreRetrievalMetrics.cs" />
-    <Compile Include="Searching\Metrics\QueryTermType.cs" />
-    <Compile Include="Searching\Metrics\QueryMetrics.cs" />
+    <Compile Include="Metrics\PreRetrievalMetrics.cs" />
+    <Compile Include="Metrics\QueryTermType.cs" />
+    <Compile Include="Metrics\QueryMetrics.cs" />
     <Compile Include="Searching\QueryWeightsSupplier.cs" />
     <Compile Include="Searching\UsageType.cs" />
   </ItemGroup>

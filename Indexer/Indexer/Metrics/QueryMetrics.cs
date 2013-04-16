@@ -27,12 +27,10 @@ namespace Sando.Indexer.Searching.Metrics
                 if (terms[i] == "-")
                 {
                     queryTypes[j+1] |= QueryTermType.Minus;
-                    continue;
                 }
                 else if (terms[i] == "\"")
                 {
                     quotesOn = !quotesOn;
-                    continue;
                 }
                 else
                 {
@@ -59,7 +57,6 @@ namespace Sando.Indexer.Searching.Metrics
 
                     if (terms[i].EndsWith("\""))
                     {
-                        terms[i] = terms[i].TrimEnd('"');
                         quotesOn = !quotesOn;
                     }
                     if (_patternCamel.IsMatch(terms[i]))
@@ -81,6 +78,6 @@ namespace Sando.Indexer.Searching.Metrics
         }
 
         private static Regex _patternCamel = new Regex("([A-Z][a-z]+)", RegexOptions.Compiled);
-        private static Regex _patternAcronym = new Regex("[A-Z]{3}", RegexOptions.Compiled);
+        private static Regex _patternAcronym = new Regex("([A-Z]{3})", RegexOptions.Compiled);
     }
 }

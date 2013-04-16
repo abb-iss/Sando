@@ -56,8 +56,7 @@ namespace Sando.UI.View
                     return;
                 }
 
-                //QueryMetrics queryMetrics = new QueryMetrics(searchString);
-                //LogEvents.PreSearchQueryAnalysis(this, queryMetrics.NumberOfTerms(), queryMetrics.NumberOfTermsInCamelCase(), queryMetrics.IsQuoted());
+                LogEvents.PreSearchQueryAnalysis(this, QueryMetrics.ExamineQuery(searchString).ToString());
 				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader, ServiceLocator.Resolve<Analyzer>());
 				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString), preMetrics.AvgSqc(searchString), preMetrics.AvgVar(searchString));
 

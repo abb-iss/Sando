@@ -62,7 +62,7 @@ namespace Sando.Indexer.Searching.Metrics
                     if ((tt & QueryTermType.Minus) == QueryTermType.Minus) result += "Minus";
                     if ((tt & QueryTermType.Quoted) == QueryTermType.Quoted) result += "Quoted";
                     if ((tt & QueryTermType.Camelcase) == QueryTermType.Camelcase) result += "Camelcase";
-                    if ((tt & QueryTermType.Acronym) == QueryTermType.Camelcase) result += "Acronym";
+                    if ((tt & QueryTermType.Acronym) == QueryTermType.Acronym) result += "Acronym";
                     if ((tt & QueryTermType.Underscore) == QueryTermType.Underscore) result += "Underscore";
                 }
                 result += ",";

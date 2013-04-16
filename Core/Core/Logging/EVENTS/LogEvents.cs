@@ -103,10 +103,10 @@ namespace Sando.Core.Logging.Events
 
         #region IndexerEvents
 
-        public static void PreSearchQueryAnalysis(Object sender, int numTerms, int numCamel, bool quoted)
+        public static void PreSearchQueryAnalysis(Object sender, string queryDescription)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted: NumTerms=" + numTerms + ", CamelCaseTerms=" + numCamel + ", Quoted=" + quoted);
-        }
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted: " + queryDescription);
+		}
 
 		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
 		{

@@ -151,7 +151,7 @@
     <Compile Include="Documents\MyCustomProgramElementForTesting.cs" />
     <Compile Include="Documents\SandoDocumentStringExtensionTest.cs" />
     <Compile Include="IndexFiltering\IndexFilterManagerTest.cs" />
-    <Compile Include="QueryMetricsTest.cs" />
+    <Compile Include="Metrics\QueryMetricsTest.cs" />
     <Compile Include="TestFiles\Searching\Criteria\SimpleSearchCriteriaTest.cs" />
     <Compile Include="TestFiles\Searching\ProgramElementReaderTest.cs" />
     <Compile Include="TestFiles\Searching\Results\CsSimpleTest.cs" />
