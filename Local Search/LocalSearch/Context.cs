@@ -207,15 +207,18 @@ namespace Sando.LocalSearch
             if (InitialSearchResults.Count() == 0)
                 return;
 
-            //bool isExisting = false;
-
             List<double> weights = new List<double>();
             weights.Add(1);
-            for (double i = 2; i <= steps; i++)
+            for (int i = 1; i <= steps; i++)
             {
-                weights.Add(1 / (2 * (i - 1)));
+                int temp = 2 ^ i;
+                weights.Add(1 / Convert.ToDouble(temp));
             }
-            NormalizeScoreBySum(ref weights);
+            //NormalizeScoreBySum(ref weights);
+
+            List<double> listOfAbsScores = new List<double>();
+            for (int i = 0; i < RelatedProgramElements.Count; i++)
+                listOfAbsScores.Add(0);
 
             Dictionary<CodeNavigationResult, List<CodeNavigationResult>> relatedElementsInSteps
                 = new Dictionary<CodeNavigationResult, List<CodeNavigationResult>>();
@@ -223,14 +226,14 @@ namespace Sando.LocalSearch
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
                 List<CodeNavigationResult> relatedElements = new List<CodeNavigationResult>();
-                relatedElements.Add(relatedProgramElement);
+                relatedElements.Add(relatedProgramElement); // add itself
                 relatedElementsInSteps[relatedProgramElement] = relatedElements;
             }
 
             AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]*baseweight);
+            //AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0], ref listOfAbsScores);
 
-            //while((step >=1) && (isExisting == false))
-            for (int i = 2; i <= steps; i++)
+            for (int i = 1; i <= steps; i++)
             {
                 foreach (var relatedProgramElement in RelatedProgramElements)
                 {
@@ -248,8 +251,18 @@ namespace Sando.LocalSearch
                     }
                 }
 
-                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i-1]*baseweight);
+                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i]*baseweight);
+                //AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i], ref listOfAbsScores);
             }
+
+            // Normalize Final Score by Max
+            //NormalizeScoreByMax(ref listOfAbsScores);
+            //int cnt = 0;
+            //foreach (var element in RelatedProgramElements)
+            //{
+            //    element.Score += baseweight * listOfAbsScores[cnt];
+            //    cnt++;
+            //}
         }
 
         private void AmongInitialSearchResultsByStep(ref List<CodeNavigationResult> RelatedProgramElements,
@@ -266,11 +279,12 @@ namespace Sando.LocalSearch
                 foreach (var relatedElement in relatedElementsInSteps)
                 {
                     double searchScore = ExistingInInitialSearchRes(InitialSearchResults, relatedElement);
-                    if (searchScore > 0)
+                    if (searchScore > 0) //this is always true
                     {
-                        relatedProgramElement.Score = relatedProgramElement.Score + 0.1 * weight;
-                        if (searchScore > 1)
-                            relatedProgramElement.Score += (searchScore - 1) * weight;
+                        //relatedProgramElement.Score = relatedProgramElement.Score + 0.1 * weight;
+                        //if (searchScore > 1)
+                        //    relatedProgramElement.Score += (searchScore - 1) * weight;
+                        relatedProgramElement.Score += searchScore * weight;
                     }
                 }
             }
@@ -402,20 +416,33 @@ namespace Sando.LocalSearch
             
             List<double> listOfDegree = new List<double>();
             listOfDegree.Add(1);
-
-            for (double i = 2; i <= steps; i++)
-            {              
-                listOfDegree.Add(1 / (2*(i-1)));
+            for (int i = 2; i <= steps; i++)
+            {
+                int temp = 2 ^ (i-1);
+                listOfDegree.Add(1 / Convert.ToDouble(temp));
             }
+           // NormalizeScoreBySum(ref listOfDegree);
 
-            NormalizeScoreBySum(ref listOfDegree);
+            List<double> listOfAbsScores = new List<double>();
+            for (int i = 0; i < relatedProgramElements.Count; i++)
+                listOfAbsScores.Add(0);
 
             for (int i = 1; i <= steps; i++)
             {
                 CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
                 double absoluteweight = listOfDegree[i - 1] * baseweight;
                 EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, absoluteweight);
+                //EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
             }
+
+            // Normalize Final Score by Max
+            //NormalizeScoreByMax(ref listOfAbsScores);
+            //int cnt = 0;
+            //foreach (var element in relatedProgramElements)
+            //{
+            //    element.Score += baseweight * listOfAbsScores[cnt];
+            //    cnt++;
+            //}
         }
 
 
@@ -428,18 +455,28 @@ namespace Sando.LocalSearch
             {
                 double degree = 0;
 
-                if (relatedelement.ProgramElementRelation != ProgramElementRelation.Other)
-                {
-                    double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
-                    if (distance == 0)
-                        degree = 2.1;//double.MaxValue;
-                    else
-                    {
-                        if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
-                            degree = 1;
-                        degree += 1 / distance;
-                    }
-                }
+                //if (relatedelement.ProgramElementRelation != ProgramElementRelation.Other)
+                //{
+                //    double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
+                    
+                //    if (distance == 0) //very little chance to hit
+                //        degree = 2.1; //double.MaxValue;
+                //    else
+                //    {
+                //        if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
+                //            degree = 1;
+                //        degree += 1 / distance;
+                //    }
+                //}
+
+                if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
+                    degree = 1;
+
+                double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
+                if (distance == 0) //very little chance to hit
+                    degree += 2; 
+                else
+                    degree += 1 / distance;
 
                 listOfDegree.Add(degree);
             }
@@ -459,8 +496,14 @@ namespace Sando.LocalSearch
                 Stemmer s = new Stemmer();
                 s.add(originalWord.ToCharArray(), originalWord.Length);
                 s.stem();
-                string stemWord = new string(s.getResultBuffer());
-                if (target.Contains(stemWord) || stemWord.Contains(target))
+                string stemSource = new string(s.getResultBuffer());
+
+                Stemmer t = new Stemmer();
+                t.add(target.ToCharArray(), target.Length);
+                t.stem();
+                String stemTarget = new string(t.getResultBuffer());
+
+                if (stemTarget.Contains(stemSource) || stemSource.Contains(stemTarget))
                     return true;
             }
 
@@ -519,6 +562,9 @@ namespace Sando.LocalSearch
         private void NormalizeScoreByMax(ref List<double> scores)
         {
             double maxscore = scores.Max();
+            if (maxscore == 0)
+                return;
+
             List<double> normalizedscores = new List<double>();
             foreach (var score in scores)
                 normalizedscores.Add(score / maxscore);
@@ -528,6 +574,9 @@ namespace Sando.LocalSearch
         private void NormalizeScoreBySum(ref List<double> scores)
         {
             double sumscore = scores.Sum();
+            if (sumscore == 0)
+                return;
+
             List<double> normalizedscores = new List<double>();
             foreach (var score in scores)
                 normalizedscores.Add(score / sumscore);
