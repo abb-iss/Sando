@@ -3,7 +3,6 @@ using EnvDTE;
 using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.Core.Logging.Events;
 
 namespace Sando.UI.Actions
 {
@@ -15,7 +14,6 @@ namespace Sando.UI.Actions
     		{
     			if(result != null)
     			{
-                    LogEvents.OpeningCodeSearchResult(result.ProgramElementType);
 					OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text);
     			}
     		}

@@ -34,9 +34,9 @@ namespace Sando.Core.Logging.Events
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Invalid characters found in query. Search aborted.");
         }
 
-        public static void OpeningCodeSearchResult(ProgramElementType programElementType)
+        public static void OpeningCodeSearchResult(ProgramElementType programElementType, int rank)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", programElementType.ToString() + " was opened in VS editor (double-click)");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", programElementType.ToString() + " at rank " + rank + " was opened in VS editor (double-click)");
         }
 
         public static void SolutionOpened(Object sender, string solutionName)

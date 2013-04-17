@@ -244,7 +244,10 @@ namespace Sando.UI.View
                 var result = sender as ListBoxItem;
                 if (result != null)
                 {
-                    FileOpener.OpenItem(result.Content as CodeSearchResult, searchBox.Text);
+                    var searchResult = result.Content as CodeSearchResult;
+                    var rank = SearchResults.IndexOf(searchResult) + 1;
+                    FileOpener.OpenItem(searchResult, searchBox.Text);
+                    LogEvents.OpeningCodeSearchResult(searchResult.ProgramElementType, rank);
                 }
             }
             catch (ArgumentException aex)
