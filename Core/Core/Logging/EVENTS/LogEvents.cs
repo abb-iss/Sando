@@ -42,7 +42,11 @@ namespace Sando.Core.Logging.Events
 
         public static void OpeningCodeSearchResult(CodeSearchResult result, int rank)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
+            string lang = "OtherLang";
+            var resultFile = result.FileName;
+            if (resultFile.EndsWith(".cs")) lang = "C#";
+            if (resultFile.EndsWith(".cpp") || resultFile.EndsWith(".c") || resultFile.EndsWith(".h") || resultFile.EndsWith(".cc")) lang = "C++";
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (" + lang + ") ( + LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
         }
 
         public static void SolutionOpened(Object sender, string solutionName)

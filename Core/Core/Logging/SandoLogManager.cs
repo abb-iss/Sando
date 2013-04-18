@@ -42,7 +42,7 @@ namespace Sando.Core.Logging
                 LogEvents.NoS3UploadDueToChance(t, rand);
             }
 
-            var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
+            var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
             var logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
             DataCollectionLogEventHandlers.InitializeLogFile(logger);
             DataCollectionOn = true;
@@ -62,9 +62,9 @@ namespace Sando.Core.Logging
             foreach (var file in files)
             {
                 string fullPath = Path.GetFullPath(file);
+                FileInfo fileInfo = new FileInfo(fullPath);
                 string fileName = Path.GetFileName(fullPath);
-
-                if (fileName.StartsWith("SandoData-") && fileName.EndsWith("log"))
+                if (fileName.StartsWith("SandoData-") && fileName.EndsWith("log") && fileInfo.Length > 0)
                 {
                     bool success = AmazonS3LogUploader.WriteLogFile(fullPath, s3CredsPath);
                     if (success == true)
