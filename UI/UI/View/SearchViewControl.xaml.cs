@@ -245,9 +245,8 @@ namespace Sando.UI.View
                 if (result != null)
                 {
                     var searchResult = result.Content as CodeSearchResult;
-                    var rank = SearchResults.IndexOf(searchResult) + 1;
+                    LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1);
                     FileOpener.OpenItem(searchResult, searchBox.Text);
-                    LogEvents.OpeningCodeSearchResult(searchResult.ProgramElementType, rank);
                 }
             }
             catch (ArgumentException aex)
@@ -350,6 +349,8 @@ namespace Sando.UI.View
 
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var listview = sender as ListView;
+            LogEvents.SelectingCodeSearchResult(listview.SelectedIndex + 1);
             UpdateExpansionState(searchResultListbox);
         }
 

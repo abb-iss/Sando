@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.Core.Logging.Events
 {
@@ -34,9 +35,14 @@ namespace Sando.Core.Logging.Events
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Invalid characters found in query. Search aborted.");
         }
 
-        public static void OpeningCodeSearchResult(ProgramElementType programElementType, int rank)
+        public static void SelectingCodeSearchResult(int rank)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", programElementType.ToString() + " at rank " + rank + " was opened in VS editor (double-click)");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", "Result at rank " + rank + " was selected");
+        }
+
+        public static void OpeningCodeSearchResult(CodeSearchResult result, int rank)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
         }
 
         public static void SolutionOpened(Object sender, string solutionName)
