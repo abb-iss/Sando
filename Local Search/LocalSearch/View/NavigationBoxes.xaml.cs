@@ -267,7 +267,8 @@ namespace Sando.LocalSearch.View
 
                 //var relatedmembers = InformationSource.GetRecommendations(selected);
                 var relatedmembers = InformationSource.GetBasicRecommendations(selected);
-                InformationSource.RankRelatedInfo(ref relatedmembers, rankingHeuristic);
+                //InformationSource.RankRelatedInfo(ref relatedmembers, rankingHeuristic);
+                InformationSource.RankRelatedInfoWithWeights(ref relatedmembers, false, 1, 1, 1, 1, 1, 1);
                 foreach (var member in relatedmembers)
                 {
                     relatedInfo.Add(member);

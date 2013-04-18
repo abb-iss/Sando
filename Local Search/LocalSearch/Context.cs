@@ -20,8 +20,8 @@ namespace Sando.LocalSearch
 
         public String query { set;  get; }
 
-        //int -- line number on which the query or its extension is satisfied 
-        //       (only the highest score result?)
+        //TODO: int -- line number on which the query or its extension is satisfied 
+        //       (only the highest score result?) 
         public List<Tuple<CodeSearchResult, int>> InitialSearchResults { set; get; }
 
         public List<CodeSearchResult> CurrentPath
@@ -146,7 +146,9 @@ namespace Sando.LocalSearch
         }
 
         public void RankRelatedInfoWithWeights(ref List<CodeNavigationResult> RelatedProgramElements,
-            int searchResultsLookahead, double AmongSearchResWeight, double TopologyWeight, 
+            bool decayOn, double ShowBeforeWeight,
+            int searchResultsLookahead, double AmongSearchResWeight, 
+            double TopologyWeight, 
             int editDistanceLookback, double EditDistanceWeight)
         {
             if (RelatedProgramElements.Count() == 0)
@@ -158,7 +160,7 @@ namespace Sando.LocalSearch
 
             //score setting
             CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-            ShowBeforeHeuristic(ref RelatedProgramElements);
+            ShowBeforeHeuristic(ref RelatedProgramElements, ShowBeforeWeight, decayOn);
             AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight);
             TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight);
             EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight);
@@ -186,17 +188,27 @@ namespace Sando.LocalSearch
             AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, 1, 1);
         }
 
-        private void ShowBeforeHeuristic(ref List<CodeNavigationResult> RelatedProgramElements)
+        private void ShowBeforeHeuristic(ref List<CodeNavigationResult> RelatedProgramElements, double weight = 1, bool decay = false)
         {
-            if(CurrentPath.Count() == 0)
+            int pathLen = CurrentPath.Count();
+            if (pathLen == 0)
                 return;
 
             foreach (var relatedProgramElement in RelatedProgramElements)
             {
+                int location = pathLen -1;
+
                 //what has shown before is set lower score
-                if (ExistingInCurrentPath(CurrentPath, relatedProgramElement))
+                if (ExistingInCurrentPath(CurrentPath, relatedProgramElement, out location))
                 {
-                    relatedProgramElement.Score = relatedProgramElement.Score - 1;
+                    if (!decay)
+                        relatedProgramElement.Score = relatedProgramElement.Score - 1;
+                    else
+                    {
+                        int temp = 2 ^ (pathLen - location - 1);
+                        double decayfactor = Convert.ToDouble(1 / temp);
+                        relatedProgramElement.Score = relatedProgramElement.Score - (1 * decayfactor) * weight;
+                    }
                 }
                 
             }
@@ -230,8 +242,8 @@ namespace Sando.LocalSearch
                 relatedElementsInSteps[relatedProgramElement] = relatedElements;
             }
 
-            AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]*baseweight);
-            //AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0], ref listOfAbsScores);
+            //AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0]*baseweight);
+            AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[0], ref listOfAbsScores);
 
             for (int i = 1; i <= steps; i++)
             {
@@ -251,18 +263,18 @@ namespace Sando.LocalSearch
                     }
                 }
 
-                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i]*baseweight);
-                //AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i], ref listOfAbsScores);
+                //AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i]*baseweight);
+                AmongInitialSearchResultsByStep(ref RelatedProgramElements, relatedElementsInSteps, weights[i], ref listOfAbsScores);
             }
 
             // Normalize Final Score by Max
-            //NormalizeScoreByMax(ref listOfAbsScores);
-            //int cnt = 0;
-            //foreach (var element in RelatedProgramElements)
-            //{
-            //    element.Score += baseweight * listOfAbsScores[cnt];
-            //    cnt++;
-            //}
+            NormalizeScoreByMax(ref listOfAbsScores);
+            int cnt = 0;
+            foreach (var element in RelatedProgramElements)
+            {
+                element.Score += baseweight * listOfAbsScores[cnt];
+                cnt++;
+            }
         }
 
         private void AmongInitialSearchResultsByStep(ref List<CodeNavigationResult> RelatedProgramElements,
@@ -290,31 +302,73 @@ namespace Sando.LocalSearch
             }
         }
 
-        private bool ExistingInCurrentPath(List<CodeSearchResult> source, CodeNavigationResult target)
+        private void AmongInitialSearchResultsByStep(ref List<CodeNavigationResult> RelatedProgramElements,
+            Dictionary<CodeNavigationResult, List<CodeNavigationResult>> RelatedProgramElementsInSteps,
+            double weight, ref List<double> rankingScores)
         {
+            int cnt = 0;
+            foreach (var relatedProgramElement in RelatedProgramElements)
+            {
+                //what is more closer related to search result is set higher score
+                List<CodeNavigationResult> relatedElementsInSteps = null;
+                RelatedProgramElementsInSteps.TryGetValue(relatedProgramElement, out relatedElementsInSteps);
+                if (relatedElementsInSteps == null)
+                {
+                    cnt++;
+                    continue;
+                }
+
+                foreach (var relatedElement in relatedElementsInSteps)
+                {
+                    double searchScore = ExistingInInitialSearchRes(InitialSearchResults, relatedElement);
+                    if (searchScore > 0) 
+                    {
+                        try
+                        {
+                            rankingScores[cnt] += searchScore * weight;
+                        }
+                        catch(Exception e)
+                        {
+                           //do nothing
+                        }
+                    }                   
+                }
+
+                cnt++;
+            }
+        }
+
+        private bool ExistingInCurrentPath(List<CodeSearchResult> source, CodeNavigationResult target, out int location)
+        {
+            int index = source.Count() -1;
+
             //if it's an declaration, treated differently
             if (target.ProgramElementRelation == ProgramElementRelation.Other)
             {
-                foreach (var programelement in source)
+                //foreach (var programelement in source)
+                for (location = index; location >= 0; location--)
                 {
+                    var programelement = source[location];
                     if (programelement.Name.Equals(target.Name)
                     && programelement.ProgramElementType.Equals(target.ProgramElementType)
                     && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber)
                     && ((programelement as CodeNavigationResult == null) ||
                     ((programelement as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Other))))
-                            return true;                    
+                        return true;                    
                 }
 
                 return false;
             }
             else
             {
-                foreach (var eachSelectedElement in source)
+                //foreach (var eachSelectedElement in source)
+                for (location = index; location >= 0; location--)
                 {
+                    var eachSelectedElement = source[location];
                     if (eachSelectedElement.Name.Equals(target.Name)
                     && eachSelectedElement.ProgramElementType.Equals(target.ProgramElementType)
                     && eachSelectedElement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
-                        return true;
+                        return true;                    
                 }
 
                 return false;
@@ -324,7 +378,7 @@ namespace Sando.LocalSearch
 
         private double ExistingInInitialSearchRes(List<Tuple<CodeSearchResult,int>> source, CodeNavigationResult target)
         {
-            double res = -1;
+            double res = 0;
 
             foreach (var searchresult in source)
             {
@@ -431,18 +485,18 @@ namespace Sando.LocalSearch
             {
                 CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
                 double absoluteweight = listOfDegree[i - 1] * baseweight;
-                EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, absoluteweight);
-                //EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
+                //EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, absoluteweight);
+                EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
             }
 
             // Normalize Final Score by Max
-            //NormalizeScoreByMax(ref listOfAbsScores);
-            //int cnt = 0;
-            //foreach (var element in relatedProgramElements)
-            //{
-            //    element.Score += baseweight * listOfAbsScores[cnt];
-            //    cnt++;
-            //}
+            NormalizeScoreByMax(ref listOfAbsScores);
+            int cnt = 0;
+            foreach (var element in relatedProgramElements)
+            {
+                element.Score += baseweight * listOfAbsScores[cnt];
+                cnt++;
+            }
         }
 
 
@@ -469,8 +523,8 @@ namespace Sando.LocalSearch
                 //    }
                 //}
 
-                if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
-                    degree = 1;
+                //if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
+                //    degree = 1;
 
                 double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
                 if (distance == 0) //very little chance to hit
@@ -485,6 +539,32 @@ namespace Sando.LocalSearch
 
             for (int i = 0; i < relatedProgramElements.Count(); i++)
                 relatedProgramElements[i].Score += listOfDegree[i] * weight;
+        }
+
+        private void EditDistanceHeuristic(CodeSearchResult ProgramElementToCompare,
+            ref List<CodeNavigationResult> relatedProgramElements, double weight, ref List<double> rankingScores)
+        {
+            int cnt = 0;
+            foreach (var relatedelement in relatedProgramElements)
+            {
+                double degree = 0;
+
+                if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
+                    degree = 1;
+
+                double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
+                if (distance == 0) //very little chance to hit
+                    degree += 2;
+                else
+                    degree += 1 / distance;
+
+                //listOfDegree.Add(degree);
+                rankingScores[cnt] += degree * weight;
+                cnt++;
+            }
+
+            //Assert: cnt == relatedProgramElements.Count()
+
         }
 
         private bool PartialWordMatch(string target, string source)
@@ -658,12 +738,14 @@ namespace Sando.LocalSearch
         }
 
         public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult,
-            int searchResLookahead, double AmongSearchResW, double TopologyW,
+            bool decay, double showBeforeW,
+            int searchResLookahead, double AmongSearchResW, 
+            double TopologyW,
             int editDistanceLookback, double EditDistanceW)
         {
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
-            RankRelatedInfoWithWeights(ref recommendations, searchResLookahead, AmongSearchResW,
+            RankRelatedInfoWithWeights(ref recommendations, decay, showBeforeW, searchResLookahead, AmongSearchResW,
                 TopologyW, editDistanceLookback, EditDistanceW);
 
             return recommendations;
