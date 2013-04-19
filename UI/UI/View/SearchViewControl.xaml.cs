@@ -350,7 +350,7 @@ namespace Sando.UI.View
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listview = sender as ListView;
-            LogEvents.SelectingCodeSearchResult(listview.SelectedIndex + 1);
+            LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
             UpdateExpansionState(searchResultListbox);
         }
 
@@ -383,7 +383,10 @@ namespace Sando.UI.View
         {
             var listBox = sender as ListBox;
             if (listBox != null)
+            {
                 listBox.ScrollIntoView(listBox.SelectedItem);
+                LogEvents.SelectingRecommendationItem(this, listBox.SelectedIndex + 1);
+            }
         }
 
         private void Toggled_Popup(object sender, RoutedEventArgs e)

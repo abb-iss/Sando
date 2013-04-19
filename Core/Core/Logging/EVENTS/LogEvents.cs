@@ -35,9 +35,14 @@ namespace Sando.Core.Logging.Events
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Invalid characters found in query. Search aborted.");
         }
 
-        public static void SelectingCodeSearchResult(int rank)
+        public static void SelectingRecommendationItem(Object sender, int rank)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", "Result at rank " + rank + " was selected");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query recommendation at rank " + rank + " was selected");
+        }
+
+        public static void SelectingCodeSearchResult(Object sender, int rank)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Result at rank " + rank + " was selected");
         }
 
         public static void OpeningCodeSearchResult(CodeSearchResult result, int rank)
@@ -46,7 +51,7 @@ namespace Sando.Core.Logging.Events
             var resultFile = result.FileName;
             if (resultFile.EndsWith(".cs")) lang = "C#";
             if (resultFile.EndsWith(".cpp") || resultFile.EndsWith(".c") || resultFile.EndsWith(".h") || resultFile.EndsWith(".cc")) lang = "C++";
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (" + lang + ") ( + LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (" + lang + ") (LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
         }
 
         public static void SolutionOpened(Object sender, string solutionName)
@@ -113,9 +118,9 @@ namespace Sando.Core.Logging.Events
 
         #region IndexerEvents
 
-        public static void PreSearchQueryAnalysis(Object sender, string queryDescription)
+        public static void PreSearchQueryAnalysis(Object sender, string queryDescription, double diceCoeff)
         {
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted: " + queryDescription);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted: " + queryDescription + " ; Dice Coeff (w/ prev query)=" + diceCoeff);
 		}
 
 		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
@@ -192,5 +197,6 @@ namespace Sando.Core.Logging.Events
         }
 
 		#endregion
-	}
+
+    }
 }

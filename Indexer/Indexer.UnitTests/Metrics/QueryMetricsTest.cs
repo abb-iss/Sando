@@ -22,5 +22,14 @@ namespace Sando.Indexer.UnitTests
 			Assert.AreEqual(QueryMetrics.ExamineQuery("\"a\" BBB_b").ToString(), "Quoted,AcronymUnderscore");
 			Assert.AreEqual(QueryMetrics.ExamineQuery("-Abb aAAAc").ToString(), "MinusCamelcase,CamelcaseAcronym");
         }
+
+        [Test]
+        public void QueryMetrics_DiceCoefficientTest()
+        {           
+            Assert.IsTrue(QueryMetrics.DiceCoefficient("a b","b c") - 0.50 < 0.001);
+            Assert.IsTrue(QueryMetrics.DiceCoefficient("a b c d e f g h", "a b c d e f g") - 0.933 < 0.001);
+            Assert.IsTrue(QueryMetrics.DiceCoefficient("\"a\" BBB_b", "BB BBB BBB_b") - 0.40 < 0.001);
+            Assert.IsTrue(QueryMetrics.DiceCoefficient(String.Empty, String.Empty) == 0.0);
+        }
     }
 }
