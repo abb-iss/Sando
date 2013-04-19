@@ -206,7 +206,7 @@ namespace Sando.LocalSearch
                     else
                     {
                         int temp = 2 ^ (pathLen - location - 1);
-                        double decayfactor = Convert.ToDouble(1 / temp);
+                        double decayfactor = 1 / Convert.ToDouble(temp);
                         relatedProgramElement.Score = relatedProgramElement.Score - (1 * decayfactor) * weight;
                     }
                 }
@@ -407,14 +407,14 @@ namespace Sando.LocalSearch
 
             if (sourceProgramElement.ProgramElementType == ProgramElementType.Field)
             {
-                numberOfUsers = graph.GetFieldUsers(sourceAsCodeSearchRes).Count();
+                numberOfUsers = graph.GetFieldUsersIgnoreMultiUse(sourceAsCodeSearchRes).Count();
                 foreach (var relatedProgramElement in RelatedProgramElements)
                 {
                     double degree = 0;
 
                     if (relatedProgramElement.ProgramElementRelation == ProgramElementRelation.Use)
                     {
-                        numberOfUses = graph.GetFieldUses(relatedProgramElement as CodeSearchResult).Count();
+                        numberOfUses = graph.GetFieldUsesIgnoreMultiUse(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfUsers) * (FixedNumerator / numberOfUses);
                     }
                     
@@ -424,28 +424,28 @@ namespace Sando.LocalSearch
 
             if (sourceProgramElement.ProgramElementType == ProgramElementType.Method)
             {
-                numberOfCallers = graph.GetCallers(sourceAsCodeSearchRes).Count();
-                numberOfCalls = graph.GetCallees(sourceAsCodeSearchRes).Count();
-                numberOfUses = graph.GetFieldUses(sourceAsCodeSearchRes).Count();
+                numberOfCallers = graph.GetCallersIgnoreMultiCallsite(sourceAsCodeSearchRes).Count();
+                numberOfCalls = graph.GetCalleesIgnoreMultiCallsite(sourceAsCodeSearchRes).Count();
+                numberOfUses = graph.GetFieldUsesIgnoreMultiUse(sourceAsCodeSearchRes).Count();
                 foreach (var relatedProgramElement in RelatedProgramElements)
                 {
                     double degree = 0;
                     ProgramElementRelation relation = relatedProgramElement.ProgramElementRelation;
                     if (relation == ProgramElementRelation.Call)
                     {
-                        double NumOfCall = graph.GetCallees(relatedProgramElement as CodeSearchResult).Count();
+                        double NumOfCall = graph.GetCalleesIgnoreMultiCallsite(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfCallers) * (FixedNumerator / NumOfCall);
                     }
 
                     if (relation == ProgramElementRelation.CallBy)
                     {
-                        double NumOfCaller = graph.GetCallers(relatedProgramElement as CodeSearchResult).Count();
+                        double NumOfCaller = graph.GetCallersIgnoreMultiCallsite(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfCalls) * (FixedNumerator / NumOfCaller);
                     }
 
                     if (relation == ProgramElementRelation.UseBy)
                     {
-                        double NumOfUser = graph.GetFieldUsers(relatedProgramElement as CodeSearchResult).Count();
+                        double NumOfUser = graph.GetFieldUsersIgnoreMultiUse(relatedProgramElement as CodeSearchResult).Count();
                         degree = (FixedNumerator / numberOfUses) * (FixedNumerator / NumOfUser);
                     }
 

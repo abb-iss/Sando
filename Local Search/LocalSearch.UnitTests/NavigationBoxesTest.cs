@@ -23,7 +23,7 @@ namespace Sando.LocalSearch.UnitTests
         {
             Context gbuilder = new Context();
             //MindMapMapModel.java, CreatureManager.cs
-            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\MindMapMapModel.java");
+            gbuilder.Intialize(@"..\..\Local Search\LocalSearch.UnitTests\TestFiles\CreatureManager.cs");
             var elements = gbuilder.GetRecommendations();
             var boxes = new NavigationBoxes();
             boxes.InformationSource = gbuilder;

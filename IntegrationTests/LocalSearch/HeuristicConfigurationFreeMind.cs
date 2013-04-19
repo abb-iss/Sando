@@ -65,24 +65,20 @@ namespace Sando.IntegrationTests.LocalSearch
                 }   
             }
 
-     //       save (definition, 245) --> saveInternal(callby, 246)
-     //                 --> saveInternal (definition, 250)
+     //       save (definition, 245) 
+     //                 --> saveInternal(callby, 246) --> saveInternal (definition, 250)
      //                 --> getXml (callby, 260) --> getXml (definition, 303)
      //                 --> getXml (callby, 304) --> getXml (definition, 286)
      //                 --> getXml (callby, 287) --> getXml (definition, 292)
             List<targetProgramElement> targetSet = new List<targetProgramElement>();
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
-            int[] linenumber = { 245, 246, 250, 260, 303, 304, 286, 287, 292};
-            String[] elements = { "save", "saveInternal", "saveInternal", "getXml", "getXml", "getXml", "getXml", "getXml", "getXml"};
+            int[] linenumber = { 245,  250, 303, 286, 292};
+            String[] elements = { "save", "saveInternal",  "getXml", "getXml", "getXml"};
             ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
-                                                   ProgramElementRelation.CallBy,
                                                    ProgramElementRelation.Other,
-                                                   ProgramElementRelation.CallBy,
                                                    ProgramElementRelation.Other,
-                                                   ProgramElementRelation.CallBy,
                                                    ProgramElementRelation.Other, 
-                                                   ProgramElementRelation.CallBy,
                                                    ProgramElementRelation.Other};
 
             for (int i = 0; i < linenumber.Length; i++)
@@ -95,14 +91,14 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetFound.Add(false);
             }
 
-            for (double w0 = 0; w0 <= 0; w0++ )
+            for (double w0 = 1; w0 <= 1; w0++ )
                 for (int lookahead = 1; lookahead <= 1; lookahead++)
                     for (double w1 = 1; w1 <= 1; w1++)
                         for (double w2 = 1; w2 <= 1; w2++)
                             for (int lookback = 1; lookback <= 1; lookback++)
                                 for (double w3 = 1; w3 <= 1; w3++)
                                 {
-                                    bool decay = false;
+                                    bool decay = true;
 
                                     heuristicWeightComb configuration =
                                         new heuristicWeightComb(decay, w0, lookahead, w1, w2, lookback, w3);

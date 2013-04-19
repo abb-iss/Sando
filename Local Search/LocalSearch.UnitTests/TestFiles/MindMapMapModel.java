@@ -243,7 +243,7 @@ public class MindMapMapModel extends MapAdapter  {
      * Return the success of saving
      */
     public boolean save(File file) {
-        return saveInternal(file, false);
+		return saveInternal(file, false);
     }
 
     /** This method is intended to provide both normal save routines and saving of temporary (internal) files.*/
