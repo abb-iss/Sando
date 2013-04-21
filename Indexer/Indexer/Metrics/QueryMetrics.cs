@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sando.ExtensionContracts.ProgramElementContracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -80,6 +81,22 @@ namespace Sando.Indexer.Searching.Metrics
                 }
             }
             return queryTypes;
+        }
+
+        public static string DescribeQueryProgramElementMatch(ProgramElement progElem, string query)
+        {
+            if (progElem.Name.Contains(query))
+            {
+                return "Name_ContainsQuery";
+            }
+            else if (progElem.RawSource.Contains(query))
+            {
+                return "RawSource_ContainsQuery";
+            }
+            else
+            {
+                return "NoMatchWithQuery";
+            }
         }
 
         public static double DiceCoefficient(string query1, string query2)

@@ -19,6 +19,7 @@ using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
 using Sando.Core.Logging.Events;
+using Sando.Indexer.Searching.Metrics;
 
 namespace Sando.UI.View
 {
@@ -245,8 +246,10 @@ namespace Sando.UI.View
                 if (result != null)
                 {
                     var searchResult = result.Content as CodeSearchResult;
-                    LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1);
                     FileOpener.OpenItem(searchResult, searchBox.Text);
+
+                    var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
+                    LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
                 }
             }
             catch (ArgumentException aex)

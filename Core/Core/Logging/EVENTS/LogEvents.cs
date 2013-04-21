@@ -45,13 +45,14 @@ namespace Sando.Core.Logging.Events
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Result at rank " + rank + " was selected");
         }
 
-        public static void OpeningCodeSearchResult(CodeSearchResult result, int rank)
+        public static void OpeningCodeSearchResult(CodeSearchResult result, int rank, string queryMatchDescription)
         {
             string lang = "OtherLang";
             var resultFile = result.FileName;
             if (resultFile.EndsWith(".cs")) lang = "C#";
             if (resultFile.EndsWith(".cpp") || resultFile.EndsWith(".c") || resultFile.EndsWith(".h") || resultFile.EndsWith(".cc")) lang = "C++";
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (" + lang + ") (LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (" + queryMatchDescription + ")" + 
+                                                                    " (" + lang + ") (LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
         }
 
         public static void SolutionOpened(Object sender, string solutionName)
