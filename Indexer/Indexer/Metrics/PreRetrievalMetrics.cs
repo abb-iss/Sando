@@ -25,12 +25,12 @@ namespace Sando.Indexer.Searching.Metrics
 		{
 			double SumIdf = 0.0;
             query = StemText(query);
-            string[] splitQ = query.Split(' ');
-			foreach(var qTerm in splitQ)
+            string[] terms = query.Split(' ');
+			foreach(var term in terms)
 			{
-				SumIdf += Idf(qTerm);
+				SumIdf += Idf(term);
 			}
-			return (SumIdf / splitQ.Length);
+			return (SumIdf / terms.Length);
 		}
 
 
@@ -39,12 +39,12 @@ namespace Sando.Indexer.Searching.Metrics
 			double diff = 0.0;
             query = StemText(query);
 			double avgIdf = AvgIdf(query);
-			string[] splitQ = query.Split(' ');
-			foreach(var qTerm in splitQ)
+			string[] terms = query.Split(' ');
+			foreach(var term in terms)
 			{
-				diff += Math.Abs(Idf(qTerm) - avgIdf);
+				diff += Math.Pow(Idf(term) - avgIdf, 2.0);
 			}
-			return Math.Sqrt(diff / splitQ.Length);
+			return Math.Sqrt(diff / terms.Length);
 		}
 
 		#endregion
@@ -55,11 +55,11 @@ namespace Sando.Indexer.Searching.Metrics
 		{
 			double SumSqc = 0.0;
             query = StemText(query);
-			string[] splitQ = query.Split(' ');
-			foreach(var qTerm in splitQ)
+			string[] terms = query.Split(' ');
+			foreach(var term in terms)
 			{
-				double tfCorp = TfOfCorpus(qTerm);
-				double idf = Idf(qTerm);
+				double tfCorp = TfOfCorpus(term);
+				double idf = Idf(term);
 				if(tfCorp > 0.0)
 				{
 					SumSqc += ((1 + Math.Log(tfCorp)) * idf);
@@ -69,7 +69,7 @@ namespace Sando.Indexer.Searching.Metrics
 					SumSqc += 1 * idf;
 				}
 			}
-			return (SumSqc / splitQ.Length);
+			return (SumSqc / terms.Length);
 		}
 
 		#endregion
@@ -80,12 +80,12 @@ namespace Sando.Indexer.Searching.Metrics
 		{
 			double AvgVar = 0.0;
             query = StemText(query);
-			string[] splitQ = query.Split(' ');
-			foreach(var qTerm in splitQ)
+			string[] terms = query.Split(' ');
+			foreach(var term in terms)
 			{
-				AvgVar += Var(qTerm);
+				AvgVar += Var(term);
 			}
-			return (AvgVar / splitQ.Length);
+			return (AvgVar / terms.Length);
 		}
 
         private double Var(string term)

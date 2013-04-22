@@ -121,6 +121,7 @@
     <Compile Include="IndexState\IndexState.cs" />
     <Compile Include="IndexState\CppHeaderElementResolver.cs" />
     <Compile Include="IndexState\IndexStateManager.cs" />
+    <Compile Include="Metrics\PostRetrievalMetrics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Searching\Criteria\CriteriaBuilder.cs" />
     <Compile Include="Searching\DefaultQueryRewriter.cs" />

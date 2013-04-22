@@ -17,6 +17,7 @@ using Sando.Indexer;
 using Sando.Core.Logging.Events;
 using Sando.Indexer.Searching.Metrics;
 using Lucene.Net.Analysis;
+using Sando.Indexer.Metrics;
 
 namespace Sando.UI.View
 {
@@ -82,8 +83,7 @@ namespace Sando.UI.View
                 _searchResultListener.Update(results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
 
-				//calculate and log post retrival metrics?
-				LogEvents.PostSearch(this, results.Count());
+				LogEvents.PostSearch(this, results.Count(), PostRetrievalMetrics.AvgScore(results.ToList()), PostRetrievalMetrics.StdDevScore(results.ToList()));
             }
             catch (Exception e)
             {

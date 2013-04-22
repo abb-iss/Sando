@@ -57,7 +57,7 @@ namespace Sando.Core.Logging.Events
 
         public static void SolutionOpened(Object sender, string solutionName)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "A solution was opened");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "A solution was opened, hash=" + solutionName.GetHashCode());
         }
 
         public static void UIGenericError(Object sender, Exception ex)
@@ -129,9 +129,11 @@ namespace Sando.Core.Logging.Events
 			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre search metrics: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
 		}
 
-        public static void PostSearch(Object sender, int numOfResults)
+        public static void PostSearch(Object sender, int numOfResults, double avgscore, double stddevscore)
         {
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search returned " + numOfResults + " results");
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval metrics: AvgScore = " + avgscore + ", StdDevScore = " + stddevscore);
+
         }
 
         public static void IndexLockObtainFailed(Object sender, Exception lockFailedEx)
