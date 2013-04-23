@@ -397,10 +397,13 @@ namespace Sando.LocalSearch
 
         }
 
-        public List<CodeNavigationResult> GetFieldUses(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetFieldUses(CodeSearchResult codeSearchResult, bool ignoreMultiUse = true)
         {
             var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
-            return GetFieldUses(method);
+            if (!ignoreMultiUse)
+                return GetFieldUses(method);
+            else
+                return GetFieldUsesIgnoreMultiUse2(method);
         }        
 
         private List<CodeNavigationResult> GetFieldUses(XElement method)
@@ -417,6 +420,30 @@ namespace Sando.LocalSearch
                     fieldaselement.RelationLineNumber[0] = use.Item2;
                     fieldaselement.RelationCode = GetXElementFromLineNum(use.Item2);
                     listUses.Add(fieldaselement);
+                }
+            }
+            return listUses;
+        }
+
+        private List<CodeNavigationResult> GetFieldUsesIgnoreMultiUse2(XElement method)
+        {
+            List<CodeNavigationResult> listUses = new List<CodeNavigationResult>();
+            List<Tuple<XElement, int>> myUses = null;
+            FieldUses.TryGetValue(method.GetSrcLineNumber(), out myUses);
+            if (myUses != null)
+            {
+                foreach (var use in myUses)
+                {
+                    var fieldaselement = XElementToProgramElementConverter.GetFieldElementWRelationFromDecl(use.Item1, origPath);
+                    var element = fieldaselement.ProgramElement;
+                    if (listUses.FindIndex(x => x.ProgramElement.Name == element.Name &&
+                        x.ProgramElement.DefinitionLineNumber == element.DefinitionLineNumber) < 0)
+                    {
+                        fieldaselement.ProgramElementRelation = ProgramElementRelation.UseBy;
+                        fieldaselement.RelationLineNumber[0] = use.Item2; // only record the line number of the first use 
+                        fieldaselement.RelationCode = GetXElementFromLineNum(use.Item2);
+                        listUses.Add(fieldaselement);
+                    }
                 }
             }
             return listUses;
@@ -447,10 +474,14 @@ namespace Sando.LocalSearch
             return listUses;
         }
 
-        public List<CodeNavigationResult> GetFieldUsers(CodeSearchResult codeSearchResult)
+
+        public List<CodeNavigationResult> GetFieldUsers(CodeSearchResult codeSearchResult, bool ignoreMultiUse = true)
         {
             var field = GetField(codeSearchResult.ProgramElement as FieldElement);
-            return GetFieldUsers(field);
+            if (!ignoreMultiUse)
+                return GetFieldUsers(field);
+            else
+                return GetFieldUsersIgnoreMultiUse2(field);
         }        
 
         private List<CodeNavigationResult> GetFieldUsers(XElement field)
@@ -467,6 +498,30 @@ namespace Sando.LocalSearch
                     methodaselement.RelationLineNumber[0] = user.Item2;
                     methodaselement.RelationCode = GetXElementFromLineNum(user.Item2);
                     listUsers.Add(methodaselement);
+                }
+            }
+            return listUsers;
+        }
+
+        private List<CodeNavigationResult> GetFieldUsersIgnoreMultiUse2(XElement field)
+        {
+            List<CodeNavigationResult> listUsers = new List<CodeNavigationResult>();
+            List<Tuple<XElement, int>> myUsers = null;
+            FieldUsers.TryGetValue(field.GetSrcLineNumber(), out myUsers);
+            if (myUsers != null)
+            {
+                foreach (var user in myUsers)
+                {
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(user.Item1, origPath);
+                    var element = methodaselement.ProgramElement;
+                    if (listUsers.FindIndex(x => x.ProgramElement.Name == element.Name &&
+                        x.ProgramElement.DefinitionLineNumber == element.DefinitionLineNumber) < 0)
+                    {
+                        methodaselement.ProgramElementRelation = ProgramElementRelation.Use;
+                        methodaselement.RelationLineNumber[0] = user.Item2;
+                        methodaselement.RelationCode = GetXElementFromLineNum(user.Item2);
+                        listUsers.Add(methodaselement);
+                    }
                 }
             }
             return listUsers;

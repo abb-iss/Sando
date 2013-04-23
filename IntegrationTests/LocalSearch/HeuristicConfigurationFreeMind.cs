@@ -92,69 +92,49 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             for (double w0 = 1; w0 <= 1; w0++ )
-                for (int lookahead = 1; lookahead <= 1; lookahead++)
-                    for (double w1 = 1; w1 <= 1; w1++)
-                        for (double w2 = 1; w2 <= 1; w2++)
-                            for (int lookback = 1; lookback <= 1; lookback++)
-                                for (double w3 = 1; w3 <= 1; w3++)
-                                {
-                                    bool decay = true;
+                for (double w1 = 1; w1 <= 1; w1++)
+                    for (double w2 = 1; w2 <= 1; w2++)
+                        for (double w3 = 1; w3 <= 1; w3++)
+                        {
+                            int lookahead = 2;
+                            int lookback = 3;
+                            bool decay = true;
 
-                                    heuristicWeightComb configuration =
-                                        new heuristicWeightComb(decay, w0, lookahead, w1, w2, lookback, w3);
+                            heuristicWeightComb configuration =
+                                new heuristicWeightComb(decay, w0, lookahead, w1, w2, lookback, w3);
 
-                                    //recommendation trees building
-                                    foreach (var searchresultfull in gbuilder.InitialSearchResults)
-                                    {
-                                        if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
-                                            break;
+                            //recommendation trees building
+                            foreach (var searchresultfull in gbuilder.InitialSearchResults)
+                            {
+                                if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
+                                    break;
 
-                                        var searchresult = searchresultfull.Item1;
-                                        //for (int i = 0; i < targetSet.Count; i++)
-                                        //{
-                                        //    targetProgramElement target = targetSet[i];
-                                        //    if (targetFound[i] == true)
-                                        //        continue;
+                                var searchresult = searchresultfull.Item1;
+                                
+                                int number = Convert.ToInt32(searchresult.ProgramElement.DefinitionLineNumber);
+                                CodeNavigationResult rootElement = new CodeNavigationResult(searchresult.ProgramElement, searchresult.Score, gbuilder.GetXElementFromLineNum(number));
+                                NTree<CodeNavigationResult> rootTreeNode = new NTree<CodeNavigationResult>(rootElement);
 
-                                        //    if (target.relationName == ProgramElementRelation.Other
-                                        //        && searchresult.ProgramElement.DefinitionLineNumber == target.relationLine
-                                        //        && searchresult.Name == target.elementName)
-                                        //    {
-                                        //        targetFound[i] = true;
-                                        //        break; //can't be another target
-                                        //    }
-                                        //}
+                                //recommendTrees.Add(rootTreeNode);
 
-                                        //if ((searchresult.Type != "Method") && (searchresult.Type != "Field"))
-                                        //    continue;
+                                TreeBuild(ref rootTreeNode, gbuilder, 0, configuration, ref targetFound,
+                                    ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);
+                            }
 
-                                        int number = Convert.ToInt32(searchresult.ProgramElement.DefinitionLineNumber);
-                                        CodeNavigationResult rootElement = new CodeNavigationResult(searchresult.ProgramElement, searchresult.Score, gbuilder.GetXElementFromLineNum(number));
-                                        NTree<CodeNavigationResult> rootTreeNode = new NTree<CodeNavigationResult>(rootElement);
+                            String outputStr = "Number of Navigation of ("
+                                + decay.ToString() + " "
+                                + w0.ToString() + " "
+                                + w1.ToString() + " "
+                                + w2.ToString() + " "
+                                + w3.ToString() + "): ";
 
-                                        //recommendTrees.Add(rootTreeNode);
+                            for (int i = 0; i < numberOfNavigation.Count; i++)
+                            {
+                                outputStr += numberOfNavigation[i].ToString() + " ";
+                            }
 
-                                        TreeBuild(ref rootTreeNode, gbuilder, 0, configuration, ref targetFound,
-                                            ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);
-                                    }
-
-                                    String outputStr = "Number of Navigation of ("
-                                        + decay.ToString() + " "
-                                        + w0.ToString()+" "
-                                        + lookahead.ToString() + " "
-                                        + w1.ToString() + " "
-                                        + w2.ToString() + " "
-                                        + lookback.ToString() + " "
-                                        + w3.ToString() + "):";
-
-                                    for (int i = 0; i < numberOfNavigation.Count; i++)
-                                    {
-                                        outputStr += numberOfNavigation[i].ToString() + " ";
-                                    }
-
-                                    Console.Write(outputStr);
-
-                                }
+                            Console.Write(outputStr);
+                        }                                
 
         }
 
@@ -234,7 +214,7 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             CodeNavigationResult rootElement = rootNode.getData();
-            Console.WriteLine(rootElement.Name + ":" + rootElement.RelationLineNumberAsString
+            Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
                 +" " + rootElement.ProgramElementRelation.ToString()); //debugging
             for (int i = 0; i < targetSet.Count; i++)
             {
