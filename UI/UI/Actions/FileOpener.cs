@@ -78,10 +78,11 @@ namespace Sando.UI.Actions
                 text = text.TrimEnd(chars);
                 var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
                 TextRanges textRanges = null;
-                objSel.FindPattern(text, 0, ref textRanges);
-                {
-                    objSel.SelectLine();
-                }                
+                if(text.Contains("*"))                
+                    objSel.FindPattern(text, 1024, ref textRanges);                                                                
+                else
+                    objSel.FindPattern(text, 0, ref textRanges);                
+                objSel.SelectLine();             
             }    	
 
     		private static void InitDte2()

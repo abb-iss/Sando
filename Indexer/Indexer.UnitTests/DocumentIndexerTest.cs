@@ -150,6 +150,18 @@ namespace Sando.Indexer.UnitTests
             var transformed = LuceneQueryStringBuilder.GetTransformed("return \"..\\\\..\\\\Parser\"");
             Assert.AreEqual(transformed, "return?\\\"\\.\\.\\\\\\\\\\\\\\\\\\.\\.\\\\\\\\\\\\\\\\Parser\\\"");
        
+            var input = @"stringBuilder.Append('\'";
+            transformed = LuceneQueryStringBuilder.GetTransformed(input);
+            Assert.AreEqual(transformed, @"stringBuilder\.Append\(\'\\\'");
+            
+            input = @"'""'";
+            transformed = LuceneQueryStringBuilder.GetTransformed(input);
+            Assert.AreEqual(transformed, @"\'\""\'");
+
+            input = @"""*"" : '\""'";
+            transformed = LuceneQueryStringBuilder.GetTransformed(input);
+            Assert.AreEqual(transformed, @"\""*\""?\:?\'\\\""\'");
+
         }
 
 
