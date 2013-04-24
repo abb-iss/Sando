@@ -156,6 +156,8 @@ namespace Sando.Core.Tools
                 return true;
             if (searchTerms.Contains('$'))
                 return true;
+            if (searchTerms.Contains('*'))
+                return true;
             if (searchTerms.Contains("->"))
                 return true;
             return false;
