@@ -315,7 +315,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																				}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":class OR " + SandoField.ProgramElementType.ToString() + ":enum OR " + SandoField.ProgramElementType.ToString() + ":property)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.ProgramElementType.ToString() + ":property OR " + SandoField.ProgramElementType.ToString() + ":enum OR " + SandoField.ProgramElementType.ToString() + ":class)", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.ProgramElementType.ToString(), new SimpleAnalyzer()).Parse(queryString);
@@ -513,7 +513,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
 			Assert.AreEqual(queryString, "(" + SandoField.AccessLevel.ToString() + ":protected OR " + SandoField.AccessLevel.ToString() + ":public) AND " +
-										"(" + SandoField.ProgramElementType.ToString() + ":class OR " + SandoField.ProgramElementType.ToString() + ":enum OR " + SandoField.ProgramElementType.ToString() + ":property) AND " +
+										"(" + SandoField.ProgramElementType.ToString() + ":property OR " + SandoField.ProgramElementType.ToString() + ":enum OR " + SandoField.ProgramElementType.ToString() + ":class) AND " +
                                         "(" + SandoField.FileExtension.ToString() + ":\".cs\" OR " + SandoField.FileExtension.ToString() + ":\".h\") AND " +
                                         "(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\") AND " +
 										"(" + SandoField.Name.ToString() + ":SimpleClass^4 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass OR " + SandoField.Namespace.ToString() + ":SimpleClass)", "Created query string is invalid!");
