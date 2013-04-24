@@ -6,6 +6,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Core.Extensions.Logging;
 using Sando.Core.Tools;
 using System.Collections.Generic;
+using Sando.Indexer.Searching;
 
 namespace Sando.UI.Actions
 {
@@ -74,12 +75,16 @@ namespace Sando.UI.Actions
             private static void FocusOnLiteralString(string text) 
             {
                 const char chars = '"';
+                bool isQuoted = text.StartsWith("\"") && text.EndsWith("\"");
                 text = text.TrimStart(chars);
                 text = text.TrimEnd(chars);
                 var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
                 TextRanges textRanges = null;
-                if(text.Contains("*"))                
-                    objSel.FindPattern(text, 1024, ref textRanges);                                                                
+                if (text.Contains("*") && !isQuoted)
+                {
+                    text = LuceneQueryStringBuilder.EscapeChars(text);
+                    objSel.FindPattern(text, 1024, ref textRanges);
+                }
                 else
                     objSel.FindPattern(text, 0, ref textRanges);                
                 objSel.SelectLine();             

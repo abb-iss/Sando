@@ -228,6 +228,12 @@ namespace Sando.Indexer.Searching
             searchTerm = searchTerm.Replace("✉∞dq",@"\""");
             searchTerm = searchTerm.Replace("✉∞q",@"\'");
 
+            searchTerm = EscapeChars(searchTerm);
+            return searchTerm;
+        }
+
+        public static string EscapeChars(string searchTerm)
+        {
             searchTerm = searchTerm.Replace("+", "\\+");
             searchTerm = searchTerm.Replace("-", "\\-");
             searchTerm = searchTerm.Replace("&&", "\\&\\&");
