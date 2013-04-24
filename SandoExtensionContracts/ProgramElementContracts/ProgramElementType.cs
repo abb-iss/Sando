@@ -2,14 +2,14 @@
 {
 	public enum ProgramElementType
 	{
-		Class,
+        Field,
+        Method,
+        MethodPrototype,
+        Property,
+        Enum,
         Struct,
-		Comment,
-		Enum,
-		Field,
-		Method,
-		Property,
-		MethodPrototype,
+        Class,        
+		Comment,							
 		TextLine,
 		Custom
 	}

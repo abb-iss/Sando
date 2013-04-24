@@ -23,6 +23,8 @@ using ABB.SrcML.VisualStudio.SrcMLService;
 using Sando.UI.View;
 using System.Diagnostics;
 using System.Text;
+using Sando.Indexer.Documents;
+using Lucene.Net.Analysis.Standard;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -120,7 +122,13 @@ namespace Sando.IntegrationTests.Search
         private void CreateIndexer()
         {
             ServiceLocator.RegisterInstance(new IndexFilterManager());
-            ServiceLocator.RegisterInstance<Analyzer>(new SnowballAnalyzer("English"));
+
+            PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new SnowballAnalyzer("English"));            
+            analyzer.AddAnalyzer(SandoField.Source.ToString(), new KeywordAnalyzer());
+            analyzer.AddAnalyzer(SandoField.AccessLevel.ToString(), new KeywordAnalyzer());
+            analyzer.AddAnalyzer(SandoField.ProgramElementType.ToString(), new KeywordAnalyzer());
+            ServiceLocator.RegisterInstance<Analyzer>(analyzer);
+
             var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), GetTimeToCommit());
             ServiceLocator.RegisterInstance(currentIndexer);
             ServiceLocator.RegisterInstance(new IndexUpdateManager());
@@ -265,7 +273,7 @@ namespace Sando.IntegrationTests.Search
 
         public void UpdateMessage(string message)
         {
-            _myMessage = message;
+            _myMessage = message;            
         }
 
         public class FakeOptionsProvider : ISandoOptionsProvider

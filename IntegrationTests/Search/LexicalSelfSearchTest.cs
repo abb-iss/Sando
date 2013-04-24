@@ -111,7 +111,7 @@ namespace Sando.IntegrationTests.Search
 		public void QuotedExactQueryTest()
 		{
             string keywords = "\"private static void InitDte2()\"";
-            var expectedLowestRank = 3;
+            var expectedLowestRank = 4;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "InitDte2");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}

@@ -26,7 +26,7 @@ namespace Sando.IntegrationTests.Search
 		public void FieldSearchWithUnderscore()
 		{
             string keywords = "_solutionKey";
-		    var expectedLowestRank = 1;
+		    var expectedLowestRank = 2;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Field && (el.ProgramElement.Name == "_solutionKey");
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
 		}

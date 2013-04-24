@@ -24,8 +24,8 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTermsTestLeaveCompleteTerm()
         {
             var parts = WordSplitter.ExtractSearchTerms("_solutionEvents");
-            Assert.AreEqual(parts.Count, 3);
-            Assert.IsTrue(parts.Contains("_solutionevents"));
+            Assert.AreEqual(parts.Count, 1);
+            Assert.IsTrue(parts.Contains("\"_solutionEvents\""));
         }
 
         
@@ -90,8 +90,31 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another_word");
-            Assert.AreEqual(4, parts.Count);
-            Assert.AreEqual("\"words inside quotes\"*word*another_word*another", String.Join("*", parts));
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"word \"words inside quotes\" another_word\"", String.Join("*", parts));
+
+            parts = WordSplitter.ExtractSearchTerms("return \"..\\\\..\\\\Parser\"");
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"return \"..\\\\..\\\\Parser\"\"", String.Join("*", parts));
+        }
+
+        [Test]
+        public void InterpretSearchQuery()
+        {
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("Assert.AreEqual(4, parts.Count);"));
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedInsideQuotes()"));
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedInsideQuotes("));
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("WordSplitter.InvalidCharactersFound(\"\"wordSplitter.ExtractWords(\"IInUnderscore\")\"\")"));
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("simpleSearchCriteria.ToQueryString();"));
+            Assert.IsFalse(WordSplitter.IsUnquotedLiteral("open file"));
+            Assert.IsFalse(WordSplitter.IsUnquotedLiteral("\"sadfasdfasdfasdfasdfasdf\""));
+            Assert.IsFalse(WordSplitter.IsUnquotedLiteral(" \"sadfasdfasdfasdfasdfasdf\" "));
+            Assert.IsFalse(WordSplitter.IsUnquotedLiteral(" open file -test "));
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("\"sadfasdfasdfasdfasdfasdf\" test"));
+            Assert.IsTrue(WordSplitter.IsUnquotedLiteral("return \"..\\..\\Parser\";"));
+
+            var parsed = WordSplitter.ExtractSearchTerms("return \"..\\..\\Parser\";").ToArray()[0];
+            Assert.IsTrue(parsed.Equals("\"return \"..\\..\\Parser\";\""));
         }
 
         [Test]
@@ -107,33 +130,48 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenQuotesUsedWithInvalidQuote()
         {
-            List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another\"word");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual(String.Join("*", parts), "\"words inside quotes\"*word*another");
+            List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside quotes\" another word");
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "\"word \"words inside quotes\" another word\"");
+        }
+
+
+        [Test]
+        public void ExtractSearchTerms_SlashesInsideQuotesInsideQuote()
+        {
+            //implicit quotes
+            List<string> parts = WordSplitter.ExtractSearchTerms("IsUnquotedLiteral(\"..\\Path\"))");
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"IsUnquotedLiteral(\"..\\Path\"))\"", String.Join(" ", parts));
+
+            //explicit quotes
+            parts = WordSplitter.ExtractSearchTerms("\"IsUnquotedLiteral(\"..\\Path\"))\"");
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"IsUnquotedLiteral(\"..\\Path\"))\"", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenColonUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file::open::now");
-            Assert.AreEqual(3, parts.Count);
-            Assert.AreEqual("file open now", String.Join(" ", parts));
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"file::open::now\"", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenEqualityOperatorUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file=new");
-            Assert.AreEqual(2, parts.Count);
-            Assert.AreEqual("file new", String.Join(" ", parts));
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"file=new\"", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenBracketsUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file(new File())");
-            Assert.AreEqual(2, parts.Count);
-            Assert.AreEqual("file new", String.Join(" ", parts));
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"file(new File())\"", String.Join(" ", parts));
         }
 
         [Test]
@@ -180,24 +218,24 @@ namespace Sando.Core.UnitTests.Tools
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenUnderscoreUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("file_open_now");
-            Assert.AreEqual(4, parts.Count);
-            Assert.AreEqual("file_open_now file open now", String.Join(" ", parts));
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"file_open_now\"", String.Join(" ", parts));
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoQuotesUsed()
         {
             List<string> parts = WordSplitter.ExtractSearchTerms("word words inside quotes another_word");
-            Assert.AreEqual(6, parts.Count);
-            Assert.AreEqual(String.Join("*", parts), "word*words*inside*quotes*another_word*another");
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual(String.Join("*", parts), "\"word words inside quotes another_word\"");
         }
 
         [Test]
         public void ExtractSearchTerms_ReturnsValidNumberOfSearchTermsWhenNoOperatortUsedWithQuotes()
         {
-            List<string> parts = WordSplitter.ExtractSearchTerms("word -\"words inside\"");
-            Assert.AreEqual(2, parts.Count);
-            Assert.AreEqual("-\"words inside\"*word", String.Join("*", parts));
+            List<string> parts = WordSplitter.ExtractSearchTerms("word \"words inside\"");
+            Assert.AreEqual(1, parts.Count);
+            Assert.AreEqual("\"word \"words inside\"\"", String.Join("*", parts));
         }
 
         [Test]
@@ -215,12 +253,7 @@ namespace Sando.Core.UnitTests.Tools
             Assert.AreEqual(0, parts.Count);
         }
 
-        [Test]
-        public void ExtractSearchTerms_ReturnsEmptyListWhenSearchTermContainsInvalidCharacters()
-        {
-            List<string> parts = WordSplitter.ExtractSearchTerms("\\/:~");
-            Assert.AreEqual(0, parts.Count);
-        }
+ 
 
         [Test]
         public void InvalidCharactersFound_ReturnsTrueWhenInvalidCharactersUsed()

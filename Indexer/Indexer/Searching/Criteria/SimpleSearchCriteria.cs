@@ -38,5 +38,16 @@ namespace Sando.Indexer.Searching.Criteria
 		public SortedSet<string> Locations { get; set; }
         public bool SearchByFileExtension { get; set; }
         public SortedSet<string> FileExtensions { get; set; }
-	}
+
+        public bool RequiresWildcards()
+        {
+            foreach (var term in SearchTerms)
+            {
+                var temp = LuceneQueryStringBuilder.GetTransformed(term);
+                if (!temp.Equals(term))                
+                    return true;
+            }
+            return false;
+        }
+    }
 }

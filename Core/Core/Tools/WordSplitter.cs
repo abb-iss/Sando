@@ -29,33 +29,26 @@ namespace Sando.Core.Tools
             var matches = new List<string>();
 
             searchTerms = searchTerms.Trim();
-            if (searchTerms.StartsWith("\"") && searchTerms.EndsWith("\""))
+            if (IsUnquotedLiteral(searchTerms))
             {
-                //handle case where quote is whole search term, works if quote contians double quotes
-                searchTerms = searchTerms.Substring(1).Substring(0, searchTerms.Length - 2);
-                searchTerms = searchTerms.Replace("\"","\\\"");
-                matches.Add("\"" + searchTerms + "\"");
+                matches.Add(EscapeQuotesAndPathInQuotes(searchTerms));                
+            }
+            else if (searchTerms.StartsWith("\"") && searchTerms.EndsWith("\""))
+            {                
+                matches.Add(EscapeQuotesAndPathInQuotes(searchTerms.Substring(1).Substring(0, searchTerms.Length - 2)));
             }
             else
             {
 
                 //1.handle case where quote is just part of search terms, doesn't work if quote contains double quotes
-                var matchCollection = Regex.Matches(searchTerms, QuotesPattern); 
-                foreach (Match match in matchCollection)
-                {
-                    string currentMatch = match.Value;//.Trim('"', ' ');
-                    searchTerms = searchTerms.Replace(match.Value, "");
-                    if (!String.IsNullOrWhiteSpace(currentMatch))
-                        matches.Add(currentMatch);
-                }
-
+                searchTerms = RemoveQuotesFromPattern(searchTerms, matches);
                 searchTerms = RemoveFiletype(searchTerms);
 
                 //2.add unsplit terms
                 var splitTerms = searchTerms.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string term in splitTerms)
                 {
-                    if (term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c) || c.Equals('_')))
+                    //if (term.All(c => Char.IsUpper(c) || Char.IsLower(c)) || term.All(c => Char.IsLetter(c) || Char.IsNumber(c) || c.Equals('_')))
                     {
                         matches.Add(term);
                     }
@@ -73,12 +66,99 @@ namespace Sando.Core.Tools
 
                 for (int i = 0; i < matches.Count; ++i)
                 {
-                    string lower = matches[i].Trim().ToLower();
-                    matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
+                    var trimmed = matches[i].Trim();
+                    if (!IsUnquotedLiteral(trimmed) && !(trimmed.StartsWith("\"") && trimmed.EndsWith("\"")))
+                    {
+                        string lower = trimmed.ToLower();
+                        matches[i] = Regex.Replace(lower, @"[ ]{2,}", " ");
+                    }
                 }
             }
               
             return matches.Distinct().ToList();
+        }
+
+        private static string EscapeQuotesAndPathInQuotes(string searchTerms)
+        {
+            //this could cause problems in C# 
+            //if the '\' is not inside of quotes
+            //but the chance is small
+            //searchTerms = searchTerms.Replace("\"", "\\\"");   
+            //searchTerms = searchTerms.Replace(@"\", @"\\");                                 
+            return "\"" + searchTerms + "\"";            
+        }
+
+        private static string RemoveQuotesFromPattern(string searchTerms, List<string> matches)
+        {
+            var matchCollection = Regex.Matches(searchTerms, QuotesPattern);
+            foreach (Match match in matchCollection)
+            {
+                string currentMatch = match.Value;//.Trim('"', ' ');
+                searchTerms = searchTerms.Replace(match.Value, "");
+                if (!String.IsNullOrWhiteSpace(currentMatch))
+                {
+                    //escape '\'s inside of quotes
+                    var matchWithEscapedQuotes = currentMatch.Replace(@"\", @"\\");
+                    matches.Add(currentMatch);
+                }
+            }
+
+            return searchTerms;
+        }
+
+        public static bool IsUnquotedLiteral(string searchTerms)
+        {
+            searchTerms = searchTerms.Trim();
+            if (searchTerms.StartsWith("\"") && searchTerms.EndsWith("\""))
+                return false;
+            //searchTerms = RemoveQuotesFromPattern(searchTerms, new List<String>());
+            
+            //heuristics to see if this is a literal string, need to be improved
+            if (searchTerms.Contains('"'))
+                return true;
+            if (searchTerms.Contains('\''))
+                return true;
+            if (searchTerms.Contains(')'))
+                return true;
+            if (searchTerms.Contains('.'))
+                return true;
+            if(searchTerms.Contains('('))
+                return true;
+            if (searchTerms.Contains('['))
+                return true;
+            if (searchTerms.Contains(']'))
+                return true;
+            if (searchTerms.Contains('+'))
+                return true;
+            if (searchTerms.Contains(';'))
+                return true;
+            if (searchTerms.Contains(':') && !searchTerms.Contains("filetype:"))
+                return true;
+            if (searchTerms.Contains('='))
+                return true;
+            if (searchTerms.Contains('>'))
+                return true;
+            if (searchTerms.Contains('<'))
+                return true;
+            if (searchTerms.Contains('!'))
+                return true;
+            if (searchTerms.Contains('~'))
+                return true;
+            if (searchTerms.Contains('^'))
+                return true;
+            if (searchTerms.Contains('\\'))
+                return true;
+            if (searchTerms.Contains('/'))
+                return true;
+            if (searchTerms.Contains('&'))
+                return true;
+            if (searchTerms.Contains('_'))
+                return true;
+            if (searchTerms.Contains('$'))
+                return true;
+            if (searchTerms.Contains("->"))
+                return true;
+            return false;
         }
 
         public static SortedSet<string> GetFileExtensions(string searchTerms)
@@ -151,5 +231,17 @@ namespace Sando.Core.Tools
         private Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
         private Regex _patternCharDigit = new Regex(@"([A-Z]+|[0-9]+)", RegexOptions.Compiled);
         private Regex _patternSpace = new Regex(" _", RegexOptions.Compiled);
+
+        public static string IsLiteralSearchString(string text)
+        {
+            List<string> matches = new List<string>();
+            if (IsUnquotedLiteral(text))
+                return text;
+            else if (!RemoveQuotesFromPattern(text, matches).Equals(text))
+            {
+                return matches.First();
+            }
+            else return null;
+        }
     }
 }
