@@ -14,6 +14,7 @@ using UnitTestHelpers;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching.Criteria;
+using Sando.Indexer.Searching;
 
 namespace Sando.Indexer.UnitTests
 {
@@ -131,6 +132,26 @@ namespace Sando.Indexer.UnitTests
                 Assert.Fail(ex.Message + ". " + ex.StackTrace);
             }
         }
+
+        [Test]
+        public void EscapeDoubleQuotesSetInQuery(){
+            var transformed = LuceneQueryStringBuilder.GetTransformed("var split = (\"✉ ∞ \" + searchTerm + \"✉ ∞ \")");
+            Assert.AreEqual(transformed, "var?split?\\=?\\(\\\"✉?∞?\\\"?\\+?searchTerm?\\+?\\\"✉?∞?\\\"\\)");
+
+            transformed = LuceneQueryStringBuilder.GetTransformed("var a = \"a\", \"d\"");
+            Assert.AreEqual(transformed, "var?a?\\=?\\\"a\\\",?\\\"d\\\"");
+        }
+
+        
+
+        [Test]
+        public void EscapeQuotesInQuotesInQuery()
+        {
+            var transformed = LuceneQueryStringBuilder.GetTransformed("return \"..\\\\..\\\\Parser\"");
+            Assert.AreEqual(transformed, "return?\\\"\\.\\.\\\\\\\\\\\\\\\\\\.\\.\\\\\\\\\\\\\\\\Parser\\\"");
+       
+        }
+
 
         [SetUp]
         public void ResetContract()

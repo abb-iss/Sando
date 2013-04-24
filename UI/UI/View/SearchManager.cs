@@ -45,12 +45,6 @@ namespace Sando.UI.View
                 }
 
                 searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
-                var searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
-                if (searchStringContainedInvalidCharacters)
-                {
-                    _searchResultListener.UpdateMessage("Invalid Query String - only complete words or partial words followed by a '*' are accepted as input.");
-                    return;
-                }
 
                 var criteria = GetCriteria(searchString, searchCriteria);
                 var results = codeSearcher.Search(criteria, true).AsQueryable();
@@ -106,11 +100,11 @@ namespace Sando.UI.View
         private static SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
         {            
             var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                       
-            return CriteriaBuilder.GetBuilder().
-                AddCriteria(searchCriteria).
-                AddSearchString(searchString).
+            var builder = CriteriaBuilder.GetBuilder().
+                AddCriteria(searchCriteria).                
                 NumResults(sandoOptions.NumberOfSearchResultsReturned).
-                Ext(searchString).GetCriteria();                        
+                Ext(searchString).AddSearchString(searchString);
+            return builder.GetCriteria();
         }
     }
 

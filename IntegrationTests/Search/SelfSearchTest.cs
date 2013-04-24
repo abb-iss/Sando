@@ -33,6 +33,54 @@ namespace Sando.IntegrationTests.Search
         }
 
         [Test]
+        public void QuotedNoQuotesWithQuotesInside()
+        {
+            string keywords = "\"return \"..\\..\\Parser\";\"";
+            var expectedLowestRank = 5;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "GetFilesDirectory");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
+        }
+
+        [Test]
+        public void QuotedSearchWithNot()
+        {
+            //NOT supported as of now.  Only pure literal searches are supported now,
+            //meaning you cannot combine literal searches with anything else.
+            string keywords = "\"Search(\" -test";
+            var expectedLowestRank = 2;
+
+            //Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "Search");
+            //EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
+
+        [Test]
+        public void QuotedSearchBroken()
+        {            
+            string keywords = "\"ServiceLocator.Resolve<DTE2>();\"";
+            var expectedLowestRank = 10;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "InitDte2");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
+        }
+
+        [Test]
+        public void QuotedWithoutQuotes()
+        {
+            string keywords = "ServiceLocator.Resolve<DTE2>();";
+            var expectedLowestRank = 10;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "InitDte2");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
+
+        [Test]
+        public void QuotedSearchWithSpacesBroken()
+        {
+            string keywords = "\"foreach (var term in SearchTerms)\"";
+            var expectedLowestRank = 10;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "RequiresWildcards");
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
+
+        [Test]
         public void ExcludeTestIfClassNameHasTest()
         {
             string keywords = "reorder search results -test";
@@ -50,7 +98,7 @@ namespace Sando.IntegrationTests.Search
 		[Test]
 		public void ElementNameSearchesInTop3()
 		{
-            string keywords = "header element resolver";
+            string keywords = "header element resolver cpp";
 		    var expectedLowestRank = 3;
 			Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Class && (el.ProgramElement.Name == "CppHeaderElementResolver");
 			EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
@@ -60,7 +108,7 @@ namespace Sando.IntegrationTests.Search
         public void UnderscoreSearch()
         {
             string keywords = "solutionEvents";
-            var expectedLowestRank = 3;
+            var expectedLowestRank = 6;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Field && (el.ProgramElement.Name == "_solutionEvents");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             keywords = "_solutionEvents";

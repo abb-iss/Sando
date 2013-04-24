@@ -4,6 +4,8 @@ using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Core.Extensions.Logging;
+using Sando.Core.Tools;
+using System.Collections.Generic;
 
 namespace Sando.UI.Actions
 {
@@ -28,8 +30,9 @@ namespace Sando.UI.Actions
     				var selection = (TextSelection) _dte.ActiveDocument.Selection;                    
     				selection.GotoLine(lineNumber);
 
-                    if (IsLiteralSearchString(text))
-                        FocusOnLiteralString(text);
+                    var literal = WordSplitter.IsLiteralSearchString(text);
+                    if (literal!=null)
+                        FocusOnLiteralString(literal);
                     else
                         HighlightLine(lineNumber);
     			}
@@ -66,10 +69,7 @@ namespace Sando.UI.Actions
                 }
             }
 
-            private static bool IsLiteralSearchString(string text)
-            {
-                return text.Contains("\"");
-            }
+
 
             private static void FocusOnLiteralString(string text) 
             {

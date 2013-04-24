@@ -7,6 +7,7 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
+using System.Text.RegularExpressions;
 
 namespace Sando.Indexer.Searching
 {
@@ -26,14 +27,16 @@ namespace Sando.Indexer.Searching
             _queryWeights = ExtensionPointsRepository.Instance.GetQueryWeightsSupplierImplementation().GetQueryWeightsValues();
             var stringBuilder = new StringBuilder();
             if (_criteria.SearchByAccessLevel && (!_criteria.SearchByProgramElementType || !_criteria.ProgramElementTypes.Contains(ProgramElementType.Comment)))
-            {
+            {                
                 AccessLevelCriteriaToString(stringBuilder);
             }
             if (_criteria.SearchByProgramElementType)
             {
-                if (stringBuilder.Length > 0)
-                    stringBuilder.Append(" AND ");
-                ProgramElementTypeCriteriaToString(stringBuilder);
+                if(_criteria.ProgramElementTypes.Count != sizeof(ProgramElementType)){
+                    if (stringBuilder.Length > 0)
+                        stringBuilder.Append(" AND ");
+                    ProgramElementTypeCriteriaToString(stringBuilder);
+                }
             }
             if (_criteria.SearchByFileExtension)
             {
@@ -56,20 +59,24 @@ namespace Sando.Indexer.Searching
             Contract.Requires(_criteria.AccessLevels != null, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be null!");
             Contract.Requires(_criteria.AccessLevels.Count > 0, "SimpleSearchCriteria:AccessLevelCriteriaToString - AccessLevels cannot be empty!");
 
-            stringBuilder.Append("(");
-            int collectionSize = _criteria.AccessLevels.Count;
-            foreach (AccessLevel accessLevel in _criteria.AccessLevels)
+            if (_criteria.AccessLevels.Count != sizeof(AccessLevel))
             {
-                stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");             
-                stringBuilder.Append(accessLevel.ToString()+"*");
-                AppendBoostFactor(stringBuilder, SandoField.AccessLevel.ToString());
-                if (collectionSize > 1)
+
+                stringBuilder.Append("(");
+                int collectionSize = _criteria.AccessLevels.Count;
+                foreach (AccessLevel accessLevel in _criteria.AccessLevels)
                 {
-                    stringBuilder.Append(" OR ");
+                    stringBuilder.Append(SandoField.AccessLevel.ToString() + ":");
+                    stringBuilder.Append(accessLevel.ToString().ToLower());
+                    AppendBoostFactor(stringBuilder, SandoField.AccessLevel.ToString());
+                    if (collectionSize > 1)
+                    {
+                        stringBuilder.Append(" OR ");
+                    }
+                    --collectionSize;
                 }
-                --collectionSize;
+                stringBuilder.Append(")");
             }
-            stringBuilder.Append(")");
         }
 
         private void ProgramElementTypeCriteriaToString(StringBuilder stringBuilder)
@@ -82,11 +89,7 @@ namespace Sando.Indexer.Searching
             foreach (ProgramElementType programElementType in _criteria.ProgramElementTypes)
             {
                 stringBuilder.Append(SandoField.ProgramElementType.ToString() + ":");
-                string value = programElementType.ToString();
-                if (!value.Equals(ProgramElementType.Method.ToString()))
-                {
-                    value = value + "*";
-                }
+                string value = programElementType.ToString().ToLower();
                 stringBuilder.Append(value);
                 AppendBoostFactor(stringBuilder, SandoField.ProgramElementType.ToString());
                 if (collectionSize > 1)
@@ -170,7 +173,10 @@ namespace Sando.Indexer.Searching
                     notCondition = true;
                     searchTermEscaped = searchTerm.Substring(1);
                 }
-                searchTermEscaped = EscapeSpecialCharacters(searchTermEscaped);
+                else
+                {
+                    searchTermEscaped = Transform(searchTermEscaped);
+                }
                 int usageTypesLeft = _criteria.UsageTypes.Count;
                 foreach (UsageType usageType in _criteria.UsageTypes)
                 {
@@ -192,26 +198,71 @@ namespace Sando.Indexer.Searching
             stringBuilder.Append(")");
         }
 
-        private string EscapeSpecialCharacters(string searchTerm)
+        private static string Transform(string searchTermEscaped)
         {
-            var escapedSearchTermBuilder = new StringBuilder(searchTerm);
-            //escapedSearchTermBuilder.Replace("\\", "\\\\");
-            escapedSearchTermBuilder.Replace("+", "\\+");
-            escapedSearchTermBuilder.Replace("-", "\\-");
-            escapedSearchTermBuilder.Replace("&&", "\\&\\&");
-            escapedSearchTermBuilder.Replace("||", "\\|\\|");
-            escapedSearchTermBuilder.Replace("!", "\\!");
-            escapedSearchTermBuilder.Replace("(", "\\(");
-            escapedSearchTermBuilder.Replace(")", "\\)");
-            escapedSearchTermBuilder.Replace("{", "\\{");
-            escapedSearchTermBuilder.Replace("}", "\\}");
-            escapedSearchTermBuilder.Replace("[", "\\[");
-            escapedSearchTermBuilder.Replace("]", "\\]");
-            escapedSearchTermBuilder.Replace("^", "\\^");
+            var temp = GetTransformed(searchTermEscaped);
+            if (!temp.Equals(searchTermEscaped))
+                temp = "*" + temp + "*";
+            searchTermEscaped = temp;
+            return searchTermEscaped;
+        }
+
+        public static string GetTransformed(string searchTermEscaped)
+        {
+            var temp = searchTermEscaped;
+            if (searchTermEscaped.StartsWith("\"") && searchTermEscaped.EndsWith("\""))
+                temp = temp.Trim('"');
+            temp = EscapeSpecialCharacters(temp);
+            return temp;
+        }
+
+        public static string EscapeSpecialCharacters(string searchTerm)
+        {
+            var split = ("✉∞%" + searchTerm + "✉∞%").Split('"');
+            if (split.Length != 0)
+            {
+                StringBuilder buildItBack = new StringBuilder();
+                int counter = 0;
+                foreach (var term in split)
+                {
+                    counter++;
+                    if (counter > 1)
+                        buildItBack.Append("\\\"");
+                    if (counter % 2 == 0)
+                    {
+                        buildItBack.Append(term.Replace(@"\", @"\\\\"));
+                    }
+                    else
+                    {
+                        buildItBack.Append(term);
+                    }
+                }
+                searchTerm = buildItBack.ToString().Trim().Replace("✉∞%", "");
+            }
+
+
+            searchTerm = searchTerm.Replace("+", "\\+");
+            searchTerm = searchTerm.Replace("-", "\\-");
+            searchTerm = searchTerm.Replace("&&", "\\&\\&");
+            searchTerm = searchTerm.Replace("||", "\\|\\|");
+            searchTerm = searchTerm.Replace("!", "\\!");
+            searchTerm = searchTerm.Replace("(", "\\(");
+            searchTerm = searchTerm.Replace(")", "\\)");
+            searchTerm = searchTerm.Replace("{", "\\{");
+            searchTerm = searchTerm.Replace("}", "\\}");
+            searchTerm = searchTerm.Replace("[", "\\[");
+            searchTerm = searchTerm.Replace("]", "\\]");
+            searchTerm = searchTerm.Replace("^", "\\^");
+            searchTerm = searchTerm.Replace("<", "\\<");
+            searchTerm = searchTerm.Replace(">", "\\>");
+            searchTerm = searchTerm.Replace("=", "\\=");
+            searchTerm = searchTerm.Replace(";", "\\;");
+            searchTerm = searchTerm.Replace("~", "\\~");
+            searchTerm = searchTerm.Replace(":", "\\:");
+            searchTerm = searchTerm.Replace(".", "\\.");
             //escapedSearchTermBuilder.Replace("\"", "\\\"");
-            escapedSearchTermBuilder.Replace("~", "\\~");
-            escapedSearchTermBuilder.Replace(":", "\\:");
-            return escapedSearchTermBuilder.ToString();
+            searchTerm = searchTerm.Replace(" ", "?");
+            return searchTerm;
         }
 
         private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
