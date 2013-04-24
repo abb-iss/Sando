@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticallyIndexingTestClass.cs" />
+    <Compile Include="LocalSearch\HeuristicConfigurationFreeMind2.cs" />
     <Compile Include="LocalSearch\NTree.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationAddMonster.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -105,15 +106,13 @@
     <Compile Include="Search\NameWithNumbersSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Content Include="TestFiles\FreeMindTestFiles2\ControllerAdapter.cs" />
     <Content Include="TestFiles\AddMonsterTestFiles\CreatureManager.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\FreeMindTestFiles\MindMapMapModel.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles\MindMapMapModel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="TestFiles\LocalSearchTestFiles\AddMonsterTestFiles\CreatureManager.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -193,8 +192,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="TestFiles\LocalSearchTestFiles\jpassWordSafeTestFiles\" />
-    <Folder Include="TestFiles\LocalSearchTestFiles\RachotaTestFiles\" />
+    <Folder Include="TestFiles\LocalSearchTestFiles\jpassWordSafeTestFiles-orig\" />
+    <Folder Include="TestFiles\LocalSearchTestFiles\RachotaTestFiles-orig\" />
     <Folder Include="TestFiles\SolutionMonitorTestFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

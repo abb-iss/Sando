@@ -33,20 +33,22 @@ namespace Sando.IntegrationTests.LocalSearch
     */
 
     [TestFixture]
-    public class HeuristicConfigurationFreeMind : AutomaticallyIndexingTestClass
+    public class HeuristicConfigurationFreeMind2 : AutomaticallyIndexingTestClass
     {
         [Test]
-        public void FreeMindTest()
+        public void FreeMindTest2()
         {
             //SetTargetSet();
             
-            string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\MindMapMapModel.java";
-            int treeDepthThreshold = 10;
+            string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\ControllerAdapter.java";
+            int treeDepthThreshold = 5;
             int stopLine = 30;
 
-            string keywords = "Saving Failed"; //"Saving Failed";
+            string keywords = "Saving failed"; //"Saving Failed";
             var codeSearcher = new CodeSearcher(new IndexerSearcher());            
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
+
+            int numberofNode = 0; //for debugging
 
             Context gbuilder = new Context(keywords);
             gbuilder.Intialize(testfilePath);
@@ -65,21 +67,20 @@ namespace Sando.IntegrationTests.LocalSearch
                 }   
             }
 
-     //       save (definition, 245) 
-     //                 --> saveInternal(callby, 246) --> saveInternal (definition, 250)
-     //                 --> getXml (callby, 260) --> getXml (definition, 303)
-     //                 --> getXml (callby, 304) --> getXml (definition, 286)
-     //                 --> getXml (callby, 287) --> getXml (definition, 292)
+            //       (search result) --> actionPerformed (definition 968)
+     //                              --> mc.save(callby, 969)
+     //                 --> save(definition, 373, same file, different class) 
+     //                 --> save(getModel().getFile) (callby, 378)
+     //                 --> save(definition, 560)
             List<targetProgramElement> targetSet = new List<targetProgramElement>();
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
-            int[] linenumber = { 245,  250, 303, 286, 292};
-            String[] elements = { "save", "saveInternal",  "getXml", "getXml", "getXml"};
+            int[] linenumber = { 968, 373, 560};
+            String[] elements = { "actionPerformed", "save", "save" };
             ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
                                                    ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other, 
-                                                   ProgramElementRelation.Other};
+                                                   ProgramElementRelation.Other
+                                                 };
 
             for (int i = 0; i < linenumber.Length; i++)
             {
@@ -96,9 +97,9 @@ namespace Sando.IntegrationTests.LocalSearch
                     for (double w2 = 1; w2 <= 1; w2++)
                         for (double w3 = 1; w3 <= 1; w3++)
                         {
-                            int lookahead = 2;
+                            int lookahead = 1;
                             int lookback = 3;
-                            bool decay = true;
+                            bool decay = false;
 
                             heuristicWeightComb configuration =
                                 new heuristicWeightComb(decay, w0, lookahead, w1, w2, lookback, w3);
@@ -203,7 +204,6 @@ namespace Sando.IntegrationTests.LocalSearch
             ref List<int> numberOfNavigation, ref List<targetProgramElement> targetSet,
             int treeDepthThreshold, int stopLine)
         {
-            //target found
             if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
                 return;
 
@@ -214,8 +214,13 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             CodeNavigationResult rootElement = rootNode.getData();
-            Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+            Console.WriteLine("+[" + (depth + 1).ToString() + "] "
+                + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
                 + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+            gbuilder.CurrentPath.Add(rootElement as CodeSearchResult);
+            //Console.WriteLine("Last element of current path: " + gbuilder.CurrentPath.ElementAt(gbuilder.CurrentPath.Count - 1).Name); //debug
+            depth++;
+            
             for (int i = 0; i < targetSet.Count; i++)
             {
                 targetProgramElement target = targetSet[i];
@@ -231,13 +236,17 @@ namespace Sando.IntegrationTests.LocalSearch
                 }
             }
 
-            gbuilder.CurrentPath.Add(rootElement as CodeSearchResult);
-            depth++;
+            if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
+                return;
 
             if (depth >= treeDepthThreshold)
             {
+                Console.WriteLine("-[" +depth.ToString() + "] "
+                    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+                    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
                 depth--;
+                //Console.WriteLine("Last element of current path: " + gbuilder.CurrentPath.ElementAt(gbuilder.CurrentPath.Count - 1).Name); //debug
                 return;
             }
 
@@ -248,25 +257,34 @@ namespace Sando.IntegrationTests.LocalSearch
 
             if (childrenElements.Count == 0)
             {
+                Console.WriteLine("-[" +depth.ToString() + "] "
+                    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+                    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
                 depth--;
+                //Console.WriteLine("Last element : " 
+                //    + gbuilder.CurrentPath.ElementAt(gbuilder.CurrentPath.Count - 1).Name); //debug
                 return;
             }
 
             foreach (var child in childrenElements)
             {
                 rootNode.addChild(child);
-            }
-
-            for (int i = 0; i < rootNode.getChildNumber(); i++)
-            {
-                NTree<CodeNavigationResult> newrootNode = rootNode.getChild(i);
+                NTree<CodeNavigationResult> newrootNode = rootNode.getChild(0);
                 TreeBuild(ref newrootNode, gbuilder, depth, config, ref targetFound, ref numberOfNavigation,
                     ref targetSet, treeDepthThreshold, stopLine);
+                rootNode.RemoveChild(newrootNode);
             }
 
-            //gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count-1);
-            //depth--;
+            //for (int i = 0; i < rootNode.getChildNumber(); i++)
+            //while (rootNode.getChildNumber() > 0)
+            //{
+            //    NTree<CodeNavigationResult> newrootNode = rootNode.getChild(0);
+            //    TreeBuild(ref newrootNode, gbuilder, depth, config, ref targetFound, ref numberOfNavigation,
+            //        ref targetSet, treeDepthThreshold, stopLine);
+            //    rootNode.RemoveChild(newrootNode);
+            //}
+            
         }
         
 
@@ -277,7 +295,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\FreeMindTestFiles";
+            return "..\\..\\IntegrationTests\\TestFiles\\FreeMindTestFiles2";
         }
 
         public override TimeSpan? GetTimeToCommit()

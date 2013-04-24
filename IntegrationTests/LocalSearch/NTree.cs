@@ -38,5 +38,16 @@ namespace Sando.IntegrationTests.LocalSearch
             return children.Count;
         }
 
+        public void RemoveChildren()
+        {
+            children.Clear();
+        }
+
+        public void RemoveChild(NTree<T> child)
+        {
+            children.Remove(child);
+        }
+
     }
+        
 }

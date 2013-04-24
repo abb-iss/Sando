@@ -104,30 +104,13 @@ namespace Sando.LocalSearch
             }            
         }
 
-        public List<CodeNavigationResult> GetCallees(CodeSearchResult codeSearchResult)
+        public List<CodeNavigationResult> GetCallees(CodeSearchResult codeSearchResult, bool ignoreMultiCallsite = true)
         {   
             var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
-            return GetCallees(method);            
-        }
-
-        public List<ProgramElement> GetCalleesIgnoreMultiCallsite(CodeSearchResult codeSearchResult)
-        {
-            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
-            return GetCalleesIgnoreMultiCallsite(method);
-        }
-
-        public List<CodeNavigationResult> GetCallers(CodeSearchResult codeSearchResult)
-        {
-
-            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
-            return GetCallers(method);
-        }
-
-        public List<ProgramElement> GetCallersIgnoreMultiCallsite(CodeSearchResult codeSearchResult)
-        {
-
-            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
-            return GetCallersIgnoreMultiCallsite(method);
+            if (!ignoreMultiCallsite)
+                return GetCallees(method);
+            else
+                return GetCalleesIgnoreMultiCallsite2(method);
         }
 
         private List<CodeNavigationResult> GetCallees(XElement method)
@@ -143,10 +126,69 @@ namespace Sando.LocalSearch
                     methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
                     methodaselement.RelationLineNumber[0] = callee.Item2;
                     methodaselement.RelationCode = GetXElementFromLineNum(callee.Item2);
-                    listCallees.Add(methodaselement);                    
+                    listCallees.Add(methodaselement);
                 }
             }
             return listCallees;
+        }
+
+        private List<CodeNavigationResult> GetCalleesIgnoreMultiCallsite2(XElement method)
+        {
+            List<CodeNavigationResult> listCallees = new List<CodeNavigationResult>();
+            List<Tuple<XElement, int>> myCallees = null;
+            Calls.TryGetValue(method.GetSrcLineNumber(), out myCallees);
+            if (myCallees != null)
+            {
+                foreach (var callee in myCallees)
+                {
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(callee.Item1, origPath);
+                    var element = methodaselement.ProgramElement;
+                    if (listCallees.FindIndex(x => x.ProgramElement.Name == element.Name &&
+                        x.ProgramElement.DefinitionLineNumber == element.DefinitionLineNumber) < 0)
+                    {
+                        methodaselement.ProgramElementRelation = ProgramElementRelation.CallBy;
+                        methodaselement.RelationLineNumber[0] = callee.Item2; //only add first call site location
+                        methodaselement.RelationCode = GetXElementFromLineNum(callee.Item2);
+                        listCallees.Add(methodaselement);
+                    }
+                }
+            }
+            return listCallees;
+        }
+        
+        public List<ProgramElement> GetCalleesIgnoreMultiCallsite(CodeSearchResult codeSearchResult)
+        {
+            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
+            return GetCalleesIgnoreMultiCallsite(method);
+        }
+
+        private List<ProgramElement> GetCalleesIgnoreMultiCallsite(XElement method)
+        {
+            List<ProgramElement> listCallees = new List<ProgramElement>();
+            List<Tuple<XElement, int>> myCallees = null;
+            Calls.TryGetValue(method.GetSrcLineNumber(), out myCallees);
+            if (myCallees != null)
+            {
+                foreach (var callee in myCallees)
+                {
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(callee.Item1, origPath);
+                    var element = methodaselement.ProgramElement;
+                    if (listCallees.FindIndex(x => x.Name == element.Name &&
+                        x.DefinitionLineNumber == element.DefinitionLineNumber) < 0)
+                        listCallees.Add(element);
+                }
+            }
+            return listCallees;
+        }
+
+        public List<CodeNavigationResult> GetCallers(CodeSearchResult codeSearchResult, bool ignoreMultiCallsite = true)
+        {
+
+            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
+            if (!ignoreMultiCallsite)
+                return GetCallers(method);
+            else
+                return GetCallersIgnoreMultiCallsite2(method);
         }
 
         private List<CodeNavigationResult> GetCallers(XElement method)
@@ -162,12 +204,43 @@ namespace Sando.LocalSearch
                     methodaselement.ProgramElementRelation = ProgramElementRelation.Call;
                     methodaselement.RelationLineNumber[0] = caller.Item2;
                     methodaselement.RelationCode = GetXElementFromLineNum(caller.Item2);
-                    listCallers.Add(methodaselement);                    
+                    listCallers.Add(methodaselement);
                 }
             }
             return listCallers;
         }
 
+        private List<CodeNavigationResult> GetCallersIgnoreMultiCallsite2(XElement method)
+        {
+            List<CodeNavigationResult> listCallers = new List<CodeNavigationResult>();
+            List<Tuple<XElement, int>> myCallers = null;
+            Callers.TryGetValue(method.GetSrcLineNumber(), out myCallers);
+            if (myCallers != null)
+            {
+                foreach (var caller in myCallers)
+                {
+                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(caller.Item1, origPath);
+                    var element = methodaselement.ProgramElement;
+                    if (listCallers.FindIndex(x => x.ProgramElement.Name == element.Name
+                        && x.ProgramElement.DefinitionLineNumber == element.DefinitionLineNumber) < 0)
+                    {
+                        methodaselement.ProgramElementRelation = ProgramElementRelation.Call;
+                        methodaselement.RelationLineNumber[0] = caller.Item2;
+                        methodaselement.RelationCode = GetXElementFromLineNum(caller.Item2);
+                        listCallers.Add(methodaselement);
+                    }
+                }
+            }
+            return listCallers;
+        }
+
+        public List<ProgramElement> GetCallersIgnoreMultiCallsite(CodeSearchResult codeSearchResult)
+        {
+
+            var method = GetMethod(codeSearchResult.ProgramElement as MethodElement);
+            return GetCallersIgnoreMultiCallsite(method);
+        }      
+        
         private List<ProgramElement> GetCallersIgnoreMultiCallsite(XElement method)
         {
             List<ProgramElement> listCallers = new List<ProgramElement>();
@@ -190,24 +263,7 @@ namespace Sando.LocalSearch
             return listCallers;
         }
 
-        private List<ProgramElement> GetCalleesIgnoreMultiCallsite(XElement method)
-        {
-            List<ProgramElement> listCallees = new List<ProgramElement>();
-            List<Tuple<XElement, int>> myCallees = null;
-            Calls.TryGetValue(method.GetSrcLineNumber(), out myCallees);
-            if (myCallees != null)
-            {
-                foreach (var callee in myCallees)
-                {
-                    var methodaselement = XElementToProgramElementConverter.GetMethodElementWRelationFromXElement(callee.Item1, origPath);
-                    var element = methodaselement.ProgramElement;
-                    if(listCallees.FindIndex(x => x.Name == element.Name &&
-                        x.DefinitionLineNumber == element.DefinitionLineNumber) < 0)
-                        listCallees.Add(element);
-                }
-            }
-            return listCallees;
-        }
+       
 
         //find a method call's definition if it is defined in the same file
         public XElement GetMethodFromCall(XElement call)
