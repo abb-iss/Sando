@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using ABB.SrcML.VisualStudio.SrcMLService;
 using Sando.Core.Extensions.Logging;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -12,10 +13,15 @@ namespace Sando.Parser
 {
     public class SrcMLCppParser : IParser
     {
+        public ISrcMLGlobalService SrcMLService;
         public SrcMLArchive Archive { get; set; }           // should be deleted
         public SrcMLGenerator Generator { get; set; }
 
         public SrcMLCppParser() {
+        }
+
+        public SrcMLCppParser(ISrcMLGlobalService srcmlService) {
+            this.SrcMLService = srcmlService;
         }
 
         public SrcMLCppParser(SrcMLArchive archive) {
@@ -29,7 +35,14 @@ namespace Sando.Parser
         public List<ProgramElement> Parse(string fileName) {
             var programElements = new List<ProgramElement>();
             XElement sourceElements;
-            if(Archive != null) {
+            if(SrcMLService != null) {
+                sourceElements = SrcMLService.GetXElementForSourceFile(fileName);
+                if(sourceElements != null) {
+                    programElements = Parse(fileName, sourceElements);
+                } else {
+                    FileLogger.DefaultLogger.ErrorFormat("SrcMLCppParser: File not found in SrcMLService: {0}", fileName);
+                }
+            } else if(Archive != null) {
                 sourceElements = Archive.GetXElementForSourceFile(fileName);
                 if(sourceElements != null) {
                     programElements = Parse(fileName, sourceElements);
