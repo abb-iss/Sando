@@ -7,7 +7,6 @@ using Sando.Core.Extensions.Logging;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using Sando.Indexer.Searching;
-using Microsoft.VisualStudio.Shell;
 
 namespace Sando.UI.Actions
 {
@@ -84,25 +83,11 @@ namespace Sando.UI.Actions
                 if (text.Contains("*") && !isQuoted)
                 {
                     text = LuceneQueryStringBuilder.EscapeChars(text);
-                    if (Is2012())
-                    {
-                        text = text.Replace("*", ".*");
-                        objSel.FindPattern(text, 8, ref textRanges);
-                    }
-                    else
-                        objSel.FindPattern(text, 1024, ref textRanges);
+                    objSel.FindPattern(text, 1024, ref textRanges);
                 }
                 else
                     objSel.FindPattern(text, 0, ref textRanges);                
                 objSel.SelectLine();             
-            }
-
-            private static bool Is2012()
-            {
-                EnvDTE.DTE dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
-                if (dte.Version.Contains("11.0"))
-                    return true;
-                return false;
             }    	
 
     		private static void InitDte2()
