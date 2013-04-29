@@ -35,6 +35,8 @@ using System.Threading.Tasks;
 using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
 using Sando.Core.Logging;
+using Sando.Core.Logging.Events;
+using Sando.Core.Logging.Persistence;
 
 
 

@@ -13,7 +13,7 @@ namespace Sando.Core.UnitTests.Logging
         [Test]
         public void GIVEN_FileLoggerNotInitialize_WHEN_SetupDefautlFileLoggerMethodIsCalled_AND_DefaultLoggerIsUsed_THEN_LogFileShouldBeCreatedAndContainLoggedMessage()
         {
-            FileLogger.SetupDefaultFileLogger(_directoryPath);
+			SandoLogManager.StartDefaultLogging(_directoryPath);
 			LogEvents.TestLogging(this);
             var logFiles = Directory.GetFiles(_directoryPath).AsEnumerable().Where(f => f.Contains("Sando") && f.EndsWith(".log")).ToList();
             Assert.IsTrue(logFiles.Any(), "There should be log file created!");

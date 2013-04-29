@@ -8,6 +8,7 @@ using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using ABB.SrcML;
 using Sando.Core.Logging.Events;
+using Sando.Core.Logging.Persistence;
 
 namespace Sando.Parser
 {
