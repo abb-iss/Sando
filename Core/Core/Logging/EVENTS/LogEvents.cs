@@ -129,13 +129,13 @@ namespace Sando.Core.Logging.Events
 
 		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
 		{
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre search metrics: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre retrieval: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
 		}
 
-        public static void PostSearch(Object sender, int numOfResults, double avgscore, double stddevscore)
+        public static void PostSearch(Object sender, int numOfResults, int maxNumOfResults, double avgscore, double stddevscore)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search returned " + numOfResults + " results");
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval metrics: AvgScore = " + avgscore + ", StdDevScore = " + stddevscore);
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval: NumberOfResults=" + numOfResults + ", MaxNumberOfResultsPossible=" + maxNumOfResults);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval: AvgScore=" + avgscore + ", StdDevScore=" + stddevscore);
 
         }
 

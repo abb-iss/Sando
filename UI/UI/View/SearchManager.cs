@@ -76,8 +76,8 @@ namespace Sando.UI.View
                 }
                 _searchResultListener.Update(results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
-
-				LogEvents.PostSearch(this, results.Count(), PostRetrievalMetrics.AvgScore(results.ToList()), PostRetrievalMetrics.StdDevScore(results.ToList()));
+				
+				LogEvents.PostSearch(this, results.Count(), criteria.NumberOfSearchResultsReturned, PostRetrievalMetrics.AvgScore(results.ToList()), PostRetrievalMetrics.StdDevScore(results.ToList()));
             }
             catch (Exception e)
             {
