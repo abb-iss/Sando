@@ -37,7 +37,10 @@ namespace Sando.Core.Logging.Events
 
         public static void SelectingRecommendationItem(Object sender, int rank)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query recommendation at rank " + rank + " was selected");
+			if (rank > 0)
+			{
+				DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query recommendation at rank " + rank + " was selected");
+			}
         }
 
         public static void SelectingCodeSearchResult(Object sender, int rank)
