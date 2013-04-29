@@ -9,7 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
@@ -18,6 +18,8 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
+using Sando.Core.Logging.Events;
+using Sando.Indexer.Searching.Metrics;
 
 namespace Sando.UI.View
 {
@@ -243,12 +245,16 @@ namespace Sando.UI.View
                 var result = sender as ListBoxItem;
                 if (result != null)
                 {
-                    FileOpener.OpenItem(result.Content as CodeSearchResult, searchBox.Text);
+                    var searchResult = result.Content as CodeSearchResult;
+                    FileOpener.OpenItem(searchResult, searchBox.Text);
+
+                    var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
+                    LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
                 }
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
                 MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
             }
         }
@@ -346,6 +352,8 @@ namespace Sando.UI.View
 
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var listview = sender as ListView;
+            LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
             UpdateExpansionState(searchResultListbox);
         }
 
@@ -378,7 +386,10 @@ namespace Sando.UI.View
         {
             var listBox = sender as ListBox;
             if (listBox != null)
+            {
                 listBox.ScrollIntoView(listBox.SelectedItem);
+                LogEvents.SelectingRecommendationItem(this, listBox.SelectedIndex + 1);
+            }
         }
 
         private void Toggled_Popup(object sender, RoutedEventArgs e)
@@ -426,7 +437,7 @@ namespace Sando.UI.View
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
             }
         }
 

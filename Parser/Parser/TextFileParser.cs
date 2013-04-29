@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging.Events;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
@@ -42,7 +42,7 @@ namespace Sando.Parser
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "The file could not be read:"));
+                LogEvents.ParserGenericFileError(this, filename);
             }
             return list;
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sando.Core.Extensions.Logging
+namespace Sando.Core.Logging.Persistence
 {
 	public class ExceptionFormatter
 	{

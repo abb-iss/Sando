@@ -3,7 +3,7 @@ using System.IO;
 using ABB.SrcML;
 using ABB.SrcML.VisualStudio.SrcMLService;
 using Sando.Core.Extensions;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.Indexer;
 using Sando.Indexer.IndexFiltering;
@@ -13,6 +13,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
+using Sando.Core.Logging.Events;
 
 
 namespace Sando.UI.Monitoring
@@ -120,7 +121,7 @@ namespace Sando.UI.Monitoring
 
         public void MonitoringStopped(object sender, EventArgs args)
         {
-            FileLogger.DefaultLogger.Info("Sando: MonitoringStopped()");
+			LogEvents.UIMonitoringStopped(this);
             var currentIndexer = ServiceLocator.ResolveOptional<DocumentIndexer>();
             if (currentIndexer != null)
             {
