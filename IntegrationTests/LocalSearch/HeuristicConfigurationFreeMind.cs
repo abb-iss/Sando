@@ -96,12 +96,19 @@ namespace Sando.IntegrationTests.LocalSearch
                     for (double w2 = 1; w2 <= 1; w2++)
                         for (double w3 = 1; w3 <= 1; w3++)
                         {
-                            int lookahead = 2;
-                            int lookback = 3;
+                            int lookahead = 0; // 0 - 2
+                            int lookback = 1;  //1 - 3
+                            bool set = true;
                             bool decay = true;
 
+                            if (set)
+                            {
+                                lookahead = 2;
+                                lookback = 3;
+                            }
+
                             heuristicWeightComb configuration =
-                                new heuristicWeightComb(decay, w0, lookahead, w1, w2, lookback, w3);
+                                new heuristicWeightComb(set, decay, w0, lookahead, w1, w2, lookback, w3);
 
                             //recommendation trees building
                             foreach (var searchresultfull in gbuilder.InitialSearchResults)
@@ -122,6 +129,7 @@ namespace Sando.IntegrationTests.LocalSearch
                             }
 
                             String outputStr = "Number of Navigation of ("
+                                + set.ToString() + " "
                                 + decay.ToString() + " "
                                 + w0.ToString() + " "
                                 + w1.ToString() + " "
@@ -155,7 +163,8 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public struct heuristicWeightComb
         {
-            public bool showBeforeDecay;
+            public bool Decay;
+            public bool Set;
             public double showBeforeW;
             public int searchResLookahead;
             public double AmongSearchResW;
@@ -163,9 +172,10 @@ namespace Sando.IntegrationTests.LocalSearch
             public int editDistanceLookback;
             public double EditDistanceW;
 
-            public heuristicWeightComb(bool decay, double w0, int lookahead, double w1, double w2, int lookback, double w3)
+            public heuristicWeightComb(bool set, bool decay, double w0, int lookahead, double w1, double w2, int lookback, double w3)
             {
-                showBeforeDecay = decay;
+                Decay = decay;
+                Set = set;
                 showBeforeW = w0;
                 searchResLookahead = lookahead;
                 AmongSearchResW = w1;
@@ -242,8 +252,10 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             List<CodeNavigationResult> childrenElements
-                = gbuilder.GetRecommendations(rootElement as CodeSearchResult, config.showBeforeDecay, config.showBeforeW,
-                config.searchResLookahead, config.AmongSearchResW, config.TopologyW,
+                = gbuilder.GetRecommendations(rootElement as CodeSearchResult, config.Set, config.Decay, 
+                config.showBeforeW,
+                config.searchResLookahead, config.AmongSearchResW, 
+                config.TopologyW,
                 config.editDistanceLookback, config.EditDistanceW);
 
             if (childrenElements.Count == 0)

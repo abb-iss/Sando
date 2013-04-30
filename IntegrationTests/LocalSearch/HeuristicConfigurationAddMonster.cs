@@ -156,8 +156,10 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             List<CodeNavigationResult> childrenElements 
-                = gbuilder.GetRecommendations(rootElement as CodeSearchResult, config.showBeforeDecay, config.showBeforeW,
-                config.searchResLookahead, config.AmongSearchResW, config.TopologyW,
+                = gbuilder.GetRecommendations(rootElement as CodeSearchResult, true, config.showBeforeDecay, 
+                config.showBeforeW,
+                config.searchResLookahead, config.AmongSearchResW, 
+                config.TopologyW,
                 config.editDistanceLookback, config.EditDistanceW);
 
             if (childrenElements.Count == 0)

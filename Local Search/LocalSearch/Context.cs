@@ -146,6 +146,7 @@ namespace Sando.LocalSearch
         }
 
         public void RankRelatedInfoWithWeights(ref List<CodeNavigationResult> RelatedProgramElements,
+            bool set,
             bool decay, 
             double ShowBeforeWeight,
             int searchResultsLookahead, double AmongSearchResWeight, 
@@ -163,7 +164,7 @@ namespace Sando.LocalSearch
             CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
             ShowBeforeHeuristic(ref RelatedProgramElements, ShowBeforeWeight, decay);
             AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight, decay);
-            TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, decay);
+            TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, decay, set);
             EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight, decay);
             //UseLocationHeuristic(ref RelatedProgramElements);                        
 
@@ -203,7 +204,7 @@ namespace Sando.LocalSearch
                 if (ExistingInCurrentPath(CurrentPath, relatedProgramElement, out location))
                 {
                     if (!decay)
-                        relatedProgramElement.Score = relatedProgramElement.Score - 1;
+                        relatedProgramElement.Score = relatedProgramElement.Score - 1 * weight;
                     else
                     {
                         int temp = 2 ^ (pathLen - location - 1);
@@ -409,7 +410,8 @@ namespace Sando.LocalSearch
         }
         
         private void TopologyHeuristic(CodeSearchResult sourceProgramElement,
-            ref List<CodeNavigationResult> RelatedProgramElements, double baseweight, bool decay = false)
+            ref List<CodeNavigationResult> RelatedProgramElements, double baseweight, 
+            bool decay = false, bool set = false)
         {
             double numberOfCallers = 0;
             double numberOfCalls = 0;
@@ -423,8 +425,10 @@ namespace Sando.LocalSearch
             if (sourceProgramElement.ProgramElementType == ProgramElementType.Field)
             {
                 List<ProgramElement> FieldUsers = graph.GetFieldUsersIgnoreMultiUse(sourceAsCodeSearchRes);
-                numberOfUsers = Convert.ToDouble(FieldUsers.Count()); 
-                double numberOfUsersInterest = GetReinforceScore(CurrentPath, FieldUsers, decay);
+                numberOfUsers = Convert.ToDouble(FieldUsers.Count());
+                double numberOfUsersInterest = 0;
+                if(set)
+                    numberOfUsersInterest = GetReinforceScore(CurrentPath, FieldUsers, decay);
 
                 foreach (var relatedProgramElement in RelatedProgramElements)
                 {
@@ -434,7 +438,9 @@ namespace Sando.LocalSearch
                     {
                         List<ProgramElement> FieldUses = graph.GetFieldUsesIgnoreMultiUse(relatedProgramElement as CodeSearchResult);
                         numberOfUses = Convert.ToDouble(FieldUses.Count());
-                        double numberofUsesInterest = GetReinforceScore(CurrentPath, FieldUses, decay);
+                        double numberofUsesInterest = 1;
+                        if(set)
+                            numberofUsesInterest = GetReinforceScore(CurrentPath, FieldUses, decay);
 
                         degree = ((FixedNumerator + numberOfUsersInterest) / numberOfUsers) *
                             ((numberofUsesInterest) / numberOfUses);
@@ -460,19 +466,29 @@ namespace Sando.LocalSearch
                     {
                         List<ProgramElement> IMethodCalls = graph.GetCalleesIgnoreMultiCallsite(relatedProgramElement as CodeSearchResult);
                         double INumOfCalls = Convert.ToDouble(IMethodCalls.Count());
-                        double numberOfCallersInterest = GetReinforceScore(CurrentPath, MethodCallers, decay);
-                        double numberOfCallsInterest = GetReinforceScore(CurrentPath, IMethodCalls, decay);
+                        double numberOfCallersInterest = 0; 
+                        double numberOfCallsInterest = 1; 
+                        if (set)
+                        {
+                            numberOfCallersInterest = GetReinforceScore(CurrentPath, MethodCallers, decay);
+                            numberOfCallsInterest = GetReinforceScore(CurrentPath, IMethodCalls, decay);
+                        }
 
-                        degree = ((FixedNumerator+numberOfCallers) / numberOfCallers) * 
-                            ((INumOfCalls) / INumOfCalls);
+                        degree = ((FixedNumerator+numberOfCallersInterest) / numberOfCallers) *
+                            ((numberOfCallsInterest) / INumOfCalls);
                     }
 
                     if (relation == ProgramElementRelation.CallBy)
                     {
                         List<ProgramElement> IMethodCallers = graph.GetCallersIgnoreMultiCallsite(relatedProgramElement as CodeSearchResult);
                         double INumOfCallers = Convert.ToDouble(IMethodCallers.Count());
-                        double numberOfCallersInterest = GetReinforceScore(CurrentPath, IMethodCallers, decay);
-                        double numberOfCallsInterest = GetReinforceScore(CurrentPath, MethodCallees, decay);
+                        double numberOfCallersInterest = 1;  
+                        double numberOfCallsInterest = 0;
+                        if (set)
+                        {
+                            numberOfCallersInterest = GetReinforceScore(CurrentPath, IMethodCallers, decay);
+                            numberOfCallsInterest = GetReinforceScore(CurrentPath, MethodCallees, decay);
+                        }                        
                         degree = ((FixedNumerator + numberOfCallsInterest) / numberOfCalls) *
                             ( numberOfCallersInterest / INumOfCallers);
                     }
@@ -481,8 +497,13 @@ namespace Sando.LocalSearch
                     {
                         List<ProgramElement> IFieldUsers = graph.GetFieldUsersIgnoreMultiUse(relatedProgramElement as CodeSearchResult);
                         double INumOfUsers = Convert.ToDouble(IFieldUsers.Count());
-                        double numberOfUsersInterest = GetReinforceScore(CurrentPath, IFieldUsers, decay);
-                        double numberOfUsesInterest = GetReinforceScore(CurrentPath, FieldUses, decay);
+                        double numberOfUsersInterest = 1;  
+                        double numberOfUsesInterest = 0;  
+                        if (set)
+                        {
+                            numberOfUsersInterest = GetReinforceScore(CurrentPath, IFieldUsers, decay);
+                            numberOfUsesInterest = GetReinforceScore(CurrentPath, FieldUses, decay);
+                        }
                         degree = ((FixedNumerator + numberOfUsesInterest) / numberOfUses) *
                             ((numberOfUsersInterest) / INumOfUsers);
                     }
@@ -543,6 +564,23 @@ namespace Sando.LocalSearch
             return count;
         }
 
+        private int GetInterscetionSize(List<ProgramElement> Set1, List<ProgramElement> Set2)
+        {
+            int count = 0;
+
+            foreach (var element1 in Set1)
+                foreach (var element2 in Set2)
+                {
+                    if ((element1.Name == element2.Name)
+                        && (element1.DefinitionLineNumber == element2.DefinitionLineNumber))
+                    {
+                        count++;
+                        break;
+                    }
+                }
+            return count;
+        }
+
         private double GetIntersectionWithDecay(List<CodeSearchResult> InterestSet, List<ProgramElement> TargetSet)
         {
             double reinforceScore = 0;
@@ -592,7 +630,6 @@ namespace Sando.LocalSearch
             for (int i = 1; i <= steps; i++)
             {
                 CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
-                double absoluteweight = listOfDegree[i - 1] * baseweight;
                 EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
             }
 
@@ -809,6 +846,75 @@ namespace Sando.LocalSearch
             return res;
         }
 
+        private void DataFlowHeuristicInPath(ref List<CodeNavigationResult> relatedProgramElements,
+           int steps, double baseweight, bool decay = false)
+        {
+            if (CurrentPath.Count < steps)
+                steps = CurrentPath.Count;
+
+            List<double> listOfDegree = new List<double>();
+            listOfDegree.Add(1);
+            for (int i = 2; i <= steps; i++)
+            {
+                if (decay)
+                {
+                    int temp = 2 ^ (i - 1);
+                    listOfDegree.Add(1 / Convert.ToDouble(temp));
+                }
+                else
+                    listOfDegree.Add(1);
+            }
+
+            List<double> listOfAbsScores = new List<double>();
+            for (int i = 0; i < relatedProgramElements.Count; i++)
+                listOfAbsScores.Add(0);
+
+            for (int i = 1; i <= steps; i++)
+            {
+                CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
+                DataFlowHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
+            }
+
+            // Normalize Final Score by Max
+            NormalizeScoreByMax(ref listOfAbsScores);
+            int cnt = 0;
+            foreach (var element in relatedProgramElements)
+            {
+                element.Score += baseweight * listOfAbsScores[cnt];
+                cnt++;
+            }
+        }
+
+        private void DataFlowHeuristic(CodeSearchResult ProgramElementToCompare,
+            ref List<CodeNavigationResult> relatedProgramElements, double weight, ref List<double> rankingScores)
+        {
+            if (ProgramElementToCompare.ProgramElementType != ProgramElementType.Method)
+                return;
+
+            int cnt = 0;
+            foreach (var relatedelement in relatedProgramElements)
+            {
+                double degree = 0;
+
+                if (relatedelement.ProgramElement.ProgramElementType == ProgramElementType.Method)
+                {
+                    var fields1 = graph.GetFieldUsesIgnoreMultiUse(relatedelement as CodeSearchResult);
+                    var fields2 = graph.GetFieldUsesIgnoreMultiUse(ProgramElementToCompare);
+                    int intersectSize = GetInterscetionSize(fields1, fields2);
+                    int fieldUseSize = fields1.Count();
+                    degree = Convert.ToDouble(intersectSize) / Convert.ToDouble(fieldUseSize);
+                }
+
+                rankingScores[cnt] += degree * weight;
+                cnt++;
+            }
+
+            //Assert: cnt == relatedProgramElements.Count()
+
+        }
+
+
+
         #endregion ranking heuristics
 
         #region public APIs
@@ -844,7 +950,7 @@ namespace Sando.LocalSearch
         }
 
         public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult,
-            bool decay, 
+            bool set, bool decay, 
             double showBeforeW,
             int searchResLookahead, double AmongSearchResW, 
             double TopologyW,
@@ -852,7 +958,7 @@ namespace Sando.LocalSearch
         {
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
-            RankRelatedInfoWithWeights(ref recommendations, decay, showBeforeW, searchResLookahead, AmongSearchResW,
+            RankRelatedInfoWithWeights(ref recommendations, set, decay, showBeforeW, searchResLookahead, AmongSearchResW,
                 TopologyW, editDistanceLookback, EditDistanceW);
 
             return recommendations;
