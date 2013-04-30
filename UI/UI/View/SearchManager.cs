@@ -51,8 +51,6 @@ namespace Sando.UI.View
                 searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
                     LogEvents.InvalidCharactersInQuery(this);
 
-				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader, ServiceLocator.Resolve<Analyzer>());
-				LogEvents.PreSearch(this, preMetrics.AvgIdf(searchString), preMetrics.AvgSqc(searchString), preMetrics.AvgVar(searchString));
                 LogEvents.PreSearchQueryAnalysis(this, QueryMetrics.ExamineQuery(searchString).ToString(), QueryMetrics.DiceCoefficient(QueryMetrics.SavedQuery, searchString));
                 QueryMetrics.SavedQuery = searchString;
 
@@ -76,8 +74,6 @@ namespace Sando.UI.View
                 }
                 _searchResultListener.Update(results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
-				
-				LogEvents.PostSearch(this, results.Count(), criteria.NumberOfSearchResultsReturned, PostRetrievalMetrics.AvgScore(results.ToList()), PostRetrievalMetrics.StdDevScore(results.ToList()));
             }
             catch (Exception e)
             {

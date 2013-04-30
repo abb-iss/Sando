@@ -32,20 +32,20 @@ namespace Sando.Core.Logging.Events
 
         public static void InvalidCharactersInQuery(Object sender)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Invalid characters found in query. Search aborted.");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query Error: Invalid characters found in query, search aborted.");
         }
 
         public static void SelectingRecommendationItem(Object sender, int rank)
         {
 			if (rank > 0)
 			{
-				DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query recommendation at rank " + rank + " was selected");
+				DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Recommendation item selected: SelectedRecommendationRank=" + rank );
 			}
         }
 
         public static void SelectingCodeSearchResult(Object sender, int rank)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Result at rank " + rank + " was selected");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "User single-clicked a result: SingleClickedResultRank=" + rank );
         }
 
         public static void OpeningCodeSearchResult(CodeSearchResult result, int rank, string queryMatchDescription)
@@ -54,13 +54,16 @@ namespace Sando.Core.Logging.Events
             var resultFile = result.FileName;
             if (resultFile.EndsWith(".cs")) lang = "C#";
             if (resultFile.EndsWith(".cpp") || resultFile.EndsWith(".c") || resultFile.EndsWith(".h") || resultFile.EndsWith(".cc")) lang = "C++";
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", result.ProgramElementType.ToString() + " (" + queryMatchDescription + ")" + 
-                                                                    " (" + lang + ") (LuceneScore=" + result.Score + ") at rank " + rank + " was opened in VS editor");
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("FileOpener", "User double-clicked a result: TypeOfResult=" +  result.ProgramElementType.ToString() +
+																	", QueryToResultSimilarityDescription=" + queryMatchDescription +
+																	", ResultLanguage=" + lang + 
+																	", ResultLuceneScore=" + result.Score + 
+																	", DoubleClickedResultRank=" + rank );
         }
 
         public static void SolutionOpened(Object sender, string solutionName)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "A solution was opened, hash=" + solutionName.GetHashCode());
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Solution opened: SolutionHash=" + solutionName.GetHashCode());
         }
 
         public static void UIGenericError(Object sender, Exception ex)
@@ -124,18 +127,18 @@ namespace Sando.Core.Logging.Events
 
         public static void PreSearchQueryAnalysis(Object sender, string queryDescription, double diceCoeff)
         {
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted: " + queryDescription + " ; Dice Coeff (w/ prev query)=" + diceCoeff);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted by user: " + queryDescription + " ; DiceCoefficientToPreviousQuery=" + diceCoeff);
 		}
 
 		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
 		{
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre retrieval: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre retrieval metrics: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
 		}
 
         public static void PostSearch(Object sender, int numOfResults, int maxNumOfResults, double avgscore, double stddevscore)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval: NumberOfResults=" + numOfResults + ", MaxNumberOfResultsPossible=" + maxNumOfResults);
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval: AvgScore=" + avgscore + ", StdDevScore=" + stddevscore);
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Sando returned results: NumberOfResults=" + numOfResults + ", MaxNumberOfResultsPossible=" + maxNumOfResults);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Post retrieval metrics: AvgScore=" + avgscore + ", StdDevScore=" + stddevscore);
 
         }
 

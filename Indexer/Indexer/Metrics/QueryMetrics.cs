@@ -87,15 +87,15 @@ namespace Sando.Indexer.Searching.Metrics
         {
             if (progElem.Name.Contains(query))
             {
-                return "Name_ContainsQuery";
+                return "NameContainsQuery";
             }
             else if (progElem.RawSource.Contains(query))
             {
-                return "RawSource_ContainsQuery";
+                return "RawSourceContainsQuery";
             }
             else
             {
-                return "NoMatchWithQuery";
+                return "QueryNotInNameOrRawSource";
             }
         }
 
