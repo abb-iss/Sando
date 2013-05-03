@@ -90,58 +90,60 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetFound.Add(false);
             }
 
-            for (double w0 = 1; w0 <= 1; w0++ )
+            for (double w0 = 1; w0 <= 1; w0++)
                 for (double w1 = 1; w1 <= 1; w1++)
                     for (double w2 = 1; w2 <= 1; w2++)
                         for (double w3 = 1; w3 <= 1; w3++)
-                        {
-                            int lookahead = 0; // 0 - 1
-                            int lookback = 1;  //1 - 3
-                            bool set = false;
-                            bool decay = false;
-
-                            if (set)
+                            for (double w4 = 1; w4 <= 1; w4++ )
                             {
-                                lookahead = 1;
-                                lookback = 3;
-                            }
+                                int lookahead = 0; // 0 - 1
+                                int lookback = 1;  //1 - 3
+                                int lookback2 = 1;
+                                bool set = false;
+                                bool decay = false;
 
-                            heuristicWeightComb configuration =
-                                new heuristicWeightComb(set, decay, w0, lookahead, w1, w2, lookback, w3);
+                                if (set)
+                                {
+                                    lookahead = 1;
+                                    lookback = 3;
+                                }
 
-                            //recommendation trees building
-                            foreach (var searchresultfull in gbuilder.InitialSearchResults)
-                            {
-                                if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
-                                    break;
+                                heuristicWeightComb configuration =
+                                    new heuristicWeightComb(set, decay, w0, lookahead, w1, w2, lookback, w3, lookback2, w4);
 
-                                var searchresult = searchresultfull.Item1;
-                                
-                                int number = Convert.ToInt32(searchresult.ProgramElement.DefinitionLineNumber);
-                                CodeNavigationResult rootElement = new CodeNavigationResult(searchresult.ProgramElement, searchresult.Score, gbuilder.GetXElementFromLineNum(number));
-                                NTree<CodeNavigationResult> rootTreeNode = new NTree<CodeNavigationResult>(rootElement);
+                                //recommendation trees building
+                                foreach (var searchresultfull in gbuilder.InitialSearchResults)
+                                {
+                                    if (targetSatisfied(targetFound) || stopCriteriaSatisfied(numberOfNavigation, stopLine))
+                                        break;
 
-                                //recommendTrees.Add(rootTreeNode);
+                                    var searchresult = searchresultfull.Item1;
 
-                                TreeBuild(ref rootTreeNode, gbuilder, 0, configuration, ref targetFound,
-                                    ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);
-                            }
+                                    int number = Convert.ToInt32(searchresult.ProgramElement.DefinitionLineNumber);
+                                    CodeNavigationResult rootElement = new CodeNavigationResult(searchresult.ProgramElement, searchresult.Score, gbuilder.GetXElementFromLineNum(number));
+                                    NTree<CodeNavigationResult> rootTreeNode = new NTree<CodeNavigationResult>(rootElement);
 
-                            String outputStr = "Number of Navigation of ("
-                                + set.ToString() + " "
-                                + decay.ToString() + " "
-                                + w0.ToString() + " "
-                                + w1.ToString() + " "
-                                + w2.ToString() + " "
-                                + w3.ToString() + "): ";
+                                    //recommendTrees.Add(rootTreeNode);
 
-                            for (int i = 0; i < numberOfNavigation.Count; i++)
-                            {
-                                outputStr += numberOfNavigation[i].ToString() + " ";
-                            }
+                                    TreeBuild(ref rootTreeNode, gbuilder, 0, configuration, ref targetFound,
+                                        ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);
+                                }
 
-                            Console.Write(outputStr);
-                        }                                
+                                String outputStr = "Number of Navigation of ("
+                                    + set.ToString() + " "
+                                    + decay.ToString() + " "
+                                    + w0.ToString() + " "
+                                    + w1.ToString() + " "
+                                    + w2.ToString() + " "
+                                    + w3.ToString() + "): ";
+
+                                for (int i = 0; i < numberOfNavigation.Count; i++)
+                                {
+                                    outputStr += numberOfNavigation[i].ToString() + " ";
+                                }
+
+                                Console.Write(outputStr);
+                            }                                
 
         }
 
@@ -170,8 +172,11 @@ namespace Sando.IntegrationTests.LocalSearch
             public double TopologyW;
             public int editDistanceLookback;
             public double EditDistanceW;
+            public int dataFlowLookback;
+            public double DataFlowW;
 
-            public heuristicWeightComb(bool set, bool decay, double w0, int lookahead, double w1, double w2, int lookback, double w3)
+            public heuristicWeightComb(bool set, bool decay, double w0, int lookahead, double w1, double w2, 
+                int lookback, double w3, int lookback2, double w4)
             {
                 Set = set;
                 Decay = decay;
@@ -181,6 +186,8 @@ namespace Sando.IntegrationTests.LocalSearch
                 TopologyW = w2;
                 editDistanceLookback = lookback;
                 EditDistanceW = w3;
+                dataFlowLookback = lookback2;
+                DataFlowW = w4;
             }
 
         }
@@ -263,7 +270,8 @@ namespace Sando.IntegrationTests.LocalSearch
                 config.showBeforeW,
                 config.searchResLookahead, config.AmongSearchResW, 
                 config.TopologyW,
-                config.editDistanceLookback, config.EditDistanceW);
+                config.editDistanceLookback, config.EditDistanceW,
+                config.dataFlowLookback, config.DataFlowW);
 
             if (childrenElements.Count == 0)
             {

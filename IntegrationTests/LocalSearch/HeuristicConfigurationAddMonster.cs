@@ -112,7 +112,7 @@ namespace Sando.IntegrationTests.LocalSearch
             public double TopologyW;
             public int editDistanceLookback;
             public double EditDistanceW;
-
+           
             public heuristicWeightComb(bool decay, double w0, int lookahead, double w1, double w2, int lookback, double w3)
             {
                 showBeforeDecay = decay;

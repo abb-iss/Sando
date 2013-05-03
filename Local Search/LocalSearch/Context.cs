@@ -151,7 +151,8 @@ namespace Sando.LocalSearch
             double ShowBeforeWeight,
             int searchResultsLookahead, double AmongSearchResWeight, 
             double TopologyWeight, 
-            int editDistanceLookback, double EditDistanceWeight)
+            int editDistanceLookback, double EditDistanceWeight,
+            int dataFlowLookback, double DataFlowWeight)
         {
             if (RelatedProgramElements.Count() == 0)
                 return;
@@ -166,6 +167,7 @@ namespace Sando.LocalSearch
             AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight, decay);
             TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, decay, set);
             EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight, decay);
+            DataFlowHeuristicInPath(ref RelatedProgramElements, dataFlowLookback, DataFlowWeight, decay);
             //UseLocationHeuristic(ref RelatedProgramElements);                        
 
             //bubble ranking
@@ -954,12 +956,13 @@ namespace Sando.LocalSearch
             double showBeforeW,
             int searchResLookahead, double AmongSearchResW, 
             double TopologyW,
-            int editDistanceLookback, double EditDistanceW)
+            int editDistanceLookback, double EditDistanceW,
+            int dataflowLookback = 1, double DataFlowW = 0)
         {
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
             RankRelatedInfoWithWeights(ref recommendations, set, decay, showBeforeW, searchResLookahead, AmongSearchResW,
-                TopologyW, editDistanceLookback, EditDistanceW);
+                TopologyW, editDistanceLookback, EditDistanceW, dataflowLookback, DataFlowW);
 
             return recommendations;
         }

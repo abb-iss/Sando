@@ -95,9 +95,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 for (double w1 = 1; w1 <= 1; w1++)
                     for (double w2 = 1; w2 <= 1; w2++)
                         for (double w3 = 1; w3 <= 1; w3++)
+                            for (double w4 = 1; w4 <= 1; w4++)
                         {
                             int lookahead = 0; // 0 - 2
                             int lookback = 1;  //1 - 3
+                            int lookback2 = 1;
                             bool set = true;
                             bool decay = true;
 
@@ -108,7 +110,7 @@ namespace Sando.IntegrationTests.LocalSearch
                             }
 
                             heuristicWeightComb configuration =
-                                new heuristicWeightComb(set, decay, w0, lookahead, w1, w2, lookback, w3);
+                                new heuristicWeightComb(set, decay, w0, lookahead, w1, w2, lookback, w3, lookback2, w4);
 
                             //recommendation trees building
                             foreach (var searchresultfull in gbuilder.InitialSearchResults)
@@ -171,8 +173,11 @@ namespace Sando.IntegrationTests.LocalSearch
             public double TopologyW;
             public int editDistanceLookback;
             public double EditDistanceW;
+            public int dataFlowLookback;
+            public double DataFlowW;
 
-            public heuristicWeightComb(bool set, bool decay, double w0, int lookahead, double w1, double w2, int lookback, double w3)
+            public heuristicWeightComb(bool set, bool decay, double w0, int lookahead, double w1, double w2, 
+                int lookback, double w3, int lookback2, double w4)
             {
                 Decay = decay;
                 Set = set;
@@ -182,6 +187,8 @@ namespace Sando.IntegrationTests.LocalSearch
                 TopologyW = w2;
                 editDistanceLookback = lookback;
                 EditDistanceW = w3;
+                dataFlowLookback = lookback2;
+                DataFlowW = w4;
             }
 
         }
@@ -256,7 +263,8 @@ namespace Sando.IntegrationTests.LocalSearch
                 config.showBeforeW,
                 config.searchResLookahead, config.AmongSearchResW, 
                 config.TopologyW,
-                config.editDistanceLookback, config.EditDistanceW);
+                config.editDistanceLookback, config.EditDistanceW,
+                config.dataFlowLookback, config.DataFlowW);
 
             if (childrenElements.Count == 0)
             {
