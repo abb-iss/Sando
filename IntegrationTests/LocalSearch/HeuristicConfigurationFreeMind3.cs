@@ -30,17 +30,22 @@ namespace Sando.IntegrationTests.LocalSearch
      *                 --> Save(definition, 373, same file, different class) 
      *                 --> Save(getModel().getFile) (callby, 378)
      *                 --> Save(definition, 560)
+     *                 
+     * 3. EncryptedMindMapNode.java
+     *  isDecrypted @ 59
+     *  isAccessable @ 392
+     *  save @ 296
     */
 
     [TestFixture]
-    public class HeuristicConfigurationFreeMind2 : AutomaticallyIndexingTestClass
+    public class HeuristicConfigurationFreeMind3 : AutomaticallyIndexingTestClass
     {
         [Test]
-        public void FreeMindTest2()
+        public void FreeMindTest3()
         {
             //SetTargetSet();
-            
-            string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\ControllerAdapter.java";
+
+            string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\EncryptedMindMapNode.java";
             int treeDepthThreshold = 5;
             int stopLine = 30;
 
@@ -65,16 +70,12 @@ namespace Sando.IntegrationTests.LocalSearch
                 }   
             }
 
-            //       (search result) --> actionPerformed (definition 968)
-     //                              --> mc.save(callby, 969)
-     //                 --> save(definition, 373, same file, different class) 
-     //                 --> save(getModel().getFile) (callby, 378)
-     //                 --> save(definition, 560)
+            //       isDecrypted @ 59,  isAccessable @ 392,  save @ 296
             List<targetProgramElement> targetSet = new List<targetProgramElement>();
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
-            int[] linenumber = { 968, 373, 560};
-            String[] elements = { "actionPerformed", "save", "save" };
+            int[] linenumber = { 59, 392, 296};
+            String[] elements = { "isDecrypted", "isAccessable", "save" };
             ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other
@@ -90,17 +91,17 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetFound.Add(false);
             }
 
-            for (double w0 = 1; w0 <= 1; w0++)
+            for (double w0 = 0; w0 <= 0; w0++)
                 for (double w1 = 1; w1 <= 1; w1++)
-                    for (double w2 = 1; w2 <= 1; w2++)
-                        for (double w3 = 1; w3 <= 1; w3++)
-                            for (double w4 = 1; w4 <= 1; w4++ )
+                    for (double w2 = 0; w2 <= 0; w2++)
+                        for (double w3 = 0; w3 <= 0; w3++)
+                            for (double w4 = 0; w4 <= 0; w4++ )
                             {
                                 int lookahead = 0; // 0 - 1
                                 int lookback = 1;  //1 - 3
                                 int lookback2 = 1;
-                                bool set = false;
-                                bool decay = false;
+                                bool set = true;
+                                bool decay = true;
 
                                 if (set)
                                 {
@@ -243,9 +244,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 if (targetFound[i] == true)
                     continue;
 
-                if (rootElement.RelationLineNumber[0] == target.relationLine &&
+                if (//rootElement.RelationLineNumber[0] == target.relationLine &&
+                     rootElement.ProgramElement.DefinitionLineNumber == target.relationLine &&
                      rootElement.Name == target.elementName
-                    && rootElement.ProgramElementRelation == target.relationName)
+                    //&& rootElement.ProgramElementRelation == target.relationName
+                    )
                 {
                     targetFound[i] = true;
                     break; //can't be another target
@@ -314,7 +317,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles\\FreeMindTestFiles2";
+            return "..\\..\\IntegrationTests\\TestFiles\\FreeMindTestFiles3";
         }
 
         public override TimeSpan? GetTimeToCommit()

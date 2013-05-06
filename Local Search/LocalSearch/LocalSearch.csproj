@@ -107,6 +107,10 @@
     <Compile Include="XElementToProgramElementConverter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Core\Core\Core.csproj">
+      <Project>{db482a0e-4294-4008-bc79-d22505b5b661}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DependencyInjection\DependencyInjection\DependencyInjection.csproj">
       <Project>{c4332491-cd26-408e-8e80-7d1c7a5c6abe}</Project>
       <Name>DependencyInjection</Name>

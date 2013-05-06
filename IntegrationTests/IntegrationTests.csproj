@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="AutomaticallyIndexingTestClass.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationFreeMind2.cs" />
+    <Compile Include="LocalSearch\HeuristicConfigurationFreeMind3.cs" />
     <Compile Include="LocalSearch\NTree.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationAddMonster.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -106,6 +107,8 @@
     <Compile Include="Search\NameWithNumbersSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Content Include="TestFiles\jpassWordSafeTestFiles\PasswordSafeJFace.cs" />
+    <Content Include="TestFiles\FreeMindTestFiles3\EncryptedMindMapNode.cs" />
     <Content Include="TestFiles\FreeMindTestFiles2\ControllerAdapter.cs" />
     <Content Include="TestFiles\AddMonsterTestFiles\CreatureManager.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -117,6 +120,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\ControllerAdapter.java" />
+    <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\EncryptedMindMapNode.java" />
     <Content Include="TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\MindMapMapModel.java" />
     <Content Include="TestFiles\MethodElementTestFiles\Hello.cpp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

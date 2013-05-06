@@ -8,6 +8,8 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 using ABB.SrcML;
 using System.Xml;
 using System.Xml.Linq;
+using Sando.ExtensionContracts.SplitterContracts;
+using Sando.Core.Tools;
 
 namespace Sando.LocalSearch
 {
@@ -672,6 +674,10 @@ namespace Sando.LocalSearch
                 //if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
                 //    degree = 1;
 
+                List<string> parts_relatedelement = WordSplitter.ExtractSearchTerms(relatedelement.Name);
+                List<string> parts_elementtocompare = WordSplitter.ExtractSearchTerms(ProgramElementToCompare.Name);
+                degree = Convert.ToDouble(parts_relatedelement.Intersect(parts_elementtocompare).Count());
+
                 double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
                 if (distance == 0) //very little chance to hit
                     degree += 2; 
@@ -903,8 +909,9 @@ namespace Sando.LocalSearch
                     var fields1 = graph.GetFieldUsesIgnoreMultiUse(relatedelement as CodeSearchResult);
                     var fields2 = graph.GetFieldUsesIgnoreMultiUse(ProgramElementToCompare);
                     int intersectSize = GetInterscetionSize(fields1, fields2);
-                    int fieldUseSize = fields1.Count();
-                    degree = Convert.ToDouble(intersectSize) / Convert.ToDouble(fieldUseSize);
+                    //int fieldUseSize = fields1.Count();
+                    //degree = Convert.ToDouble(intersectSize) / Convert.ToDouble(fieldUseSize);
+                    degree = Convert.ToDouble(intersectSize);
                 }
 
                 rankingScores[cnt] += degree * weight;
@@ -944,9 +951,12 @@ namespace Sando.LocalSearch
         
         public List<CodeNavigationResult> GetRecommendations(CodeSearchResult codeSearchResult)
         {            
-            List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
+            //List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
-            RankRelatedInfo(ref recommendations, 2);
+            //RankRelatedInfo(ref recommendations, 2);
+
+            List<CodeNavigationResult> recommendations =
+                GetRecommendations(codeSearchResult, true, false, 1, 1, 1, 0, 1, 2, 1, 1);
 
             return recommendations;
         }
@@ -1041,7 +1051,7 @@ namespace Sando.LocalSearch
             return graph.GetRelation(searchRes1, searchRes2, ref UsedLineNumber);
         }
         
-          public Context Copy()
+        public Context Copy()
         {
             return this;
         }
