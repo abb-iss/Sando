@@ -374,6 +374,18 @@ namespace Sando.UI.View
                 textBox.Focus();
         }
 
+        public void ShowProgressBar(bool visible)
+        {
+            if (Thread.CurrentThread == Dispatcher.Thread)
+            {
+                ProgBar.Visibility = (visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                Dispatcher.Invoke((Action)(() => ProgBar.Visibility = (visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed));
+            }
+        }
+
         private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = sender as ListBox;
