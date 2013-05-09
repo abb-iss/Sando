@@ -51,7 +51,7 @@ namespace Sando.IntegrationTests.LocalSearch
             Context gbuilder = new Context(keywords);
             gbuilder.Intialize(testfilePath);
 
-            Console.WriteLine(codeSearchResults.Count); //debugging
+            //Console.WriteLine(codeSearchResults.Count); //debugging
 
             if (codeSearchResults.Count == 0)
                 codeSearchResults = gbuilder.GetRecommendations().ToList();
@@ -61,7 +61,7 @@ namespace Sando.IntegrationTests.LocalSearch
                 if ((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
                 {
                     gbuilder.InitialSearchResults.Add(Tuple.Create(initialSearchRes, 1));
-                    Console.WriteLine(initialSearchRes.Name); //debugging
+                    //Console.WriteLine(initialSearchRes.Name); //debugging
                 }   
             }
 
@@ -73,39 +73,47 @@ namespace Sando.IntegrationTests.LocalSearch
             List<targetProgramElement> targetSet = new List<targetProgramElement>();
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
-            int[] linenumber = { 245,  250, 303, 286, 292};
-            String[] elements = { "save", "saveInternal",  "getXml", "getXml", "getXml"};
+            int[] linenumber = { 245,  250, 303, 286, 292, 653};
+            String[] elements = { "save", "saveInternal",  "getXml", "getXml", "getXml", "run"};
             ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other, 
-                                                   ProgramElementRelation.Other};
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other
+                                                 };
 
             for (int i = 0; i < linenumber.Length; i++)
             {
                 targetProgramElement target =
                 new targetProgramElement(linenumber[i], elements[i], relations[i]);
 
-                targetSet.Add(target);
-                numberOfNavigation.Add(0);
-                targetFound.Add(false);
+                targetSet.Add(target);                
             }
 
-            for (double w0 = 1; w0 <= 1; w0++ )
-                for (double w1 = 1; w1 <= 1; w1++)
-                    for (double w2 = 1; w2 <= 1; w2++)
-                        for (double w3 = 1; w3 <= 1; w3++)
-                            for (double w4 = 1; w4 <= 1; w4++)
+            for (double w0 = 0; w0 <= 2; w0++ )
+                for (double w1 = 0; w1 <= 2; w1++)
+                    for (double w2 = 0; w2 <= 2; w2++)
+                        for (double w3 = 0; w3 <= 2; w3++)
+                            for (double w4 = 0; w4 <= 2; w4++)
                         {
-                            int lookahead = 0; // 0 - 2
+                            numberOfNavigation.Clear();
+                            targetFound.Clear();
+                            for (int i = 0; i < linenumber.Length; i++)
+                            {
+                                numberOfNavigation.Add(0);
+                                targetFound.Add(false);
+                            }
+
+                            int lookahead = 0; // 0 - 1
                             int lookback = 1;  //1 - 3
                             int lookback2 = 1;
-                            bool set = true;
-                            bool decay = true;
+                            bool set = false;
+                            bool decay = false;
 
                             if (set)
                             {
-                                lookahead = 2;
+                                lookahead = 1;
                                 lookback = 3;
                                 lookback2 = 3;
                             }
@@ -137,15 +145,26 @@ namespace Sando.IntegrationTests.LocalSearch
                                 + w0.ToString() + " "
                                 + w1.ToString() + " "
                                 + w2.ToString() + " "
-                                + w3.ToString() + "): ";
+                                + w3.ToString() + " "
+                                + w4.ToString() + "): ";
 
+                            bool output = true;
                             for (int i = 0; i < numberOfNavigation.Count; i++)
                             {
+                                if (numberOfNavigation[i] > stopLine)
+                                {
+                                    output = false;
+                                    break;
+                                }
                                 outputStr += numberOfNavigation[i].ToString() + " ";
                             }
 
-                            Console.Write(outputStr);
-                        }                                
+                            if(output)
+                                Console.Write(outputStr);
+
+
+                            gbuilder.CurrentPath.Clear();
+                        }      
 
         }
 
@@ -232,8 +251,8 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             CodeNavigationResult rootElement = rootNode.getData();
-            Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-                + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+            //Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+            //    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
             for (int i = 0; i < targetSet.Count; i++)
             {
                 targetProgramElement target = targetSet[i];
@@ -241,8 +260,10 @@ namespace Sando.IntegrationTests.LocalSearch
                     continue;
 
                 if (rootElement.RelationLineNumber[0] == target.relationLine &&
-                     rootElement.Name == target.elementName
-                    && rootElement.ProgramElementRelation == target.relationName)
+                     rootElement.Name == target.elementName &&
+                    // rootElement.ProgramElement.DefinitionLineNumber == target.relationLine
+                     rootElement.ProgramElementRelation == target.relationName
+                    )
                 {
                     targetFound[i] = true;
                     break; //can't be another target
@@ -267,6 +288,7 @@ namespace Sando.IntegrationTests.LocalSearch
                 config.editDistanceLookback, config.EditDistanceW,
                 config.dataFlowLookback, config.DataFlowW);
 
+            //Console.WriteLine("number of children: " + childrenElements.Count.ToString()); //debug
             if (childrenElements.Count == 0)
             {
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
@@ -277,17 +299,12 @@ namespace Sando.IntegrationTests.LocalSearch
             foreach (var child in childrenElements)
             {
                 rootNode.addChild(child);
-            }
-
-            for (int i = 0; i < rootNode.getChildNumber(); i++)
-            {
-                NTree<CodeNavigationResult> newrootNode = rootNode.getChild(i);
+                NTree<CodeNavigationResult> newrootNode = rootNode.getChild(0);
                 TreeBuild(ref newrootNode, gbuilder, depth, config, ref targetFound, ref numberOfNavigation,
                     ref targetSet, treeDepthThreshold, stopLine);
+                rootNode.RemoveChild(newrootNode);
             }
-
-            //gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count-1);
-            //depth--;
+                        
         }
         
 

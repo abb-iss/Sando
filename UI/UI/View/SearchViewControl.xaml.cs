@@ -309,8 +309,8 @@ namespace Sando.UI.View
                 else
                     SearchResults.Add(codeSearchResult);
             }
-            if(LastSearchLocal)
-                ShowPopups = true;
+            if (LastSearchLocal)
+                ShowPopups = true;               
         }
 
         public void UpdateMessage(string message)

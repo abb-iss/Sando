@@ -165,11 +165,16 @@ namespace Sando.LocalSearch
 
             //score setting
             CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
-            ShowBeforeHeuristic(ref RelatedProgramElements, ShowBeforeWeight, decay);
-            AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight, decay);
-            TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, decay, set);
-            EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight, decay);
-            DataFlowHeuristicInPath(ref RelatedProgramElements, dataFlowLookback, DataFlowWeight, decay);
+            if (ShowBeforeWeight > 0)
+                ShowBeforeHeuristic(ref RelatedProgramElements, ShowBeforeWeight, decay);
+            if (AmongSearchResWeight > 0)
+                AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight, decay);
+            if (TopologyWeight > 0)
+                TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, decay, set);
+            if (EditDistanceWeight > 0)
+                EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight, decay);
+            if (DataFlowWeight > 0)
+                DataFlowHeuristicInPath(ref RelatedProgramElements, dataFlowLookback, DataFlowWeight, decay);
             //UseLocationHeuristic(ref RelatedProgramElements);                        
 
             //bubble ranking
@@ -211,11 +216,12 @@ namespace Sando.LocalSearch
                         relatedProgramElement.Score = relatedProgramElement.Score - 1 * weight;
                     else
                     {
-                        int temp = 2 ^ (pathLen - location - 1);
+                        //int temp = 2 ^ (pathLen - location - 1);
+                        int temp = pathLen - location;
                         double decayfactor = 0;
                         try
                         {
-                            decayfactor = 1 / Convert.ToDouble(temp);
+                            decayfactor = 1 / Convert.ToDouble(temp);                             
                         }
                         catch (Exception e)
                         {
@@ -224,6 +230,13 @@ namespace Sando.LocalSearch
                         relatedProgramElement.Score = relatedProgramElement.Score - (1 * decayfactor) * weight;
                     }
                 }
+
+                //if a definition never shows, give it the highest score
+                //else
+                //{
+                //    if (relatedProgramElement.ProgramElementRelation == ProgramElementRelation.Other)
+                //        relatedProgramElement.Score += 1 * weight;
+                //}
                 
             }
         }
@@ -240,7 +253,8 @@ namespace Sando.LocalSearch
             {
                 if (decay)
                 {
-                    int temp = 2 ^ i;
+                    //int temp = 2 ^ i;
+                    int temp = i + 1;
                     weights.Add(1 / Convert.ToDouble(temp));
                 }
                 else
@@ -598,7 +612,8 @@ namespace Sando.LocalSearch
                     if ((elementTarget.Name == elementI.Name)
                         && (elementTarget.DefinitionLineNumber == elementI.DefinitionLineNumber))
                     {
-                        int temp = 2^(length-i-1);
+                        //int temp = 2^(length-i-1);
+                        int temp = length - i;
                         reinforceScore += 1/Convert.ToDouble(temp);
                         break;
                     }
@@ -620,7 +635,8 @@ namespace Sando.LocalSearch
             {
                 if (decay)
                 {
-                    int temp = 2 ^ (i - 1);
+                    //int temp = 2 ^ (i - 1);
+                    int temp = i;
                     listOfDegree.Add(1 / Convert.ToDouble(temp));
                 }
                 else
@@ -703,6 +719,10 @@ namespace Sando.LocalSearch
 
                 if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
                     degree = 1;
+
+                //List<string> parts_relatedelement = WordSplitter.ExtractSearchTerms(relatedelement.Name);
+                //List<string> parts_elementtocompare = WordSplitter.ExtractSearchTerms(ProgramElementToCompare.Name);
+                //degree = Convert.ToDouble(parts_relatedelement.Intersect(parts_elementtocompare).Count());
 
                 double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
                 if (distance == 0) //very little chance to hit
@@ -956,8 +976,13 @@ namespace Sando.LocalSearch
             //RankRelatedInfo(ref recommendations, 2);
 
             List<CodeNavigationResult> recommendations =
-                GetRecommendations(codeSearchResult, true, false, 1, 1, 1, 0, 1, 2, 1, 1);
-
+               // GetRecommendations(codeSearchResult, true, true, 1, 0, 1, 1, 3, 1, 3, 1);
+              GetRecommendations(codeSearchResult, false, false, 
+              1,  //w1
+              0, 2, //lookahead, w2
+              0, //w3
+              1, 0, //lookback, w4
+              1, 0); //lookback, w5
             return recommendations;
         }
 
@@ -969,6 +994,8 @@ namespace Sando.LocalSearch
             int editDistanceLookback, double EditDistanceW,
             int dataflowLookback = 1, double DataFlowW = 0)
         {
+            //Console.WriteLine(codeSearchResult.Name); //debug
+            
             List<CodeNavigationResult> recommendations = GetBasicRecommendations(codeSearchResult);
 
             RankRelatedInfoWithWeights(ref recommendations, set, decay, showBeforeW, searchResLookahead, AmongSearchResW,

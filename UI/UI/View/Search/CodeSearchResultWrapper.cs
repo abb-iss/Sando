@@ -20,7 +20,8 @@ namespace Sando.UI.View.Search
         {
             get
             {
-                return ServiceLocator.Resolve<RecommendationGetter>().Convert(this as CodeSearchResult, 1) + " ← " + ServiceLocator.Resolve<RecommendationGetter>().Convert(this as CodeSearchResult, 0) + " ← ";
+               // return ServiceLocator.Resolve<RecommendationGetter>().Convert(this as CodeSearchResult, 1) + " ← " + ServiceLocator.Resolve<RecommendationGetter>().Convert(this as CodeSearchResult, 0) + " ← ";
+                return "debug";
             }
         }
 

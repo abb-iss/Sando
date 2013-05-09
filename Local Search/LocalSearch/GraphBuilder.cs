@@ -515,7 +515,14 @@ namespace Sando.LocalSearch
         {
             List<ProgramElement> listUses = new List<ProgramElement>();
             List<Tuple<XElement, int>> myUses = null;
-            FieldUses.TryGetValue(method.GetSrcLineNumber(), out myUses);
+            try
+            {
+                FieldUses.TryGetValue(method.GetSrcLineNumber(), out myUses);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("bug");
+            }
             if (myUses != null)
             {
                 foreach (var use in myUses)
@@ -976,7 +983,17 @@ namespace Sando.LocalSearch
 
             List<String> listParas = new List<string>();
             foreach (var para in paras)
-                listParas.Add(para.Value);            
+            {
+                try
+                {
+                    listParas.Add(para.Value);
+
+                }
+                catch (Exception e)
+                {
+                    listParas.Add("");
+                }
+            }
             
             //handle single names
             if (NameStrings.Contains(fieldname) 

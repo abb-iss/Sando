@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticallyIndexingTestClass.cs" />
+    <Compile Include="LocalSearch\HeuristicConfigurationJPass.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationFreeMind2.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationFreeMind3.cs" />
     <Compile Include="LocalSearch\NTree.cs" />
@@ -91,7 +92,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
     <Compile Include="LocalSearch\HeuristicConfigurationFreeMind.cs" />
-    <Compile Include="LocalSearch\HeuristicConfigurationjpassWordSafe.cs" />
     <Compile Include="LocalSearch\HeuristicConfigurationRachota.cs" />
     <Compile Include="MockProgress.cs" />
     <Compile Include="IProgressCallback.cs" />
@@ -107,6 +107,7 @@
     <Compile Include="Search\NameWithNumbersSearchTest.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Compile>
+    <Content Include="TestFiles\RachotaTestFiles\HistoryView.cs" />
     <Content Include="TestFiles\jpassWordSafeTestFiles\PasswordSafeJFace.cs" />
     <Content Include="TestFiles\FreeMindTestFiles3\EncryptedMindMapNode.cs" />
     <Content Include="TestFiles\FreeMindTestFiles2\ControllerAdapter.cs" />

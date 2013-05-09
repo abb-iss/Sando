@@ -46,7 +46,7 @@ namespace Sando.IntegrationTests.LocalSearch
             //SetTargetSet();
 
             string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\EncryptedMindMapNode.java";
-            int treeDepthThreshold = 5;
+            int treeDepthThreshold = 10;
             int stopLine = 30;
 
             string keywords = "Saving failed"; //"Saving Failed";
@@ -56,7 +56,7 @@ namespace Sando.IntegrationTests.LocalSearch
             Context gbuilder = new Context(keywords);
             gbuilder.Intialize(testfilePath);
 
-            Console.WriteLine(codeSearchResults.Count); //debugging
+            //Console.WriteLine(codeSearchResults.Count); //debugging
 
             if (codeSearchResults.Count == 0)
                 codeSearchResults = gbuilder.GetRecommendations().ToList();
@@ -66,7 +66,7 @@ namespace Sando.IntegrationTests.LocalSearch
                 if ((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
                 {
                     gbuilder.InitialSearchResults.Add(Tuple.Create(initialSearchRes, 1));
-                    Console.WriteLine(initialSearchRes.Name); //debugging
+                   // Console.WriteLine(initialSearchRes.Name); //debugging
                 }   
             }
 
@@ -75,7 +75,7 @@ namespace Sando.IntegrationTests.LocalSearch
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
             int[] linenumber = { 59, 392, 296};
-            String[] elements = { "isDecrypted", "isAccessable", "save" };
+            String[] elements = { "isDecrypted", "isAccessible", "save" };
             ProgramElementRelation[] relations = { ProgramElementRelation.Other, 
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other
@@ -86,18 +86,25 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetProgramElement target =
                 new targetProgramElement(linenumber[i], elements[i], relations[i]);
 
-                targetSet.Add(target);
-                numberOfNavigation.Add(0);
-                targetFound.Add(false);
+                targetSet.Add(target);                
             }
 
-            for (double w0 = 0; w0 <= 0; w0++)
-                for (double w1 = 1; w1 <= 1; w1++)
-                    for (double w2 = 0; w2 <= 0; w2++)
-                        for (double w3 = 0; w3 <= 0; w3++)
-                            for (double w4 = 0; w4 <= 0; w4++ )
+            for (double w0 = 0; w0 <= 2; w0++)
+                for (double w1 = 0; w1 <= 2; w1++)
+                    for (double w2 = 0; w2 <= 2; w2++)
+                        for (double w3 = 0; w3 <= 2; w3++)
+                            for (double w4 = 0; w4 <= 2; w4++ )
                             {
-                                int lookahead = 0; // 0 - 1
+                                numberOfNavigation.Clear();
+                                targetFound.Clear();
+                                for (int i = 0; i < linenumber.Length; i++)
+                                {   
+                                    numberOfNavigation.Add(0);
+                                    targetFound.Add(false);
+                                }
+
+
+                                int lookahead = 0; // 0 - 2
                                 int lookback = 1;  //1 - 3
                                 int lookback2 = 1;
                                 bool set = true;
@@ -131,20 +138,31 @@ namespace Sando.IntegrationTests.LocalSearch
                                         ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);
                                 }
 
+                                
                                 String outputStr = "Number of Navigation of ("
                                     + set.ToString() + " "
                                     + decay.ToString() + " "
                                     + w0.ToString() + " "
                                     + w1.ToString() + " "
                                     + w2.ToString() + " "
-                                    + w3.ToString() + "): ";
+                                    + w3.ToString() + " "
+                                    + w4.ToString() + "): ";
 
+                                bool output = true;
                                 for (int i = 0; i < numberOfNavigation.Count; i++)
                                 {
+                                    if (numberOfNavigation[i] > stopLine)
+                                    {
+                                        output = false;
+                                        break;
+                                    }
                                     outputStr += numberOfNavigation[i].ToString() + " ";
                                 }
 
-                                Console.Write(outputStr);
+                                if (output)
+                                    Console.Write(outputStr);
+
+                                gbuilder.CurrentPath.Clear();
                             }                                
 
         }
@@ -231,9 +249,9 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             CodeNavigationResult rootElement = rootNode.getData();
-            Console.WriteLine("+[" + (depth + 1).ToString() + "] "
-                + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-                + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+            //Console.WriteLine("+[" + (depth + 1).ToString() + "] "
+            //    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+            //    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
             gbuilder.CurrentPath.Add(rootElement as CodeSearchResult);
             //Console.WriteLine("Last element of current path: " + gbuilder.CurrentPath.ElementAt(gbuilder.CurrentPath.Count - 1).Name); //debug
             depth++;
@@ -244,10 +262,10 @@ namespace Sando.IntegrationTests.LocalSearch
                 if (targetFound[i] == true)
                     continue;
 
-                if (//rootElement.RelationLineNumber[0] == target.relationLine &&
-                     rootElement.ProgramElement.DefinitionLineNumber == target.relationLine &&
+                if ( rootElement.RelationLineNumber[0] == target.relationLine &&
+                     //rootElement.ProgramElement.DefinitionLineNumber == target.relationLine &&
                      rootElement.Name == target.elementName
-                    //&& rootElement.ProgramElementRelation == target.relationName
+                     && rootElement.ProgramElementRelation == target.relationName
                     )
                 {
                     targetFound[i] = true;
@@ -260,9 +278,9 @@ namespace Sando.IntegrationTests.LocalSearch
 
             if (depth >= treeDepthThreshold)
             {
-                Console.WriteLine("-[" +depth.ToString() + "] "
-                    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-                    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+                //Console.WriteLine("-[" +depth.ToString() + "] "
+                //    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+                //    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
                 depth--;
                 //Console.WriteLine("Last element of current path: " + gbuilder.CurrentPath.ElementAt(gbuilder.CurrentPath.Count - 1).Name); //debug
@@ -277,11 +295,12 @@ namespace Sando.IntegrationTests.LocalSearch
                 config.editDistanceLookback, config.EditDistanceW,
                 config.dataFlowLookback, config.DataFlowW);
 
+            //Console.WriteLine("number of children: " + childrenElements.Count.ToString()); //debug
             if (childrenElements.Count == 0)
             {
-                Console.WriteLine("-[" +depth.ToString() + "] "
-                    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-                    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+                //Console.WriteLine("-[" +depth.ToString() + "] "
+                //    + rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+                //    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
                 depth--;
                 //Console.WriteLine("Last element : " 

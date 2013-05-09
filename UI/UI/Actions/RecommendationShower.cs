@@ -26,6 +26,7 @@ namespace Sando.UI.Actions
         private RelatedItemsWindow myWindow;
         private RelatedItems itemsView;
         private CodeSearchResult starter;
+        private List<CodeSearchResult> searchRes;
         private Point point;
         private Window ParentWindow;
 
@@ -34,6 +35,16 @@ namespace Sando.UI.Actions
         public RecommendationShower(CodeSearchResult starter, string fileName, Dispatcher dispatcher, Point point)
         {
             // TODO: Complete member initialization
+            this.starter = starter;
+            this.fileName = fileName;
+            this.dispatcher = dispatcher;
+            this.point = point;
+        }
+
+        public RecommendationShower(List<CodeSearchResult> initialres, CodeSearchResult starter, string fileName, Dispatcher dispatcher, Point point)
+        {
+            // TODO: Complete member initialization
+            this.searchRes = initialres;
             this.starter = starter;
             this.fileName = fileName;
             this.dispatcher = dispatcher;
@@ -93,6 +104,17 @@ namespace Sando.UI.Actions
             var selected = (e.Argument as RecommendParameters).Item;
             var itemsView = (e.Argument as RecommendParameters).MyView;
             context.CurrentPath.Add(selected);
+
+            if (context.InitialSearchResults.Count == 0)
+            {
+                if (searchRes.Count > 0)
+                {
+                    foreach (var res in searchRes)
+                        context.InitialSearchResults.Add(Tuple.Create(res, 1));
+                }
+
+            }
+
             var relatedmembers = context.GetRecommendations(selected);            
             
             if (Thread.CurrentThread == dispatcher.Thread)
@@ -126,7 +148,11 @@ namespace Sando.UI.Actions
         public static RecommendationShower Create(ListView listBox, string fileName, Dispatcher dispatcher)
         {
             var point = (listBox.ItemContainerGenerator.ContainerFromIndex(listBox.SelectedIndex) as ListViewItem).PointToScreen(new Point(-10, 0)); ;
-            return new RecommendationShower(listBox.SelectedItem as CodeSearchResult, fileName, dispatcher,point).SetParentWindow(Window.GetWindow(listBox));
+            //return new RecommendationShower(listBox.SelectedItem as CodeSearchResult, fileName, dispatcher,point).SetParentWindow(Window.GetWindow(listBox));
+            List<CodeSearchResult> res = new List<CodeSearchResult> ();
+             for (int i = 0; i < listBox.Items.Count;i++)
+                res.Add(listBox.Items[i] as CodeSearchResult);
+             return new RecommendationShower(res, listBox.SelectedItem as CodeSearchResult, fileName, dispatcher, point).SetParentWindow(Window.GetWindow(listBox));
         }
 
         public static RecommendationShower Create(CodeSearchResult selected, string fileName, Dispatcher dispatcher, Point point)

@@ -13,7 +13,16 @@ namespace Sando.LocalSearch
 
         public static CodeNavigationResult GetMethodElementWRelationFromXElement(XElement fullmethod, string fileName)
         {
-            var definitionLineNumber = fullmethod.Element(SRC.Name).GetSrcLineNumber();            
+            var definitionLineNumber = 0;
+            try
+            {
+                definitionLineNumber = fullmethod.Element(SRC.Name).GetSrcLineNumber();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("bug " + fileName);
+                Console.WriteLine(fullmethod.ToSource());
+            }
             var block = fullmethod.Element(SRC.Block);
             var snippet = "{ }";
             if (block != null)

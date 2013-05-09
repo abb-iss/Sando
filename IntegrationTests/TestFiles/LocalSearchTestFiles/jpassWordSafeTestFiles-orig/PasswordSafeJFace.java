@@ -261,7 +261,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	/**
 	 * @see org.eclipse.jface.window.Window#createContents(org.eclipse.swt.widgets.Composite)
 	 */
-	@Override
+	//@Override
 	protected Control createContents(Composite parent) {
 		Composite container = new Composite(parent, SWT.NONE);
 		container.setLayout(new FillLayout(SWT.VERTICAL));
@@ -325,7 +325,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	/**
 	 * @see org.eclipse.jface.window.ApplicationWindow#createMenuManager()
 	 */
-	@Override
+	//@Override
 	protected MenuManager createMenuManager() {
 		MenuManager result = new MenuManager(Messages.getString("PasswordSafeJFace.Menu.Menu")); //$NON-NLS-1$
 
@@ -434,7 +434,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	/**
 	 * @see org.eclipse.jface.window.ApplicationWindow#createToolBarManager(int)
 	 */
-	@Override
+	//@Override
 	protected ToolBarManager createToolBarManager(int style) {
 		ToolBarManager toolBarManager = new ToolBarManager(style);
 
@@ -459,7 +459,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	/**
 	 * @see org.eclipse.jface.window.ApplicationWindow#createStatusLineManager()
 	 */
-	@Override
+	//@Override
 	protected StatusLineManager createStatusLineManager() {
 		StatusLineManager statusLineManager = new StatusLineManager();
 		statusLineManager.setMessage("http://jpwsafe.sf.net"); //$NON-NLS-1$
@@ -510,7 +510,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	/**
 	 * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
 	 */
-	@Override
+	//@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		newShell.setText(PasswordSafeJFace.APP_NAME);
@@ -526,7 +526,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	/**
 	 * @see org.eclipse.jface.window.Window#getInitialSize()
 	 */
-	@Override
+	//@Override
 	protected Point getInitialSize() {
 		return new Point(425, 375);
 	}
@@ -1312,12 +1312,12 @@ public class PasswordSafeJFace extends ApplicationWindow {
 	 * 
 	 * @return a shell listener
 	 */
-	@Override
+	//@Override
 	protected ShellListener getShellListener() {
 		return new ShellAdapter() {
 			volatile private boolean unlocking = false; 			
 			
-			@Override
+			//@Override
 			public void shellClosed(ShellEvent event) {
 				log.trace("PWSJface shell listener enter 'Closed'"); //$NON-NLS-1$
 				event.doit = false; // don't close now
@@ -1346,7 +1346,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 			 * @param e an event containing information about the activation
 			 */
 			
-			@Override
+			//@Override
 			public void shellActivated(ShellEvent e) {
 				//TODO: avoid recalling when aborting unlock
 				log.trace("PWSJface shell listener enter 'Activated'"); //$NON-NLS-1$
@@ -1382,7 +1382,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 			 *
 			 * @param e an event containing information about the deactivation
 			 */
-			@Override
+			//@Override
 			public void shellDeactivated(ShellEvent e) {
 				log.trace("PWSJface shell listener enter 'Deactivated'"); //$NON-NLS-1$
 
@@ -1400,7 +1400,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 			 * @param e an event containing information about the un-minimization
 			 */
 			
-			@Override
+			//@Override
 			public void shellDeiconified(ShellEvent e) {
 				log.trace("PWSJface shell listener enter 'Deiconified'"); //$NON-NLS-1$
 				
@@ -1440,7 +1440,7 @@ public class PasswordSafeJFace extends ApplicationWindow {
 			 *
 			 * @param e an event containing information about the minimization
 			 */
-			@Override
+			//@Override
 			public void shellIconified(ShellEvent e) {
 				log.trace("PWSJface shell listener enter 'Iconified'"); //$NON-NLS-1$
 

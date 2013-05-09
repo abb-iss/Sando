@@ -34,7 +34,7 @@ namespace Sando.IntegrationTests.LocalSearch
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
             
             Context gbuilder = new Context(keywords);
-            gbuilder.Intialize(@"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\AddMonsterTestFiles\CreatureManager.cs");
+            gbuilder.Intialize(@"..\..\IntegrationTests\TestFiles\AddMonsterTestFiles\CreatureManager.cs");
             foreach (var initialSearchRes in codeSearchResults)
             {
                 if((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
