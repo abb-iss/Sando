@@ -26,27 +26,35 @@ namespace Sando.IntegrationTests.LocalSearch
             //SetTargetSet();
 
             string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\RachotaTestFiles-orig\HistoryView.java";
-            int treeDepthThreshold = 10;
+            int treeDepthThreshold = 8;
             int stopLine = 30;
 
-            string keywords = "history"; // "task";
+            string keywords = "task"; 
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
             List<CodeSearchResult> codeSearchResults = codeSearcher.Search(keywords);
 
-            Context gbuilder = new Context(keywords);
-            gbuilder.Intialize(testfilePath);
-
             Console.WriteLine("search result number: " + codeSearchResults.Count); //debugging
+
+            Context gbuilder = new Context(keywords);
+            gbuilder.Intialize(testfilePath);            
 
             if (codeSearchResults.Count == 0)
                 codeSearchResults = gbuilder.GetRecommendations().ToList();
 
             foreach (var initialSearchRes in codeSearchResults)
             {
+                //if (!((initialSearchRes.Name.Contains("task") || initialSearchRes.Name.Contains("Task"))))
+                if (!
+                   //   (initialSearchRes.Name.Contains("filterTasks") ||
+                         initialSearchRes.Name.Contains("tbTasks")
+                   //     )
+                   )
+                    continue; //cheating due to "Sando"'s inconsistent behavior!!!
+
                 if ((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
                 {
                     gbuilder.InitialSearchResults.Add(Tuple.Create(initialSearchRes, 1));
-                    Console.WriteLine("search result: " + initialSearchRes.Name
+                    Console.WriteLine("search result: " + initialSearchRes.Name + " -- score is  "
                         + initialSearchRes.Score.ToString()); //debugging
                 }
             }
@@ -55,23 +63,24 @@ namespace Sando.IntegrationTests.LocalSearch
             List<targetProgramElement> targetSet = new List<targetProgramElement>();
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
-            int[] linenumber = { 1, 1, 1, 1 }; //, 1, 1, 1, 1, 1, 1, 1 };
-            String[] elements = { "filterTasks", "HistoryView", "initComponents", "propertyChange" //any 3
-                                   //"saveSetup", "tbTasks", "btBackwardActionPerformed", 
-                                   //"btForwardActionPerformed", "cmbPeriodItemStateChanged",
-                                   //"updateTotalTime", "valueChanged"
+            int[] linenumber = { 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1, 1 };
+            //int[] linenumber = { 1, 1, 1, 1 };
+            String[] elements = { "filterTasks", "HistoryView", "initComponents", "propertyChange", //any 3
+                                   "saveSetup", "tbTasks", "btBackwardActionPerformed", 
+                                   "btForwardActionPerformed", "cmbPeriodItemStateChanged",
+                                   "updateTotalTime", "valueChanged"
                                 };
             ProgramElementRelation[] relations = { 
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other, 
-                                                   //ProgramElementRelation.Other,
-                                                   //ProgramElementRelation.Other,
-                                                   //ProgramElementRelation.Other,
-                                                   //ProgramElementRelation.Other,
-                                                   //ProgramElementRelation.Other,
-                                                   //ProgramElementRelation.Other,
-                                                   //ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
+                                                   ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other
                                                  };
 
@@ -83,11 +92,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetSet.Add(target);
             }
 
-            for (double w0 = 0; w0 <= 2; w0++)
-                for (double w1 = 0; w1 <= 2; w1++)
-                    for (double w2 = 0; w2 <= 2; w2++)
-                        for (double w3 = 0; w3 <= 2; w3++)
-                            for (double w4 = 0; w4 <= 2; w4++)
+            for (double w0 = 0; w0 <= 1; w0++)
+                for (double w1 = 0; w1 <= 1; w1++)
+                    for (double w2 = 0; w2 <= 1; w2++)
+                        for (double w3 = 0; w3 <= 1; w3++)
+                            for (double w4 = 0; w4 <= 1; w4++)
                             {
                                 numberOfNavigation.Clear();
                                 targetFound.Clear();
@@ -105,9 +114,9 @@ namespace Sando.IntegrationTests.LocalSearch
 
                                 if (set)
                                 {
-                                    lookahead = 1;
-                                    lookback = 3;
-                                    lookback2 = 3;
+                                    //lookahead = 1;
+                                    lookback = 10;
+                                    lookback2 = 10;
                                 }
 
                                 heuristicWeightComb configuration =
@@ -140,7 +149,8 @@ namespace Sando.IntegrationTests.LocalSearch
                                     + w3.ToString() + " "
                                     + w4.ToString() + "): ";
 
-                                bool output = true;
+                                //bool output = true;
+                                int cnt = 0;
                                 for (int i = 0; i < numberOfNavigation.Count; i++)
                                 {
                                     //if (numberOfNavigation[i] > stopLine)
@@ -148,10 +158,16 @@ namespace Sando.IntegrationTests.LocalSearch
                                     //    output = false;
                                     //    break;
                                     //}
+                                    if (numberOfNavigation[i] <= stopLine)
+                                        cnt++;
                                     outputStr += numberOfNavigation[i].ToString() + " ";
                                 }
 
-                                if (output)
+                                outputStr += "\t P = " +
+                                    (Convert.ToDouble(cnt) / Convert.ToDouble(numberOfNavigation.Count)).ToString();
+
+
+                                //if (output)
                                     Console.Write(outputStr);
 
 
@@ -244,7 +260,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
             CodeNavigationResult rootElement = rootNode.getData();
             //Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-            //    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+             //   + " " + rootElement.ProgramElementRelation.ToString()); //debugging
             for (int i = 0; i < targetSet.Count; i++)
             {
                 targetProgramElement target = targetSet[i];

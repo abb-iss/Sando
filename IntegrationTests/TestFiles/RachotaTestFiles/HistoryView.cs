@@ -72,93 +72,93 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         ProjectsTreeModel model = new ProjectsTreeModel(getDays());
         jtProjects.setModel(model);
         jtProjects.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        jtProjects.addTreeSelectionListener(new ProjectsTreeModel.ProjectsTreeListener() {
-            public void valueChanged(TreeSelectionEvent event) {
-                TreePath treePath = event.getPath();
-                int nodeType = model.getSelectedNodeType(treePath);
-                Vector names = new Vector();
-                Vector shares = new Vector();
-                switch(nodeType) {
-                case ProjectsTreeModel.NODE_TYPE_TASK:
-                    DefaultMutableTreeNode selectedTaskNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-                    ProjectsTreeModel.TaskNode taskNode = (ProjectsTreeModel.TaskNode) selectedTaskNode.getUserObject();
-                    txtName.setText(taskNode.getDescription());
-                    txtName.setCaretPosition(0);
-                    txtName.setFont(txtName.getFont().deriveFont(java.awt.Font.BOLD));
-                    txtTime.setText(Tools.getTime(taskNode.getTotalTime()));
-                    txtTasks.setText("" + taskNode.getTasks().size());
-                    DefaultMutableTreeNode selectedCategoryNode = (DefaultMutableTreeNode) selectedTaskNode.getParent();
-                    ProjectsTreeModel.CategoryNode category = (ProjectsTreeModel.CategoryNode) selectedCategoryNode.getUserObject();
-                    float shareTask = Math.round(((float) taskNode.getTotalTime()/(float) category.getTotalTime())*100);
-                    txtPercentage.setText("" + shareTask + "%");
-                    txtPriority.setText(Task.getPriority(taskNode.getAverageValue(ProjectsTreeModel.TaskNode.PROPERTY_PRIORITY)));
-                    txtState.setText(Task.getState(taskNode.getAverageValue(ProjectsTreeModel.TaskNode.PROPERTY_STATE)));
-                    PieChart taskPieChart = (PieChart) pnShare.getComponent(0);
-                    names.add(taskNode.getDescription());
-                    shares.add(new Float(shareTask));
-                    taskPieChart.setShares(names, shares);
-                    break;
-                case ProjectsTreeModel.NODE_TYPE_CATEGORY:
-                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-                    ProjectsTreeModel.CategoryNode categoryNode = (ProjectsTreeModel.CategoryNode) selectedNode.getUserObject();
-                    LimitedCapacityStack categoryStack = new LimitedCapacityStack(3);
-                    Iterator iterator = categoryNode.getTaskNodes().iterator();
-                    while (iterator.hasNext()) {
-                        ProjectsTreeModel.TaskNode node = (ProjectsTreeModel.TaskNode) iterator.next();
-                        float share = Math.round(((float) node.getTotalTime()/(float) categoryNode.getTotalTime())*100);
-                        categoryStack.put(new Float(share), node.getDescription());
-                    }
-                    txtName.setText(categoryNode.getName());
-                    txtTime.setText(Tools.getTime(categoryNode.getTotalTime()));
-                    txtTasks.setText("" + categoryNode.getTaskNodes().size());
-                    boolean includePrivateTime = ((Boolean) Settings.getDefault().getSetting("countPrivateTasks")).booleanValue();
-                    float shareCategory = Math.round(((float) categoryNode.getTotalTime()/(float) Tools.getTotalTime(true, includePrivateTime, getDays()))*100);
-                    txtPercentage.setText("" + shareCategory + "%");
-                    txtPriority.setText(Task.getPriority(categoryNode.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_PRIORITY)));
-                    txtState.setText(Task.getState(categoryNode.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_STATE)));
-                    PieChart categoryPieChart = (PieChart) pnShare.getComponent(0);
-                    categoryPieChart.setShares(categoryStack.getObjects(), categoryStack.getKeys());
-                    break;
-                default:
-                    DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-                    long totalTime = 0;
-                    int priority = 0;
-                    int state = 0;
-                    int tasks = 0;
-                    int count = rootNode.getChildCount();
-                    LimitedCapacityStack rootStack = new LimitedCapacityStack(3);
-                    if (count != 1) {
-                        Enumeration children = rootNode.children();
-                        while(children.hasMoreElements()) {
-                            DefaultMutableTreeNode subNode = (DefaultMutableTreeNode) children.nextElement();
-                            ProjectsTreeModel.CategoryNode node = (ProjectsTreeModel.CategoryNode) subNode.getUserObject();
-                            totalTime = totalTime + node.getTotalTime();
-                            priority = priority + node.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_PRIORITY);
-                            state = state + node.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_STATE);
-                            tasks = tasks + node.getTaskNodes().size();
-                            float share = Math.round(((float) node.getTotalTime()/(float) Tools.getTotalTime(true, true, getDays()))*100);
-                            rootStack.put(new Float(share), node.getName());
-                        }
-                        priority = priority / count;
-                        state = state / count;
-                    }
-                    txtName.setText(rootNode.getUserObject().toString());
-                    txtTime.setText(Tools.getTime(totalTime));
-                    txtPercentage.setText("100%");
-                    if (count != 1) {
-                        txtTasks.setText("" + tasks);
-                        txtPriority.setText(Task.getPriority(priority));
-                        txtState.setText(Task.getState(state));
-                    } else {
-                        txtTasks.setText("0");
-                        txtPriority.setText("");
-                        txtState.setText("");
-                    }
-                    PieChart emptyPieChart = (PieChart) pnShare.getComponent(0);
-                    emptyPieChart.setShares(rootStack.getObjects(), rootStack.getKeys());
-                }
-            }
-        });
+        //jtProjects.addTreeSelectionListener(new ProjectsTreeModel.ProjectsTreeListener() {
+        //    public void valueChanged(TreeSelectionEvent event) {
+        //        TreePath treePath = event.getPath();
+        //        int nodeType = model.getSelectedNodeType(treePath);
+        //        Vector names = new Vector();
+        //        Vector shares = new Vector();
+        //        switch(nodeType) {
+        //        case ProjectsTreeModel.NODE_TYPE_TASK:
+        //            DefaultMutableTreeNode selectedTaskNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+        //            ProjectsTreeModel.TaskNode taskNode = (ProjectsTreeModel.TaskNode) selectedTaskNode.getUserObject();
+        //            txtName.setText(taskNode.getDescription());
+        //            txtName.setCaretPosition(0);
+        //            txtName.setFont(txtName.getFont().deriveFont(java.awt.Font.BOLD));
+        //            txtTime.setText(Tools.getTime(taskNode.getTotalTime()));
+        //            txtTasks.setText("" + taskNode.getTasks().size());
+        //            DefaultMutableTreeNode selectedCategoryNode = (DefaultMutableTreeNode) selectedTaskNode.getParent();
+        //            ProjectsTreeModel.CategoryNode category = (ProjectsTreeModel.CategoryNode) selectedCategoryNode.getUserObject();
+        //            float shareTask = Math.round(((float) taskNode.getTotalTime()/(float) category.getTotalTime())*100);
+        //            txtPercentage.setText("" + shareTask + "%");
+        //            txtPriority.setText(Task.getPriority(taskNode.getAverageValue(ProjectsTreeModel.TaskNode.PROPERTY_PRIORITY)));
+        //            txtState.setText(Task.getState(taskNode.getAverageValue(ProjectsTreeModel.TaskNode.PROPERTY_STATE)));
+        //            PieChart taskPieChart = (PieChart) pnShare.getComponent(0);
+        //            names.add(taskNode.getDescription());
+        //            shares.add(new Float(shareTask));
+        //            taskPieChart.setShares(names, shares);
+        //            break;
+        //        case ProjectsTreeModel.NODE_TYPE_CATEGORY:
+        //            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+        //            ProjectsTreeModel.CategoryNode categoryNode = (ProjectsTreeModel.CategoryNode) selectedNode.getUserObject();
+        //            LimitedCapacityStack categoryStack = new LimitedCapacityStack(3);
+        //            Iterator iterator = categoryNode.getTaskNodes().iterator();
+        //            while (iterator.hasNext()) {
+        //                ProjectsTreeModel.TaskNode node = (ProjectsTreeModel.TaskNode) iterator.next();
+        //                float share = Math.round(((float) node.getTotalTime()/(float) categoryNode.getTotalTime())*100);
+        //                categoryStack.put(new Float(share), node.getDescription());
+        //            }
+        //            txtName.setText(categoryNode.getName());
+        //            txtTime.setText(Tools.getTime(categoryNode.getTotalTime()));
+        //            txtTasks.setText("" + categoryNode.getTaskNodes().size());
+        //            boolean includePrivateTime = ((Boolean) Settings.getDefault().getSetting("countPrivateTasks")).booleanValue();
+        //            float shareCategory = Math.round(((float) categoryNode.getTotalTime()/(float) Tools.getTotalTime(true, includePrivateTime, getDays()))*100);
+        //            txtPercentage.setText("" + shareCategory + "%");
+        //            txtPriority.setText(Task.getPriority(categoryNode.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_PRIORITY)));
+        //            txtState.setText(Task.getState(categoryNode.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_STATE)));
+        //            PieChart categoryPieChart = (PieChart) pnShare.getComponent(0);
+        //            categoryPieChart.setShares(categoryStack.getObjects(), categoryStack.getKeys());
+        //            break;
+        //        default:
+        //            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+        //            long totalTime = 0;
+        //            int priority = 0;
+        //            int state = 0;
+        //            int tasks = 0;
+        //            int count = rootNode.getChildCount();
+        //            LimitedCapacityStack rootStack = new LimitedCapacityStack(3);
+        //            if (count != 1) {
+        //                Enumeration children = rootNode.children();
+        //                while(children.hasMoreElements()) {
+        //                    DefaultMutableTreeNode subNode = (DefaultMutableTreeNode) children.nextElement();
+        //                    ProjectsTreeModel.CategoryNode node = (ProjectsTreeModel.CategoryNode) subNode.getUserObject();
+        //                    totalTime = totalTime + node.getTotalTime();
+        //                    priority = priority + node.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_PRIORITY);
+        //                    state = state + node.getAverageValue(ProjectsTreeModel.CategoryNode.PROPERTY_STATE);
+        //                    tasks = tasks + node.getTaskNodes().size();
+        //                    float share = Math.round(((float) node.getTotalTime()/(float) Tools.getTotalTime(true, true, getDays()))*100);
+        //                    rootStack.put(new Float(share), node.getName());
+        //                }
+        //                priority = priority / count;
+        //                state = state / count;
+        //            }
+        //            txtName.setText(rootNode.getUserObject().toString());
+        //            txtTime.setText(Tools.getTime(totalTime));
+        //            txtPercentage.setText("100%");
+        //            if (count != 1) {
+        //                txtTasks.setText("" + tasks);
+        //                txtPriority.setText(Task.getPriority(priority));
+        //                txtState.setText(Task.getState(state));
+        //            } else {
+        //                txtTasks.setText("0");
+        //                txtPriority.setText("");
+        //                txtState.setText("");
+        //            }
+        //            PieChart emptyPieChart = (PieChart) pnShare.getComponent(0);
+        //            emptyPieChart.setShares(rootStack.getObjects(), rootStack.getKeys());
+        //        }
+        //    }
+        //});
         tbFilters.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbTasks.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         cmbPeriod.addItem(Translator.getTranslation("HISTORYVIEW.PERIOD_" + SCALE_DAY));
@@ -175,29 +175,29 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnTimes.add(historyChart, gridBagConstraints);
         historyChart.setToolTipText(Translator.getTranslation("HISTORYVIEW.CHART_TOOLTIP"));
-        historyChart.addMouseListener(new MouseAdapter() {
-            Date clickedWhen = new Date();
-            Point clickedWhere = new Point();
-            public void mouseClicked(MouseEvent e) {
-                Date now = new Date();
-                long delay = now.getTime() - clickedWhen.getTime();
-                boolean samePoint = clickedWhere.equals(e.getPoint());
-                if (samePoint & (delay < 250)) {
-                    Day day = historyChart.getDayAt(e.getPoint());
-                    if (day != null) firePropertyChange("day", null, day);
-                }
-                clickedWhere = e.getPoint();
-                clickedWhen = now;
-                Tools.recordActivity();
-            }
+        //historyChart.addMouseListener(new MouseAdapter() {
+        //    Date clickedWhen = new Date();
+        //    Point clickedWhere = new Point();
+        //    public void mouseClicked(MouseEvent e) {
+        //        Date now = new Date();
+        //        long delay = now.getTime() - clickedWhen.getTime();
+        //        boolean samePoint = clickedWhere.equals(e.getPoint());
+        //        if (samePoint & (delay < 250)) {
+        //            Day day = historyChart.getDayAt(e.getPoint());
+        //            if (day != null) firePropertyChange("day", null, day);
+        //        }
+        //        clickedWhere = e.getPoint();
+        //        clickedWhen = now;
+        //        Tools.recordActivity();
+        //    }
 
-            public void mouseEntered(MouseEvent e) {
-                Tools.recordActivity();
-            }
-            public void mouseExited(MouseEvent e) {
-                Tools.recordActivity();
-            }
-        });
+        //    public void mouseEntered(MouseEvent e) {
+        //        Tools.recordActivity();
+        //    }
+        //    public void mouseExited(MouseEvent e) {
+        //        Tools.recordActivity();
+        //    }
+        //});
         cmbPeriod.setSelectedIndex(SCALE_WEEK);
         checkButtons();
         filterTasks();
@@ -211,12 +211,12 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         tbTasks.getTableHeader().setFont(getFont());
         tbTasks.setFont(getFont());
         tbTasks.setRowHeight(getFont().getSize() + 2);
-        cmbFilterName.addItem(new DescriptionFilter().toString());
-        cmbFilterName.addItem(new KeywordFilter().toString());
-        cmbFilterName.addItem(new DurationFilter().toString());
-        cmbFilterName.addItem(new PriorityFilter().toString());
-        cmbFilterName.addItem(new StateFilter().toString());
-        cmbFilterName.addItem(new PrivateFilter().toString());
+        //cmbFilterName.addItem(new DescriptionFilter().toString());
+        //cmbFilterName.addItem(new KeywordFilter().toString());
+        //cmbFilterName.addItem(new DurationFilter().toString());
+        //cmbFilterName.addItem(new PriorityFilter().toString());
+        //cmbFilterName.addItem(new StateFilter().toString());
+        //cmbFilterName.addItem(new PrivateFilter().toString());
         loadSetup();
         tbTasks.getColumn(Translator.getTranslation("TASKS.DESCRIPTION")).setPreferredWidth(280);
         tbTasks.getColumn(Translator.getTranslation("TASKS.DURATION_DAYS")).setPreferredWidth(50);
@@ -227,21 +227,21 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         copyItem.addActionListener(mouseActionAdapter);
         copyPopupMenu.add(copyItem);
         tbTasks.addMouseListener(mouseActionAdapter);
-        tbTasks.getTableHeader().addMouseListener(new MouseAdapter() {
-            Point pressedPoint;
-            public void mousePressed(MouseEvent e) {
-                pressedPoint = e.getPoint();
-            }
-            public void mouseReleased(MouseEvent e) {
-                if (!e.getPoint().equals(pressedPoint)) return;
-                int column = tbTasks.getTableHeader().columnAtPoint(e.getPoint());
-                FilteredTasksTableModel filteredTasksTableModel = (FilteredTasksTableModel) tbTasks.getModel();
-                filteredTasksTableModel.sortTable(column, true);
-                int columns = tbTasks.getColumnCount();
-                for (int i=0; i<columns; i++)
-                    tbTasks.getColumnModel().getColumn(i).setHeaderValue(filteredTasksTableModel.getColumnName(i));
-            }
-        });
+        //tbTasks.getTableHeader().addMouseListener(new MouseAdapter() {
+        //    Point pressedPoint;
+        //    public void mousePressed(MouseEvent e) {
+        //        pressedPoint = e.getPoint();
+        //    }
+        //    public void mouseReleased(MouseEvent e) {
+        //        if (!e.getPoint().equals(pressedPoint)) return;
+        //        int column = tbTasks.getTableHeader().columnAtPoint(e.getPoint());
+        //        FilteredTasksTableModel filteredTasksTableModel = (FilteredTasksTableModel) tbTasks.getModel();
+        //        filteredTasksTableModel.sortTable(column, true);
+        //        int columns = tbTasks.getColumnCount();
+        //        for (int i=0; i<columns; i++)
+        //            tbTasks.getColumnModel().getColumn(i).setHeaderValue(filteredTasksTableModel.getColumnName(i));
+        //    }
+        //});
     }
     
     /** Returns font that should be used for all widgets in this component
@@ -317,12 +317,12 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         pnShare = new javax.swing.JPanel();
 
         setName(Translator.getTranslation("HISTORYVIEW.TB_NAME"));
-        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                formMouseMoved(evt);
-            }
-        });
-        setLayout(new java.awt.GridBagLayout());
+        //addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        formMouseMoved(evt);
+        //    }
+        //});
+        //setLayout(new java.awt.GridBagLayout());
 
         lblPeriod.setDisplayedMnemonic(Translator.getMnemonic("HISTORYVIEW.LBL_PERIOD"));
         lblPeriod.setFont(getFont());
@@ -334,26 +334,26 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
 
         cmbPeriod.setFont(getFont());
         cmbPeriod.setToolTipText(Translator.getTranslation("HISTORYVIEW.PERIOD_TOOLTIP"));
-        cmbPeriod.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbPeriodItemStateChanged(evt);
-            }
-        });
+        //cmbPeriod.addItemListener(new java.awt.event.ItemListener() {
+        //    public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        //        cmbPeriodItemStateChanged(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         add(cmbPeriod, gridBagConstraints);
 
         btReport.setFont(getFont());
-        btReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/report.png"))); // NOI18N
+        //btReport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/report.png"))); // NOI18N
         btReport.setMnemonic(Translator.getMnemonic("HISTORYVIEW.BT_REPORT"));
         btReport.setText(Translator.getTranslation("HISTORYVIEW.BT_REPORT"));
         btReport.setToolTipText(Translator.getTranslation("HISTORYVIEW.BT_REPORT_TOOLTIP"));
-        btReport.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btReportActionPerformed(evt);
-            }
-        });
+        //btReport.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btReportActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
@@ -362,53 +362,53 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
 
         spMinus.setFont(getFont());
         spMinus.setToolTipText(Translator.getTranslation("HISTORYVIEW.SP_MINUS_TOOLTIP"));
-        spMinus.setPreferredSize(new java.awt.Dimension(60, 23));
-        spMinus.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                spMinusStateChanged(evt);
-            }
-        });
+        //spMinus.setPreferredSize(new java.awt.Dimension(60, 23));
+        //spMinus.addChangeListener(new javax.swing.event.ChangeListener() {
+        //    public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        //        spMinusStateChanged(evt);
+        //    }
+        //});
         pnPeriod.add(spMinus);
 
-        btBackward.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/previous.png"))); // NOI18N
+        //btBackward.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/previous.png"))); // NOI18N
         btBackward.setToolTipText(Translator.getTranslation("HISTORYVIEW.BT_BACKWARD_TOOLTIP"));
-        btBackward.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btBackwardActionPerformed(evt);
-            }
-        });
+        //btBackward.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btBackwardActionPerformed(evt);
+        //    }
+        //});
         pnPeriod.add(btBackward);
 
         txtDate.setEditable(false);
         txtDate.setFont(getFont());
         txtDate.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtDate.setToolTipText(Translator.getTranslation("HISTORYVIEW.TXT_DATE_TOOLTIP"));
-        txtDate.setPreferredSize(new java.awt.Dimension(200, 23));
+        //txtDate.setPreferredSize(new java.awt.Dimension(200, 23));
         txtDate.setRequestFocusEnabled(false);
-        txtDate.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtDateMouseClicked(evt);
-            }
-        });
+        //txtDate.addMouseListener(new java.awt.event.MouseAdapter() {
+        //    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        //        txtDateMouseClicked(evt);
+        //    }
+        //});
         pnPeriod.add(txtDate);
 
-        btForward.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/next.png"))); // NOI18N
+        //btForward.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/next.png"))); // NOI18N
         btForward.setToolTipText(Translator.getTranslation("HISTORYVIEW.BT_FORWARD_TOOLTIP"));
-        btForward.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btForwardActionPerformed(evt);
-            }
-        });
+        //btForward.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btForwardActionPerformed(evt);
+        //    }
+        //});
         pnPeriod.add(btForward);
 
         spPlus.setFont(getFont());
         spPlus.setToolTipText(Translator.getTranslation("HISTORYVIEW.SP_PLUS_TOOLTIP"));
-        spPlus.setPreferredSize(new java.awt.Dimension(60, 23));
-        spPlus.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                spPlusStateChanged(evt);
-            }
-        });
+        //spPlus.setPreferredSize(new java.awt.Dimension(60, 23));
+        //spPlus.addChangeListener(new javax.swing.event.ChangeListener() {
+        //    public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        //        spPlusStateChanged(evt);
+        //    }
+        //});
         pnPeriod.add(spPlus);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -422,12 +422,12 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         tpViews.setFont(getFont());
 
         pnTimes.setFont(getFont());
-        pnTimes.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                pnTimesMouseMoved(evt);
-            }
-        });
-        pnTimes.setLayout(new java.awt.GridBagLayout());
+        //pnTimes.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        pnTimesMouseMoved(evt);
+        //    }
+        //});
+        //pnTimes.setLayout(new java.awt.GridBagLayout());
 
         lblChartType.setDisplayedMnemonic(Translator.getMnemonic("HISTORYVIEW.LBL_CHART_TYPE"));
         lblChartType.setFont(getFont());
@@ -442,11 +442,11 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         rbTotal.setSelected(true);
         rbTotal.setText(Translator.getTranslation("HISTORYVIEW.TYPE_TOTAL"));
         rbTotal.setToolTipText(Translator.getTranslation("HISTORYVIEW.TYPE_TOTAL_TOOLTIP"));
-        rbTotal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbTotalActionPerformed(evt);
-            }
-        });
+        //rbTotal.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        rbTotalActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -457,11 +457,11 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         rbFromTo.setFont(getFont());
         rbFromTo.setText(Translator.getTranslation("HISTORYVIEW.TYPE_FROM_TO"));
         rbFromTo.setToolTipText(Translator.getTranslation("HISTORYVIEW.TYPE_FROM_TO_TOOLTIP"));
-        rbFromTo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbFromToActionPerformed(evt);
-            }
-        });
+        //rbFromTo.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        rbFromToActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -473,11 +473,11 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         rbTimeUsage.setFont(getFont());
         rbTimeUsage.setText(Translator.getTranslation("HISTORYVIEW.TYPE_TIME_USAGE"));
         rbTimeUsage.setToolTipText(Translator.getTranslation("HISTORYVIEW.TYPE_TIME_USAGE_TOOLTIP"));
-        rbTimeUsage.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbTimeUsageActionPerformed(evt);
-            }
-        });
+        //rbTimeUsage.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        rbTimeUsageActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -490,11 +490,11 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         chbHighlightTasks.setMnemonic(Translator.getMnemonic("HISTORYVIEW.LBL_HIGHLIGHT_TASKS"));
         chbHighlightTasks.setText(Translator.getTranslation("HISTORYVIEW.LBL_HIGHLIGHT_TASKS"));
         chbHighlightTasks.setToolTipText(Translator.getTranslation("HISTORYVIEW.LBL_HIGHLIGHT_TASKS_TOOLTIP"));
-        chbHighlightTasks.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chbHighlightTasksActionPerformed(evt);
-            }
-        });
+        //chbHighlightTasks.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        chbHighlightTasksActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = 2;
@@ -505,11 +505,11 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         cmbFilterName.setFont(getFont());
         cmbFilterName.setToolTipText(Translator.getTranslation("FILTERDIALOG.NAME_TOOLTIP"));
         cmbFilterName.setEnabled(false);
-        cmbFilterName.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbFilterNameItemStateChanged(evt);
-            }
-        });
+        //cmbFilterName.addItemListener(new java.awt.event.ItemListener() {
+        //    public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        //        cmbFilterNameItemStateChanged(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -519,12 +519,12 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         cmbContentRule.setFont(getFont());
         cmbContentRule.setToolTipText(Translator.getTranslation("FILTERDIALOG.CONTENT_RULE_TOOLTIP"));
         cmbContentRule.setEnabled(false);
-        cmbContentRule.setPreferredSize(new java.awt.Dimension(100, 22));
-        cmbContentRule.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbContentRuleItemStateChanged(evt);
-            }
-        });
+        //cmbContentRule.setPreferredSize(new java.awt.Dimension(100, 22));
+        //cmbContentRule.addItemListener(new java.awt.event.ItemListener() {
+        //    public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        //        cmbContentRuleItemStateChanged(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -534,12 +534,12 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         cmbContent.setFont(getFont());
         cmbContent.setToolTipText(Translator.getTranslation("FILTERDIALOG.CONTENT_TOOLTIP"));
         cmbContent.setEnabled(false);
-        cmbContent.setPreferredSize(new java.awt.Dimension(100, 22));
-        cmbContent.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cmbContentItemStateChanged(evt);
-            }
-        });
+        //cmbContent.setPreferredSize(new java.awt.Dimension(100, 22));
+        //cmbContent.addItemListener(new java.awt.event.ItemListener() {
+        //    public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        //        cmbContentItemStateChanged(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = 3;
@@ -551,11 +551,11 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         txtContent.setFont(getFont());
         txtContent.setToolTipText(Translator.getTranslation("FILTERDIALOG.CONTENT_TOOLTIP"));
         txtContent.setEnabled(false);
-        txtContent.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtContentKeyTyped(evt);
-            }
-        });
+        //txtContent.addKeyListener(new java.awt.event.KeyAdapter() {
+        //    public void keyTyped(java.awt.event.KeyEvent evt) {
+        //        txtContentKeyTyped(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
@@ -576,7 +576,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         txtTotalTime.setFont(getFont());
         txtTotalTime.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtTotalTime.setToolTipText(Translator.getTranslation("HISTORYVIEW.TXT_TOTAL_TIME_TOOLTIP"));
-        txtTotalTime.setMinimumSize(new java.awt.Dimension(40, 20));
+        //txtTotalTime.setMinimumSize(new java.awt.Dimension(40, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -585,12 +585,12 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         tpViews.addTab(Translator.getTranslation("HISTORYVIEW.TIMES_TAB_NAME"), pnTimes);
 
         pnTasks.setFont(getFont());
-        pnTasks.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                pnTasksMouseMoved(evt);
-            }
-        });
-        pnTasks.setLayout(new java.awt.GridBagLayout());
+        //pnTasks.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        pnTasksMouseMoved(evt);
+        //    }
+        //});
+        //pnTasks.setLayout(new java.awt.GridBagLayout());
 
         lblFilters.setDisplayedMnemonic(Translator.getMnemonic("HISTORYVIEW.LBL_FILTERS"));
         lblFilters.setFont(getFont());
@@ -601,26 +601,26 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnTasks.add(lblFilters, gridBagConstraints);
 
-        spFilters.setMinimumSize(new java.awt.Dimension(453, 80));
-        spFilters.setPreferredSize(new java.awt.Dimension(453, 80));
-        spFilters.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                spFiltersMouseMoved(evt);
-            }
-        });
+        //spFilters.setMinimumSize(new java.awt.Dimension(453, 80));
+        //spFilters.setPreferredSize(new java.awt.Dimension(453, 80));
+        //spFilters.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        spFiltersMouseMoved(evt);
+        //    }
+        //});
 
         tbFilters.setFont(getFont());
-        tbFilters.setModel(new FiltersTableModel());
-        tbFilters.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tbFiltersMouseClicked(evt);
-            }
-        });
-        tbFilters.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                tbFiltersKeyReleased(evt);
-            }
-        });
+        //tbFilters.setModel(new FiltersTableModel());
+        //tbFilters.addMouseListener(new java.awt.event.MouseAdapter() {
+        //    public void mouseClicked(java.awt.event.MouseEvent evt) {
+        //        tbFiltersMouseClicked(evt);
+        //    }
+        //});
+        //tbFilters.addKeyListener(new java.awt.event.KeyAdapter() {
+        //    public void keyReleased(java.awt.event.KeyEvent evt) {
+        //        tbFiltersKeyReleased(evt);
+        //    }
+        //});
         spFilters.setViewportView(tbFilters);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -630,47 +630,47 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnTasks.add(spFilters, gridBagConstraints);
 
-        pnButtons.setLayout(new java.awt.GridBagLayout());
+        //pnButtons.setLayout(new java.awt.GridBagLayout());
 
         btAddFilter.setFont(getFont());
-        btAddFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/new_filter.png"))); // NOI18N
+        //btAddFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/new_filter.png"))); // NOI18N
         btAddFilter.setMnemonic(Translator.getMnemonic("HISTORYVIEW.BT_ADD_FILTER"));
         btAddFilter.setText(Translator.getTranslation("HISTORYVIEW.BT_ADD_FILTER"));
         btAddFilter.setToolTipText(Translator.getTranslation("HISTORYVIEW.BT_ADD_FILTER_TOOLTIP"));
-        btAddFilter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAddFilterActionPerformed(evt);
-            }
-        });
+        //btAddFilter.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btAddFilterActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnButtons.add(btAddFilter, gridBagConstraints);
 
         btEditFilter.setFont(getFont());
-        btEditFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/edit_filter.png"))); // NOI18N
+        //btEditFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/edit_filter.png"))); // NOI18N
         btEditFilter.setMnemonic(Translator.getMnemonic("HISTORYVIEW.BT_EDIT_FILTER"));
         btEditFilter.setText(Translator.getTranslation("HISTORYVIEW.BT_EDIT_FILTER"));
         btEditFilter.setToolTipText(Translator.getTranslation("HISTORYVIEW.BT_EDIT_FILTER_TOOLTIP"));
-        btEditFilter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btEditFilterActionPerformed(evt);
-            }
-        });
+        //btEditFilter.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btEditFilterActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnButtons.add(btEditFilter, gridBagConstraints);
 
         btRemoveFilter.setFont(getFont());
-        btRemoveFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/remove_filter.png"))); // NOI18N
+        //btRemoveFilter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/cesilko/rachota/gui/images/remove_filter.png"))); // NOI18N
         btRemoveFilter.setMnemonic(Translator.getMnemonic("HISTORYVIEW.BT_REMOVE_FILTER"));
         btRemoveFilter.setText(Translator.getTranslation("HISTORYVIEW.BT_REMOVE_FILTER"));
         btRemoveFilter.setToolTipText(Translator.getTranslation("HISTORYVIEW.BT_REMOVE_FILTER_TOOLTIP"));
-        btRemoveFilter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRemoveFilterActionPerformed(evt);
-            }
-        });
+        //btRemoveFilter.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        btRemoveFilterActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -692,14 +692,14 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnTasks.add(lblTasks, gridBagConstraints);
 
-        spTasks.setPreferredSize(new java.awt.Dimension(453, 100));
-        spTasks.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                spTasksMouseMoved(evt);
-            }
-        });
+        //spTasks.setPreferredSize(new java.awt.Dimension(453, 100));
+        //spTasks.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        spTasksMouseMoved(evt);
+        //    }
+        //});
 
-        tbTasks.setModel(new FilteredTasksTableModel());
+        //tbTasks.setModel(new FilteredTasksTableModel());
         spTasks.setViewportView(tbTasks);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -715,18 +715,18 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         chbGroupTasks.setSelected(true);
         chbGroupTasks.setText(Translator.getTranslation("HISTORYVIEW.CHB_GROUP_TASKS"));
         chbGroupTasks.setToolTipText(Translator.getTranslation("HISTORYVIEW.CHB_GROUP_TASKS_TOOLTIP"));
-        chbGroupTasks.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chbGroupTasksActionPerformed(evt);
-            }
-        });
+        //chbGroupTasks.addActionListener(new java.awt.event.ActionListener() {
+        //    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        //        chbGroupTasksActionPerformed(evt);
+        //    }
+        //});
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnTasks.add(chbGroupTasks, gridBagConstraints);
 
-        pnTotalTime.setLayout(new java.awt.GridBagLayout());
+        //pnTotalTime.setLayout(new java.awt.GridBagLayout());
 
         lblFilteredTime.setFont(getFont());
         lblFilteredTime.setLabelFor(txtFilteredTime);
@@ -741,8 +741,8 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         txtFilteredTime.setFont(getFont());
         txtFilteredTime.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtFilteredTime.setToolTipText(Translator.getTranslation("HISTORYVIEW.TXT_FILTERED_TIME_TOOLTIP"));
-        txtFilteredTime.setMinimumSize(new java.awt.Dimension(80, 19));
-        txtFilteredTime.setPreferredSize(new java.awt.Dimension(80, 19));
+        //txtFilteredTime.setMinimumSize(new java.awt.Dimension(80, 19));
+        //txtFilteredTime.setPreferredSize(new java.awt.Dimension(80, 19));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -757,21 +757,21 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         tpViews.addTab(Translator.getTranslation("HISTORYVIEW.TASKS_TAB_NAME"), pnTasks);
 
         pnProjects.setFont(getFont());
-        pnProjects.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                pnProjectsMouseMoved(evt);
-            }
-        });
-        pnProjects.setLayout(new java.awt.GridBagLayout());
+        //pnProjects.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        pnProjectsMouseMoved(evt);
+        //    }
+        //});
+        //pnProjects.setLayout(new java.awt.GridBagLayout());
 
-        spProjects.setPreferredSize(new java.awt.Dimension(81, 100));
+        //spProjects.setPreferredSize(new java.awt.Dimension(81, 100));
 
         jtProjects.setFont(getFont());
-        jtProjects.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jtProjectsMouseMoved(evt);
-            }
-        });
+        //jtProjects.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        //    public void mouseMoved(java.awt.event.MouseEvent evt) {
+        //        jtProjectsMouseMoved(evt);
+        //    }
+        //});
         spProjects.setViewportView(jtProjects);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -781,8 +781,8 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         pnProjects.add(spProjects, gridBagConstraints);
 
-        pnDetails.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Translator.getTranslation("HISTORYVIEW.PN_DETAILS"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, getFont(), new java.awt.Color(0, 0, 255)));
-        pnDetails.setLayout(new java.awt.GridBagLayout());
+        //pnDetails.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Translator.getTranslation("HISTORYVIEW.PN_DETAILS"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, getFont(), new java.awt.Color(0, 0, 255)));
+        //pnDetails.setLayout(new java.awt.GridBagLayout());
 
         lblName.setFont(getFont());
         lblName.setLabelFor(txtName);
@@ -813,8 +813,8 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         txtTime.setEditable(false);
         txtTime.setFont(getFont());
         txtTime.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtTime.setMinimumSize(new java.awt.Dimension(70, 20));
-        txtTime.setPreferredSize(new java.awt.Dimension(70, 20));
+        //txtTime.setMinimumSize(new java.awt.Dimension(70, 20));
+        //txtTime.setPreferredSize(new java.awt.Dimension(70, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -833,8 +833,8 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         txtPercentage.setEditable(false);
         txtPercentage.setFont(getFont());
         txtPercentage.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        txtPercentage.setMinimumSize(new java.awt.Dimension(80, 20));
-        txtPercentage.setPreferredSize(new java.awt.Dimension(80, 20));
+        //txtPercentage.setMinimumSize(new java.awt.Dimension(80, 20));
+        //txtPercentage.setPreferredSize(new java.awt.Dimension(80, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -903,10 +903,10 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         pnDetails.add(txtState, gridBagConstraints);
 
         pnShare.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        pnShare.setMinimumSize(new java.awt.Dimension(100, 100));
-        pnShare.setPreferredSize(new java.awt.Dimension(100, 100));
-        pnShare.setLayout(new java.awt.GridBagLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        //pnShare.setMinimumSize(new java.awt.Dimension(100, 100));
+        //pnShare.setPreferredSize(new java.awt.Dimension(100, 100));
+        //pnShare.setLayout(new java.awt.GridBagLayout());
+        //gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridheight = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.3;
@@ -932,7 +932,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         add(tpViews, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void rbTimeUsageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbTimeUsageActionPerformed
+    private void rbTimeUsageActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_rbTimeUsageActionPerformed
         rbTotal.setSelected(false);
         rbFromTo.setSelected(false);
         rbTimeUsage.setSelected(true);
@@ -941,26 +941,26 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         setComponents();
 }//GEN-LAST:event_rbTimeUsageActionPerformed
 
-    private void tbFiltersKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbFiltersKeyReleased
+    private void tbFiltersKeyReleased(java.awt.event1.KeyEvent evt) {//GEN-FIRST:event_tbFiltersKeyReleased
         checkButtons();
     }//GEN-LAST:event_tbFiltersKeyReleased
     
     /** Method called when generate report button was clicked.
      * @param evt Event that invoked the action.
      */
-    private void btReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btReportActionPerformed
+    private void btReportActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_btReportActionPerformed
         FiltersTableModel filtersTableModel = (FiltersTableModel) tbFilters.getModel();
         Vector selectFilters = new Vector();
         int count = filtersTableModel.getRowCount();
         for (int i = 0; i < count; i++)
             selectFilters.add(filtersTableModel.getFilter(i));
-        new ReportWizard(getDays(), historyChart, getFilter(), selectFilters).setVisible(true);
+        //new ReportWizard(getDays(), historyChart, getFilter(), selectFilters).setVisible(true);
     }//GEN-LAST:event_btReportActionPerformed
     
     /** Method called when highlight tasks checkbox is un/checked.
      * @param evt Event that invoked the action.
      */
-    private void chbHighlightTasksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chbHighlightTasksActionPerformed
+    private void chbHighlightTasksActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_chbHighlightTasksActionPerformed
         setComponents();
         historyChart.setHighlightingFilter(getFilter());
     }//GEN-LAST:event_chbHighlightTasksActionPerformed
@@ -968,7 +968,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when from/to chart type is required.
      * @param evt Event that invoked the action.
      */
-    private void rbFromToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFromToActionPerformed
+    private void rbFromToActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_rbFromToActionPerformed
         rbTotal.setSelected(false);
         rbTimeUsage.setSelected(false);
         rbFromTo.setSelected(true);
@@ -980,7 +980,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when total times chart type is required.
      * @param evt Event that invoked the action.
      */
-    private void rbTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbTotalActionPerformed
+    private void rbTotalActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_rbTotalActionPerformed
         rbTotal.setSelected(true);
         rbFromTo.setSelected(false);
         rbTimeUsage.setSelected(false);
@@ -993,28 +993,28 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when any key is typed in content textfield.
      * @param evt Event that invoked the action.
      */
-    private void txtContentKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContentKeyTyped
+    private void txtContentKeyTyped(java.awt.event1.KeyEvent evt) {//GEN-FIRST:event_txtContentKeyTyped
         if (evt.getKeyChar() == evt.VK_ENTER) historyChart.setHighlightingFilter(getFilter());
     }//GEN-LAST:event_txtContentKeyTyped
     
     /** Method called when selection of content item has changed.
      * @param evt Event that invoked the action.
      */
-    private void cmbContentItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbContentItemStateChanged
+    private void cmbContentItemStateChanged(java.awt.event1.ItemEvent evt) {//GEN-FIRST:event_cmbContentItemStateChanged
         historyChart.setHighlightingFilter(getFilter());
     }//GEN-LAST:event_cmbContentItemStateChanged
     
     /** Method called when selection of content rule item has changed.
      * @param evt Event that invoked the action.
      */
-    private void cmbContentRuleItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbContentRuleItemStateChanged
+    private void cmbContentRuleItemStateChanged(java.awt.event1.ItemEvent evt) {//GEN-FIRST:event_cmbContentRuleItemStateChanged
         historyChart.setHighlightingFilter(getFilter());
     }//GEN-LAST:event_cmbContentRuleItemStateChanged
     
     /** Method called when selection of filter item has changed.
      * @param evt Event that invoked the action.
      */
-    private void cmbFilterNameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbFilterNameItemStateChanged
+    private void cmbFilterNameItemStateChanged(java.awt.event1.ItemEvent evt) {//GEN-FIRST:event_cmbFilterNameItemStateChanged
         setComponents();
         historyChart.setHighlightingFilter(getFilter());
     }//GEN-LAST:event_cmbFilterNameItemStateChanged
@@ -1022,7 +1022,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when checkbox "Group tasks with same name" is un/checked.
      * @param evt Event that invoked this action.
      */
-    private void chbGroupTasksActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chbGroupTasksActionPerformed
+    private void chbGroupTasksActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_chbGroupTasksActionPerformed
         FilteredTasksTableModel filteredTasksTableModel = (FilteredTasksTableModel) tbTasks.getModel();
         filteredTasksTableModel.setGroupSameTasks(chbGroupTasks.isSelected());
     }//GEN-LAST:event_chbGroupTasksActionPerformed
@@ -1030,14 +1030,14 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when user clicked into tables of filters.
      * @param evt Event that invoked this action.
      */
-    private void tbFiltersMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbFiltersMouseClicked
+    private void tbFiltersMouseClicked(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_tbFiltersMouseClicked
         checkButtons();
     }//GEN-LAST:event_tbFiltersMouseClicked
     
     /** Method called when Edit Filter button was pressed.
      * @param evt Event that invoked this action.
      */
-    private void btEditFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btEditFilterActionPerformed
+    private void btEditFilterActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_btEditFilterActionPerformed
         int row = tbFilters.getSelectedRow();
         FiltersTableModel tableModel = (FiltersTableModel) tbFilters.getModel();
         AbstractTaskFilter taskFilter = tableModel.getFilter(row);
@@ -1051,7 +1051,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when Remove Filter button was pressed.
      * @param evt Event that invoked this action.
      */
-    private void btRemoveFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoveFilterActionPerformed
+    private void btRemoveFilterActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_btRemoveFilterActionPerformed
         int row = tbFilters.getSelectedRow();
         FiltersTableModel tableModel = (FiltersTableModel) tbFilters.getModel();
         AbstractTaskFilter taskFilter = tableModel.getFilter(row);
@@ -1063,7 +1063,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when Add Filter button was pressed.
      * @param evt Event that invoked this action.
      */
-    private void btAddFilterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAddFilterActionPerformed
+    private void btAddFilterActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_btAddFilterActionPerformed
         FiltersTableModel tableModel = (FiltersTableModel) tbFilters.getModel();
         FilterDialog dialog = new FilterDialog(tableModel);
         dialog.setLocationRelativeTo(this);
@@ -1075,7 +1075,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when date textfield was clicked to select actual day/week/month/year.
      * @param evt Event that invoked the action.
      */
-    private void txtDateMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtDateMouseClicked
+    private void txtDateMouseClicked(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_txtDateMouseClicked
         period = new Date();
         cmbPeriodItemStateChanged(null);
     }//GEN-LAST:event_txtDateMouseClicked
@@ -1083,7 +1083,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when period scale should be changed.
      * @param evt Event that invoked the action.
      */
-    private void cmbPeriodItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbPeriodItemStateChanged
+    private void cmbPeriodItemStateChanged(java.awt.event1.ItemEvent evt) {//GEN-FIRST:event_cmbPeriodItemStateChanged
         int scale = cmbPeriod.getSelectedIndex();
         SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
         String format;
@@ -1120,7 +1120,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when forward button was pressed.
      * @param evt Event that invoked the action.
      */
-    private void btForwardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btForwardActionPerformed
+    private void btForwardActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_btForwardActionPerformed
         period = shiftPeriod(1);
         cmbPeriodItemStateChanged(null);
         updateTotalTime();
@@ -1132,7 +1132,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when backward button was pressed.
      * @param evt Event that invoked the action.
      */
-    private void btBackwardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btBackwardActionPerformed
+    private void btBackwardActionPerformed(java.awt.event1.ActionEvent evt) {//GEN-FIRST:event_btBackwardActionPerformed
         period = shiftPeriod(-1);
         cmbPeriodItemStateChanged(null);
         updateTotalTime();
@@ -1144,7 +1144,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when plus spinner was pressed.
      * @param evt Event that invoked the action.
      */
-    private void spPlusStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spPlusStateChanged
+    private void spPlusStateChanged(javax.swing.event1.ChangeEvent evt) {//GEN-FIRST:event_spPlusStateChanged
         Integer plus = (Integer) spPlus.getValue();
         int value = plus.intValue();
         if (value < 0) spPlus.setValue(previousPlus);
@@ -1160,7 +1160,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
     /** Method called when minus spinner was pressed.
      * @param evt Event that invoked the action.
      */
-    private void spMinusStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_spMinusStateChanged
+    private void spMinusStateChanged(javax.swing.event1.ChangeEvent evt) {//GEN-FIRST:event_spMinusStateChanged
         Integer minus = (Integer) spMinus.getValue();
         int value = minus.intValue();
         if (value > 0) spMinus.setValue(previousMinus);
@@ -1173,31 +1173,31 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         jtProjects.setSelectionRow(0);
     }//GEN-LAST:event_spMinusStateChanged
 
-    private void formMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
+    private void formMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_formMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_formMouseMoved
 
-    private void pnTimesMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnTimesMouseMoved
+    private void pnTimesMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_pnTimesMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_pnTimesMouseMoved
 
-    private void pnTasksMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnTasksMouseMoved
+    private void pnTasksMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_pnTasksMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_pnTasksMouseMoved
 
-    private void pnProjectsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnProjectsMouseMoved
+    private void pnProjectsMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_pnProjectsMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_pnProjectsMouseMoved
 
-    private void jtProjectsMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtProjectsMouseMoved
+    private void jtProjectsMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_jtProjectsMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_jtProjectsMouseMoved
 
-    private void spFiltersMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spFiltersMouseMoved
+    private void spFiltersMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_spFiltersMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_spFiltersMouseMoved
 
-    private void spTasksMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_spTasksMouseMoved
+    private void spTasksMouseMoved(java.awt.event1.MouseEvent evt) {//GEN-FIRST:event_spTasksMouseMoved
         Tools.recordActivity();
     }//GEN-LAST:event_spTasksMouseMoved
     
@@ -1382,7 +1382,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
         }
         FiltersTableModel filtersTableModel = (FiltersTableModel) tbFilters.getModel();
         Vector filters = (Vector) filtersTableModel.getFilters().clone();
-        filters.add(new IdleFilter(IdleFilter.RULE_EQUALS_NOT, new Boolean(true)));
+        //filters.add(new IdleFilter(IdleFilter.RULE_EQUALS_NOT, new Boolean(true)));
         iterator = filters.iterator();
         while (iterator.hasNext()) {
             AbstractTaskFilter abstractTaskFilter = (AbstractTaskFilter) iterator.next();
@@ -1412,7 +1412,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
                 FiltersTableModel filtersModel = (FiltersTableModel) tbFilters.getModel();
                 filtersModel.addFilter(filter);
             } catch (Exception exception) {
-                System.out.println("Error: Cannot load this filter: " + filterData);
+                System.out1.println("Error: Cannot load this filter: " + filterData);
                 exception.printStackTrace();
             }
         }
@@ -1499,7 +1499,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
                 cmbContent.addItem(contentValues.get(i));
             cmbContent.setSelectedIndex(0);
         } else txtContent.setText("");
-        if (taskFilter instanceof DurationFilter) txtContent.setText(Tools.getTime(0));
+        if (taskFilter is DurationFilter) txtContent.setText(Tools.getTime(0));
         cmbContent.setEnabled(contentValues != null);
         txtContent.setEnabled(contentValues == null);
     }
@@ -1640,7 +1640,7 @@ public class HistoryView : javax.swing.JPanel { //: PropertyChangeListener {
             Day today = plan.getDay(new Date());
             if (today.getTask(selectedTask.getDescription()) == null) {
                 Task clone = selectedTask.cloneTask();
-                if (selectedTask instanceof org.cesilko.rachota.core.RegularTask)
+                if (selectedTask is org.cesilko.rachota.core.RegularTask)
                     clone = new Task(selectedTask.getDescription(), selectedTask.getKeyword(), selectedTask.getNotes(), selectedTask.getPriority(), Task.STATE_NEW, 0, selectedTask.getNotificationTime(), selectedTask.automaticStart(), selectedTask.privateTask());
                 today.addTask(clone);
                 return;

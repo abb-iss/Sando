@@ -174,7 +174,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	private readonly Timer lockTimer = new Timer("SWTPassword lock timer", true); //$NON-NLS-1$
 	private TimerTask lockTask;
 
-	protected static readonly Log log = LogFactory.getLog(PasswordSafeJFace.class);
+	protected static readonly Log log = LogFactory.getLog(PasswordSafeJFace.class1);
 
 	public static readonly String APP_NAME = "PasswordSafeSWT"; //$NON-NLS-1$
 	public static readonly String JPW_ICON = "jpwIcon";
@@ -240,7 +240,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 		setupStatusMessage();
 	}
 
-	private void startOpeningDialogThread(readonly Shell shell) {
+	private void startOpeningDialogThread(Shell shell) {
 
         //shell.getDisplay().asyncExec(new Runnable() {
         //    public void run() {
@@ -488,7 +488,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * @param args
 	 *            commandline args that are passed in
 	 */
-	public static void main(String args[]) {
+	public static void main(String [] args) {
 		log.info("PasswordSafe starting..."); 
 		log.info("java.library.path is: [" + System.getProperty("java.library.path") + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		log.info("log: " + log.getClass().getName()); //$NON-NLS-1$
@@ -536,7 +536,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * 
 	 * @param password the password for the new safe
 	 */
-	public void newFile(readonly StringBuilder password) {
+	public void newFile(StringBuilder password) {
 		getShell().setText(PasswordSafeJFace.APP_NAME + Messages.getString("PasswordSafeJFace.AppTitle.Default")); //$NON-NLS-1$
 		PwsFile newFile = PwsFileFactory.newFile();
 		newFile.setPassphrase(password);
@@ -553,7 +553,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * @throws Exception
 	 *             if bad things happen during open
 	 */
-	public void openFile(readonly String fileName, readonly StringBuilder password)  {
+	public void openFile(String fileName,  StringBuilder password)  {
 
 		this.openFile(fileName, password, isReadOnly());
 	}
@@ -567,9 +567,9 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * @throws Exception
 	 *             if bad things happen during open
 	 */
-	public void openFile(readonly String fileName, readonly StringBuilder password, readonly boolean forReadOnly)  {
+	public void openFile(String fileName,  StringBuilder password,  boolean forReadOnly)  {
 
-		readonly PwsFile file = PwsFileFactory.loadFile(fileName, password);
+		PwsFile file = PwsFileFactory.loadFile(fileName, password);
 		getShell().setText(PasswordSafeJFace.APP_NAME + " - " + fileName); //$NON-NLS-1$
 		setPwsFile(file);
 		setReadOnly(forReadOnly);
@@ -618,7 +618,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * @param valueToCopy
 	 *            the value to copy to clipboard
 	 */
-	public void copyToClipboard(readonly Clipboard cb, readonly String valueToCopy) {			 			
+	public void copyToClipboard(Clipboard cb,  String valueToCopy) {			 			
 		//TODO: check whether to create the clipboard here in order to reset it later
 		if (valueToCopy != null) {
 			cb.setContents(new Object[]{valueToCopy}, new Transfer[]{TextTransfer.getInstance()});
@@ -658,7 +658,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 			if (tree.getSelectionCount() == 1) {
 			TreeItem ti = tree.getSelection()[0];
 				Object treeData = ti.getData();
-				if (treeData != null && treeData instanceof PwsEntryBean) { // must be a left, not a group entry
+				if (treeData != null && treeData is PwsEntryBean) { // must be a left, not a group entry
 					recordToCopy = (PwsEntryBean) treeData;
 				}					
 			}
@@ -710,7 +710,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * 
 	 */
 	private void saveOnUpdateOrEditCheck() {
-		readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();		
+		IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();		
 		if (thePrefs.getBoolean(JpwPreferenceConstants.SAVE_IMMEDIATELY_ON_EDIT)) {
 			if (log.isDebugEnabled())
 				log.debug("Save on Edit option active. Saving database."); //$NON-NLS-1$
@@ -786,7 +786,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * 
 	 * @param sets the locked mode
 	 */
-	public void setLocked(readonly boolean isLocked) {
+	public void setLocked( boolean isLocked) {
 		lockState.setLocked(isLocked);
 	}
 
@@ -808,7 +808,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * 
 	 * @param sets the read only mode testtesttest@
 	 */
-	public void setReadOnly(readonly boolean isReadOnly) {
+	public void setReadOnly(boolean isReadOnly) {
 		
 		// TODO check modified flag in PwsFile?
 		getPwsFile().setReadOnly(isReadOnly);
@@ -843,7 +843,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * @param pwsFile
 	 *            The pwsFile to set.
 	 */
-	public void setPwsFile(readonly PwsFile pwsFile) {
+	public void setPwsFile(PwsFile pwsFile) {
 		this.pwsFile = pwsFile;
 		this.dataStore = PwsFileFactory.getStore(pwsFile);
 		updateViewers();
@@ -855,7 +855,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 *
 	 */
 	private void tidyUpOnExit() {
-		readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
+		IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
 
 		if (thePrefs.getBoolean(JpwPreferenceConstants.CLEAR_CLIPBOARD_ON_MIN)) {
 			clearClipboardAction.run();
@@ -912,21 +912,21 @@ public class PasswordSafeJFace : ApplicationWindow {
 		tableViewer.setInput(new Object());
         tableViewer.setSorter(new PasswordTableSorter());
 
-		readonly TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 		tableColumn.setWidth(100);
 		tableColumn.setText(Messages.getString("PasswordSafeJFace.Column.Title")); //$NON-NLS-1$
 		tableColumn.addSelectionListener(new TableColumnSelectionAdaptor(tableViewer, 1));
 		WidgetPreferences.tuneTableColumn(tableColumn, getClass(), "table/title"); //$NON-NLS-1$
 
-		readonly TableColumn tableColumn_1 = new TableColumn(table, SWT.NONE);
+		TableColumn tableColumn_1 = new TableColumn(table, SWT.NONE);
 		tableColumn_1.setWidth(100);
 		tableColumn_1.setText(Messages.getString("PasswordSafeJFace.Column.UserName")); //$NON-NLS-1$
 		tableColumn_1.addSelectionListener(new TableColumnSelectionAdaptor(tableViewer, 2));
         WidgetPreferences.tuneTableColumn(tableColumn_1, getClass(), "table/userName"); //$NON-NLS-1$
 
-        readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
+        IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
         if (thePrefs.getBoolean(JpwPreferenceConstants.SHOW_NOTES_IN_LIST)) {
-        	readonly TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);	
+        	TableColumn tableColumn_2 = new TableColumn(table, SWT.NONE);	
 			tableColumn_2.setWidth(100);
 			tableColumn_2.setText(Messages.getString("PasswordSafeJFace.Column.Notes")); //$NON-NLS-1$
 			tableColumn_2.addSelectionListener(new TableColumnSelectionAdaptor(tableViewer, 3));
@@ -962,42 +962,42 @@ public class PasswordSafeJFace : ApplicationWindow {
 		treeViewer.setContentProvider(new PasswordTreeContentProvider());
 		treeViewer.setSorter(new ViewerSorter());		
 		treeViewer.addDoubleClickListener(new ViewerDoubleClickListener());
-		treeViewer.setComparer(new IElementComparer() {
-			public boolean equals(Object a, Object b) {
-				if (a instanceof PwsEntryBean && b instanceof PwsEntryBean)
-					return ((PwsEntryBean) a).getStoreIndex() == (((PwsEntryBean) b).getStoreIndex());
-				else 
-					return a.equals(b);
-			}
+        //treeViewer.setComparer(new IElementComparer() {
+        //    public boolean equals(Object a, Object b) {
+        //        if (a is PwsEntryBean && b is PwsEntryBean)
+        //            return ((PwsEntryBean) a).getStoreIndex() == (((PwsEntryBean) b).getStoreIndex());
+        //        else 
+        //            return a.equals(b);
+        //    }
 
-			public int hashCode(Object element) {
-				if (element instanceof PwsEntryBean)
-					return ((PwsEntryBean) element).getStoreIndex();
-				else
-					return element.hashCode();
-			}
-		});
+        //    public int hashCode(Object element) {
+        //        if (element is PwsEntryBean)
+        //            return ((PwsEntryBean) element).getStoreIndex();
+        //        else
+        //            return element.hashCode();
+        //    }
+        //});
 		tree = treeViewer.getTree();
 		tree.setHeaderVisible(true);
 		tree.setMenu(createPopupMenu(tree));
 
 		treeViewer.setInput(new Object());
 
-        readonly TreeColumn treeColumn = new TreeColumn(tree, SWT.CENTER);
+        TreeColumn treeColumn = new TreeColumn(tree, SWT.CENTER);
         treeColumn.setText(Messages.getString("PasswordSafeJFace.Column.Title")); //$NON-NLS-1$
         treeColumn.setWidth(100);
         WidgetPreferences.tuneTreeColumn(treeColumn, getClass(), "tree/title"); //$NON-NLS-1$
 //        treeColumn.addSelectionListener(new TreeColumnSelectionAdaptor(treeViewer, 1));
 
-        readonly TreeColumn treeColumn_1 = new TreeColumn(tree, SWT.LEFT);
+        TreeColumn treeColumn_1 = new TreeColumn(tree, SWT.LEFT);
         treeColumn_1.setText(Messages.getString("PasswordSafeJFace.Column.UserName")); //$NON-NLS-1$
         treeColumn_1.setWidth(100);
         WidgetPreferences.tuneTreeColumn(treeColumn_1, getClass(), "tree/userName"); //$NON-NLS-1$
 //        treeColumn_1.addSelectionListener(new TreeColumnSelectionAdaptor(treeViewer, 2));
 
-        readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
+        IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
         if (thePrefs.getBoolean(JpwPreferenceConstants.SHOW_NOTES_IN_LIST)) {
-	        readonly TreeColumn treeColumn_2 = new TreeColumn(tree, SWT.LEFT);
+	        TreeColumn treeColumn_2 = new TreeColumn(tree, SWT.LEFT);
 	        treeColumn_2.setText(Messages.getString("PasswordSafeJFace.Column.Notes")); //$NON-NLS-1$
 	        treeColumn_2.setWidth(100);
 	        WidgetPreferences.tuneTreeColumn(treeColumn_2, getClass(), "tree/notes"); //$NON-NLS-1$
@@ -1068,7 +1068,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 * @param enabled
 	 *            true to enable the menus, false otherwise
 	 */
-	private void setEditMenusEnabled(readonly boolean enabled) {
+	private void setEditMenusEnabled(boolean enabled) {
 		addRecordAction.setEnabled(enabled);
 		// TODO: maybe add a new action viewRecord, possibly with a dedicated (read-only) dialog ?
 		// for now edit is also needed to VIEW the records
@@ -1100,18 +1100,18 @@ public class PasswordSafeJFace : ApplicationWindow {
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(filename);
-			Iterator<? extends PwsRecord> iter = getPwsFile().getRecords();
+			Iterator<PwsRecord> iter = getPwsFile().getRecords();
 			CSVWriter csvWriter = new CSVWriter(fw, '\t');
 			while (iter.hasNext()) {
 				PwsRecord nextRecord = iter.next();
 				List<String> nextEntry = new ArrayList<String>();
 				
-				if (nextRecord instanceof PwsRecordV1) {
+				if (nextRecord is PwsRecordV1) {
 					nextEntry.add(V1_GROUP_PLACEHOLDER);
 					nextEntry.add(PwsEntryBean.getSafeValue(nextRecord, PwsFieldTypeV1.TITLE));
 					nextEntry.add(PwsEntryBean.getSafeValue(nextRecord, PwsFieldTypeV1.USERNAME));
 					nextEntry.add(PwsEntryBean.getSafeValue(nextRecord, PwsFieldTypeV1.PASSWORD));
-				} else if (nextRecord instanceof PwsRecordV2) {
+				} else if (nextRecord is PwsRecordV2) {
 					nextEntry.add(PwsEntryBean.getSafeValue(nextRecord, PwsFieldTypeV2.GROUP));
 					nextEntry.add(PwsEntryBean.getSafeValue(nextRecord, PwsFieldTypeV2.TITLE));
 					nextEntry.add(PwsEntryBean.getSafeValue(nextRecord, PwsFieldTypeV2.USERNAME));
@@ -1236,7 +1236,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 		PwsEntryBean[] entries = xdp.parse(utf8String);
 		if (entries != null && entries.length > 0) {
 			PwsFile pwsFile = getPwsFile();
-			for (PwsEntryBean entry : entries) {
+			foreach (PwsEntryBean entry in entries) {
 				entry.setSparse(false);
 				dataStore.addEntry(entry);
 			}
@@ -1258,7 +1258,7 @@ public class PasswordSafeJFace : ApplicationWindow {
 		if (pwsFile != null) {
 			List<PwsEntryBean> sparseEntries = dataStore.getSparseEntries();
 			List<PwsEntryBean> entryList = new ArrayList<PwsEntryBean>(sparseEntries.size());
-			for (PwsEntryBean sparseEntry : sparseEntries) {
+			foreach (PwsEntryBean sparseEntry in sparseEntries) {
 				PwsEntryBean nextDTO = dataStore.getEntry(sparseEntry.getStoreIndex());
 				entryList.add(nextDTO);
 			}
@@ -1314,190 +1314,190 @@ public class PasswordSafeJFace : ApplicationWindow {
 	 */
 	//@Override
 	protected ShellListener getShellListener() {
-		return new ShellAdapter() {
-			volatile private boolean unlocking = false; 			
+//        return new ShellAdapter() {
+//            volatile private boolean unlocking = false; 			
 			
-			//@Override
-			public void shellClosed(ShellEvent event) {
-				log.trace("PWSJface shell listener enter 'Closed'"); //$NON-NLS-1$
-				event.doit = false; // don't close now
+//            //@Override
+//            public void shellClosed(ShellEvent event1) {
+//                log.trace("PWSJface shell listener enter 'Closed'"); //$NON-NLS-1$
+//                event1.doit = false; // don't close now
 				
-		    	readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
-				if (thePrefs.getBoolean(JpwPreferenceConstants.SHOW_ICON_IN_SYSTEM_TRAY) && systemTray != null) {
-					// minimize on close when sys tray is present
-					getShell().setMinimized(true);
-					setReturnCode(OK);
-					return;
-				}
+//                IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
+//                if (thePrefs.getBoolean(JpwPreferenceConstants.SHOW_ICON_IN_SYSTEM_TRAY) && systemTray != null) {
+//                    // minimize on close when sys tray is present
+//                    getShell().setMinimized(true);
+//                    setReturnCode(OK);
+//                    return;
+//                }
 
-				boolean cancelled = saveAppIfDirty();
-				if (cancelled) {
-					setReturnCode(OK);
-				} else {
-					tidyUpOnExit();
-					handleShellCloseEvent(); // forwards to Window class
-				}
-				log.trace("PWSJface shell listener leave 'Closed'"); //$NON-NLS-1$
-			}
-			/**
-			 * Sent when a shell becomes the active window.
-			 * The default behavior is to do nothing.
-			 *
-			 * @param e an event containing information about the activation
-			 */
+//                boolean cancelled = saveAppIfDirty();
+//                if (cancelled) {
+//                    setReturnCode(OK);
+//                } else {
+//                    tidyUpOnExit();
+//                    handleShellCloseEvent(); // forwards to Window class
+//                }
+//                log.trace("PWSJface shell listener leave 'Closed'"); //$NON-NLS-1$
+//            }
+//            /**
+//             * Sent when a shell becomes the active window.
+//             * The default behavior is to do nothing.
+//             *
+//             * @param e an event containing information about the activation
+//             */
 			
-			//@Override
-			public void shellActivated(ShellEvent e) {
-				//TODO: avoid recalling when aborting unlock
-				log.trace("PWSJface shell listener enter 'Activated'"); //$NON-NLS-1$
+//            //@Override
+//            public void shellActivated(ShellEvent e) {
+//                //TODO: avoid recalling when aborting unlock
+//                log.trace("PWSJface shell listener enter 'Activated'"); //$NON-NLS-1$
 
-				if (unlocking) {
-					log.info("PWSJface shell listener 'Activated' - aborted because unlocking"); //$NON-NLS-1$
-					e.doit = false;
-					return;
-				}
-				unlocking = true;
-				try {
-					if (lockTask != null) {
-						lockTask.cancel();
-						lockTask = null;
-					}
-					if (lockState.isLocked()) {
-						log.info("PWSJface shell listener 'Activated' - unlocking"); //$NON-NLS-1$
-						//e.doit = false;
-						unlockDbAction.run();
-					}
-//					if (getShell().getMinimized()) {
-//						getShell().setMinimized(false);
-//					}
-				} finally {
-					unlocking = false;
-				}
-				log.trace("PWSJface shell listener leave 'Activated'"); //$NON-NLS-1$
-			}
+//                if (unlocking) {
+//                    log.info("PWSJface shell listener 'Activated' - aborted because unlocking"); //$NON-NLS-1$
+//                    e.doit = false;
+//                    return;
+//                }
+//                unlocking = true;
+//                try {
+//                    if (lockTask != null) {
+//                        lockTask.cancel();
+//                        lockTask = null;
+//                    }
+//                    if (lockState.isLocked()) {
+//                        log.info("PWSJface shell listener 'Activated' - unlocking"); //$NON-NLS-1$
+//                        //e.doit = false;
+//                        unlockDbAction.run();
+//                    }
+////					if (getShell().getMinimized()) {
+////						getShell().setMinimized(false);
+////					}
+//                } finally {
+//                    unlocking = false;
+//                }
+//                log.trace("PWSJface shell listener leave 'Activated'"); //$NON-NLS-1$
+//            }
 
-			/**
-			 * Sent when a shell stops being the active window.
-			 * The default behavior is to do nothing.
-			 *
-			 * @param e an event containing information about the deactivation
-			 */
-			//@Override
-			public void shellDeactivated(ShellEvent e) {
-				log.trace("PWSJface shell listener enter 'Deactivated'"); //$NON-NLS-1$
+//            /**
+//             * Sent when a shell stops being the active window.
+//             * The default behavior is to do nothing.
+//             *
+//             * @param e an event containing information about the deactivation
+//             */
+//            //@Override
+//            public void shellDeactivated(ShellEvent e) {
+//                log.trace("PWSJface shell listener enter 'Deactivated'"); //$NON-NLS-1$
 
-				startLockTimer();
-				log.trace("PWSJface shell listener leave 'Deactivated'"); //$NON-NLS-1$
-			}
+//                startLockTimer();
+//                log.trace("PWSJface shell listener leave 'Deactivated'"); //$NON-NLS-1$
+//            }
 			
 
-			/**
-			 * In <em>theory</em>, sent when a shell is un-minimized.
-			 * On windows sent when the shell is set visible. 
-			 * Do <strong>not</strong> call setVisible(true)
-			 * within this method, danger of endless loop.
-			 *
-			 * @param e an event containing information about the un-minimization
-			 */
+//            /**
+//             * In <em>theory</em>, sent when a shell is un-minimized.
+//             * On windows sent when the shell is set visible. 
+//             * Do <strong>not</strong> call setVisible(true)
+//             * within this method, danger of endless loop.
+//             *
+//             * @param e an event containing information about the un-minimization
+//             */
 			
-			//@Override
-			public void shellDeiconified(ShellEvent e) {
-				log.trace("PWSJface shell listener enter 'Deiconified'"); //$NON-NLS-1$
+//            //@Override
+//            public void shellDeiconified(ShellEvent e) {
+//                log.trace("PWSJface shell listener enter 'Deiconified'"); //$NON-NLS-1$
 				
-				if (unlocking) {
-					log.info("PWSJface shell listener deiconify - abort because of unlocking"); //$NON-NLS-1$
-					e.doit = false;
-					return;
-				}
-				if (lockTask != null) {
-					lockTask.cancel();
-					lockTask = null;
-				}
-				if (lockState.isLocked()) {
-					unlocking = true;
-					try {
-						log.info("PWSJface shell listener deiconify - unlocking"); //$NON-NLS-1$
-						e.doit = unlockDbAction.performUnlock();
-						//e.doit = false;
-						//Display.getDefault().asyncExec(unlockDbAction);
-					} finally {
-						unlocking = false;
-					}
-				}
-				log.trace("PWSJface shell listener leave 'Deiconified'"); //$NON-NLS-1$
+//                if (unlocking) {
+//                    log.info("PWSJface shell listener deiconify - abort because of unlocking"); //$NON-NLS-1$
+//                    e.doit = false;
+//                    return;
+//                }
+//                if (lockTask != null) {
+//                    lockTask.cancel();
+//                    lockTask = null;
+//                }
+//                if (lockState.isLocked()) {
+//                    unlocking = true;
+//                    try {
+//                        log.info("PWSJface shell listener deiconify - unlocking"); //$NON-NLS-1$
+//                        e.doit = unlockDbAction.performUnlock();
+//                        //e.doit = false;
+//                        //Display.getDefault().asyncExec(unlockDbAction);
+//                    } finally {
+//                        unlocking = false;
+//                    }
+//                }
+//                log.trace("PWSJface shell listener leave 'Deiconified'"); //$NON-NLS-1$
 
-			}
+//            }
 
 
-			/**
-			 * Sent when a shell is minimized.
-			 * The default behavior is to do nothing.
-			 * <br>
-			 * On Mac Carbon, this is called the first time when disposing 
-			 * the password dialogue when reactivating from Systray.
-			 * The second time it is not called. Still no good, therefore 
-			 * Systray on Mac is blocked - see PasswordSafeMacOSX.main.
-			 *
-			 * @param e an event containing information about the minimization
-			 */
-			//@Override
-			public void shellIconified(ShellEvent e) {
-				log.trace("PWSJface shell listener enter 'Iconified'"); //$NON-NLS-1$
+//            /**
+//             * Sent when a shell is minimized.
+//             * The default behavior is to do nothing.
+//             * <br>
+//             * On Mac Carbon, this is called the first time when disposing 
+//             * the password dialogue when reactivating from Systray.
+//             * The second time it is not called. Still no good, therefore 
+//             * Systray on Mac is blocked - see PasswordSafeMacOSX.main.
+//             *
+//             * @param e an event containing information about the minimization
+//             */
+//            //@Override
+//            public void shellIconified(ShellEvent e) {
+//                log.trace("PWSJface shell listener enter 'Iconified'"); //$NON-NLS-1$
 
-				readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
-				if (thePrefs.getBoolean(JpwPreferenceConstants.CLEAR_CLIPBOARD_ON_MIN)) {
-					clearClipboardAction.run();
-				}
+//                IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
+//                if (thePrefs.getBoolean(JpwPreferenceConstants.CLEAR_CLIPBOARD_ON_MIN)) {
+//                    clearClipboardAction.run();
+//                }
 				
-				//handle Save and DB lock
-				if (isDirty()) {
-					if (thePrefs.getBoolean(JpwPreferenceConstants.CONFIRM_SAVE_ON_MIN)) {
-						//TODO
-						saveFileAction.run();
-					} else {
-						saveFileAction.run();
-					}
-				}
+//                //handle Save and DB lock
+//                if (isDirty()) {
+//                    if (thePrefs.getBoolean(JpwPreferenceConstants.CONFIRM_SAVE_ON_MIN)) {
+//                        //TODO
+//                        saveFileAction.run();
+//                    } else {
+//                        saveFileAction.run();
+//                    }
+//                }
 
-				// minimize to tray if available
-				if (systemTray != null
-						&& thePrefs.getBoolean(JpwPreferenceConstants.SHOW_ICON_IN_SYSTEM_TRAY)) {
-					if (log.isDebugEnabled())
-						log.debug("Shrinking to tray"); 
-					getShell ().setVisible(false);
-				}
+//                // minimize to tray if available
+//                if (systemTray != null
+//                        && thePrefs.getBoolean(JpwPreferenceConstants.SHOW_ICON_IN_SYSTEM_TRAY)) {
+//                    if (log.isDebugEnabled())
+//                        log.debug("Shrinking to tray"); 
+//                    getShell ().setVisible(false);
+//                }
 				
-				// lock safe
-				if (thePrefs.getBoolean(JpwPreferenceConstants.LOCK_DB_ON_MIN)) {
-					// important: lock in an async fashion 
-					// otherwise LockState observers might be called
-					// before the shell has been minimized
-					getShell().getDisplay().asyncExec(lockDbAction);
-				}
-				startLockTimer();
-				log.trace("PWSJface shell listener leave 'Iconified'"); //$NON-NLS-1$
-			}
+//                // lock safe
+//                if (thePrefs.getBoolean(JpwPreferenceConstants.LOCK_DB_ON_MIN)) {
+//                    // important: lock in an async fashion 
+//                    // otherwise LockState observers might be called
+//                    // before the shell has been minimized
+//                    getShell().getDisplay().asyncExec(lockDbAction);
+//                }
+//                startLockTimer();
+//                log.trace("PWSJface shell listener leave 'Iconified'"); //$NON-NLS-1$
+//            }
 			
-			private void startLockTimer() {
-				readonly IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
-				if (pwsFile != null && thePrefs.getBoolean(JpwPreferenceConstants.LOCK_ON_IDLE)){
-					if (lockTask != null) {//be on the safe side:
-						lockTask.cancel();
-					}
-					String idleMins = thePrefs.getString(JpwPreferenceConstants.LOCK_ON_IDLE_MINS);
-					try {
-						int mins = Integer.parseInt(idleMins);
-						lockTask = lockDbAction.createTaskTimer();
-						lockTimer.schedule(lockTask, mins * 60 * 1000);
+//            private void startLockTimer() {
+//                IPreferenceStore thePrefs = JFacePreferences.getPreferenceStore();
+//                if (pwsFile != null && thePrefs.getBoolean(JpwPreferenceConstants.LOCK_ON_IDLE)){
+//                    if (lockTask != null) {//be on the safe side:
+//                        lockTask.cancel();
+//                    }
+//                    String idleMins = thePrefs.getString(JpwPreferenceConstants.LOCK_ON_IDLE_MINS);
+//                    try {
+//                        int mins = Integer.parseInt(idleMins);
+//                        lockTask = lockDbAction.createTaskTimer();
+//                        lockTimer.schedule(lockTask, mins * 60 * 1000);
 						
-					} catch (NumberFormatException anEx) {
-						log.warn("Unable to set lock timer to an amount of " + idleMins + " minutes"); //$NON-NLS-1$ //$NON-NLS-2$
-					}
-				}
-			}
+//                    } catch (NumberFormatException anEx) {
+//                        log.warn("Unable to set lock timer to an amount of " + idleMins + " minutes"); //$NON-NLS-1$ //$NON-NLS-2$
+//                    }
+//                }
+//            }
 
 
-		};
+//        };
 	}
 
 	/**

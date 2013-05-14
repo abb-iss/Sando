@@ -166,11 +166,11 @@ namespace Sando.LocalSearch
             //score setting
             CodeSearchResult lastSelectedProgramElement = CurrentPath[CurrentPath.Count() - 1];
             if (ShowBeforeWeight > 0)
-                ShowBeforeHeuristic(ref RelatedProgramElements, ShowBeforeWeight, decay);
+                ShowBeforeHeuristic(ref RelatedProgramElements, ShowBeforeWeight, false);
             if (AmongSearchResWeight > 0)
                 AmongInitialSearchResultsHeuristic(ref RelatedProgramElements, searchResultsLookahead, AmongSearchResWeight, decay);
             if (TopologyWeight > 0)
-                TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, decay, set);
+                TopologyHeuristic(lastSelectedProgramElement, ref RelatedProgramElements, TopologyWeight, false, set);
             if (EditDistanceWeight > 0)
                 EditDistanceHeuristicInPath(ref RelatedProgramElements, editDistanceLookback, EditDistanceWeight, decay);
             if (DataFlowWeight > 0)
@@ -384,7 +384,7 @@ namespace Sando.LocalSearch
                 {
                     var programelement = source[location];
                     if (programelement.Name.Equals(target.Name)
-                    && programelement.ProgramElementType.Equals(target.ProgramElementType)
+                    //&& programelement.ProgramElementType.Equals(target.ProgramElementType)
                     && programelement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber)
                     && ((programelement as CodeNavigationResult == null) ||
                     ((programelement as CodeNavigationResult).ProgramElementRelation.Equals(ProgramElementRelation.Other))))
@@ -400,8 +400,9 @@ namespace Sando.LocalSearch
                 {
                     var eachSelectedElement = source[location];
                     if (eachSelectedElement.Name.Equals(target.Name)
-                    && eachSelectedElement.ProgramElementType.Equals(target.ProgramElementType)
-                    && eachSelectedElement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber))
+                    //&& eachSelectedElement.ProgramElementType.Equals(target.ProgramElementType)
+                    && eachSelectedElement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber)
+                        )
                         return true;                    
                 }
 

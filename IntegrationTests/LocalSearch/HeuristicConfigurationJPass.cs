@@ -91,11 +91,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetSet.Add(target);
             }
 
-            for (double w0 = 0; w0 <= 2; w0++)
-                for (double w1 = 0; w1 <= 2; w1++)
-                    for (double w2 = 0; w2 <= 2; w2++)
-                        for (double w3 = 0; w3 <= 2; w3++)
-                            for (double w4 = 0; w4 <= 2; w4++)
+            for (double w0 = 0; w0 <= 1; w0++)
+                for (double w1 = 0; w1 <= 1; w1++)
+                    for (double w2 = 0; w2 <= 1; w2++)
+                        for (double w3 = 0; w3 <= 1; w3++)
+                            for (double w4 = 0; w4 <= 1; w4++)
                             {
                                 numberOfNavigation.Clear();
                                 targetFound.Clear();
@@ -108,14 +108,13 @@ namespace Sando.IntegrationTests.LocalSearch
                                 int lookahead = 0; // 0 - 1
                                 int lookback = 1;  //1 - 3
                                 int lookback2 = 1;
-                                bool set = false;
-                                bool decay = false;
+                                bool set = true;
+                                bool decay = true;
 
                                 if (set)
-                                {
-                                    lookahead = 1;
-                                    lookback = 3;
-                                    lookback2 = 3;
+                                {   
+                                    //lookback = 10;
+                                    lookback2 = 10;
                                 }
 
                                 heuristicWeightComb configuration =
@@ -148,18 +147,25 @@ namespace Sando.IntegrationTests.LocalSearch
                                     + w3.ToString() + " "
                                     + w4.ToString() + "): ";
 
-                                bool output = true;
+                                //bool output = true;
+                                int cnt = 0;
                                 for (int i = 0; i < numberOfNavigation.Count; i++)
                                 {
-                                    if (numberOfNavigation[i] > stopLine)
-                                    {
-                                        output = false;
-                                        break;
-                                    }
+                                    //if (numberOfNavigation[i] > stopLine)
+                                    //{
+                                    //    output = false;
+                                    //    break;
+                                    //}
+                                    if (numberOfNavigation[i] <= stopLine)
+                                        cnt++;
                                     outputStr += numberOfNavigation[i].ToString() + " ";
                                 }
 
-                                if (output)
+                                outputStr += "\t P = " +
+                                    (Convert.ToDouble(cnt) / Convert.ToDouble(numberOfNavigation.Count)).ToString();
+
+
+                                //if (output)
                                     Console.Write(outputStr);
 
 

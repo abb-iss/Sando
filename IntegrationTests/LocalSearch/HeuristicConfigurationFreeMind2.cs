@@ -90,11 +90,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 
             }
 
-            for (double w0 = 2; w0 <= 2; w0++)
-                for (double w1 = 0; w1 <= 2; w1++)
-                    for (double w2 = 0; w2 <= 2; w2++)
-                        for (double w3 = 0; w3 <= 2; w3++)
-                            for (double w4 = 0; w4 <= 2; w4++ )
+            for (double w0 = 0; w0 <= 1; w0++)
+                for (double w1 = 0; w1 <= 1; w1++)
+                    for (double w2 = 0; w2 <= 1; w2++)
+                        for (double w3 = 0; w3 <= 1; w3++)
+                            for (double w4 = 0; w4 <= 1; w4++ )
                             {
                                 targetFound.Clear();
                                 numberOfNavigation.Clear();
@@ -112,7 +112,6 @@ namespace Sando.IntegrationTests.LocalSearch
 
                                 if (set)
                                 {
-                                    lookahead = 1;
                                     lookback = 3;
                                     lookback2 = 3;
                                 }
@@ -147,7 +146,8 @@ namespace Sando.IntegrationTests.LocalSearch
                                     + w3.ToString() + " "
                                     + w4.ToString() + "): ";
 
-                                bool output = true;
+                                //bool output = true;
+                                int cnt = 0;
                                 for (int i = 0; i < numberOfNavigation.Count; i++)
                                 {
                                     //if (numberOfNavigation[i] > stopLine)
@@ -155,10 +155,16 @@ namespace Sando.IntegrationTests.LocalSearch
                                     //    output = false;
                                     //    break;
                                     //}
+                                    if (numberOfNavigation[i] <= stopLine)
+                                        cnt++;
                                     outputStr += numberOfNavigation[i].ToString() + " ";
                                 }
 
-                                if (output)
+                                outputStr += "\t P = " +
+                                    (Convert.ToDouble(cnt) / Convert.ToDouble(numberOfNavigation.Count)).ToString();
+
+
+                               // if (output)
                                     Console.Write(outputStr);
 
                                 gbuilder.CurrentPath.Clear();
