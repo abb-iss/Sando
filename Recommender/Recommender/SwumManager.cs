@@ -347,7 +347,10 @@ namespace Sando.Recommender {
                     var signature = nameElement.GetXPath(false);
                     var swumData = ProcessSwumNode(fdn);
                     swumData.FileNames.Add(fileName);
-                    signaturesToSwum[signature] = swumData;
+                    lock (signaturesToSwum)
+                    {
+                        signaturesToSwum[signature] = swumData;
+                    }
                     declPos++;
                 }
             }
