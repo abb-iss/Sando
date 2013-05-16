@@ -47,7 +47,8 @@ namespace Sando.Parser
             {
                 string name;
                 int definitionLineNumber;
-                SrcMLParsingUtils.ParseNameAndLineNumber(field, out name, out definitionLineNumber);
+                int definitionColumnNumber;
+                SrcMLParsingUtils.ParseNameAndLineNumber(field, out name, out definitionLineNumber, out definitionColumnNumber);
 
                 ClassElement classElement = RetrieveClassElement(field, programElements);
                 Guid classId = classElement != null ? classElement.Id : Guid.Empty;
@@ -73,7 +74,7 @@ namespace Sando.Parser
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string snippet = RetrieveSource(field);
 
-                return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
+                return new FieldElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
             }
             catch (Exception error)
             {
@@ -124,6 +125,7 @@ namespace Sando.Parser
                     var comment = oneGroup.First();
                     var commentText = GetCommentText(oneGroup);
                     int commentLine = Int32.Parse(comment.Attribute(POS.Line).Value);
+                    int definitionColumnNumber = Int32.Parse(comment.Attribute(POS.Column).Value);
                     if (String.IsNullOrWhiteSpace(commentText)) continue;
 
                     //comment name doesn't contain non-word characters and is compact-er than its body
@@ -142,7 +144,7 @@ namespace Sando.Parser
                     }
                     if (programElement != null)
                     {
-                        programElements.Add(new CommentElement(commentName, commentLine, programElement.FullFilePath, RetrieveSource(commentText), commentText));
+                        programElements.Add(new CommentElement(commentName, commentLine, definitionColumnNumber, programElement.FullFilePath, RetrieveSource(commentText), commentText));
                         continue;
                     }
 
@@ -152,18 +154,18 @@ namespace Sando.Parser
                     MethodElement methodEl = RetrieveMethodElement(comment, programElements);
                     if (methodEl != null)
                     {
-                        programElements.Add(new CommentElement(commentName, commentLine, methodEl.FullFilePath, RetrieveSource(commentText), commentText));
+                        programElements.Add(new CommentElement(commentName, commentLine, definitionColumnNumber, methodEl.FullFilePath, RetrieveSource(commentText), commentText));
                         continue;
                     }
                     ClassElement classEl = RetrieveClassElement(comment, programElements);
                     if (classEl != null)
                     {
-                        programElements.Add(new CommentElement(commentName, commentLine, classEl.FullFilePath, RetrieveSource(commentText), commentText));
+                        programElements.Add(new CommentElement(commentName, commentLine, definitionColumnNumber, classEl.FullFilePath, RetrieveSource(commentText), commentText));
                         continue;
                     }
 
                     //comments is not associated with another element, so it's a plain CommentElement
-                    programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSource(commentText), commentText));
+                    programElements.Add(new CommentElement(commentName, commentLine, definitionColumnNumber, fileName, RetrieveSource(commentText), commentText));
                 }                            
                 catch (Exception error)
                 {
@@ -279,7 +281,7 @@ namespace Sando.Parser
         private static Regex replaceWhitespace = new Regex("\\W", RegexOptions.Compiled);
 
 
-		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber)
+		public static void ParseNameAndLineNumber(XElement target, out string name, out int definitionLineNumber, out int definitionColumnNumber)
 		{
 			XElement nameElement;
 			nameElement = target.Element(SRC.Name);
@@ -313,6 +315,16 @@ namespace Sando.Parser
 				//i can't find the line number
 				definitionLineNumber = 0;
 			}
+            ////try to get col number
+            if (nameElement.Attribute(POS.Column) != null)
+            {
+                definitionColumnNumber = Int32.Parse(nameElement.Attribute(POS.Column).Value);
+            }
+            else
+            {
+                //i can't find the line number
+                definitionColumnNumber = 0;
+            }
 		}
 
 		public static ClassElement RetrieveClassElement(XElement field, List<ProgramElement> programElements)

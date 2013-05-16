@@ -25,10 +25,10 @@ namespace Sando.Indexer.Documents
             return fields;
 		}
 
-        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, int definitionColumnNumber, string snippet, Document document)
 		{
 		    string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue();
-			return new object[]{name, definitionLineNumber, fullFilePath, snippet, body};
+            return new object[] { name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet, body };
 		}
 	}
 }

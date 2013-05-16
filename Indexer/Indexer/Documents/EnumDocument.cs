@@ -27,13 +27,13 @@ namespace Sando.Indexer.Documents
             return fields;
 		}
 
-        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, int definitionColumnNumber, string snippet, Document document)
 		{
 			string namespaceName = document.GetField(SandoField.Namespace.ToString()).StringValue().ToSandoDisplayable();
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
             string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue().ToSandoDisplayable();
 			if(name == String.Empty) name = ProgramElement.UndefinedName;
-            return new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body };			
+            return new object[] { name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet, accessLevel, namespaceName, body };			
 		}
 	}
 }

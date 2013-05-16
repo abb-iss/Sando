@@ -5,8 +5,8 @@ namespace Sando.TestExtensionPoints
 {
 	public class TestElement : ProgramElement
 	{
-		public TestElement(string name, int definitionLineNumber, string fullFilePath, string snippet)
-			: base(name, definitionLineNumber, fullFilePath, snippet)
+		public TestElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet)
+            : base(name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet)
 		{
 
 		}

@@ -141,7 +141,7 @@ namespace Sando.Indexer.UnitTests
 		{
 			try
 			{
-				SandoDocument sandoDocument = DocumentFactory.Create(new TestElement("name", 12, "full path", "snippet"));
+				SandoDocument sandoDocument = DocumentFactory.Create(new TestElement("name", 12, -1000, "full path", "snippet"));
 			}
 			catch
 			{
@@ -164,8 +164,8 @@ namespace Sando.Indexer.UnitTests
 
 		private class TestElement : ProgramElement
 		{
-			public TestElement(string name, int definitionLineNumber, string fullFilePath, string snippet)
-				: base(name, definitionLineNumber, fullFilePath, snippet)
+            public TestElement(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet)
+                : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet)
 			{
 			}
 

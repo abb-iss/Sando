@@ -301,7 +301,8 @@ namespace Sando.Parser.UnitTests
         [CustomIndexField]
         public string CustomStuffHere { get; set; }
 
-        public MyMethodElementUnresolvedType(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles) : base(name, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
+        public MyMethodElementUnresolvedType(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
         {
         }
 
@@ -318,7 +319,8 @@ namespace Sando.Parser.UnitTests
         [CustomIndexField]
         public string CustomStuffHere { get; set; }
 
-        public MyMethodElementType(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
+        public MyMethodElementType(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
         {
         }
     }

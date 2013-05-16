@@ -130,10 +130,9 @@ namespace Sando.Parser
             {
                 string name = String.Empty;
                 int definitionLineNumber = 0;
-                int definitionColumn = 0;
-                string returnType = String.Empty;
-
-                SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber);
+                int definitionColumnNumber = 0;
+                string returnType = String.Empty;                
+                SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber, out definitionColumnNumber);
                 if (name.Contains("::"))
                 {
                     name = name.Substring(name.LastIndexOf("::") + 2);
@@ -160,7 +159,7 @@ namespace Sando.Parser
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string source = SrcMLParsingUtils.RetrieveSource(function);
 
-                return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, source, isConstructor);
+                return new MethodPrototypeElement(name, definitionLineNumber, definitionColumnNumber, returnType, accessLevel, arguments, fullFilePath, source, isConstructor);
             }
             catch (Exception error)
             {
@@ -224,7 +223,8 @@ namespace Sando.Parser
         {
             string name;
             int definitionLineNumber;
-            SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
+            int definitionColumnNumber;
+            SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber, out definitionColumnNumber);
 
             AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(cls, AccessLevel.Public);
 
@@ -268,12 +268,12 @@ namespace Sando.Parser
             string body = cls.Value;
             if (parseStruct)
             {
-                return new StructElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName, body, extendedClasses, String.Empty);
+                return new StructElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, namespaceName, body, extendedClasses, String.Empty);
             }
             else
             {
                 string implementedInterfaces = String.Empty;
-                return new ClassElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName,
+                return new ClassElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, namespaceName,
                     extendedClasses, implementedInterfaces, String.Empty, body);
             }
         }
@@ -314,6 +314,7 @@ namespace Sando.Parser
                 MethodElement methodElement = null;
                 string source = String.Empty;
                 int definitionLineNumber = 0;
+                int definitionColumnNumber = 0;
                 string returnType = String.Empty;
 
                 XElement type = function.Element(SRC.Type);
@@ -347,9 +348,10 @@ namespace Sando.Parser
                     string funcName = twonames[2];
                     string className = twonames[0];
                     definitionLineNumber = Int32.Parse(nameElement.Element(SRC.Name).Attribute(POS.Line).Value);
+                    definitionColumnNumber = Int32.Parse(nameElement.Element(SRC.Name).Attribute(POS.Column).Value);
                     source = SrcMLParsingUtils.RetrieveSource(function);
 
-                    return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, fullFilePath, source, arguments, returnType, body,
+                    return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, definitionColumnNumber, fullFilePath, source, arguments, returnType, body,
                                                             className, isConstructor, includedFiles) as MethodElement;
                 }
                 else
@@ -357,6 +359,7 @@ namespace Sando.Parser
                     //regular C-type function, or an inlined class function
                     string funcName = wholeName;
                     definitionLineNumber = Int32.Parse(nameElement.Attribute(POS.Line).Value);
+                    definitionColumnNumber = Int32.Parse(nameElement.Attribute(POS.Column).Value);
                     source = SrcMLParsingUtils.RetrieveSource(function);
                     AccessLevel accessLevel = RetrieveCppAccessLevel(function);
 
@@ -374,7 +377,7 @@ namespace Sando.Parser
                         classId = structElement.Id;
                         className = structElement.Name;
                     }
-                    methodElement = Activator.CreateInstance(resolvedType, funcName, definitionLineNumber, fullFilePath, source, accessLevel, arguments,
+                    methodElement = Activator.CreateInstance(resolvedType, funcName, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, arguments,
                                              returnType, body,
                                              classId, className, String.Empty, isConstructor) as MethodElement;
                 }
@@ -411,9 +414,10 @@ namespace Sando.Parser
 
                 string name = "";
                 int definitionLineNumber = 0;
+                int definitionColumnNumber=0;
                 if (enm.Element(SRC.Name) != null)
                 {
-                    SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber);
+                    SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber, out definitionColumnNumber);
                 }
                 else
                 {
@@ -461,7 +465,7 @@ namespace Sando.Parser
 
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string source = SrcMLParsingUtils.RetrieveSource(enm);
-                var enumParsed = new EnumElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName, values);
+                var enumParsed = new EnumElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, namespaceName, values);
                 return enumParsed;
             }
             catch (Exception error)

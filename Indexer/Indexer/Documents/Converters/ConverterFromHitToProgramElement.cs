@@ -72,11 +72,12 @@ namespace Sando.Indexer.Documents.Converters
             ProgramElementType type = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), luceneDocument.GetField(SandoField.ProgramElementType.ToString()).StringValue(), true);
             string fullFilePath = luceneDocument.GetField(SandoField.FullFilePath.ToString()).StringValue();
             int definitionLineNumber = int.Parse(luceneDocument.GetField(SandoField.DefinitionLineNumber.ToString()).StringValue());
+            int definitionColumnNumber = int.Parse(luceneDocument.GetField(SandoField.DefinitionColumnNumber.ToString()).StringValue());
             string snippet = luceneDocument.GetField(SandoField.Source.ToString()).StringValue();
             
             //Add values that vary according to element type (e.g., a textline doesn't have a parent class whereas a method often does)
             //Note: Parameters must match the parameter list for corresponding program element.  See MethodDocument.GetParametersForConstructor and the MethodElement constructor
-            var parameters = sandoDocument.GetParametersForConstructor(name, type, fullFilePath, definitionLineNumber, snippet, luceneDocument);
+            var parameters = sandoDocument.GetParametersForConstructor(name, type, fullFilePath, definitionLineNumber, definitionColumnNumber, snippet, luceneDocument);
             
             //Create type from the collected values
             var myClassType = GetMyType(luceneDocument);
