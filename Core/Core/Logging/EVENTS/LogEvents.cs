@@ -63,6 +63,7 @@ namespace Sando.Core.Logging.Events
 
         public static void SolutionOpened(Object sender, string solutionName)
         {
+			DataCollectionLogEventHandlers.UploadLogFiles();
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Solution opened: SolutionHash=" + solutionName.GetHashCode());
         }
 

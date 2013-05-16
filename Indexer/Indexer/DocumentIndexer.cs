@@ -286,7 +286,7 @@ namespace Sando.Indexer
 	    public Directory LuceneIndexesDirectory { get; set; }
 		public QueryParser QueryParser { get; protected set; }
 		public IndexReader Reader { get; private set; }
-		public Analyzer Analyzer { get; protected set; }
+		protected Analyzer Analyzer { get; set; }
 		protected IndexWriter IndexWriter { get; set; }
 
         private bool _hasIndexChanged;

@@ -27,24 +27,7 @@ namespace Sando.Core.Logging
 
         public static void StartDataCollectionLogging(string logPath)
         {
-            //Upload old data to S3 (randomly with p=0.33)
-            Random random = new Random();
-            int rand = random.Next(0, 3);
-            if (rand == 0)
-            {
-                var s3UploadWorker = new BackgroundWorker();
-                s3UploadWorker.DoWork += new DoWorkEventHandler(s3UploadWorker_DoWork);
-                s3UploadWorker.RunWorkerAsync(logPath);
-            }
-            else
-            {
-                Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-                LogEvents.NoS3UploadDueToChance(t, rand);
-            }
-
-            var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".log");
-            var logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
-            DataCollectionLogEventHandlers.InitializeLogFile(logger);
+            DataCollectionLogEventHandlers.InitializeLogFile(logPath);
             DataCollectionOn = true;
         }
 
@@ -52,27 +35,6 @@ namespace Sando.Core.Logging
         {
             DefaultLoggingOn = false;
             DataCollectionOn = false;
-        }
-
-        private static void s3UploadWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            string logPath = (string) e.Argument;
-            string s3CredsPath = logPath + "//S3Credentials";
-            string[] files = Directory.GetFiles(logPath);
-            foreach (var file in files)
-            {
-                string fullPath = Path.GetFullPath(file);
-                FileInfo fileInfo = new FileInfo(fullPath);
-                string fileName = Path.GetFileName(fullPath);
-                if (fileName.StartsWith("SandoData-") && fileName.EndsWith("log") && fileInfo.Length > 0)
-                {
-                    bool success = AmazonS3LogUploader.WriteLogFile(fullPath, s3CredsPath);
-                    if (success == true)
-                    {
-                        System.IO.File.Delete(fullPath);
-                    }
-                }
-            }
         }
 
         public static bool DefaultLoggingOn { get; private set; }
