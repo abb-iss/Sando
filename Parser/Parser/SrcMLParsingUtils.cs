@@ -35,6 +35,16 @@ namespace Sando.Parser
 
             foreach (XElement field in fields)
             {
+                var aField = ParseField(programElements, fileName, field);
+                if(aField!=null)
+                    programElements.Add(aField);
+            }
+        }
+
+        private static FieldElement ParseField(List<ProgramElement> programElements, string fileName, XElement field)
+        {
+            try
+            {
                 string name;
                 int definitionLineNumber;
                 SrcMLParsingUtils.ParseNameAndLineNumber(field, out name, out definitionLineNumber);
@@ -63,7 +73,12 @@ namespace Sando.Parser
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string snippet = RetrieveSource(field);
 
-                programElements.Add(new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue));
+                return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, classId, className, String.Empty, initialValue);
+            }
+            catch (Exception error)
+            {
+                FileLogger.DefaultLogger.Info("Exception in SrcMLParsingUtils " + error.Message + "\n" + error.StackTrace);
+                return null;
             }
         }
 
@@ -104,49 +119,56 @@ namespace Sando.Parser
 
             foreach (var oneGroup in commentGroups)
             {
-                var comment = oneGroup.First();
-                var commentText = GetCommentText(oneGroup);
-                int commentLine = Int32.Parse(comment.Attribute(POS.Line).Value);				
-				if(String.IsNullOrWhiteSpace(commentText)) continue;
-
-				//comment name doesn't contain non-word characters and is compact-er than its body
-                var commentName = "";
-                commentName = GetCommentSummary(GetCommentText(oneGroup,true));
-                if(string.IsNullOrWhiteSpace(commentName)) { continue; }
-
-                //comments above method or class
-                var lastComment = oneGroup.Last() as XElement;
-                ProgramElement programElement=null;
-                if(lastComment != null && lastComment.Attribute(POS.Line) != null)
+                try
                 {
-                    var definitionLineNumber = Int32.Parse(lastComment.Attribute(POS.Line).Value);
-                    programElement =
-                        programElements.Find(element => element.DefinitionLineNumber == definitionLineNumber + 1);
-                }
-                if(programElement!=null)
+                    var comment = oneGroup.First();
+                    var commentText = GetCommentText(oneGroup);
+                    int commentLine = Int32.Parse(comment.Attribute(POS.Line).Value);
+                    if (String.IsNullOrWhiteSpace(commentText)) continue;
+
+                    //comment name doesn't contain non-word characters and is compact-er than its body
+                    var commentName = "";
+                    commentName = GetCommentSummary(GetCommentText(oneGroup, true));
+                    if (string.IsNullOrWhiteSpace(commentName)) { continue; }
+
+                    //comments above method or class
+                    var lastComment = oneGroup.Last() as XElement;
+                    ProgramElement programElement = null;
+                    if (lastComment != null && lastComment.Attribute(POS.Line) != null)
+                    {
+                        var definitionLineNumber = Int32.Parse(lastComment.Attribute(POS.Line).Value);
+                        programElement =
+                            programElements.Find(element => element.DefinitionLineNumber == definitionLineNumber + 1);
+                    }
+                    if (programElement != null)
+                    {
+                        programElements.Add(new CommentElement(commentName, commentLine, programElement.FullFilePath, RetrieveSource(commentText), commentText));
+                        continue;
+                    }
+
+
+
+                    //comments inside a method or class
+                    MethodElement methodEl = RetrieveMethodElement(comment, programElements);
+                    if (methodEl != null)
+                    {
+                        programElements.Add(new CommentElement(commentName, commentLine, methodEl.FullFilePath, RetrieveSource(commentText), commentText));
+                        continue;
+                    }
+                    ClassElement classEl = RetrieveClassElement(comment, programElements);
+                    if (classEl != null)
+                    {
+                        programElements.Add(new CommentElement(commentName, commentLine, classEl.FullFilePath, RetrieveSource(commentText), commentText));
+                        continue;
+                    }
+
+                    //comments is not associated with another element, so it's a plain CommentElement
+                    programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSource(commentText), commentText));
+                }                            
+                catch (Exception error)
                 {
-                    programElements.Add(new CommentElement(commentName, commentLine, programElement.FullFilePath, RetrieveSource(commentText), commentText));                    
-                    continue;                    
+                    FileLogger.DefaultLogger.Info("Exception in SrcMLParsingUtils " + error.Message + "\n" + error.StackTrace);                    
                 }
-
-				
-
-				//comments inside a method or class
-				MethodElement methodEl = RetrieveMethodElement(comment, programElements);
-				if(methodEl != null)
-				{
-					programElements.Add(new CommentElement(commentName, commentLine, methodEl.FullFilePath, RetrieveSource(commentText), commentText));
-					continue;
-				}
-				ClassElement classEl = RetrieveClassElement(comment, programElements);
-				if(classEl != null)
-				{
-					programElements.Add(new CommentElement(commentName, commentLine, classEl.FullFilePath, RetrieveSource(commentText), commentText));
-					continue;
-				}
-
-				//comments is not associated with another element, so it's a plain CommentElement
-				programElements.Add(new CommentElement(commentName, commentLine, fileName, RetrieveSource(commentText), commentText));
 			}
 		}
 
@@ -342,46 +364,17 @@ namespace Sando.Parser
 			}
 		}
 
-        public static string RetrieveSource(string source)
-        {
-            try
-            {
-                var snip = new StringBuilder();
-                var lines = source.Replace("\t", "   ").Split('\n').ToList();
-                var prefixToRemove = String.Empty;
-                char[] trimChars = { '\n', '\r' };
-				//if(lines.Count > 1 && numLines > 2)
-                if(lines.Count > 1)
-                {
-                    var secondLine = lines[1].Trim(trimChars);
-                    var match = Regex.Match(secondLine, "(\\s+)");
-                    if(match.Success)
-                        prefixToRemove = match.Groups[0].Value;
-                }
-                if (lines.Count > 0)
-                {
-					//for(int i = 0; i < lines.Count && i < numLines; ++i)
-                    for(int i=0; i<lines.Count; ++i)
-                    {
-                        var line = lines[i].Trim(trimChars);
-                        if(line.StartsWith(prefixToRemove))
-                            line = line.Substring(prefixToRemove.Length);
-                        snip.AppendLine(line);
-                    }
-                }
-                return snip.ToString();
-            }
-            catch (Exception e)
-            {
-                return source;
-            }
+        public static string RetrieveSource(string theThang)
+        {            
+            //return RetrieveSource(retrieveSnippet);
+            return theThang;
         }
 
 		public static string RetrieveSource(XElement theThang)
 		{
 		    string retrieveSnippet = theThang.Value;
-            return RetrieveSource(retrieveSnippet);
-
+            //return RetrieveSource(retrieveSnippet);
+            return retrieveSnippet;
 		}
 
         

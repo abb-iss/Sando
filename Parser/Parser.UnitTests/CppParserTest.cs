@@ -33,6 +33,20 @@ namespace Sando.Parser.UnitTests
             ///////CheckParseOfEventFile(parser, sourceFile, elements);
 		}
 
+
+        [Test]
+        public void ParseCPPSourceWithErrorsTest()
+        {
+            bool seenGetTimeMethod = false;
+            int numMethods = 0;
+            ///////string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
+            string sourceFile = @"TestFiles\EventWithErrorInIt.cpp";
+            var parser = new SrcMLCppParser(generator);
+            var elements = parser.Parse(sourceFile);
+            Assert.IsNotNull(elements);
+            Assert.AreEqual(elements.Count, 5);
+            ///////CheckParseOfEventFile(parser, sourceFile, elements);
+        }
         
 
 		[Test]

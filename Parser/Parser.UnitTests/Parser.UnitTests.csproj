@@ -84,6 +84,9 @@
     <Content Include="TestFiles\AboutDlg.cpp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestFiles\EventWithErrorInIt.CPP">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestFiles\Event.CPP">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
