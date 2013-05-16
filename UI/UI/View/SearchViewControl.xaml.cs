@@ -34,6 +34,8 @@ namespace Sando.UI.View
             InitAccessLevels();
             InitProgramElements();
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += SelectFirstResult;
+            ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += ScrollToTop;
+
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
 
@@ -154,6 +156,13 @@ namespace Sando.UI.View
             searchResultListbox.SelectedIndex = -1;
             searchResultListbox.Focus();
         }
+
+        private void ScrollToTop(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if(searchResultListbox.Items.Count > 0)
+                searchResultListbox.ScrollIntoView(searchResultListbox.Items[0]);
+        }
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
