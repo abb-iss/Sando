@@ -17,6 +17,9 @@ namespace Configuration.OptionsPages
 		private GroupBox SearchResultsConfigurationGroupBox;
 		private TextBox SearchResultsConfigurationNumberOfResultsReturnedTextBox;
 		private Label NumberOfResultsReturnedLabel;
+		private GroupBox ToggleLogCollectionGroupBox;
+		private Label AllowCollectionLabel;
+		private CheckBox allowCollectionCheckBox;
 
 		/// <summary>  
 		/// Required designer variable. 
@@ -75,8 +78,12 @@ namespace Configuration.OptionsPages
 			this.SearchResultsConfigurationGroupBox = new System.Windows.Forms.GroupBox();
 			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox = new System.Windows.Forms.TextBox();
 			this.NumberOfResultsReturnedLabel = new System.Windows.Forms.Label();
+			this.ToggleLogCollectionGroupBox = new System.Windows.Forms.GroupBox();
+			this.allowCollectionCheckBox = new System.Windows.Forms.CheckBox();
+			this.AllowCollectionLabel = new System.Windows.Forms.Label();
 			this.ExtensionPointsConfigurationGroupBox.SuspendLayout();
 			this.SearchResultsConfigurationGroupBox.SuspendLayout();
+			this.ToggleLogCollectionGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ExtensionPointsPluginDirectoryPathFolderBrowserDialog
@@ -144,7 +151,7 @@ namespace Configuration.OptionsPages
 			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox.Size = new System.Drawing.Size(90, 20);
 			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox.TabIndex = 6;
 			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox.TextChanged += new EventHandler(SearchResultsConfigurationNumberOfResultsReturnedTextBox_TextChanged);
+			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox.TextChanged += new System.EventHandler(this.SearchResultsConfigurationNumberOfResultsReturnedTextBox_TextChanged);
 			// 
 			// NumberOfResultsReturnedLabel
 			// 
@@ -155,17 +162,52 @@ namespace Configuration.OptionsPages
 			this.NumberOfResultsReturnedLabel.TabIndex = 4;
 			this.NumberOfResultsReturnedLabel.Text = "Number of results returned:";
 			// 
+			// ToggleLogCollectionGroupBox
+			// 
+			this.ToggleLogCollectionGroupBox.Controls.Add(this.allowCollectionCheckBox);
+			this.ToggleLogCollectionGroupBox.Controls.Add(this.AllowCollectionLabel);
+			this.ToggleLogCollectionGroupBox.Location = new System.Drawing.Point(5, 146);
+			this.ToggleLogCollectionGroupBox.Name = "ToggleLogCollectionGroupBox";
+			this.ToggleLogCollectionGroupBox.Size = new System.Drawing.Size(445, 60);
+			this.ToggleLogCollectionGroupBox.TabIndex = 8;
+			this.ToggleLogCollectionGroupBox.TabStop = false;
+			this.ToggleLogCollectionGroupBox.Text = "Sando improvement log collection";
+			// 
+			// allowCollectionCheckBox
+			// 
+			this.allowCollectionCheckBox.AutoSize = true;
+			this.allowCollectionCheckBox.Checked = true;
+			this.allowCollectionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.allowCollectionCheckBox.Location = new System.Drawing.Point(385, 29);
+			this.allowCollectionCheckBox.Name = "allowCollectionCheckBox";
+			this.allowCollectionCheckBox.Size = new System.Drawing.Size(15, 14);
+			this.allowCollectionCheckBox.TabIndex = 5;
+			this.allowCollectionCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.allowCollectionCheckBox.UseVisualStyleBackColor = true;
+			// 
+			// AllowCollectionLabel
+			// 
+			this.AllowCollectionLabel.AutoSize = true;
+			this.AllowCollectionLabel.Location = new System.Drawing.Point(10, 30);
+			this.AllowCollectionLabel.Name = "AllowCollectionLabel";
+			this.AllowCollectionLabel.Size = new System.Drawing.Size(206, 13);
+			this.AllowCollectionLabel.TabIndex = 4;
+			this.AllowCollectionLabel.Text = "Allow collection of anonymous usage logs:";
+			// 
 			// SandoOptionsControl
 			// 
 			this.AllowDrop = true;
+			this.Controls.Add(this.ToggleLogCollectionGroupBox);
 			this.Controls.Add(this.SearchResultsConfigurationGroupBox);
 			this.Controls.Add(this.ExtensionPointsConfigurationGroupBox);
 			this.Name = "SandoOptionsControl";
-			this.Size = new System.Drawing.Size(465, 195);
+			this.Size = new System.Drawing.Size(465, 220);
 			this.ExtensionPointsConfigurationGroupBox.ResumeLayout(false);
 			this.ExtensionPointsConfigurationGroupBox.PerformLayout();
 			this.SearchResultsConfigurationGroupBox.ResumeLayout(false);
 			this.SearchResultsConfigurationGroupBox.PerformLayout();
+			this.ToggleLogCollectionGroupBox.ResumeLayout(false);
+			this.ToggleLogCollectionGroupBox.PerformLayout();
 			this.ResumeLayout(false);
 
 		}

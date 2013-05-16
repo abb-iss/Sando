@@ -28,8 +28,10 @@ namespace Sando.UI.Options
                 if (!int.TryParse(sandoDialogPage.NumberOfSearchResultsReturned, out numberOfSearchResultsReturned) || numberOfSearchResultsReturned < 0)
                     numberOfSearchResultsReturned = SearchCriteria.DefaultNumberOfSearchResultsReturned;
             }
-            
-            var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned);
+
+			var allowLogCollection = sandoDialogPage.AllowLogCollection;
+
+            var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned, allowLogCollection);
             return sandoOptions;
         }
     }

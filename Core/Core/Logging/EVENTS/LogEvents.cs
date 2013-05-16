@@ -131,9 +131,9 @@ namespace Sando.Core.Logging.Events
 			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted by user: " + queryDescription + " ; DiceCoefficientToPreviousQuery=" + diceCoeff);
 		}
 
-		public static void PreSearch(Object sender, double avgidf, double avgsqc, double avgvar)
+		public static void PreSearch(Object sender, double maxidf, double avgidf, double avgsqc, double avgvar)
 		{
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre retrieval metrics: AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Pre retrieval metrics: MaxIDF=" + maxidf + ", AvgIDF=" + avgidf + ", AvgSQC=" + avgsqc + ", AvgVAR=" + avgvar);
 		}
 
         public static void PostSearch(Object sender, int numOfResults, int maxNumOfResults, double avgscore, double stddevscore)

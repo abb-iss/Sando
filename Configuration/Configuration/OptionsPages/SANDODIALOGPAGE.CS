@@ -42,6 +42,9 @@ namespace Configuration.OptionsPages
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public string ExtensionPointsPluginDirectoryPath { get; set; }
 
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+		public bool AllowLogCollection { get; set; }
+
 		#endregion Properties 
 	}
 }

@@ -24,8 +24,8 @@ namespace Sando.Core.Logging.Events
 				_initialized = true;
 			}
 
-			var machineDomain = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
-			var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain + DateTime.Now.ToString("yyyy-MM-dd HH.mm") + ".log");
+			var machineDomain = GetMachineDomain();
+			var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain.GetHashCode() + DateTime.Now.ToString("yyyy-MM-dd HH.mm") + ".log");
 			Logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
 			CurrentLogFile = dataFileName;
 			LogPath = logPath;
@@ -79,6 +79,19 @@ namespace Sando.Core.Logging.Events
 					}
 				}
 			}
+		}
+
+		private static string GetMachineDomain()
+		{
+			var machineDomain = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
+
+			//if domain has the form x.y.z.com then return the last 2 parts: z.com 
+			string[] domainSplit = machineDomain.Split('.');
+			if(domainSplit.Count() >= 2)
+			{
+				return domainSplit[domainSplit.Count() - 2] + "." + domainSplit[domainSplit.Count() - 1];
+			}
+			return machineDomain;
 		}
 
         private static ILog Logger;

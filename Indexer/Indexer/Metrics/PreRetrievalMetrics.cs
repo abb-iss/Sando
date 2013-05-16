@@ -33,6 +33,18 @@ namespace Sando.Indexer.Searching.Metrics
 			return (SumIdf / terms.Length);
 		}
 
+		public double MaxIdf(string query)
+		{
+			double MaxIdf = Double.MinValue;
+			query = StemText(query);
+			string[] terms = query.Split(' ');
+			foreach(var term in terms)
+			{
+				if(MaxIdf < Idf(term)) MaxIdf = Idf(term);
+			}
+			return MaxIdf;
+		}
+
 
 		public double DevIdf(string query)
 		{
