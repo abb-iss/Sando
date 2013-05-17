@@ -28,13 +28,13 @@ namespace Sando.Indexer.Documents
             return fields;
 		}
 
-        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, int definitionColumnNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string arguments = document.GetField(SandoField.Arguments.ToString()).StringValue().ToSandoDisplayable();
 			string returnType = document.GetField(SandoField.ReturnType.ToString()).StringValue().ToSandoDisplayable();
 			bool isConstructor = bool.Parse(document.GetField(SandoField.IsConstructor.ToString()).StringValue().ToSandoDisplayable());
-            return new object[] { name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor };			
+            return new object[] { name, definitionLineNumber, definitionColumnNumber, returnType, accessLevel, arguments, fullFilePath, snippet, isConstructor };			
 		}
 	}
 }

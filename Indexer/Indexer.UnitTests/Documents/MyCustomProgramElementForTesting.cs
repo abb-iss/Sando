@@ -10,7 +10,8 @@ namespace Sando.Indexer.UnitTests.Documents
 {
     public class MyCustomProgramElementForTesting: ProgramElement 
     {
-        public MyCustomProgramElementForTesting(string name, int definitionLineNumber, string fullFilePath, string snippet) : base(name, definitionLineNumber, fullFilePath, snippet)
+        public MyCustomProgramElementForTesting(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet)
         {
         }
         
@@ -32,6 +33,7 @@ namespace Sando.Indexer.UnitTests.Documents
             document.Add(new Field(SandoField.ProgramElementType.ToString(), ProgramElementType.Custom.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.FullFilePath.ToString(), @"C:\stuff\place.txt", Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), "123", Field.Store.YES, Field.Index.NO));
+            document.Add(new Field(SandoField.DefinitionColumnNumber.ToString(), "123", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(SandoField.Source.ToString(), "The text of the custom thing.", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(ProgramElement.CustomTypeTag, typeof(MyCustomProgramElementForTesting).AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
             return document;
@@ -39,7 +41,7 @@ namespace Sando.Indexer.UnitTests.Documents
 
         public static MyCustomProgramElementForTesting GetProgramElement()
         {
-            var element =  new MyCustomProgramElementForTesting("customThingName", 123, @"C:\stuff\place.txt", "The text of the custom thing.");
+            var element =  new MyCustomProgramElementForTesting("customThingName", 123, -1000, @"C:\stuff\place.txt", "The text of the custom thing.");
             element.A = "A's value";
             element.B = "B's value";
             element.C = "C's value";

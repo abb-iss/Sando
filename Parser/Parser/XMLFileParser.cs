@@ -42,7 +42,7 @@ namespace Sando.Parser
                     cleanedText = cleanedText.TrimEnd(' ', '\n', '\r', '\t');
                     var linenum = reader.LineNumber;
                     var snippet = SrcMLParsingUtils.RetrieveSource(cleanedText);
-                    var pe = new TextLineElement(cleanedText, linenum, filename, snippet, cleanedText);
+                    var pe = new TextLineElement(cleanedText, linenum, -1000, filename, snippet, cleanedText);
                     programElements.Add(pe);
                 }
             }

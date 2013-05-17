@@ -30,7 +30,7 @@ namespace Sando.Indexer.Documents
             return fields;
 		}
 
-        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, int definitionColumnNumber, string snippet, Document document)
 		{
 			AccessLevel accessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), document.GetField(SandoField.AccessLevel.ToString()).StringValue(), true);
 			string propertyType = document.GetField(SandoField.DataType.ToString()).StringValue().ToSandoDisplayable();
@@ -38,7 +38,7 @@ namespace Sando.Indexer.Documents
 			Guid classId = new Guid(document.GetField(SandoField.ClassId.ToString()).StringValue());
 			string className = document.GetField(SandoField.ClassName.ToString()).StringValue().ToSandoDisplayable();
 			string modifiers = document.GetField(SandoField.Modifiers.ToString()).StringValue();
-            return new object[] { name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, modifiers };
+            return new object[] { name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet, accessLevel, propertyType, body, classId, className, modifiers };
 		}
 	}
 }

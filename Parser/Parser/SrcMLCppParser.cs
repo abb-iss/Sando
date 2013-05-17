@@ -106,7 +106,9 @@ namespace Sando.Parser
                 select el;
             foreach (XElement function in functions)
             {
-                programElements.Add(ParseCppFunctionPrototype(function, fileName, false));
+                var func = ParseCppFunctionPrototype(function, fileName, false);
+                if(func!=null)
+                    programElements.Add(func);
             }
         }
 
@@ -117,62 +119,78 @@ namespace Sando.Parser
                 select el;
             foreach (XElement function in functions)
             {
-                programElements.Add(ParseCppFunctionPrototype(function, fileName, true));
+                var prototype = ParseCppFunctionPrototype(function, fileName, true);
+                if(prototype!=null)
+                    programElements.Add(prototype);
             }
         }
 
         private MethodPrototypeElement ParseCppFunctionPrototype(XElement function, string fileName, bool isConstructor)
         {
-            string name = String.Empty;
-            int definitionLineNumber = 0;
-            string returnType = String.Empty;
-
-            SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber);
-            if (name.Contains("::"))
+            try
             {
-                name = name.Substring(name.LastIndexOf("::") + 2);
+                string name = String.Empty;
+                int definitionLineNumber = 0;
+                int definitionColumnNumber = 0;
+                string returnType = String.Empty;                
+                SrcMLParsingUtils.ParseNameAndLineNumber(function, out name, out definitionLineNumber, out definitionColumnNumber);
+                if (name.Contains("::"))
+                {
+                    name = name.Substring(name.LastIndexOf("::") + 2);
+                }
+                AccessLevel accessLevel = RetrieveCppAccessLevel(function);
+                XElement type = function.Element(SRC.Type);
+                if (type != null)
+                {
+                    XElement typeName = type.Element(SRC.Name);
+                    returnType = typeName.Value;
+                }
+
+                XElement paramlist = function.Element(SRC.ParameterList);
+                IEnumerable<XElement> argumentElements =
+                    from el in paramlist.Descendants(SRC.Name)
+                    select el;
+                string arguments = String.Empty;
+                foreach (XElement elem in argumentElements)
+                {
+                    arguments += elem.Value + " ";
+                }
+                arguments = arguments.TrimEnd();
+
+                string fullFilePath = System.IO.Path.GetFullPath(fileName);
+                string source = SrcMLParsingUtils.RetrieveSource(function);
+
+                return new MethodPrototypeElement(name, definitionLineNumber, definitionColumnNumber, returnType, accessLevel, arguments, fullFilePath, source, isConstructor);
             }
-            AccessLevel accessLevel = RetrieveCppAccessLevel(function);
-            XElement type = function.Element(SRC.Type);
-            if (type != null)
+            catch (Exception error)
             {
-                XElement typeName = type.Element(SRC.Name);
-                returnType = typeName.Value;
+                FileLogger.DefaultLogger.Info("Exception in SrcMLCppParser " + error.Message + "\n" + error.StackTrace);
+                return null;
             }
-
-            XElement paramlist = function.Element(SRC.ParameterList);
-            IEnumerable<XElement> argumentElements =
-                from el in paramlist.Descendants(SRC.Name)
-                select el;
-            string arguments = String.Empty;
-            foreach (XElement elem in argumentElements)
-            {
-                arguments += elem.Value + " ";
-            }
-            arguments = arguments.TrimEnd();
-
-            string fullFilePath = System.IO.Path.GetFullPath(fileName);
-            string source = SrcMLParsingUtils.RetrieveSource(function);
-
-            return new MethodPrototypeElement(name, definitionLineNumber, returnType, accessLevel, arguments, fullFilePath, source, isConstructor);
         }
 
 
         private string[] ParseCppIncludes(XElement sourceElements)
         {
             List<string> includeFileNames = new List<string>();
-            IEnumerable<XElement> includeStatements =
-                from el in sourceElements.Descendants(CPP.Include)
-                select el;
-
-            foreach (XElement include in includeStatements)
+            try
             {
-                string filename = include.Element(CPP.File).Value;
-                if (filename.Substring(0, 1) == "<") continue; //ignore includes of system files -> they start with a bracket
-                filename = filename.Substring(1, filename.Length - 2);	//remove quotes	
-                includeFileNames.Add(filename);
-            }
+                IEnumerable<XElement> includeStatements =
+                    from el in sourceElements.Descendants(CPP.Include)
+                    select el;
 
+                foreach (XElement include in includeStatements)
+                {
+                    string filename = include.Element(CPP.File).Value;
+                    if (filename.Substring(0, 1) == "<") continue; //ignore includes of system files -> they start with a bracket
+                    filename = filename.Substring(1, filename.Length - 2);	//remove quotes	
+                    includeFileNames.Add(filename);
+                }
+            }
+            catch (Exception error)
+            {
+                FileLogger.DefaultLogger.Info("Exception in SrcMLCppParser.ParseCppIncludes() " + error.Message + "\n" + error.StackTrace);
+            }
             return includeFileNames.ToArray();
         }
 
@@ -183,7 +201,9 @@ namespace Sando.Parser
                 select el;
             foreach (XElement cls in classes)
             {
-                programElements.Add((ClassElement)ParseClassOrStruct(cls, fileName, false));
+                var classElement = (ClassElement)ParseClassOrStruct(cls, fileName, false);
+                if(classElement!=null)
+                    programElements.Add(classElement);
             }
         }
 
@@ -194,7 +214,9 @@ namespace Sando.Parser
                 select el;
             foreach (XElement cls in classes)
             {
-                programElements.Add((StructElement)ParseClassOrStruct(cls, fileName, true));
+                var structure = (StructElement)ParseClassOrStruct(cls, fileName, true);
+                if(structure!=null)
+                    programElements.Add(structure);
             }
         }
 
@@ -202,7 +224,8 @@ namespace Sando.Parser
         {
             string name;
             int definitionLineNumber;
-            SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber);
+            int definitionColumnNumber;
+            SrcMLParsingUtils.ParseNameAndLineNumber(cls, out name, out definitionLineNumber, out definitionColumnNumber);
 
             AccessLevel accessLevel = SrcMLParsingUtils.RetrieveAccessLevel(cls, AccessLevel.Public);
 
@@ -246,12 +269,12 @@ namespace Sando.Parser
             string body = cls.Value;
             if (parseStruct)
             {
-                return new StructElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName, body, extendedClasses, String.Empty);
+                return new StructElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, namespaceName, body, extendedClasses, String.Empty);
             }
             else
             {
                 string implementedInterfaces = String.Empty;
-                return new ClassElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName,
+                return new ClassElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, namespaceName,
                     extendedClasses, implementedInterfaces, String.Empty, body);
             }
         }
@@ -264,7 +287,9 @@ namespace Sando.Parser
                 select el;
             foreach (XElement cons in constructors)
             {
-                programElements.Add(ParseCppFunction(cons, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement), true));
+                var constructor = ParseCppFunction(cons, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement), true);
+                if(constructor!=null)
+                    programElements.Add(constructor);
             }
         }
 
@@ -276,82 +301,95 @@ namespace Sando.Parser
                 select el;
             foreach (XElement func in functions)
             {
-                programElements.Add(ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement)));
+                var method = ParseCppFunction(func, programElements, fileName, includedFiles, typeof(MethodElement), typeof(CppUnresolvedMethodElement));
+                if(method!=null)
+                    programElements.Add(method);
             }
         }
 
         public virtual MethodElement ParseCppFunction(XElement function, List<ProgramElement> programElements, string fileName,
                                                 string[] includedFiles, Type resolvedType, Type unresolvedType, bool isConstructor = false)
         {
-            MethodElement methodElement = null;
-            string source = String.Empty;
-            int definitionLineNumber = 0;
-            string returnType = String.Empty;
-
-            XElement type = function.Element(SRC.Type);
-            if (type != null)
+            try
             {
-                XElement typeName = type.Element(SRC.Name);
-                returnType = typeName.Value;
-            }
+                MethodElement methodElement = null;
+                string source = String.Empty;
+                int definitionLineNumber = 0;
+                int definitionColumnNumber = 0;
+                string returnType = String.Empty;
 
-            XElement paramlist = function.Element(SRC.ParameterList);
-            IEnumerable<XElement> argumentElements =
-                from el in paramlist.Descendants(SRC.Name)
-                select el;
-            string arguments = String.Empty;
-            foreach (XElement elem in argumentElements)
-            {
-                arguments += elem.Value + " ";
-            }
-            arguments = arguments.TrimEnd();
-
-            string body = SrcMLParsingUtils.ParseBody(function);
-            string fullFilePath = System.IO.Path.GetFullPath(fileName);
-
-
-            XElement nameElement = function.Element(SRC.Name);
-            string wholeName = nameElement.Value;
-            if (wholeName.Contains("::"))
-            {
-                //class function
-                string[] twonames = wholeName.Split("::".ToCharArray());
-                string funcName = twonames[2];
-                string className = twonames[0];
-                definitionLineNumber = Int32.Parse(nameElement.Element(SRC.Name).Attribute(POS.Line).Value);
-                source = SrcMLParsingUtils.RetrieveSource(function);
-
-                return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, fullFilePath, source, arguments, returnType, body,
-                                                        className, isConstructor, includedFiles) as MethodElement;
-            }
-            else
-            {
-                //regular C-type function, or an inlined class function
-                string funcName = wholeName;
-                definitionLineNumber = Int32.Parse(nameElement.Attribute(POS.Line).Value);
-                source = SrcMLParsingUtils.RetrieveSource(function);
-                AccessLevel accessLevel = RetrieveCppAccessLevel(function);
-
-                Guid classId = Guid.Empty;
-                string className = String.Empty;
-                ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(function, programElements);
-                StructElement structElement = RetrieveStructElement(function, programElements);
-                if (classElement != null)
+                XElement type = function.Element(SRC.Type);
+                if (type != null)
                 {
-                    classId = classElement.Id;
-                    className = classElement.Name;
+                    XElement typeName = type.Element(SRC.Name);
+                    returnType = typeName.Value;
                 }
-                else if (structElement != null)
-                {
-                    classId = structElement.Id;
-                    className = structElement.Name;
-                }
-                methodElement = Activator.CreateInstance(resolvedType, funcName, definitionLineNumber, fullFilePath, source, accessLevel, arguments,
-                                         returnType, body,
-                                         classId, className, String.Empty, isConstructor) as MethodElement;
-            }
 
-            return methodElement;
+                XElement paramlist = function.Element(SRC.ParameterList);
+                IEnumerable<XElement> argumentElements =
+                    from el in paramlist.Descendants(SRC.Name)
+                    select el;
+                string arguments = String.Empty;
+                foreach (XElement elem in argumentElements)
+                {
+                    arguments += elem.Value + " ";
+                }
+                arguments = arguments.TrimEnd();
+
+                string body = SrcMLParsingUtils.ParseBody(function);
+                string fullFilePath = System.IO.Path.GetFullPath(fileName);
+
+
+                XElement nameElement = function.Element(SRC.Name);
+                string wholeName = nameElement.Value;
+                if (wholeName.Contains("::"))
+                {
+                    //class function
+                    string[] twonames = wholeName.Split("::".ToCharArray());
+                    string funcName = twonames[2];
+                    string className = twonames[0];
+                    definitionLineNumber = Int32.Parse(nameElement.Element(SRC.Name).Attribute(POS.Line).Value);
+                    definitionColumnNumber = Int32.Parse(nameElement.Element(SRC.Name).Attribute(POS.Column).Value);
+                    source = SrcMLParsingUtils.RetrieveSource(function);
+
+                    return Activator.CreateInstance(unresolvedType, funcName, definitionLineNumber, definitionColumnNumber, fullFilePath, source, arguments, returnType, body,
+                                                            className, isConstructor, includedFiles) as MethodElement;
+                }
+                else
+                {
+                    //regular C-type function, or an inlined class function
+                    string funcName = wholeName;
+                    definitionLineNumber = Int32.Parse(nameElement.Attribute(POS.Line).Value);
+                    definitionColumnNumber = Int32.Parse(nameElement.Attribute(POS.Column).Value);
+                    source = SrcMLParsingUtils.RetrieveSource(function);
+                    AccessLevel accessLevel = RetrieveCppAccessLevel(function);
+
+                    Guid classId = Guid.Empty;
+                    string className = String.Empty;
+                    ClassElement classElement = SrcMLParsingUtils.RetrieveClassElement(function, programElements);
+                    StructElement structElement = RetrieveStructElement(function, programElements);
+                    if (classElement != null)
+                    {
+                        classId = classElement.Id;
+                        className = classElement.Name;
+                    }
+                    else if (structElement != null)
+                    {
+                        classId = structElement.Id;
+                        className = structElement.Name;
+                    }
+                    methodElement = Activator.CreateInstance(resolvedType, funcName, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, arguments,
+                                             returnType, body,
+                                             classId, className, String.Empty, isConstructor) as MethodElement;
+                }
+
+                return methodElement;
+            }
+            catch (Exception error)
+            {
+                FileLogger.DefaultLogger.Info("Exception in SrcMLCppParser " + error.Message + "\n" + error.StackTrace);
+                return null;
+            }
         }
 
         public static void ParseCppEnums(List<ProgramElement> programElements, XElement elements, string fileName)
@@ -362,14 +400,25 @@ namespace Sando.Parser
 
             foreach (XElement enm in enums)
             {
+                var enumParsed = ParseEnum(fileName, enm);
+                if(enumParsed!=null)
+                    programElements.Add(enumParsed);
+            }
+        }
+
+        private static EnumElement ParseEnum(string fileName, XElement enm)
+        {
+            try
+            {
                 //SrcML doesn't seem to parse access level specifiers for enums, so just pretend they are all public for now
                 AccessLevel accessLevel = AccessLevel.Public;
 
                 string name = "";
                 int definitionLineNumber = 0;
+                int definitionColumnNumber=0;
                 if (enm.Element(SRC.Name) != null)
                 {
-                    SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber);
+                    SrcMLParsingUtils.ParseNameAndLineNumber(enm, out name, out definitionLineNumber, out definitionColumnNumber);
                 }
                 else
                 {
@@ -388,7 +437,7 @@ namespace Sando.Parser
                 string namespaceName = String.Empty;
                 foreach (XElement ownerNamespace in ownerNamespaces)
                 {
-                    foreach(XElement spc in ownerNamespace.Elements(SRC.Name))
+                    foreach (XElement spc in ownerNamespace.Elements(SRC.Name))
                     {
                         namespaceName += spc.Value + " ";
                     }
@@ -417,8 +466,13 @@ namespace Sando.Parser
 
                 string fullFilePath = System.IO.Path.GetFullPath(fileName);
                 string source = SrcMLParsingUtils.RetrieveSource(enm);
-
-                programElements.Add(new EnumElement(name, definitionLineNumber, fullFilePath, source, accessLevel, namespaceName, values));
+                var enumParsed = new EnumElement(name, definitionLineNumber, definitionColumnNumber, fullFilePath, source, accessLevel, namespaceName, values);
+                return enumParsed;
+            }
+            catch (Exception error)
+            {
+                FileLogger.DefaultLogger.Info("Exception in SrcMLCppParser " + error.Message + "\n" + error.StackTrace);
+                return null;
             }
         }
 

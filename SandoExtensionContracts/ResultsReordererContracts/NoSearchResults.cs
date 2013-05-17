@@ -16,7 +16,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 
         public static CodeSearchResult Instance(string searchTerm, string openSolution)
         { 
-            return new NoSearchResults(new TextLineElement("\""+searchTerm+"\" not found ",0,"Solution "+openSolution," Tips for improving your query:" +
+            return new NoSearchResults(new TextLineElement("\""+searchTerm+"\" not found ",0,0,"Solution "+openSolution," Tips for improving your query:" +
                                                                                                           "\n\t* Consider adding * to the end of your query" +
                                                                                                           "\n\t* Search for a complete, not partial word"+
                                                                                                           "\n\t* Reduce the number of search terms"

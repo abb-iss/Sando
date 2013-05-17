@@ -5,9 +5,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class StructElement : ProgramElement
 	{
-		public StructElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
-            string namespaceName, string body, string extendedStructs, string modifiers) 
-			: base(name, definitionLineNumber, fullFilePath, snippet)
+        public StructElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
+            string namespaceName, string body, string extendedStructs, string modifiers)
+            : base(name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(namespaceName != null, "StructElement:Constructor - namespace cannot be null!");
 			Contract.Requires(extendedStructs != null, "StructElement:Constructor - extended structs cannot be null!");

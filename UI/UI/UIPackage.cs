@@ -315,10 +315,38 @@ namespace Sando.UI
 
 		private void SolutionHasBeenOpened()
 		{
+            CallShowProgressBar(true);
             var bw = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
 		    bw.DoWork += RespondToSolutionOpened;
 		    bw.RunWorkerAsync();
 		}
+
+
+        public void HandleIndexingFinish(object sender, EventArgs args)
+        {
+            CallShowProgressBar(false);
+        }
+
+        private void CallShowProgressBar(bool show)
+        {
+            try
+            {
+                var window = FindToolWindow(typeof(SearchToolWindow), 0, true);
+                if ((null == window) || (null == window.Frame))
+                {
+                    throw new NotSupportedException(Resources.CanNotCreateWindow);
+                }
+                var stw = window as SearchToolWindow;
+                if (stw != null)
+                {
+                    stw.GetSearchViewControl().ShowProgressBar(show);
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(e);
+            }
+        }
 
         /// <summary>
         /// Respond to solution opening.
@@ -368,6 +396,7 @@ namespace Sando.UI
                     SetupHandlers = true;
                     srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
                     srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
+                    srcMLService.StartupCompleted += HandleIndexingFinish;
                     srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
                 }
 
