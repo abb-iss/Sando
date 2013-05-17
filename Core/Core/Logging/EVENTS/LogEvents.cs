@@ -26,6 +26,11 @@ namespace Sando.Core.Logging.Events
             DefaultLogEventHandlers.WriteErrorLogMessage(sender.GetType().ToString(), "The file could not be read: " + fileName);
         }
 
+		public static void ParserGenericException(Object sender, Exception exception)
+		{
+			DefaultLogEventHandlers.WriteErrorLogMessage(sender.GetType().ToString(), "", exception);
+		}
+
         #endregion
 
         #region UIEvents

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
-using Sando.Core.Logging;
+using Sando.Core.Logging.Events;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using ABB.SrcML;
 
@@ -78,7 +78,8 @@ namespace Sando.Parser
             }
             catch (Exception error)
             {
-                FileLogger.DefaultLogger.Info("Exception in SrcMLParsingUtils " + error.Message + "\n" + error.StackTrace);
+				Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+				LogEvents.ParserGenericException(t, error);
                 return null;
             }
         }
@@ -169,7 +170,8 @@ namespace Sando.Parser
                 }                            
                 catch (Exception error)
                 {
-                    FileLogger.DefaultLogger.Info("Exception in SrcMLParsingUtils " + error.Message + "\n" + error.StackTrace);                    
+					Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+					LogEvents.ParserGenericException(t, error);                   
                 }
 			}
 		}
