@@ -28,6 +28,11 @@ namespace Sando.Indexer.Documents
 			return document;
 		}
 
+        protected static void AddField(List<Field> fields, Field field)
+        {
+            field.SetOmitNorms(true);
+            fields.Add(field);
+        }  
 
         public virtual List<Field> GetFieldsForLucene()
 		{

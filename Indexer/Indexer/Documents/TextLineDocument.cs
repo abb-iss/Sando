@@ -21,7 +21,7 @@ namespace Sando.Indexer.Documents
 		{
             List<Field> fields = new List<Field>();
 			var textLineElement = (TextLineElement) programElement;
-            fields.Add(new Field(SandoField.Body.ToString(), textLineElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            AddField(fields, new Field(SandoField.Body.ToString(), textLineElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
             return fields;
 		}
 
