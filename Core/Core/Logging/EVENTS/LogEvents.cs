@@ -128,7 +128,7 @@ namespace Sando.Core.Logging.Events
 
         public static void PreSearchQueryAnalysis(Object sender, string queryDescription, double diceCoeff)
         {
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted by user: " + queryDescription + " ; DiceCoefficientToPreviousQuery=" + diceCoeff);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query submitted by user: QueryDescription=" + queryDescription + " ; DiceCoefficientToPreviousQuery=" + diceCoeff);
 		}
 
 		public static void PreSearch(Object sender, double maxidf, double avgidf, double avgsqc, double avgvar)

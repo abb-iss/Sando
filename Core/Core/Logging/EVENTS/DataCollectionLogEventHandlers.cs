@@ -7,6 +7,8 @@ using System.Text;
 using System.ComponentModel;
 using System.IO;
 using Sando.Core.Logging.Upload;
+using Sando.DependencyInjection;
+using Configuration.OptionsPages;
 
 namespace Sando.Core.Logging.Events
 {
@@ -25,7 +27,7 @@ namespace Sando.Core.Logging.Events
 			}
 
 			var machineDomain = GetMachineDomain();
-			var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain.GetHashCode() + DateTime.Now.ToString("yyyy-MM-dd HH.mm") + ".log");
+			var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain.GetHashCode() + DateTime.Now.ToString("-yyyy-MM-dd-HH.mm") + ".log");
 			Logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
 			CurrentLogFile = dataFileName;
 			LogPath = logPath;
@@ -42,6 +44,9 @@ namespace Sando.Core.Logging.Events
 		public static void UploadLogFiles()
 		{
 			if (!_initialized) return;
+
+			var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+			if (!sandoOptions.AllowDataCollectionLogging) return;
 
 			//randomly with p=0.33
 			Random random = new Random();
@@ -84,7 +89,7 @@ namespace Sando.Core.Logging.Events
 		private static string GetMachineDomain()
 		{
 			var machineDomain = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties().DomainName;
-
+			var md = System.Net.Dns.GetHostName();
 			//if domain has the form x.y.z.com then return the last 2 parts: z.com 
 			string[] domainSplit = machineDomain.Split('.');
 			if(domainSplit.Count() >= 2)

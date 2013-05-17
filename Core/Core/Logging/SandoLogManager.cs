@@ -31,6 +31,11 @@ namespace Sando.Core.Logging
             DataCollectionOn = true;
         }
 
+		public static void StopDataCollectionLogging()
+		{
+			DataCollectionOn = false;
+		}
+
         public static void StopAllLogging()
         {
             DefaultLoggingOn = false;

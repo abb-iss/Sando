@@ -172,7 +172,7 @@ namespace Sando.Indexer.Searching.Metrics
         public string StemText(string text) 
         {
             string result = "";
-            TokenStream stream  = Stemmer.TokenStream(null, new StringReader(text));
+            TokenStream stream  = Stemmer.TokenStream(String.Empty, new StringReader(text));
 
             while(stream.IncrementToken()) {
                 TermAttribute termAttr = (TermAttribute) stream.GetAttribute(typeof(TermAttribute));

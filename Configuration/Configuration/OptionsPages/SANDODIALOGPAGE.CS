@@ -32,6 +32,7 @@ namespace Configuration.OptionsPages
 				optionsControl.OptionsPage = this;
 				optionsControl.ExtensionPointsPluginDirectoryPath = this.ExtensionPointsPluginDirectoryPath;
 				optionsControl.NumberOfSearchResultsReturned = this.NumberOfSearchResultsReturned;
+				optionsControl.AllowDataCollectionLogging = this.AllowDataCollectionLogging;
 				return optionsControl;
 			}
 		}
@@ -42,8 +43,8 @@ namespace Configuration.OptionsPages
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public string ExtensionPointsPluginDirectoryPath { get; set; }
 
-		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-		public bool AllowLogCollection { get; set; }
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible), DefaultValue(true)]
+		public bool AllowDataCollectionLogging { get; set; }
 
 		#endregion Properties 
 	}

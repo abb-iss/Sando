@@ -19,7 +19,7 @@ namespace Configuration.OptionsPages
 		private Label NumberOfResultsReturnedLabel;
 		private GroupBox ToggleLogCollectionGroupBox;
 		private Label AllowCollectionLabel;
-		private CheckBox allowCollectionCheckBox;
+		private CheckBox AllowCollectionCheckBox;
 
 		/// <summary>  
 		/// Required designer variable. 
@@ -79,7 +79,7 @@ namespace Configuration.OptionsPages
 			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox = new System.Windows.Forms.TextBox();
 			this.NumberOfResultsReturnedLabel = new System.Windows.Forms.Label();
 			this.ToggleLogCollectionGroupBox = new System.Windows.Forms.GroupBox();
-			this.allowCollectionCheckBox = new System.Windows.Forms.CheckBox();
+			this.AllowCollectionCheckBox = new System.Windows.Forms.CheckBox();
 			this.AllowCollectionLabel = new System.Windows.Forms.Label();
 			this.ExtensionPointsConfigurationGroupBox.SuspendLayout();
 			this.SearchResultsConfigurationGroupBox.SuspendLayout();
@@ -164,7 +164,7 @@ namespace Configuration.OptionsPages
 			// 
 			// ToggleLogCollectionGroupBox
 			// 
-			this.ToggleLogCollectionGroupBox.Controls.Add(this.allowCollectionCheckBox);
+			this.ToggleLogCollectionGroupBox.Controls.Add(this.AllowCollectionCheckBox);
 			this.ToggleLogCollectionGroupBox.Controls.Add(this.AllowCollectionLabel);
 			this.ToggleLogCollectionGroupBox.Location = new System.Drawing.Point(5, 146);
 			this.ToggleLogCollectionGroupBox.Name = "ToggleLogCollectionGroupBox";
@@ -173,17 +173,18 @@ namespace Configuration.OptionsPages
 			this.ToggleLogCollectionGroupBox.TabStop = false;
 			this.ToggleLogCollectionGroupBox.Text = "Sando improvement log collection";
 			// 
-			// allowCollectionCheckBox
+			// AllowCollectionCheckBox
 			// 
-			this.allowCollectionCheckBox.AutoSize = true;
-			this.allowCollectionCheckBox.Checked = true;
-			this.allowCollectionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.allowCollectionCheckBox.Location = new System.Drawing.Point(385, 29);
-			this.allowCollectionCheckBox.Name = "allowCollectionCheckBox";
-			this.allowCollectionCheckBox.Size = new System.Drawing.Size(15, 14);
-			this.allowCollectionCheckBox.TabIndex = 5;
-			this.allowCollectionCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.allowCollectionCheckBox.UseVisualStyleBackColor = true;
+			this.AllowCollectionCheckBox.AutoSize = true;
+			this.AllowCollectionCheckBox.Checked = true;
+			this.AllowCollectionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.AllowCollectionCheckBox.Location = new System.Drawing.Point(385, 29);
+			this.AllowCollectionCheckBox.Name = "AllowCollectionCheckBox";
+			this.AllowCollectionCheckBox.Size = new System.Drawing.Size(15, 14);
+			this.AllowCollectionCheckBox.TabIndex = 5;
+			this.AllowCollectionCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.AllowCollectionCheckBox.UseVisualStyleBackColor = true;
+			this.AllowCollectionCheckBox.CheckedChanged += new System.EventHandler(this.AllowCollectionCheckBox_CheckedChanged);
 			// 
 			// AllowCollectionLabel
 			// 
@@ -211,6 +212,7 @@ namespace Configuration.OptionsPages
 			this.ResumeLayout(false);
 
 		}
+
 		#endregion
 		/// <summary> 
 		/// Gets or Sets the reference to the underlying OptionsPage object. 
@@ -251,6 +253,18 @@ namespace Configuration.OptionsPages
 			}
 		}
 
+		public bool AllowDataCollectionLogging
+		{
+			get
+			{
+				return AllowCollectionCheckBox.Checked;
+			}
+			set
+			{
+				AllowCollectionCheckBox.Checked = value;
+			}
+		}
+
 		#endregion
 
 		private void ExtensionPointsPluginDirectoryPathButton_Click(object sender, EventArgs e)
@@ -279,6 +293,11 @@ namespace Configuration.OptionsPages
 				SearchResultsConfigurationNumberOfResultsReturnedTextBox.Text = "40";
 				MessageBox.Show("You have to enter a positive number!");
 			}
+		}
+
+		private void AllowCollectionCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			customOptionsPage.AllowDataCollectionLogging = AllowCollectionCheckBox.Checked;
 		}
 	} 
 }
