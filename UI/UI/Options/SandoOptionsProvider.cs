@@ -29,7 +29,11 @@ namespace Sando.UI.Options
                     numberOfSearchResultsReturned = SearchCriteria.DefaultNumberOfSearchResultsReturned;
             }
 
-			var allowDataCollectionLogging = sandoDialogPage.AllowDataCollectionLogging;
+            var allowDataCollectionLogging = true;
+            if (!bool.TryParse(sandoDialogPage.AllowDataCollectionLogging, out allowDataCollectionLogging))
+            {
+                allowDataCollectionLogging = true;
+            }
 
             var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned, allowDataCollectionLogging);
             return sandoOptions;

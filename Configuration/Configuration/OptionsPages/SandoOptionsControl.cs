@@ -295,9 +295,16 @@ namespace Configuration.OptionsPages
 			}
 		}
 
-		private void AllowCollectionCheckBox_CheckedChanged(object sender, EventArgs e)
-		{
-			customOptionsPage.AllowDataCollectionLogging = AllowCollectionCheckBox.Checked;
-		}
+        private void AllowCollectionCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (AllowCollectionCheckBox.Checked)
+            {
+                customOptionsPage.AllowDataCollectionLogging = Boolean.TrueString;
+            }
+            else
+            {
+                customOptionsPage.AllowDataCollectionLogging = Boolean.FalseString;
+            }
+        }
 	} 
 }
