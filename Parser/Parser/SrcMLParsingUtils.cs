@@ -228,6 +228,9 @@ namespace Sando.Parser
 
 	    public static string ParseBody(XElement function)
 		{
+            var bodyNormal = function.Value;
+            return bodyNormal;
+
 			string body = String.Empty;
             StringBuilder builder = new StringBuilder();
 
