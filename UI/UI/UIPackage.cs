@@ -96,7 +96,6 @@ namespace Sando.UI
         {            
             PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
             SandoLogManager.StartDefaultLogging(PathManager.Instance.GetExtensionRoot());
-            SandoLogManager.StartDataCollectionLogging(PathManager.Instance.GetExtensionRoot());
         }
 
         public SandoDialogPage GetSandoDialogPage()
@@ -416,8 +415,17 @@ namespace Sando.UI
                 // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
                 // the directory of storing srcML archives and whether to use existing srcML archives.
                 srcMLService.StartMonitoring(useExistingSrcML, src2SrcmlDir);
-                
+
                 // End of code changes
+
+                if (sandoOptions.AllowDataCollectionLogging)
+                {
+                    SandoLogManager.StartDataCollectionLogging(PathManager.Instance.GetExtensionRoot());
+                }
+                else
+                {
+                    SandoLogManager.StopDataCollectionLogging();
+                }
 
 				LogEvents.SolutionOpened(this, solutionPath);
             }

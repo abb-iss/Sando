@@ -7,8 +7,6 @@ using System.Text;
 using System.ComponentModel;
 using System.IO;
 using Sando.Core.Logging.Upload;
-using Sando.DependencyInjection;
-using Configuration.OptionsPages;
 
 namespace Sando.Core.Logging.Events
 {
@@ -21,16 +19,16 @@ namespace Sando.Core.Logging.Events
 
         public static void InitializeLogFile(string logPath)
         {
-			if (!_initialized)
-			{
-				_initialized = true;
-			}
+            if (!_initialized)
+            {
+                var machineDomain = GetMachineDomain();
+                var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain.GetHashCode() + DateTime.Now.ToString("-yyyy-MM-dd-HH.mm") + ".log");
+                Logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
+                CurrentLogFile = dataFileName;
+                LogPath = logPath;
+                _initialized = true;
+            }
 
-			var machineDomain = GetMachineDomain();
-			var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain.GetHashCode() + DateTime.Now.ToString("-yyyy-MM-dd-HH.mm") + ".log");
-			Logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
-			CurrentLogFile = dataFileName;
-			LogPath = logPath;
         }
 
         public static void WriteInfoLogMessage(string sendingType, string message)
@@ -43,23 +41,21 @@ namespace Sando.Core.Logging.Events
 
 		public static void UploadLogFiles()
 		{
-			if (!_initialized) return;
-
-			var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
-			if (!sandoOptions.AllowDataCollectionLogging) return;
-
-			//randomly with p=0.33
-			Random random = new Random();
-			int rand = random.Next(0, 3);
-			if (rand == 0)
-			{
-				DoS3Upload();
-			}
-			else
-			{
-				Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-				LogEvents.NoS3UploadDueToChance(t, rand);
-			}
+            if (SandoLogManager.DataCollectionOn && _initialized)
+            {
+                //randomly with p=0.33
+                Random random = new Random();
+                int rand = random.Next(0, 3);
+                if (rand == 0)
+                {
+                    DoS3Upload();
+                }
+                else
+                {
+                    Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
+                    LogEvents.NoS3UploadDueToChance(t, rand);
+                }
+            }
 		}
 
 		private static void DoS3Upload()
@@ -79,6 +75,7 @@ namespace Sando.Core.Logging.Events
 						System.IO.File.Delete(fullFilePath);
 						if (fullFilePath == CurrentLogFile)
 						{
+                            _initialized = false;
 							InitializeLogFile(LogPath);
 						}
 					}
