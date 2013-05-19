@@ -179,6 +179,7 @@ namespace Sando.Indexer
 		    }
             catch (AlreadyClosedException)
 		    {
+                Reader = IndexWriter.GetReader();
                 _indexSearcher = new IndexSearcher(Reader);
 		    }
 		}
