@@ -26,6 +26,16 @@ namespace Sando.Core.Logging.Persistence
             return LogManager.GetLogger(loggerName);
         }
 
+        public static void CloseLogger(string loggerName)
+        {
+            var log = LogManager.GetLogger(loggerName);
+            var logger = (Logger)log.Logger;
+            var appender = logger.GetAppender(loggerName + "Appender");
+
+            appender.Close();
+            logger.RemoveAppender(appender);
+        }
+
         public static ILog DefaultLogger
         {
             get

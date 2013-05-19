@@ -17,7 +17,7 @@ namespace Sando.Core.Logging.Events
             _initialized = false;
         }
 
-        public static void InitializeLogFile(string logPath)
+        public static void InitializeDataCollection(string logPath)
         {
             if (!_initialized)
             {
@@ -29,6 +29,15 @@ namespace Sando.Core.Logging.Events
                 _initialized = true;
             }
 
+        }
+
+        public static void CloseDataCollection()
+        {
+            if (_initialized)
+            {
+                FileLogger.CloseLogger("DataCollectionLogger");
+                _initialized = false;
+            }
         }
 
         public static void WriteInfoLogMessage(string sendingType, string message)
@@ -72,12 +81,12 @@ namespace Sando.Core.Logging.Events
 					bool success = AmazonS3LogUploader.WriteLogFile(fullFilePath, s3CredsPath);
 					if (success == true)
 					{
-						System.IO.File.Delete(fullFilePath);
 						if (fullFilePath == CurrentLogFile)
 						{
-                            _initialized = false;
-							InitializeLogFile(LogPath);
+                            CloseDataCollection();
+							InitializeDataCollection(LogPath);
 						}
+                        System.IO.File.Delete(fullFilePath);
 					}
 				}
 			}

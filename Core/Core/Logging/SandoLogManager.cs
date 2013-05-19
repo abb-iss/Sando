@@ -27,12 +27,13 @@ namespace Sando.Core.Logging
 
         public static void StartDataCollectionLogging(string logPath)
         {
-            DataCollectionLogEventHandlers.InitializeLogFile(logPath);
+            DataCollectionLogEventHandlers.InitializeDataCollection(logPath);
             DataCollectionOn = true;
         }
 
 		public static void StopDataCollectionLogging()
 		{
+            DataCollectionLogEventHandlers.CloseDataCollection();
 			DataCollectionOn = false;
 		}
 

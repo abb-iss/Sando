@@ -427,7 +427,8 @@ namespace Sando.UI
                     SandoLogManager.StopDataCollectionLogging();
                 }
 
-				LogEvents.SolutionOpened(this, solutionPath);
+
+				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
             }
             catch (Exception e)
             {

@@ -8,7 +8,11 @@ namespace Sando.Core.Logging.Upload
 {
     [TestFixture]
     class AmazonS3LogUploaderTest
-    {        	
+    {    
+    	/*
+         * Kosta: Testing costs $
+         *
+         
 		[Test]
 		public void SimpleAmazonS3UploadTest()
 		{
@@ -24,5 +28,7 @@ namespace Sando.Core.Logging.Upload
             string downloadFileName = "epl-1.0.txt";
             Assert.IsFalse(AmazonS3LogUploader.ReadLogFile(downloadFileName, credentialFilePath));
         }
+          
+         */
 	}
 }

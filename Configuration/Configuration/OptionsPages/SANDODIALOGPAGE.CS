@@ -33,7 +33,7 @@ namespace Configuration.OptionsPages
 				optionsControl.ExtensionPointsPluginDirectoryPath = this.ExtensionPointsPluginDirectoryPath;
 				optionsControl.NumberOfSearchResultsReturned = this.NumberOfSearchResultsReturned;
                 bool allowCollection = true;
-                if (bool.TryParse(this.AllowDataCollectionLogging, out allowCollection))
+                if (!string.IsNullOrEmpty(this.AllowDataCollectionLogging) && bool.TryParse(this.AllowDataCollectionLogging, out allowCollection))
                 {
                     optionsControl.AllowDataCollectionLogging = allowCollection;
                 }
