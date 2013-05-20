@@ -36,6 +36,7 @@
             
         </Style>
         <converters:ElementToIcon x:Key="ElementToIcon"/>
+        <converters:ScoreToEndpoint x:Key="ScoreToEndpoint"/>
         <converters:FileTypeToIcon x:Key="FileTypeToIcon"/>
         <converters:NullableBoolToBool x:Key="NullableBoolToBool"/>
         <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
@@ -350,6 +351,16 @@
                                                 <RowDefinition Height="20"/>
                                                 <RowDefinition Height="1"/>
                                             </Grid.RowDefinitions>
+                                            <Border Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="3" Loaded="RespondToLoad">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0"  EndPoint="1,0">
+                                                        <GradientStop Color="#E9FFDE" Offset="0" />
+                                                        <GradientStop Color="#E9FFDE" Offset="{Binding Mode=OneWay, Path=Score, Converter={StaticResource ScoreToEndpoint}}" />
+                                                        <GradientStop Color="White" Offset="{Binding Mode=OneWay, Path=Score, Converter={StaticResource ScoreToEndpoint}}" />
+                                                        <GradientStop Color="White" Offset="1" />
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
                                             <Canvas Width="Auto" Height="0" Margin="-7,-2,0,0" Grid.Row="0" Grid.Column="0">
                                                 <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
                                             </Canvas>

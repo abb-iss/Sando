@@ -18,6 +18,7 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
+using System.Windows.Media;
 
 namespace Sando.UI.View
 {
@@ -454,6 +455,46 @@ namespace Sando.UI.View
         private void RemoverCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SearchButtonClick(null, null);
+        }
+
+        private Color Good = (Color)ColorConverter.ConvertFromString("#E9FFDE");
+        private Color OK = (Color)ColorConverter.ConvertFromString("#FFFFE6");
+        private Color Bad = (Color)ColorConverter.ConvertFromString("#FFF0F0");
+
+        private void RespondToLoad(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var item = sender as Border;
+                var gradientBrush = item.Background as System.Windows.Media.LinearGradientBrush;
+                Color myColor = Colors.White;
+                var result = item.DataContext as CodeSearchResult;
+                if (result != null)
+                {
+                    double score = result.Score;
+                    if (score >= 0.6)
+                        myColor = Good;
+                    else if (score >= 0.4)
+                        myColor = OK;
+                    else if (score < 0.4)
+                        myColor = Bad;
+                    if (score > .99)
+                    {
+                        foreach (var stop in gradientBrush.GradientStops)
+                            stop.Color = myColor;
+                    }
+                    else
+                    {
+                        gradientBrush.GradientStops.First().Color = myColor;
+                        gradientBrush.GradientStops.ElementAt(1).Color = myColor;
+                    }
+                }
+
+            }
+            catch (Exception problem)
+            {
+                //ignore for now, as this is not a crucial feature
+            }
         }        
     }
 }
