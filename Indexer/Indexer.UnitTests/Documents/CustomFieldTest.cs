@@ -66,7 +66,8 @@ namespace Sando.Indexer.UnitTests.Documents
 
     public class MyCustomClassForTesting : ClassElement
     {
-        public MyCustomClassForTesting(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers, string junk) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers,junk)
+        public MyCustomClassForTesting(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, AccessLevel accessLevel, string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers, string junk)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, junk)
         {
         }
         
@@ -95,7 +96,7 @@ namespace Sando.Indexer.UnitTests.Documents
             string modifiers = ""
         )
         {
-            var classElement = new MyCustomClassForTesting(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, "junk body");
+            var classElement = new MyCustomClassForTesting(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, "junk body");
             classElement.Bam = "Zaow";
             return classElement;
         }
@@ -111,8 +112,8 @@ namespace Sando.Indexer.UnitTests.Documents
 
 
 
-        public MyCustomMethodElementForTesting(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) 
-            : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor) 
+        public MyCustomMethodElementForTesting(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor) 
         {
         }
 
@@ -123,7 +124,7 @@ namespace Sando.Indexer.UnitTests.Documents
 
         public static MethodElement GetMethodElement()
         {
-            var methodElement = new MyCustomMethodElementForTesting("multiply", 12, "C:/Projects/SampleClass.cs",
+            var methodElement = new MyCustomMethodElementForTesting("multiply", 12, -1000, "C:/Projects/SampleClass.cs",
                                                 "private int multiply(int number, int factor)\n{\nreturn number * factor;\n};",
                                                 AccessLevel.Public, "int number, int factor", "int",
                                                 "return number * factor;", new Guid(),
@@ -141,6 +142,7 @@ namespace Sando.Indexer.UnitTests.Documents
             document.Add(new Field(SandoField.ProgramElementType.ToString(), ProgramElementType.Custom.ToString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.FullFilePath.ToString(), @"C:\stuff\place.txt", Field.Store.YES, Field.Index.NOT_ANALYZED));
             document.Add(new Field(SandoField.DefinitionLineNumber.ToString(), "123", Field.Store.YES, Field.Index.NO));
+            document.Add(new Field(SandoField.DefinitionColumnNumber.ToString(), "123", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(SandoField.Source.ToString(), "The text of the custom thing.", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(SandoField.AccessLevel.ToString(), "Public", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(SandoField.Arguments.ToString(), "int number, int factor", Field.Store.YES, Field.Index.NO));
@@ -151,6 +153,71 @@ namespace Sando.Indexer.UnitTests.Documents
             document.Add(new Field(SandoField.Modifiers.ToString(), "", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(SandoField.IsConstructor.ToString(), "false", Field.Store.YES, Field.Index.NO));
             document.Add(new Field(ProgramElement.CustomTypeTag, typeof(MyCustomMethodElementForTesting).AssemblyQualifiedName, Field.Store.YES, Field.Index.NO));
+            //document.Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+            // document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add document  Add 
+       
+
             return document;
         }
 

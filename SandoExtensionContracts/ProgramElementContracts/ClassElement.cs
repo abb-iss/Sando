@@ -5,9 +5,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class ClassElement : ProgramElement
 	{
-		public ClassElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
+        public ClassElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string namespaceName, string extendedClasses, string implementedInterfaces, string modifiers, string body) 
-			: base(name, definitionLineNumber, fullFilePath, snippet)
+			: base(name, definitionLineNumber, definitionColumnNumber,  fullFilePath, snippet)
 		{
 			Contract.Requires(namespaceName != null, "ClassElement:Constructor - namespace cannot be null!");
 			Contract.Requires(extendedClasses != null, "ClassElement:Constructor - extended classes cannot be null!");

@@ -8,7 +8,7 @@ namespace Sando.TestExtensionPoints
     {
         public List<ProgramElement> Parse(string filename)
         {
-            return new List<ProgramElement>() { new TestElement("TestCppName", 1, filename, "TestElement snippet") };
+            return new List<ProgramElement>() { new TestElement("TestCppName", 1,-1000, filename, "TestElement snippet") };
         }
 
         // Code changed by JZ: solution monitor integration

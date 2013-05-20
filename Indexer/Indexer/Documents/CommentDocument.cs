@@ -21,14 +21,14 @@ namespace Sando.Indexer.Documents
         {
             List<Field> fields = new List<Field>();
 			CommentElement commentElement = (CommentElement) programElement;
-            fields.Add(new Field(SandoField.Body.ToString(), commentElement.Body, Field.Store.NO, Field.Index.ANALYZED));
+            AddField(fields, new Field(SandoField.Body.ToString(), commentElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
             return fields;
 		}
 
-        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public override object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, int definitionColumnNumber, string snippet, Document document)
 		{
 		    string body = "not stored in index";//document.GetField(SandoField.Body.ToString()).StringValue();
-			return new object[]{name, definitionLineNumber, fullFilePath, snippet, body};
+            return new object[] { name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet, body };
 		}
 	}
 }

@@ -5,9 +5,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class FieldElement : ProgramElement
 	{
-		public FieldElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
+        public FieldElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string fieldType, Guid classId, string className, string modifiers, string initialValue) 
-			: base(name, definitionLineNumber, fullFilePath, snippet)
+			: base(name, definitionLineNumber, definitionColumnNumber,  fullFilePath, snippet)
 		{
 			Contract.Requires(!String.IsNullOrWhiteSpace(fieldType), "FieldElement:Constructor - field type cannot be null!");
 			Contract.Requires(classId != null, "FieldElement:Constructor - class id cannot be null!");

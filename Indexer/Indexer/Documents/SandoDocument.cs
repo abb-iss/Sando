@@ -28,15 +28,20 @@ namespace Sando.Indexer.Documents
 			return document;
 		}
 
+        protected static void AddField(List<Field> fields, Field field)
+        {
+            field.SetOmitNorms(true);
+            fields.Add(field);
+        }  
 
         public virtual List<Field> GetFieldsForLucene()
 		{
             return new List<Field>();
 		}
 
-        public virtual object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, string snippet, Document document)
+        public virtual object[] GetParametersForConstructor(string name, ProgramElementType programElementType, string fullFilePath, int definitionLineNumber, int definitionColumnNumber, string snippet, Document document)
         {
-            return new object[]{name,definitionLineNumber,fullFilePath,snippet};
+            return new object[] { name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet };
         }
 
 		internal ProgramElement programElement;

@@ -22,7 +22,6 @@ using Sando.UI.Options;
 using Microsoft.VisualStudio.Shell;
 using Sando.Core.Extensions;
 using Sando.Core.Extensions.Configuration;
-using Sando.Core.Extensions.Logging;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching;
 using Sando.Parser;
@@ -35,6 +34,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
+using Sando.Core.Logging;
+using Sando.Core.Logging.Events;
+using Sando.Core.Logging.Persistence;
 
 
 
@@ -93,11 +95,8 @@ namespace Sando.UI
         public UIPackage()
         {            
             PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
-            FileLogger.SetupDefautlFileLogger(PathManager.Instance.GetExtensionRoot());
-            FileLogger.DefaultLogger.Info(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this));
+            SandoLogManager.StartDefaultLogging(PathManager.Instance.GetExtensionRoot());
         }
-
-
 
         public SandoDialogPage GetSandoDialogPage()
         {
@@ -116,8 +115,8 @@ namespace Sando.UI
         {
             try
             {
-                base.Initialize();                
-                FileLogger.DefaultLogger.Info("Sando initialization started.");
+                base.Initialize();
+                LogEvents.UISandoBeginInitialization(this);
                 base.Initialize();
 
                 SetupDependencyInjectionObjects();
@@ -128,7 +127,7 @@ namespace Sando.UI
             }
             catch(Exception e)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e));
+                LogEvents.UISandoInitializationError(this, e);
             }
         }
 
@@ -164,7 +163,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                LogEvents.UISandoWindowActivationError(this, e);
             }
             
         }
@@ -184,27 +183,34 @@ namespace Sando.UI
         
         private void StartupCompleted()
         {
-        	if (_viewManager.ShouldShow())
-        	{
-        		_viewManager.ShowSando();
-        		_viewManager.ShowToolbar();
-        	}
+            try
+            {
+                if (_viewManager.ShouldShow())
+                {
+                    _viewManager.ShowSando();
+                    _viewManager.ShowToolbar();
+                }
 
-            if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
-        	{
-				//only need to do this in VS2010, and it breaks things in VS2012
-        		Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
+                if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
+                {
+                    //only need to do this in VS2010, and it breaks things in VS2012
+                    Solution openSolution = ServiceLocator.Resolve<DTE2>().Solution;
 
-                // JZ: SrcMLService Integration
-                ////if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
-                if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName))
-                // End of code changes
-        		{
-        			SolutionHasBeenOpened();
-        		}
-        	}
+                    // JZ: SrcMLService Integration
+                    ////if(openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName) && _currentMonitor == null)
+                    if (openSolution != null && !String.IsNullOrWhiteSpace(openSolution.FullName))
+                    // End of code changes
+                    {
+                        SolutionHasBeenOpened();
+                    }
+                }
 
-        	RegisterSolutionEvents();
+                RegisterSolutionEvents();
+            }
+            catch (Exception e)
+            {
+                LogEvents.UIGenericError(this, e);
+            }
         }  
 
         private void RegisterSolutionEvents()
@@ -302,16 +308,44 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                LogEvents.UISolutionClosingError(this, e);
             }
 		}
 
 		private void SolutionHasBeenOpened()
 		{
+            CallShowProgressBar(true);
             var bw = new BackgroundWorker {WorkerReportsProgress = false, WorkerSupportsCancellation = false};
 		    bw.DoWork += RespondToSolutionOpened;
 		    bw.RunWorkerAsync();
 		}
+
+
+        public void HandleIndexingFinish(object sender, EventArgs args)
+        {
+            CallShowProgressBar(false);
+        }
+
+        private void CallShowProgressBar(bool show)
+        {
+            try
+            {
+                var window = FindToolWindow(typeof(SearchToolWindow), 0, true);
+                if ((null == window) || (null == window.Frame))
+                {
+                    throw new NotSupportedException(Resources.CanNotCreateWindow);
+                }
+                var stw = window as SearchToolWindow;
+                if (stw != null)
+                {
+                    stw.GetSearchViewControl().ShowProgressBar(show);
+                }
+            }
+            catch (Exception e)
+            {
+                FileLogger.DefaultLogger.Error(e);
+            }
+        }
 
         /// <summary>
         /// Respond to solution opening.
@@ -327,7 +361,6 @@ namespace Sando.UI
                 var solutionPath = openSolution.FileName;
                 var key = new SolutionKey(solutionId, solutionPath);              
                 ServiceLocator.RegisterInstance(key);
-                
 
                 var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                
                 bool isIndexRecreationRequired = IndexStateManager.IsIndexRecreationRequired();
@@ -352,7 +385,7 @@ namespace Sando.UI
                 // Get the SrcML Service.
                 srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
                 if(null == srcMLService) {
-                    FileLogger.DefaultLogger.Error("Can not get the SrcML global service.");
+                    throw new Exception("Can not get the SrcML global service.");
                 }
 
                 // Register all types of events from the SrcML Service.
@@ -362,6 +395,7 @@ namespace Sando.UI
                     SetupHandlers = true;
                     srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
                     srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
+                    srcMLService.StartupCompleted += HandleIndexingFinish;
                     srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
                 }
 
@@ -381,12 +415,24 @@ namespace Sando.UI
                 // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
                 // the directory of storing srcML archives and whether to use existing srcML archives.
                 srcMLService.StartMonitoring(useExistingSrcML, src2SrcmlDir);
-                
+
                 // End of code changes
+
+                if (sandoOptions.AllowDataCollectionLogging)
+                {
+                    SandoLogManager.StartDataCollectionLogging(PathManager.Instance.GetExtensionRoot());
+                }
+                else
+                {
+                    SandoLogManager.StopDataCollectionLogging();
+                }
+
+
+				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "Problem responding to Solution Opened."));
+                LogEvents.UIRespondToSolutionOpeningError(this, e);
             }    
         }
 

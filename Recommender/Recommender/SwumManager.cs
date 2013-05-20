@@ -9,7 +9,9 @@ using System.Text;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using ABB.SrcML;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
+using Sando.Core.Logging.Persistence;
+using Sando.Core.Logging.Events;
 
 
 namespace Sando.Recommender {
@@ -94,7 +96,7 @@ namespace Sando.Recommender {
 
             if(useCache) {
                 if(!File.Exists(CachePath)) {
-                    FileLogger.DefaultLogger.InfoFormat("SwumManager.Initialize() - Cache file does not exist: {0}", CachePath);
+					LogEvents.SwumCacheFileNotExist(this, CachePath);
                     return;
                 }
                 ReadSwumCache(CachePath);
@@ -119,7 +121,7 @@ namespace Sando.Recommender {
             if(Archive != null) {
                 fileElement = Archive.GetXElementForSourceFile(sourcePath);
                 if(fileElement == null) {
-                    FileLogger.DefaultLogger.ErrorFormat("SwumManager: File not found in archive: {0}", sourcePath);
+                    LogEvents.SwumFileNotFoundInArchive(this, sourcePath);
                 }
             } else if(Generator != null) {
                 string outFile = Path.GetTempFileName();
@@ -127,7 +129,7 @@ namespace Sando.Recommender {
                     var srcmlfile = Generator.GenerateSrcMLFromFile(sourcePath, outFile);
                     fileElement = srcmlfile.FileUnits.FirstOrDefault();
                     if(fileElement == null) {
-                        FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error converting file to SrcML, no file unit found: {0}", sourcePath);
+                        LogEvents.SwumErrorGeneratingSrcML(this, sourcePath);
                     }
                 } finally {
                     File.Delete(outFile);
@@ -141,9 +143,7 @@ namespace Sando.Recommender {
                     AddSwumForMethodDefinitions(fileElement, sourcePath);
                 }
             } catch(Exception e) {
-                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
-                FileLogger.DefaultLogger.Error(e.Message);
-                FileLogger.DefaultLogger.Error(e.StackTrace);
+                LogEvents.SwumErrorCreatingSwum(this, sourcePath, e);
             }
         }
 
@@ -159,9 +159,7 @@ namespace Sando.Recommender {
                     AddSwumForFieldDefinitions(sourceXml, sourcePath);
                 }
             } catch(Exception e) {
-                FileLogger.DefaultLogger.ErrorFormat("SwumManager: Error creating SWUM on file {0}", sourcePath);
-                FileLogger.DefaultLogger.Error(e.Message);
-                FileLogger.DefaultLogger.Error(e.StackTrace);
+                LogEvents.SwumErrorCreatingSwum(this, sourcePath, e);
             }
         }
 
@@ -347,7 +345,10 @@ namespace Sando.Recommender {
                     var signature = nameElement.GetXPath(false);
                     var swumData = ProcessSwumNode(fdn);
                     swumData.FileNames.Add(fileName);
-                    signaturesToSwum[signature] = swumData;
+                    lock (signaturesToSwum)
+                    {
+                        signaturesToSwum[signature] = swumData;
+                    }
                     declPos++;
                 }
             }

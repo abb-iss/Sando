@@ -85,14 +85,14 @@ namespace Sando.Parser.UnitTests
 	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 	                    Assert.AreEqual(method.Arguments, "LanguageEnum language");
 	                    Assert.AreEqual(method.Body.Trim(),
-                                        "temporary Language   language language  LanguageEnum CSharp Language   LanguageEnum Java");
+                                        "{\n\t\t\tLanguage = language;\n\t\t\t//temporary\n\t\t\tif(language==LanguageEnum.CSharp)\n\t\t\t\tLanguage = LanguageEnum.Java;\n\t\t}");
 	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 	                }
                     if (method.Name == "GenerateSrcML")
                     {
                         seenSetLanguageMethod = true;
                         Assert.AreEqual(method.Body.Trim(),
-                                        "check whether filename exists  System IO File Exists filename  filename new ParserException  parser input file name does not exist      filename   parser input file name does not exist      filename LaunchSrcML filename  filename");
+                                        "{\n\t\t\t//check whether filename exists\n\t\t\tif(!System.IO.File.Exists(filename))\n\t\t\t{\n\t\t\t\tthrow new ParserException(\"parser input file name does not exist: \" + filename);\n\t\t\t}\n\n\t\t\treturn LaunchSrcML(filename);\n\t\t}");
                         Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
                     }
 
@@ -328,7 +328,8 @@ namespace Sando.Parser.UnitTests
         [CustomIndexField]
         public string CustomCrazyStuff { get; set; }
 
-        public MyCSharpMethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
+        public MyCSharpMethodElement(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
         {
         }
     }

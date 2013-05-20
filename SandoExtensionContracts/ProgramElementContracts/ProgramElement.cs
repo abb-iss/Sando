@@ -16,12 +16,12 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
         }
 
         public ProgramElement(object[] parameters)
-            : this(parameters[0] as string, (int)parameters[0], parameters[0] as string, parameters[0] as string)
+            : this(parameters[0] as string, (int)parameters[1], (int)parameters[2], parameters[3] as string, parameters[4] as string)
         {
 
         }
 
-        public ProgramElement(string name, int definitionLineNumber, string fullFilePath, string snippet)
+        public ProgramElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet)
         {
             Contract.Requires(!String.IsNullOrWhiteSpace(name),
                               "ProgramElement:Constructor - name cannot be null or an empty string!");
@@ -36,6 +36,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 
             Id = Guid.NewGuid();
             DefinitionLineNumber = definitionLineNumber;
+            DefinitionColumnNumber = definitionColumnNumber;
             FullFilePath = fullFilePath;
             RawSource = snippet;
             Name = name;
@@ -58,6 +59,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 
         public virtual Guid Id { get; private set; }
         public virtual int DefinitionLineNumber { get; private set; }
+        public virtual int DefinitionColumnNumber { get; private set; }
         public virtual string FullFilePath { get; private set; }
         public virtual string RawSource { get; private set; }
         public virtual ProgramElementType ProgramElementType

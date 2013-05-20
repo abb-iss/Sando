@@ -72,7 +72,7 @@ namespace Sando.IntegrationTests.Search
         public void PreferenceForShortestMatch()
         {
             string keywords = "Pumpkin";
-            var expectedLowestRank = 1;
+            var expectedLowestRank = 2;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "Pumpkin");
             List<CodeSearchResult> results = EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
             Assert.IsTrue(results.Count >= 3);

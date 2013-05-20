@@ -9,7 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
@@ -18,6 +18,9 @@ using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
+using System.Windows.Media;
+using Sando.Core.Logging.Events;
+using Sando.Indexer.Searching.Metrics;
 
 namespace Sando.UI.View
 {
@@ -34,6 +37,8 @@ namespace Sando.UI.View
             InitAccessLevels();
             InitProgramElements();
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += SelectFirstResult;
+            ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += ScrollToTop;
+
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
 
@@ -155,6 +160,13 @@ namespace Sando.UI.View
             searchResultListbox.Focus();
         }
 
+        private void ScrollToTop(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if(searchResultListbox.Items.Count > 0)
+                searchResultListbox.ScrollIntoView(searchResultListbox.Items[0]);
+        }
+
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
@@ -243,12 +255,16 @@ namespace Sando.UI.View
                 var result = sender as ListBoxItem;
                 if (result != null)
                 {
-                    FileOpener.OpenItem(result.Content as CodeSearchResult, searchBox.Text);
+                    var searchResult = result.Content as CodeSearchResult;
+                    FileOpener.OpenItem(searchResult, searchBox.Text);
+
+                    var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
+                    LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
                 }
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
                 MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
             }
         }
@@ -346,6 +362,8 @@ namespace Sando.UI.View
 
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            var listview = sender as ListView;
+            LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
             UpdateExpansionState(searchResultListbox);
         }
 
@@ -374,11 +392,26 @@ namespace Sando.UI.View
                 textBox.Focus();
         }
 
+        public void ShowProgressBar(bool visible)
+        {
+            if (Thread.CurrentThread == Dispatcher.Thread)
+            {
+                ProgBar.Visibility = (visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+            }
+            else
+            {
+                Dispatcher.Invoke((Action)(() => ProgBar.Visibility = (visible) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed));
+            }
+        }
+
         private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var listBox = sender as ListBox;
             if (listBox != null)
+            {
                 listBox.ScrollIntoView(listBox.SelectedItem);
+                LogEvents.SelectingRecommendationItem(this, listBox.SelectedIndex + 1);
+            }
         }
 
         private void Toggled_Popup(object sender, RoutedEventArgs e)
@@ -426,13 +459,53 @@ namespace Sando.UI.View
             }
             catch (ArgumentException aex)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(aex));
+                LogEvents.UIGenericError(this, aex);
             }
         }
 
         private void RemoverCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             SearchButtonClick(null, null);
+        }
+
+        private Color Good = (Color)ColorConverter.ConvertFromString("#E9FFDE");
+        private Color OK = (Color)ColorConverter.ConvertFromString("#FFFFE6");
+        private Color Bad = (Color)ColorConverter.ConvertFromString("#FFF0F0");
+
+        private void RespondToLoad(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var item = sender as Border;
+                var gradientBrush = item.Background as System.Windows.Media.LinearGradientBrush;
+                Color myColor = Colors.White;
+                var result = item.DataContext as CodeSearchResult;
+                if (result != null)
+                {
+                    double score = result.Score;
+                    if (score >= 0.6)
+                        myColor = Good;
+                    else if (score >= 0.4)
+                        myColor = OK;
+                    else if (score < 0.4)
+                        myColor = Bad;
+                    if (score > .99)
+                    {
+                        foreach (var stop in gradientBrush.GradientStops)
+                            stop.Color = myColor;
+                    }
+                    else
+                    {
+                        gradientBrush.GradientStops.First().Color = myColor;
+                        gradientBrush.GradientStops.ElementAt(1).Color = myColor;
+                    }
+                }
+
+            }
+            catch (Exception problem)
+            {
+                //ignore for now, as this is not a crucial feature
+            }
         }        
     }
 }

@@ -10,7 +10,7 @@ using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Sando.Core;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.DependencyInjection;
 using Sando.Indexer.Documents;
 using Sando.Indexer.Exceptions;
@@ -19,6 +19,7 @@ using System.Linq;
 using Sando.Indexer.Documents.Converters;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
+using Sando.Core.Logging.Events;
 
 namespace Sando.Indexer
 {
@@ -33,8 +34,8 @@ namespace Sando.Indexer
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
 				Analyzer = ServiceLocator.Resolve<Analyzer>();
                 IndexWriter = new IndexWriter(LuceneIndexesDirectory, Analyzer, IndexWriter.MaxFieldLength.LIMITED);
-			    var indexReader = IndexWriter.GetReader();
-				_indexSearcher = new IndexSearcher(indexReader);
+			    Reader = IndexWriter.GetReader();
+				_indexSearcher = new IndexSearcher(Reader);
                 QueryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, Configuration.Configuration.GetValue("DefaultSearchFieldName"), Analyzer);
 
 			    if (!refreshIndexSearcherThreadInterval.HasValue) 
@@ -60,17 +61,17 @@ namespace Sando.Indexer
 			}
 			catch(CorruptIndexException corruptIndexEx)
 			{
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(corruptIndexEx));
+                LogEvents.IndexCorruptError(this, corruptIndexEx);
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexIsCorrupt, corruptIndexEx);
 			}
 			catch(LockObtainFailedException lockObtainFailedEx)
 			{
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(lockObtainFailedEx));
+                LogEvents.IndexLockObtainFailed(this, lockObtainFailedEx);
 				throw new IndexerException(TranslationCode.Exception_Indexer_LuceneIndexAlreadyOpened, lockObtainFailedEx);
 			}
 			catch(System.IO.IOException ioEx)
 			{
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(ioEx));
+                LogEvents.IndexIOError(this, ioEx);
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
 		}
@@ -143,7 +144,7 @@ namespace Sando.Indexer
 
         public int GetNumberOfIndexedDocuments()
         {
-            return _indexSearcher.GetIndexReader().NumDocs();
+            return Reader.NumDocs();
         }
 
 	    private List<Tuple<Document, float>> RunSearch(Query query, TopScoreDocCollector collector)
@@ -167,19 +168,19 @@ namespace Sando.Indexer
 		{
 		    try
 		    {
-		        var oldReader = _indexSearcher.GetIndexReader();
-		        var newReader = oldReader.Reopen(true);
-		        if (newReader != oldReader)
+				var oldReader = Reader;
+		        Reader = Reader.Reopen(true);
+		        if (Reader != oldReader)
 		        {
 		            //_indexSearcher.Close(); - don't need this, because we create IndexSearcher by passing the IndexReader to it, so Close do nothing
 		            oldReader.Close();
-		            _indexSearcher = new IndexSearcher(newReader);
+		            _indexSearcher = new IndexSearcher(Reader);
 		        }
 		    }
             catch (AlreadyClosedException)
 		    {
-		        var indexReader = IndexWriter.GetReader();
-                _indexSearcher = new IndexSearcher(indexReader);
+                Reader = IndexWriter.GetReader();
+                _indexSearcher = new IndexSearcher(Reader);
 		    }
 		}
 
@@ -285,6 +286,7 @@ namespace Sando.Indexer
 
 	    public Directory LuceneIndexesDirectory { get; set; }
 		public QueryParser QueryParser { get; protected set; }
+		public IndexReader Reader { get; private set; }
 		protected Analyzer Analyzer { get; set; }
 		protected IndexWriter IndexWriter { get; set; }
 

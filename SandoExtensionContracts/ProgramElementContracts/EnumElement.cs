@@ -5,9 +5,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class EnumElement : ProgramElement
 	{
-		public EnumElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
+        public EnumElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string namespaceName, string body) 
-			: base(name, definitionLineNumber, fullFilePath, snippet)
+			: base(name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet)
 		{
 			Contract.Requires(namespaceName != null, "EnumElement:Constructor - namespace cannot be null!");
 			

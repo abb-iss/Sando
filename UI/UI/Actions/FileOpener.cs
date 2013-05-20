@@ -3,7 +3,7 @@ using EnvDTE;
 using EnvDTE80;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging.Events;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using Sando.Indexer.Searching;
@@ -40,7 +40,7 @@ namespace Sando.UI.Actions
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                    LogEvents.UIOpenFileError(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, e);
                 //ignore, we don't want this feature ever causing a crash
             }
         }

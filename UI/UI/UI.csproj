@@ -228,6 +228,7 @@
     <Compile Include="PkgCmdID.cs" />
     <Compile Include="View\Search\AccessWrapper.cs" />
     <Compile Include="View\Search\Converters\BoolToOppositeBoolConverter.cs" />
+    <Compile Include="View\Search\Converters\ScoreToEndpoint.cs" />
     <Compile Include="View\Search\Converters\ElementToIcon.cs" />
     <Compile Include="View\Search\Converters\FileTypeToIcon.cs" />
     <Compile Include="View\Search\Converters\NullableBoolToBool.cs" />
@@ -256,6 +257,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="S3Credentials">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="sandoKey.snk" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
