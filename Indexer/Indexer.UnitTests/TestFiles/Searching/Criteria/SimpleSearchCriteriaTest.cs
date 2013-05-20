@@ -339,7 +339,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-            string actual = "(" + SandoField.Body.ToString() + ":SimpleClass OR " + SandoField.Name.ToString() + ":SimpleClass^2 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass^0.5 OR " + SandoField.ImplementedInterfaces.ToString() + ":SimpleClass^0.5 OR " + SandoField.Arguments.ToString() + ":SimpleClass^0.25 OR " + SandoField.ReturnType.ToString() + ":SimpleClass^0.25 OR " + SandoField.Namespace.ToString() + ":SimpleClass^0.25 OR " + SandoField.DataType.ToString() + ":SimpleClass OR " + SandoField.Source.ToString() + ":SimpleClass OR " + SandoField.ClassName.ToString() + ":SimpleClass)";
+            string actual = "(" + SandoField.Body.ToString() + ":SimpleClass OR " + SandoField.Name.ToString() + ":SimpleClass^3 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass^0.5 OR " + SandoField.ImplementedInterfaces.ToString() + ":SimpleClass^0.5 OR " + SandoField.Arguments.ToString() + ":SimpleClass^0.25 OR " + SandoField.ReturnType.ToString() + ":SimpleClass^0.25 OR " + SandoField.Namespace.ToString() + ":SimpleClass^0.25 OR " + SandoField.DataType.ToString() + ":SimpleClass OR " + SandoField.Source.ToString() + ":SimpleClass OR " + SandoField.ClassName.ToString() + ":SimpleClass)";
 		    Assert.AreEqual(queryString, actual, "Created query string is invalid!");
 			try
 			{
@@ -398,7 +398,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 													};
 			string queryString = simpleSearchCriteria.ToQueryString();
-            Assert.AreEqual(queryString, "(" + SandoField.Name.ToString() + ":SimpleClass^2 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass^0.5 OR " + SandoField.Namespace.ToString() + ":SimpleClass^0.25)", "Created query string is invalid!");
+            Assert.AreEqual(queryString, "(" + SandoField.Name.ToString() + ":SimpleClass^3 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass^0.5 OR " + SandoField.Namespace.ToString() + ":SimpleClass^0.25)", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
@@ -429,7 +429,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 																		}
 			};
 			string queryString = simpleSearchCriteria.ToQueryString();
-            string actual = "(" + SandoField.Name.ToString() + ":Class^2 OR " + SandoField.ExtendedClasses.ToString() + ":Class^0.5 OR " + SandoField.Namespace.ToString() + ":Class^0.25 OR " + "" + SandoField.Name.ToString() + ":Simple^2 OR " +
+            string actual = "(" + SandoField.Name.ToString() + ":Class^3 OR " + SandoField.ExtendedClasses.ToString() + ":Class^0.5 OR " + SandoField.Namespace.ToString() + ":Class^0.25 OR " + "" + SandoField.Name.ToString() + ":Simple^3 OR " +
                 SandoField.ExtendedClasses.ToString() + ":Simple^0.5 OR " + SandoField.Namespace.ToString() + ":Simple^0.25)";
 		    Assert.AreEqual(queryString, actual, "Created query string is invalid!");
 			try
@@ -456,7 +456,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 				SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms("\"Class Simple\""))
 			};
 			string queryString = simpleSearchCriteria.ToQueryString();
-			Assert.AreEqual(queryString, "(" + SandoField.Name.ToString() + ":*Class?Simple*^2)", "Created query string is invalid!");
+			Assert.AreEqual(queryString, "(" + SandoField.Name.ToString() + ":*Class?Simple*^3)", "Created query string is invalid!");
 			try
 			{
                 var parser = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer());
@@ -517,7 +517,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 										"(" + SandoField.ProgramElementType.ToString() + ":property OR " + SandoField.ProgramElementType.ToString() + ":enum OR " + SandoField.ProgramElementType.ToString() + ":class) AND " +
                                         "(" + SandoField.FileExtension.ToString() + ":\".cs\" OR " + SandoField.FileExtension.ToString() + ":\".h\") AND " +
                                         "(" + SandoField.FullFilePath.ToString() + ":\"C:/Project/*.cs\" OR " + SandoField.FullFilePath.ToString() + ":\"C:/Project2/*.cs\") AND " +
-                                        "(" + SandoField.Name.ToString() + ":SimpleClass^2 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass^0.5 OR " + SandoField.Namespace.ToString() + ":SimpleClass^0.25)", "Created query string is invalid!");
+                                        "(" + SandoField.Name.ToString() + ":SimpleClass^3 OR " + SandoField.ExtendedClasses.ToString() + ":SimpleClass^0.5 OR " + SandoField.Namespace.ToString() + ":SimpleClass^0.25)", "Created query string is invalid!");
 			try
 			{
 				Query query = new QueryParser(Lucene.Net.Util.Version.LUCENE_29, SandoField.Name.ToString(), new SimpleAnalyzer()).Parse(queryString);
