@@ -228,6 +228,7 @@
     <Compile Include="PkgCmdID.cs" />
     <Compile Include="View\Search\AccessWrapper.cs" />
     <Compile Include="View\Search\Converters\BoolToOppositeBoolConverter.cs" />
+    <Compile Include="View\Search\Converters\ScoreToEndpoint.cs" />
     <Compile Include="View\Search\Converters\ElementToIcon.cs" />
     <Compile Include="View\Search\Converters\FileTypeToIcon.cs" />
     <Compile Include="View\Search\Converters\NullableBoolToBool.cs" />
