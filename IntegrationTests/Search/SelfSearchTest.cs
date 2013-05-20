@@ -132,7 +132,7 @@ namespace Sando.IntegrationTests.Search
         public void FileTypeWithTerm()
         {
             string keywords = "hello world filetype:cpp";
-            var expectedLowestRank = 1;
+            var expectedLowestRank = 2;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "MyFunction");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);                
         }
