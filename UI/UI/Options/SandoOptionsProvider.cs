@@ -28,8 +28,14 @@ namespace Sando.UI.Options
                 if (!int.TryParse(sandoDialogPage.NumberOfSearchResultsReturned, out numberOfSearchResultsReturned) || numberOfSearchResultsReturned < 0)
                     numberOfSearchResultsReturned = SearchCriteria.DefaultNumberOfSearchResultsReturned;
             }
-            
-            var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned);
+
+            var allowDataCollectionLogging = true;
+            if (!bool.TryParse(sandoDialogPage.AllowDataCollectionLogging, out allowDataCollectionLogging))
+            {
+                allowDataCollectionLogging = true;
+            }
+
+            var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned, allowDataCollectionLogging);
             return sandoOptions;
         }
     }

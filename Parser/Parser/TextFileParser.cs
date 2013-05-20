@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging.Events;
 using Sando.ExtensionContracts.ParserContracts;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
@@ -34,7 +34,7 @@ namespace Sando.Parser
                         var name = line.TrimStart(' ', '\n', '\r', '\t');
                         name = name.TrimEnd(' ');
                         var snippet = SrcMLParsingUtils.RetrieveSource(name);
-                        var element = new TextLineElement(name, linenum, filename, snippet, line);
+                        var element = new TextLineElement(name, linenum, -1000, filename, snippet, line);
                         list.Add(element);
                     }
 
@@ -42,7 +42,7 @@ namespace Sando.Parser
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(ExceptionFormatter.CreateMessage(e, "The file could not be read:"));
+                LogEvents.ParserGenericFileError(this, filename);
             }
             return list;
         }

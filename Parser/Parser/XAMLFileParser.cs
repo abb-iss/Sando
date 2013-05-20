@@ -17,8 +17,8 @@ namespace Sando.Parser
             var allText = File.ReadAllText(filename);
             XDocument doc = XDocument.Parse(allText, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
             var allXElements = doc.Elements().SelectMany(e => e.DescendantsAndSelf());
-            return allXElements.Select(e => new ProgramElement(getName(e), getLineNumber(e), filename, 
-                getSnippet(e))).ToList();
+            return allXElements.Select(e => new ProgramElement(getName(e), getLineNumber(e), getColumnNumber(e), 
+                filename, getSnippet(e))).ToList();
         }
 
         String getName(XElement element)
@@ -32,6 +32,16 @@ namespace Sando.Parser
             if (lineInfo != null)
             {
                 return lineInfo.LineNumber;
+            }
+            throw new Exception("Cannot get line number.");
+        }
+
+        int getColumnNumber(XElement element)
+        {
+            var lineInfo = element as IXmlLineInfo;
+            if (lineInfo != null)
+            {
+                return lineInfo.LinePosition;
             }
             throw new Exception("Cannot get line number.");
         }

@@ -328,7 +328,8 @@ namespace Sando.Parser.UnitTests
         [CustomIndexField]
         public string CustomCrazyStuff { get; set; }
 
-        public MyCSharpMethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
+        public MyCSharpMethodElement(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
         {
         }
     }

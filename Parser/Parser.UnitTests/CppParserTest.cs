@@ -33,6 +33,20 @@ namespace Sando.Parser.UnitTests
             ///////CheckParseOfEventFile(parser, sourceFile, elements);
 		}
 
+
+        [Test]
+        public void ParseCPPSourceWithErrorsTest()
+        {
+            bool seenGetTimeMethod = false;
+            int numMethods = 0;
+            ///////string sourceFile = @"..\..\Parser\Parser.UnitTests\TestFiles\Event.CPP.txt";
+            string sourceFile = @"TestFiles\EventWithErrorInIt.cpp";
+            var parser = new SrcMLCppParser(generator);
+            var elements = parser.Parse(sourceFile);
+            Assert.IsNotNull(elements);
+            Assert.AreEqual(elements.Count, 5);
+            ///////CheckParseOfEventFile(parser, sourceFile, elements);
+        }
         
 
 		[Test]
@@ -287,7 +301,8 @@ namespace Sando.Parser.UnitTests
         [CustomIndexField]
         public string CustomStuffHere { get; set; }
 
-        public MyMethodElementUnresolvedType(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles) : base(name, definitionLineNumber, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
+        public MyMethodElementUnresolvedType(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, string arguments, string returnType, string body, string className, bool isConstructor, string[] headerFiles)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, arguments, returnType, body, className, isConstructor, headerFiles)
         {
         }
 
@@ -304,7 +319,8 @@ namespace Sando.Parser.UnitTests
         [CustomIndexField]
         public string CustomStuffHere { get; set; }
 
-        public MyMethodElementType(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) : base(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
+        public MyMethodElementType(string name, int definitionLineNumber, int definitionColumn, string fullFilePath, string snippet, AccessLevel accessLevel, string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor)
+            : base(name, definitionLineNumber, definitionColumn, fullFilePath, snippet, accessLevel, arguments, returnType, body, classId, className, modifiers, isConstructor)
         {
         }
     }

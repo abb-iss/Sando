@@ -17,7 +17,7 @@ namespace Sando.UnitTestHelpers
 			string modifiers = ""
 		)
 		{
-			return new ClassElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, "junk body");
+			return new ClassElement(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, namespaceName, extendedClasses, implementedInterfaces, modifiers, "junk body");
 		}
 
 		public static CommentElement GetSampleCommentElement(
@@ -28,7 +28,7 @@ namespace Sando.UnitTestHelpers
 			string snippet = "//Comment body"
 		)
 		{
-			return new CommentElement(name, definitionLineNumber, fullFilePath, snippet, body);
+			return new CommentElement(name, definitionLineNumber, -1000, fullFilePath, snippet, body);
 		}
 
 		public static EnumElement GetSampleEnumElement(
@@ -41,7 +41,7 @@ namespace Sando.UnitTestHelpers
 			string body = "Definition, Call, Comment"
 		)
 		{
-			return new EnumElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body);
+            return new EnumElement(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, namespaceName, body);
 		}
 
 		public static FieldElement GetSampleFieldElement(
@@ -57,7 +57,7 @@ namespace Sando.UnitTestHelpers
 			string initialValue = ""
 		)
 		{
-			return new FieldElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className, modifiers, initialValue);
+            return new FieldElement(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, fieldType, new Guid(classId), className, modifiers, initialValue);
 		}
 
 		public static MethodElement GetSampleMethodElement(
@@ -74,7 +74,7 @@ namespace Sando.UnitTestHelpers
 			string modifiers = ""
 		)
 		{
-			return new MethodElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId), className, modifiers, false);
+            return new MethodElement(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, arguments, returnType, body, new Guid(classId), className, modifiers, false);
 		}
 
 		public static PropertyElement GetSamplePropertyElement(
@@ -90,7 +90,7 @@ namespace Sando.UnitTestHelpers
 			string modifiers = ""
 		)
 		{
-			return new PropertyElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId), className, modifiers);
+            return new PropertyElement(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, propertyType, body, new Guid(classId), className, modifiers);
 		}
 
         public static ProgramElement GetSampleStructElement(
@@ -106,7 +106,7 @@ namespace Sando.UnitTestHelpers
             string modifiers = ""
         )
         {
-            return new StructElement(name, definitionLineNumber, fullFilePath, snippet, accessLevel, namespaceName, body, extendedClasses, modifiers);
+            return new StructElement(name, definitionLineNumber, -1000, fullFilePath, snippet, accessLevel, namespaceName, body, extendedClasses, modifiers);
         }
 	}
 }

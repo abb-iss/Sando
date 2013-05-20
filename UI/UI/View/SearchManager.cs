@@ -10,10 +10,14 @@ using Sando.Indexer.Searching;
 using Sando.SearchEngine;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
-using Sando.Core.Extensions.Logging;
+using Sando.Core.Logging;
 using Sando.UI.Monitoring;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Indexer;
+using Sando.Core.Logging.Events;
+using Sando.Indexer.Searching.Metrics;
+using Lucene.Net.Analysis;
+using Sando.Indexer.Metrics;
 
 namespace Sando.UI.View
 {
@@ -45,8 +49,19 @@ namespace Sando.UI.View
                 }
 
                 searchString = ExtensionPointsRepository.Instance.GetQueryRewriterImplementation().RewriteQuery(searchString);
+                var searchStringContainedInvalidCharacters = WordSplitter.InvalidCharactersFound(searchString);
+                if (searchStringContainedInvalidCharacters)
+                {
+                    LogEvents.InvalidCharactersInQuery(this);
+                    return;
+                }
 
-                var criteria = GetCriteria(searchString, searchCriteria);
+				PreRetrievalMetrics preMetrics = new PreRetrievalMetrics(ServiceLocator.Resolve<DocumentIndexer>().Reader, ServiceLocator.Resolve<Analyzer>());
+				LogEvents.PreSearch(this, preMetrics.MaxIdf(searchString), preMetrics.AvgIdf(searchString), preMetrics.AvgSqc(searchString), preMetrics.AvgVar(searchString));
+                LogEvents.PreSearchQueryAnalysis(this, QueryMetrics.ExamineQuery(searchString).ToString(), QueryMetrics.DiceCoefficient(QueryMetrics.SavedQuery, searchString));
+                QueryMetrics.SavedQuery = searchString;
+
+				var criteria = GetCriteria(searchString, searchCriteria);
                 var results = codeSearcher.Search(criteria, true).AsQueryable();
                 var resultsReorderer = ExtensionPointsRepository.Instance.GetResultsReordererImplementation();
                 results = resultsReorderer.ReorderSearchResults(results);
@@ -66,11 +81,13 @@ namespace Sando.UI.View
                 }
                 _searchResultListener.Update(results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
+				
+				LogEvents.PostSearch(this, results.Count(), criteria.NumberOfSearchResultsReturned, PostRetrievalMetrics.AvgScore(results.ToList()), PostRetrievalMetrics.StdDevScore(results.ToList()));
             }
             catch (Exception e)
             {
                 _searchResultListener.UpdateMessage("Sando is experiencing difficulties. See log file for details.");
-                FileLogger.DefaultLogger.Error(e.Message, e);
+                LogEvents.UISandoSearchingError(this, e);
             }
         }
 
@@ -91,7 +108,7 @@ namespace Sando.UI.View
             {
                 _searchResultListener.UpdateMessage("Sando searches only the currently open Solution.  Please open a Solution and try again.");
                 if (indexer != null)
-                    FileLogger.DefaultLogger.Error(e.Message, e);
+                    LogEvents.UISolutionOpeningError(this, e);
                 isOpen = false;
             }
             return isOpen;

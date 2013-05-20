@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Indexer", "..\Indexer\Indexer\Indexer.csproj", "{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Parser", "..\Parser\Parser\Parser.csproj", "{C51F35A9-8D3F-44F2-8A8E-E7BFCCABE9CF}"

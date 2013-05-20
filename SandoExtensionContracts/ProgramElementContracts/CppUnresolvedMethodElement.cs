@@ -6,9 +6,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class CppUnresolvedMethodElement : MethodElement
 	{
-		public CppUnresolvedMethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, string arguments, 
+        public CppUnresolvedMethodElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet, string arguments, 
 			string returnType, string body, string className, bool isConstructor, string [] headerFiles)
-			: base(name, definitionLineNumber, fullFilePath, snippet, AccessLevel.Protected, arguments, returnType, body, 
+            : base(name, definitionLineNumber, definitionColumnNumber, fullFilePath, snippet, AccessLevel.Protected, arguments, returnType, body, 
 					Guid.NewGuid(), className, String.Empty, isConstructor)
 		{
             Contract.Requires(className != null, "CppUnresolvedMethodElement:Constructor - class name cannot be null!");
@@ -30,7 +30,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 
 			IsResolved = true;
 		    outMethodElement =
-                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, RawSource, accessLevel,
+                Activator.CreateInstance(unresolvedMethod.GetResolvedType(), Name, DefinitionLineNumber, DefinitionColumnNumber, FullFilePath, RawSource, accessLevel,
 		                                 Arguments, ReturnType, Body,
 		                                 classId, ClassName, String.Empty, IsConstructor) as MethodElement;
 		    SetCustomFields(unresolvedMethod, outMethodElement);
@@ -40,7 +40,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 		//TODO: Remove this method
 		public MethodElement Copy()
 		{
-            var outMethodElement = Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, FullFilePath, RawSource, AccessLevel.Protected,
+            var outMethodElement = Activator.CreateInstance(GetResolvedType(), Name, DefinitionLineNumber, DefinitionColumnNumber, FullFilePath, RawSource, AccessLevel.Protected,
                                          Arguments, ReturnType, Body,
                                          Guid.NewGuid(), ClassName, String.Empty, IsConstructor) as MethodElement;
             SetCustomFields(this, outMethodElement);

@@ -5,9 +5,9 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
 {
 	public class MethodElement : ProgramElement
 	{
-		public MethodElement(string name, int definitionLineNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
+        public MethodElement(string name, int definitionLineNumber, int definitionColumnNumber, string fullFilePath, string snippet, AccessLevel accessLevel,
 			string arguments, string returnType, string body, Guid classId, string className, string modifiers, bool isConstructor) 
-			: base(name, definitionLineNumber, fullFilePath, snippet)
+			: base(name, definitionLineNumber, definitionColumnNumber,  fullFilePath, snippet)
 		{
 			Contract.Requires(arguments != null, "MethodElement:Constructor - arguments cannot be null!");
 			Contract.Requires(isConstructor || !String.IsNullOrWhiteSpace(returnType), "MethodElement:Constructor - return type cannot be null or an empty string!");

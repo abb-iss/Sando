@@ -149,7 +149,7 @@ namespace Sando.IntegrationTests.Search
         {
             _indexPath = Path.Combine(Path.GetTempPath(), indexDirName);
             TestUtils.InitializeDefaultExtensionPoints();
-            ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new FakeOptionsProvider(_indexPath,40));
+            ServiceLocator.RegisterInstance<ISandoOptionsProvider>(new FakeOptionsProvider(_indexPath,40,false));
             ServiceLocator.RegisterInstance(new SrcMLArchiveEventsHandlers());
             ServiceLocator.RegisterInstance(new InitialIndexingWatcher());
         }
@@ -280,16 +280,18 @@ namespace Sando.IntegrationTests.Search
         {
             private string _myIndex;
             private int _myResultsNumber;
+			private bool _myAllowLogs;
 
-            public FakeOptionsProvider(string index, int num)
+            public FakeOptionsProvider(string index, int num, bool allowLogs)
             {
                 _myIndex = index;
                 _myResultsNumber = num;
+				_myAllowLogs = allowLogs;
             }
 
             public SandoOptions GetSandoOptions()
             {
-                return new SandoOptions(_myIndex,_myResultsNumber);
+                return new SandoOptions(_myIndex,_myResultsNumber, _myAllowLogs);
             }
         }
 
