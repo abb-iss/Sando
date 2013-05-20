@@ -2,7 +2,7 @@
   <Identifier Id="7e03caf3-06ed-4ff5-962a-effa1fb2f3ee">
     <Name>(ALPHA) Early Release Program for Sando</Name>
     <Author>OSS</Author>
-    <Version>0.415</Version>
+    <Version>0.416</Version>
     <Description xml:space="preserve">Early release program for Sando Search Tool</Description>
     <Locale>1033</Locale>
     <License>epl-1.0.txt</License>
