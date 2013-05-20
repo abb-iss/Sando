@@ -271,7 +271,7 @@ namespace Sando.Parser.UnitTests
 	                    Assert.AreEqual(method.ReturnType, "double");
 	                    Assert.AreEqual(method.AccessLevel, AccessLevel.Public);
 	                    Assert.AreEqual(method.Arguments, String.Empty);
-	                    Assert.AreEqual(method.Body, "_time");
+	                    Assert.AreEqual(method.Body, "{ \n  return _time; \n}");
 	                    Assert.AreNotEqual(method.ClassId, System.Guid.Empty);
 	                }
 	            }

@@ -228,59 +228,16 @@ namespace Sando.Parser
 
 	    public static string ParseBody(XElement function)
 		{
-            var bodyNormal = function.Value;
-            return bodyNormal;
-
-			string body = String.Empty;
-            StringBuilder builder = new StringBuilder();
-
+			string body = String.Empty;       ;
 			XElement block = function.Element(SRC.Block);
-			if(block != null)
-			{
-
-				IEnumerable<XElement> comments =
-					from el in block.Descendants(SRC.Comment)
-					select el;
-				foreach(XElement elem in comments)
-				{
-					//body += String.Join(" ", elem.Value) + " ";
-                    builder.Append(elem.Value).Append(" ");
-
-				}
-
-				//Expressions should also include all names, but we need to verify this...
-				IEnumerable<XElement> expressions =
-						from el in block.Descendants(SRC.Expression)
-						select el;
-				foreach(XElement elem in expressions)
-				{
-					//body += String.Join(" ", elem.Value) + " ";
-                    builder.Append(elem.Value).Append(" ");
-				}
-                //need to also add a names from declarations
-                IEnumerable<XElement> declarations =
-                    from el in block.Descendants(SRC.Declaration)
-                    select el;
-			    foreach (var declaration in declarations)
-			    {
-                    var declNames = from el in declaration.Descendants(SRC.Name)
-                                    where (el.Parent.Name.LocalName.Equals("type")||
-                                    el.Parent.Name.LocalName.Equals("decl"))
-                                    select el;
-                    foreach (XElement elem in declNames)
-                    {
-                        //body += String.Join(" ", elem.Value) + " ";
-                        builder.Append(elem.Value).Append(" ");
-                    }			        
-			    }
-
-				//body = body.TrimEnd();
-			}
-
-            body = builder.ToString();
-            body = body.TrimEnd();			
-            body = replaceWhitespace.Replace(body," ");
-			return body;
+            if (block != null)
+            {
+                return block.Value;
+            }
+            else
+            {
+                return function.Value;
+            }			
 		}
 
         private static Regex replaceWhitespace = new Regex("\\W", RegexOptions.Compiled);

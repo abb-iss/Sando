@@ -15,7 +15,7 @@ namespace Sando.Indexer.Searching
 			{
 				currentWeigths[name] = 1;
 			}
-			currentWeigths[SandoField.Name.ToString()] = 2;
+			currentWeigths[SandoField.Name.ToString()] = 3f;
             currentWeigths[SandoField.Arguments.ToString()] = 0.25f;
             currentWeigths[SandoField.ClassName.ToString()] = 1;
             currentWeigths[SandoField.ExtendedClasses.ToString()] = 0.5f;
