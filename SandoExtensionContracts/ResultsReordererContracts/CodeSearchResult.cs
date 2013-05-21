@@ -26,17 +26,38 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         {
             get
             {
+                //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
+                var parentOrFile = "";
                 if (string.IsNullOrEmpty(Parent))
-                    return Path.GetFileName(FileName);
-
-                var fileName = Path.GetFileName(FileName);
-                if (fileName.StartsWith(Parent))
+                    parentOrFile = Path.GetFileName(FileName);
+                else
                 {
-                    return fileName;
+                    var fileName = Path.GetFileName(FileName);
+                    if (fileName.StartsWith(Parent))
+                    {
+                        parentOrFile = fileName;
+                    }
+                    else
+                    {
+                        parentOrFile = Parent + " (" + fileName + ")";
+                    }
                 }
-                return Parent + " (" + fileName + ")";
+                if (parentOrFile.Length > MAX_PARENT_LENGTH)
+                    return parentOrFile.Substring(0, MAX_PARENT_LENGTH + RoomLeftFromName() )+"...";
+                else
+                    return parentOrFile;
             }
         }
+
+        private int RoomLeftFromName()
+        {
+            if (Name.Length > MAX_PARENT_LENGTH - 10)
+                return 0;
+            else
+                return MAX_PARENT_LENGTH - 10 - Name.Length;
+        }
+
+        private const int MAX_PARENT_LENGTH = 33;
 
         public ProgramElementType ProgramElementType
         {
@@ -60,10 +81,11 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         }
 
         private static int TAB = 4;
-        private static int MAX_SNIPPET_LENGTH = 100;        
+        private static int MAX_SNIPPET_LENGTH = 85;        
 
         public static string SourceToSnippet(string source, int numLines)
         {
+            //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
             StringBuilder snippet = new StringBuilder();
             var lines = new List<string>(source.Split('\n'));
             var newLines = new List<string>();
@@ -131,7 +153,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             if (p.Length < MAX_SNIPPET_LENGTH)
                 snippet.Append(p);
             else
-                snippet.Append(p.Substring(0,MAX_SNIPPET_LENGTH)+"...\n");
+                snippet.Append(p.Substring(0,MAX_SNIPPET_LENGTH)+"..."+"\n");
         }
 
         public string FileName

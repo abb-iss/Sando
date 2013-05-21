@@ -54,8 +54,8 @@ namespace Sando.Parser
                 string outFile = Path.GetTempFileName();
                 try {
                     //This is a C++ parser, so we'll convert the input file as C++ no matter what the file extension is
-                    var srcmlfile = Generator.GenerateSrcMLFromFile(fileName, outFile, Language.CPlusPlus);
-                    sourceElements = srcmlfile.FileUnits.FirstOrDefault();
+                    Generator.GenerateSrcMLFromFile(fileName, outFile, Language.CPlusPlus);
+                    sourceElements = SrcMLElement.Load(outFile);                                        
                     if(sourceElements != null) {
                         programElements = Parse(fileName, sourceElements);
                     }

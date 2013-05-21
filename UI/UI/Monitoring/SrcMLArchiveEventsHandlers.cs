@@ -112,11 +112,14 @@ namespace Sando.UI.Monitoring
 
         private object tasksTrackerLock = new object();
 
-        public void StartupCompleted(object sender, EventArgs args)
+        public void StartupCompleted(object sender, IsReadyChangedEventArgs args)
         {
-            ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>().WaitForIndexing();            
-            ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
-            SwumManager.Instance.PrintSwumCache();
+            if (args.UpdatedReadyState)
+            {
+                ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>().WaitForIndexing();
+                ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+                SwumManager.Instance.PrintSwumCache();
+            }
         }
 
         public void MonitoringStopped(object sender, EventArgs args)

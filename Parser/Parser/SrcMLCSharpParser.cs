@@ -43,8 +43,8 @@ namespace Sando.Parser
                 string outFile = Path.GetTempFileName();
                 try {
                     //This is a CSharp parser, so we'll convert the input file as CSharp no matter what the file extension is
-                    var srcmlfile = Generator.GenerateSrcMLFromFile(fileName, outFile, Language.CSharp);
-                    sourceElements = srcmlfile.FileUnits.FirstOrDefault();
+                    Generator.GenerateSrcMLFromFile(fileName, outFile, Language.CSharp);
+                    sourceElements = SrcMLElement.Load(outFile);                    
                     if(sourceElements != null) {
                         programElements = Parse(fileName, sourceElements);
                     }

@@ -321,9 +321,10 @@ namespace Sando.UI
 		}
 
 
-        public void HandleIndexingFinish(object sender, EventArgs args)
+        public void HandleIndexingFinish(object sender, IsReadyChangedEventArgs args)
         {
-            CallShowProgressBar(false);
+            if(args.UpdatedReadyState)
+                CallShowProgressBar(false);
         }
 
         private void CallShowProgressBar(bool show)
@@ -394,8 +395,8 @@ namespace Sando.UI
                 {
                     SetupHandlers = true;
                     srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-                    srcMLService.StartupCompleted += srcMLArchiveEventsHandlers.StartupCompleted;
-                    srcMLService.StartupCompleted += HandleIndexingFinish;
+                    srcMLService.IsReadyChanged += srcMLArchiveEventsHandlers.StartupCompleted;
+                    srcMLService.IsReadyChanged += HandleIndexingFinish;
                     srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
                 }
 

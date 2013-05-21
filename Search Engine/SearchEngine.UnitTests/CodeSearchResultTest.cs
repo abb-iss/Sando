@@ -70,12 +70,32 @@ private string input =
         public void FixSpacesDifferentCase()
         {            
             string fixSnip = CodeSearchResult.SourceToSnippet(input, CodeSearchResult.DefaultSnippetSize);
-            Assert.IsTrue(fixSnip.Equals("public virtual List<CodeSearchResult> Search(string searchString, bool rerunWithWildcardIfNoResults ...\n"+
+            Assert.IsTrue(fixSnip.Equals("public virtual List<CodeSearchResult> Search(string searchString, bool rerunWithWildc...\n"+
                 "{\n"+
-"    Contract.Requires(String.IsNullOrWhiteSpace(searchString), \"CodeSearcher:Search - searchString c...\n"+
-"    var searchCriteria = CriteriaBuilder.GetBuilder().AddSearchString(searchString).GetCriteria();\n"
+"    Contract.Requires(String.IsNullOrWhiteSpace(searchString), \"CodeSearcher:Search -...\n"+
+"    var searchCriteria = CriteriaBuilder.GetBuilder().AddSearchString(searchString).G...\n"
                 ));
         }
+
+
+        private string tab =
+@"        protected virtual void Layout(bool continueLayout)
+        {
+            if (Graph == null || Graph.VertexCount == 0 || !LayoutAlgorithmFactory.IsValidAlgorithm(LayoutAlgorithmType) || !CanLayout)
+                return; //no graph to layout, or wrong layout algorithm
+";
+
+        [TestCase]
+        public void FixAnotherWeirdCase()
+        {
+            string fixSnip = CodeSearchResult.SourceToSnippet(tab, CodeSearchResult.DefaultSnippetSize);
+            Assert.IsTrue(fixSnip.Equals("protected virtual void Layout(bool continueLayout)\r\n" +
+                "{\r\n" +
+"    if (Graph == null || Graph.VertexCount == 0 || !LayoutAlgorithmFactory.IsValidAlg...\n" +
+"        return; //no graph to layout, or wrong layout algorithm\r\n"
+                ));
+        }
+
 
     }
 }
