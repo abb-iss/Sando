@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using System;
+using System.Text;
 
 namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
@@ -58,48 +59,79 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             }
         }
 
+        private static int TAB = 4;
+        private static int MAX_SNIPPET_LENGTH = 100;        
+
         public static string SourceToSnippet(string source, int numLines)
         {
-            var toRemove = int.MaxValue;
+            StringBuilder snippet = new StringBuilder();
             var lines = new List<string>(source.Split('\n'));
+            var newLines = new List<string>();
             if (numLines < lines.Count)
             {
                 lines.RemoveRange(numLines, lines.Count - numLines);
             }
-
-            int perLineToRemove;
-
-            if (source.StartsWith("\t"))
-            {
-                perLineToRemove = source.Length - source.TrimStart('\t').Length;
-            }
-            else if (source.StartsWith(" "))
-            {
-                perLineToRemove = source.Length - source.TrimStart(' ').Length;
-            }
-            else
-            {
-                perLineToRemove = 0;
-            }
-
-            if (perLineToRemove < toRemove)
-            {
-                toRemove = perLineToRemove;
-            }
-
-            //remove the empty spaces in front
-            if (toRemove > 0 && toRemove < int.MaxValue)
-            {
-                string newSnip = "";
-                foreach (string line in lines)
+            int count = 0;
+            var line = "";
+            foreach (var aLine in lines)
+            {                                
+                line = aLine;
+                if (!line.Trim().Equals(""))
                 {
-                    if (line.Length > toRemove + 1)
-                        newSnip += line.Remove(0, toRemove) + "\n";
+                    while (line.StartsWith(" ") || line.StartsWith("\t"))
+                    {
+                        if (line.StartsWith(" "))
+                            count++;
+                        else
+                            count = count + TAB;
+                        line = line.Substring(1);
+                    }
+                    string newLine = "";
+                    for (int i = 0; i < count; i++)
+                        newLine += " ";
+                    newLine += line + "\n";
+                    newLines.Add(newLine);
                 }
-                return newSnip;
+                count = 0;
             }
 
-            return String.Join("\n", lines.ToArray());
+
+            count = 0; 
+            line = newLines.First();
+            if (!line.StartsWith(" ") && !line.StartsWith("\t") && newLines.Count() > 1)
+                line = newLines.ElementAt(1);
+            while (line.StartsWith(" ") || line.StartsWith("\t"))
+            {
+                if (line.StartsWith(" "))
+                    count++;
+                else
+                    count = count + TAB;
+                line = line.Substring(1);
+            }
+
+            foreach (var aLine in newLines)
+            {
+                try
+                {
+                    if (aLine.Substring(0, count).Trim().Equals(""))
+                        Append(snippet, aLine.Substring(count));
+                    else
+                        Append(snippet, aLine);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Append(snippet, aLine);
+                }
+            }
+            return snippet.ToString();
+        }
+
+        private static void Append(StringBuilder snippet, string p)
+        {
+            if (p.Length < MAX_SNIPPET_LENGTH)
+                snippet.Append(p);
+            else
+                snippet.Append(p.Substring(0,MAX_SNIPPET_LENGTH)+"...\n");
         }
 
         public string FileName
