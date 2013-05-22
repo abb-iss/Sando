@@ -11,11 +11,12 @@ namespace Sando.SearchEngine.UnitTests
         {
             var stuff = "	public void yo()"+
                         "\n\t\tsasdfsadf"+
-                        "\n\t\tasdfasdf\n";
+                        "\n\t\tasdfasdf\n"+
+                        "    }";
             string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()"+
                                          "\n    sasdfsadf"+
-                                         "\n    asdfasdf\n"));
+                                         "\n    asdfasdf\n}\n"));
         }
 
         [TestCase]
@@ -23,9 +24,10 @@ namespace Sando.SearchEngine.UnitTests
         {
             var stuff = "      public void yo()"+
                         "\n            sasdfsadf"+
-                        "\n            asdfasdf\n";
+                        "\n            asdfasdf\n" +
+                        "      }";
 			string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
-            Assert.IsTrue(fixSnip.Equals("public void yo()\n      sasdfsadf\n      asdfasdf\n"));
+            Assert.IsTrue(fixSnip.Equals("public void yo()\n      sasdfsadf\n      asdfasdf\n}\n"));
         }
 
 
@@ -34,19 +36,21 @@ namespace Sando.SearchEngine.UnitTests
         {
             var stuff = "\t\tpublic void yo()" +
                         "\n\t\t{" +
-                        "\n\t\t\tasdfasdf\n";
+                        "\n\t\t\tasdfasdf\n"+
+                        "\t\t}";
             string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
-            Assert.IsTrue(fixSnip.Equals("public void yo()\n{\n    asdfasdf\n"));
+            Assert.IsTrue(fixSnip.Equals("public void yo()\n{\n    asdfasdf\n}\n"));
         }
 
         [TestCase]
         public void FixNoSpaceOnFirst()
         {
             var stuff = "public void yo()" +
-                        "\n\t\t{" +
-                        "\n\t\t\tasdfasdf\n";
+                        "\n\t{" +
+                        "\n\t\tasdfasdf\n"+
+                        "\t}";
             string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
-            Assert.IsTrue(fixSnip.Equals("public void yo()\n{\n    asdfasdf\n"));
+            Assert.IsTrue(fixSnip.Equals("public void yo()\n{\n    asdfasdf\n}\n"));
         }
 
         //List<Monster> monsterlist;
@@ -63,7 +67,9 @@ private string input =
 "        public virtual List<CodeSearchResult> Search(string searchString, bool rerunWithWildcardIfNoResults = false)\n"+
 "		{\n"+
 "			Contract.Requires(String.IsNullOrWhiteSpace(searchString), \"CodeSearcher:Search - searchString cannot be null or an empty string!\");\n"+
-"            var searchCriteria = CriteriaBuilder.GetBuilder().AddSearchString(searchString).GetCriteria();";
+"            var searchCriteria = CriteriaBuilder.GetBuilder().AddSearchString(searchString).GetCriteria();\n"+
+"		}\n"
+;
 
 
         [TestCase]
@@ -73,7 +79,8 @@ private string input =
             Assert.IsTrue(fixSnip.Equals("public virtual List<CodeSearchResult> Search(string searchString, bool rerunWithWildc...\n"+
                 "{\n"+
 "    Contract.Requires(String.IsNullOrWhiteSpace(searchString), \"CodeSearcher:Search -...\n"+
-"    var searchCriteria = CriteriaBuilder.GetBuilder().AddSearchString(searchString).G...\n"
+"    var searchCriteria = CriteriaBuilder.GetBuilder().AddSearchString(searchString).G...\n"+
+                "}\n"
                 ));
         }
 
@@ -83,6 +90,7 @@ private string input =
         {
             if (Graph == null || Graph.VertexCount == 0 || !LayoutAlgorithmFactory.IsValidAlgorithm(LayoutAlgorithmType) || !CanLayout)
                 return; //no graph to layout, or wrong layout algorithm
+        }
 ";
 
         [TestCase]
@@ -92,7 +100,8 @@ private string input =
             Assert.IsTrue(fixSnip.Equals("protected virtual void Layout(bool continueLayout)\r\n" +
                 "{\r\n" +
 "    if (Graph == null || Graph.VertexCount == 0 || !LayoutAlgorithmFactory.IsValidAlg...\n" +
-"        return; //no graph to layout, or wrong layout algorithm\r\n"
+"        return; //no graph to layout, or wrong layout algorithm\r\n"+
+                "}\r\n" 
                 ));
         }
 

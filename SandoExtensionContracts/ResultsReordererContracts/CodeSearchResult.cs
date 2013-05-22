@@ -85,18 +85,42 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 
         public static string SourceToSnippet(string source, int numLines)
         {
-            //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
-            StringBuilder snippet = new StringBuilder();
+            //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem            
             var lines = new List<string>(source.Split('\n'));
-            var newLines = new List<string>();
-            if (numLines < lines.Count)
+            int leadingSpaces = GetLeadingSpaces(lines);                                  
+            lines = StandardizeLeadingWhitespace(lines, numLines);
+            StringBuilder snippet = AddTruncatedLinesToSnippet(lines, leadingSpaces);
+            return snippet.ToString();
+        }
+
+        private static StringBuilder AddTruncatedLinesToSnippet(List<string> lines, int leadingSpaces)
+        {
+            StringBuilder snippet = new StringBuilder();
+            foreach (var aLine in lines)
             {
-                lines.RemoveRange(numLines, lines.Count - numLines);
+                try
+                {
+                    if (aLine.Substring(0, leadingSpaces).Trim().Equals(""))
+                        Append(snippet, aLine.Substring(leadingSpaces));
+                    else
+                        Append(snippet, aLine);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Append(snippet, aLine);
+                }
             }
+            return snippet;
+        }
+
+        private static List<string> StandardizeLeadingWhitespace(List<string> lines, int numLines)
+        {
+            ShortenSnippet(numLines, lines);  
+            var newLines = new List<string>();
             int count = 0;
             var line = "";
             foreach (var aLine in lines)
-            {                                
+            {
                 line = aLine;
                 if (!line.Trim().Equals(""))
                 {
@@ -116,38 +140,44 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                 }
                 count = 0;
             }
-
-
-            count = 0; 
-            line = newLines.First();
-            if (!line.StartsWith(" ") && !line.StartsWith("\t") && newLines.Count() > 1)
-                line = newLines.ElementAt(1);
-            while (line.StartsWith(" ") || line.StartsWith("\t"))
-            {
-                if (line.StartsWith(" "))
-                    count++;
-                else
-                    count = count + TAB;
-                line = line.Substring(1);
-            }
-
-            foreach (var aLine in newLines)
-            {
-                try
-                {
-                    if (aLine.Substring(0, count).Trim().Equals(""))
-                        Append(snippet, aLine.Substring(count));
-                    else
-                        Append(snippet, aLine);
-                }
-                catch (ArgumentOutOfRangeException e)
-                {
-                    Append(snippet, aLine);
-                }
-            }
-            return snippet.ToString();
+            return newLines;
         }
 
+        private static List<string> ShortenSnippet(int numLines, List<string> lines)
+        {
+            if (numLines < lines.Count)
+            {
+                lines.RemoveRange(numLines, lines.Count - numLines);
+            }
+            return lines;
+        }
+
+        private static int GetLeadingSpaces(List<string> lines)
+        {
+            if (lines.Count > 0)
+            {
+                var lastLine = lines.Last();
+                if(lastLine.Trim().Equals(String.Empty))
+                {
+                    if (lines.Count > 2)
+                    {
+                        lastLine = lines.ElementAt(lines.Count - 2);
+                    }
+                }
+                int count = 0;
+                while (lastLine.StartsWith(" ") || lastLine.StartsWith("\t"))
+                {
+                    if (lastLine.StartsWith(" "))
+                        count++;
+                    else
+                        count = count + TAB;
+                    lastLine = lastLine.Substring(1);
+                }
+                return count;
+            }
+            return 0;
+        }
+           
         private static void Append(StringBuilder snippet, string p)
         {
             if (p.Length < MAX_SNIPPET_LENGTH)
