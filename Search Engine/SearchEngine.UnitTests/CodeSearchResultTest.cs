@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.SearchEngine.UnitTests
@@ -13,7 +14,7 @@ namespace Sando.SearchEngine.UnitTests
                         "\n\t\tsasdfsadf"+
                         "\n\t\tasdfasdf\n"+
                         "    }";
-            string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()"+
                                          "\n    sasdfsadf"+
                                          "\n    asdfasdf\n}\n"));
@@ -26,7 +27,7 @@ namespace Sando.SearchEngine.UnitTests
                         "\n            sasdfsadf"+
                         "\n            asdfasdf\n" +
                         "      }";
-			string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()\n      sasdfsadf\n      asdfasdf\n}\n"));
         }
 
@@ -38,7 +39,7 @@ namespace Sando.SearchEngine.UnitTests
                         "\n\t\t{" +
                         "\n\t\t\tasdfasdf\n"+
                         "\t\t}";
-            string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()\n{\n    asdfasdf\n}\n"));
         }
 
@@ -49,7 +50,7 @@ namespace Sando.SearchEngine.UnitTests
                         "\n\t{" +
                         "\n\t\tasdfasdf\n"+
                         "\t}";
-            string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public void yo()\n{\n    asdfasdf\n}\n"));
         }
 
@@ -59,7 +60,7 @@ namespace Sando.SearchEngine.UnitTests
         public void FixFieldsSpace()
         {
             var stuff = "List<Monster> monsterlist;";
-            string fixSnip = CodeSearchResult.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(stuff, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("List<Monster> monsterlist;\n"));
         }
 
@@ -74,8 +75,8 @@ private string input =
 
         [TestCase]
         public void FixSpacesDifferentCase()
-        {            
-            string fixSnip = CodeSearchResult.SourceToSnippet(input, CodeSearchResult.DefaultSnippetSize);
+        {
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(input, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("public virtual List<CodeSearchResult> Search(string searchString, bool rerunWithWildc...\n"+
                 "{\n"+
 "    Contract.Requires(String.IsNullOrWhiteSpace(searchString), \"CodeSearcher:Search -...\n"+
@@ -96,7 +97,7 @@ private string input =
         [TestCase]
         public void FixAnotherWeirdCase()
         {
-            string fixSnip = CodeSearchResult.SourceToSnippet(tab, CodeSearchResult.DefaultSnippetSize);
+            string fixSnip = CodeSearchResultInstance.SourceToSnippet(tab, CodeSearchResult.DefaultSnippetSize);
             Assert.IsTrue(fixSnip.Equals("protected virtual void Layout(bool continueLayout)\r\n" +
                 "{\r\n" +
 "    if (Graph == null || Graph.VertexCount == 0 || !LayoutAlgorithmFactory.IsValidAlg...\n" +
@@ -105,6 +106,6 @@ private string input =
                 ));
         }
 
-
+        private CodeSearchResult CodeSearchResultInstance = new CodeSearchResult(Sando.UnitTestHelpers.SampleProgramElementFactory.GetSampleMethodElement(),1);
     }
 }
