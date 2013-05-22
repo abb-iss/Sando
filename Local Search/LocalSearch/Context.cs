@@ -212,8 +212,10 @@ namespace Sando.LocalSearch
                 //what has shown before is set lower score
                 if (ExistingInCurrentPath(CurrentPath, relatedProgramElement, out location))
                 {
+                    //Console.WriteLine(relatedProgramElement.Name + " visited before."); //debugging
+
                     if (!decay)
-                        relatedProgramElement.Score = relatedProgramElement.Score - 1 * weight;
+                        relatedProgramElement.Score = relatedProgramElement.Score - 1 * weight * 4; //higher than other four
                     else
                     {
                         //int temp = 2 ^ (pathLen - location - 1);
@@ -227,7 +229,7 @@ namespace Sando.LocalSearch
                         {
                             //temp == 0 
                         }
-                        relatedProgramElement.Score = relatedProgramElement.Score - (1 * decayfactor) * weight;
+                        relatedProgramElement.Score = relatedProgramElement.Score - (1 * decayfactor) * weight * 4; //higher than other four
                     }
                 }
 
@@ -355,6 +357,7 @@ namespace Sando.LocalSearch
                 foreach (var relatedElement in relatedElementsInSteps)
                 {
                     double searchScore = ExistingInInitialSearchRes(InitialSearchResults, relatedElement);
+                    //Console.WriteLine("   " + relatedElement.Name + " SearchScore =  " + searchScore.ToString()); //debug
                     if (searchScore > 0) 
                     {
                         try
@@ -395,7 +398,6 @@ namespace Sando.LocalSearch
             }
             else
             {
-                //foreach (var eachSelectedElement in source)
                 for (location = index; location >= 0; location--)
                 {
                     var eachSelectedElement = source[location];
@@ -409,6 +411,20 @@ namespace Sando.LocalSearch
                 return false;
             }  
             
+        }
+
+        private bool ExistingInPreviousPath(List<CodeSearchResult> source, CodeSearchResult target, int endPos)
+        {
+            for (int i = source.Count-1; i >= endPos; i--)
+            {
+                var eachSelectedElement = source[i];
+                if (eachSelectedElement.Name.Equals(target.Name)
+                && eachSelectedElement.ProgramElement.DefinitionLineNumber.Equals(target.ProgramElement.DefinitionLineNumber)
+                   )
+                    return true;
+            }
+
+            return false;
         }
 
         private double ExistingInInitialSearchRes(List<Tuple<CodeSearchResult,int>> source, CodeNavigationResult target)
@@ -649,8 +665,10 @@ namespace Sando.LocalSearch
                 listOfAbsScores.Add(0);
 
             for (int i = 1; i <= steps; i++)
-            {
+            {   
                 CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
+                if (ExistingInPreviousPath(CurrentPath, ProgramElementToCompare, CurrentPath.Count - i + 1))
+                    continue;
                 EditDistanceHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
             }
 
@@ -713,33 +731,69 @@ namespace Sando.LocalSearch
         private void EditDistanceHeuristic(CodeSearchResult ProgramElementToCompare,
             ref List<CodeNavigationResult> relatedProgramElements, double weight, ref List<double> rankingScores)
         {
-            int cnt = 0;
+            //Console.WriteLine("   to compare: " + ProgramElementToCompare.Name); //debug            
+
+            List<double> SimilarityWithSingleAncestor = new List<double>();
+            //int cnt = 0;
             foreach (var relatedelement in relatedProgramElements)
             {
+                //Console.WriteLine("   compare: " + relatedelement.Name); //debug
+
                 double degree = 0;
 
-                if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
-                    degree = 1;
+                //if (PartialWordMatch(relatedelement.Name, ProgramElementToCompare.Name))
+                //{
+                //    //Console.WriteLine("   partial word mathes."); //debug
+                //    degree = 1;
+                //}
 
-                //List<string> parts_relatedelement = WordSplitter.ExtractSearchTerms(relatedelement.Name);
-                //List<string> parts_elementtocompare = WordSplitter.ExtractSearchTerms(ProgramElementToCompare.Name);
-                //degree = Convert.ToDouble(parts_relatedelement.Intersect(parts_elementtocompare).Count());
+                var stemmedRelatedName = WordStem(relatedelement.Name);
+                var stemmedElementToCompare = WordStem(ProgramElementToCompare.Name);
 
-                double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
-                if (distance == 0) //very little chance to hit
-                    degree += 2;
-                else
-                    degree += 1 / distance;
+                List<string> parts_relatedelement = WordSplitter.ExtractSearchTerms(stemmedRelatedName);
+                List<string> parts_elementtocompare = WordSplitter.ExtractSearchTerms(stemmedElementToCompare);
+                degree = Convert.ToDouble(parts_relatedelement.Intersect(parts_elementtocompare).Count());
 
-                rankingScores[cnt] += degree * weight;
-                cnt++;
+                if (degree > 0)
+                {
+                    //double distance = LevenshteinDistance(relatedelement.Name, ProgramElementToCompare.Name);
+                    double distance = LevenshteinDistance(stemmedRelatedName, stemmedElementToCompare);
+                    if (distance == 0) 
+                    {
+                        if(degree == 1)
+                            degree += 1;
+                    }
+                    else
+                        degree += 1 / distance;
+                }
+                                
+                //Console.WriteLine("   similarity: " + degree.ToString()); //debug
+
+                SimilarityWithSingleAncestor.Add(degree);
+
+                //rankingScores[cnt] += degree * weight;
+                //cnt++;
             }
+
+            NormalizeScoreByMax(ref SimilarityWithSingleAncestor);
+            for (int cnt = 0; cnt < SimilarityWithSingleAncestor.Count; cnt++)
+                rankingScores[cnt] += SimilarityWithSingleAncestor[cnt] * weight;
 
             //Assert: cnt == relatedProgramElements.Count()
 
         }
 
-        private bool PartialWordMatch(string target, string source)
+        public string WordStem(string wordBeforeStem)
+        {
+            Stemmer s = new Stemmer();
+            s.add(wordBeforeStem.ToCharArray(), wordBeforeStem.Length);
+            s.stem();
+            string stemWord = new string(s.getResultBuffer()).Substring(0, s.getResultLength());
+            return stemWord;
+        }
+    
+
+        public bool PartialWordMatch(string target, string source)
         {
             //source may be multiple words
             string[] sources = source.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -748,12 +802,22 @@ namespace Sando.LocalSearch
                 Stemmer s = new Stemmer();
                 s.add(originalWord.ToCharArray(), originalWord.Length);
                 s.stem();
-                string stemSource = new string(s.getResultBuffer());
+                string stemSource = new string(s.getResultBuffer()).Substring(0, s.getResultLength()).ToLower();
 
                 Stemmer t = new Stemmer();
                 t.add(target.ToCharArray(), target.Length);
                 t.stem();
-                String stemTarget = new string(t.getResultBuffer());
+                String stemTarget = new string(t.getResultBuffer()).Substring(0, t.getResultLength()).ToLower();
+
+                //try
+                //{
+                //    stemSource = stemSource.Substring(0, stemSource.IndexOf('\0'));
+                //    stemTarget = stemTarget.Substring(0, stemTarget.IndexOf('\0'));
+                //}
+                //catch (Exception e)
+                //{
+                //    return false;
+                //}
 
                 if (stemTarget.Contains(stemSource) || stemSource.Contains(stemTarget))
                     return true;
@@ -901,6 +965,8 @@ namespace Sando.LocalSearch
             for (int i = 1; i <= steps; i++)
             {
                 CodeSearchResult ProgramElementToCompare = CurrentPath[CurrentPath.Count - i];
+                if (ExistingInPreviousPath(CurrentPath, ProgramElementToCompare, CurrentPath.Count - i + 1))
+                    continue;
                 DataFlowHeuristic(ProgramElementToCompare, ref relatedProgramElements, listOfDegree[i - 1], ref listOfAbsScores);
             }
 
@@ -920,7 +986,8 @@ namespace Sando.LocalSearch
             if (ProgramElementToCompare.ProgramElementType != ProgramElementType.Method)
                 return;
 
-            int cnt = 0;
+            //int cnt = 0;
+            List<double> dataFlowShareWithSingleAncestor = new List<double>();
             foreach (var relatedelement in relatedProgramElements)
             {
                 double degree = 0;
@@ -935,9 +1002,14 @@ namespace Sando.LocalSearch
                     degree = Convert.ToDouble(intersectSize);
                 }
 
-                rankingScores[cnt] += degree * weight;
-                cnt++;
+                dataFlowShareWithSingleAncestor.Add(degree);
+                //rankingScores[cnt] += degree * weight;
+                //cnt++;
             }
+
+            NormalizeScoreByMax(ref dataFlowShareWithSingleAncestor);
+            for(int cnt = 0; cnt < dataFlowShareWithSingleAncestor.Count; cnt++)
+                rankingScores[cnt] += dataFlowShareWithSingleAncestor[cnt] * weight;
 
             //Assert: cnt == relatedProgramElements.Count()
 

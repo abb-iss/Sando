@@ -55,7 +55,7 @@ namespace Sando.IntegrationTests.LocalSearch
                 }
             }
 
-   //         tableViewer
+   // tableViewer
    //dataStore
    //addTableView
    //getPwsDataStore
@@ -111,9 +111,12 @@ namespace Sando.IntegrationTests.LocalSearch
                                 bool set = true;
                                 bool decay = true;
 
+                                //if (w0 == 1)
+                                //    w0 = 4;
+
                                 if (set)
                                 {   
-                                    //lookback = 10;
+                                    lookback = 10;
                                     lookback2 = 10;
                                 }
 
@@ -258,7 +261,7 @@ namespace Sando.IntegrationTests.LocalSearch
 
             CodeNavigationResult rootElement = rootNode.getData();
             //Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-            //    + " " + rootElement.ProgramElementRelation.ToString()); //debugging
+            //    + " " + rootElement.ProgramElementRelation.ToString() + " " + rootElement.Score.ToString()); //debugging
             for (int i = 0; i < targetSet.Count; i++)
             {
                 targetProgramElement target = targetSet[i];

@@ -9,6 +9,8 @@ using NUnit.Framework;
 using System.Xml.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SplitterContracts;
+using Sando.Core.Tools;
 
 
 namespace Sando.LocalSearch.UnitTests
@@ -76,6 +78,45 @@ namespace Sando.LocalSearch.UnitTests
             Context obj = new Context();
             int distance = obj.LevenshteinDistance(a,b);
             Assert.AreEqual(distance, 3);
+        }
+
+        [Test]
+        public void LevenshteinDistanceTest2()
+        {
+            String a = "sitdown";
+            String b = "sitDown";
+            Context obj = new Context();
+            int distance = obj.LevenshteinDistance(a, b);
+            Assert.AreEqual(distance, 1);
+        }
+
+        [Test]
+        public void PartialWordMatchTest()
+        {
+            String a = "save";
+            String b = "saveInternal";
+            Context obj = new Context();
+            bool res = obj.PartialWordMatch(a, b);
+            Assert.AreEqual(res, true);
+        }
+
+        [Test]
+        public void StemmerandSplitterTest()
+        {
+            String a = "scheduleTimerForAutomaticSaving";
+            String b = "timerForAutomaticSaving";
+            Context obj = new Context();
+
+            bool res = obj.PartialWordMatch(a, b);
+            Assert.AreEqual(res, true);
+
+            String a2 = obj.WordStem(a);
+            String b2 = obj.WordStem(b);
+            List<string> parts_a = WordSplitter.ExtractSearchTerms(a2);
+            List<string> parts_b = WordSplitter.ExtractSearchTerms(b2);
+            int cnt = parts_a.Intersect(parts_b).Count();
+
+            Assert.AreEqual(cnt, 4);
         }
 
     }

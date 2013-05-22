@@ -112,8 +112,8 @@ namespace Sando.IntegrationTests.LocalSearch
 
                                 if (set)
                                 {
-                                    lookback = 3;
-                                    lookback2 = 3;
+                                    lookback = 10;
+                                    lookback2 = 10;
                                 }
 
                                 heuristicWeightComb configuration =

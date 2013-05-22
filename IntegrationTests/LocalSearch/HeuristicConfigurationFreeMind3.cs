@@ -108,7 +108,7 @@ namespace Sando.IntegrationTests.LocalSearch
                                 int lookback = 1;  //1 - 3
                                 int lookback2 = 1;
                                 bool set = true;
-                                bool decay = true;
+                                bool decay = false;
 
                                 if (set)
                                 {   

@@ -109,7 +109,7 @@ namespace Sando.IntegrationTests.LocalSearch
                             int lookback = 1;  //1 - 3
                             int lookback2 = 1;
                             bool set = true;
-                            bool decay = true;
+                            bool decay = false;
 
                             if (set)
                             {
@@ -131,8 +131,6 @@ namespace Sando.IntegrationTests.LocalSearch
                                 int number = Convert.ToInt32(searchresult.ProgramElement.DefinitionLineNumber);
                                 CodeNavigationResult rootElement = new CodeNavigationResult(searchresult.ProgramElement, searchresult.Score, gbuilder.GetXElementFromLineNum(number));
                                 NTree<CodeNavigationResult> rootTreeNode = new NTree<CodeNavigationResult>(rootElement);
-
-                                //recommendTrees.Add(rootTreeNode);
 
                                 TreeBuild(ref rootTreeNode, gbuilder, 0, configuration, ref targetFound,
                                     ref numberOfNavigation, ref targetSet, treeDepthThreshold, stopLine);

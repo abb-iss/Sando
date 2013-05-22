@@ -45,10 +45,11 @@ namespace Sando.IntegrationTests.LocalSearch
             {
                 //if (!((initialSearchRes.Name.Contains("task") || initialSearchRes.Name.Contains("Task"))))
                 if (!
-                   //   (initialSearchRes.Name.Contains("filterTasks") ||
-                         initialSearchRes.Name.Contains("tbTasks")
+                       (initialSearchRes.Name.Contains("filterTasks") 
+                    //  ||
+                   //      initialSearchRes.Name.Contains("tbTasks")
                    //     )
-                   )
+                   ))
                     continue; //cheating due to "Sando"'s inconsistent behavior!!!
 
                 if ((initialSearchRes.Type == "Method") || (initialSearchRes.Type == "Field"))
@@ -63,21 +64,21 @@ namespace Sando.IntegrationTests.LocalSearch
             List<targetProgramElement> targetSet = new List<targetProgramElement>();
             List<int> numberOfNavigation = new List<int>();
             List<bool> targetFound = new List<bool>();
-            int[] linenumber = { 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1, 1 };
-            //int[] linenumber = { 1, 1, 1, 1 };
-            String[] elements = { "filterTasks", "HistoryView", "initComponents", "propertyChange", //any 3
-                                   "saveSetup", "tbTasks", "btBackwardActionPerformed", 
-                                   "btForwardActionPerformed", "cmbPeriodItemStateChanged",
-                                   "updateTotalTime", "valueChanged"
+            //int[] linenumber = { 1, 1, 1, 1 , 1, 1, 1, 1, 1, 1, 1 };
+            int[] linenumber = { 1, 1, 1, 1 };
+            String[] elements = { "filterTasks", "HistoryView", "initComponents", "propertyChange" //any 3
+                                   //"saveSetup", "tbTasks", "btBackwardActionPerformed", 
+                                   //"btForwardActionPerformed", "cmbPeriodItemStateChanged",
+                                   //"updateTotalTime", "valueChanged"
                                 };
             ProgramElementRelation[] relations = { 
-                                                   ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other, 
-                                                   ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other,
-                                                   ProgramElementRelation.Other,
+                                                   //ProgramElementRelation.Other,
+                                                   //ProgramElementRelation.Other,
+                                                   //ProgramElementRelation.Other, 
+                                                   //ProgramElementRelation.Other,
+                                                   //ProgramElementRelation.Other,
+                                                   //ProgramElementRelation.Other,
+                                                   //ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other,
                                                    ProgramElementRelation.Other,
@@ -109,13 +110,13 @@ namespace Sando.IntegrationTests.LocalSearch
                                 int lookahead = 0; // 0 - 1
                                 int lookback = 1;  //1 - 3
                                 int lookback2 = 1;
-                                bool set = false;
+                                bool set = true;
                                 bool decay = false;
 
                                 if (set)
                                 {
                                     //lookahead = 1;
-                                    lookback = 10;
+                                    //lookback = 10;
                                     lookback2 = 10;
                                 }
 
