@@ -53,6 +53,8 @@ namespace Sando.Indexer.Documents.Converters
                     return new StructDocument(document);
                 case ProgramElementType.TextLine:
                     return new TextLineDocument(document);
+                case ProgramElementType.XElement:
+                    return new XmlXElementDocument(document);
                 case ProgramElementType.Custom:
                     var type = GetMyType(document);
                     if(type.BaseType.Equals(typeof(MethodElement)))

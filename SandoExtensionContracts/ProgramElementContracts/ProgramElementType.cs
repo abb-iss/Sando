@@ -11,6 +11,7 @@
         Class,        
 		Comment,							
 		TextLine,
+        XElement,
 		Custom
 	}
 }

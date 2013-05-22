@@ -60,9 +60,8 @@ namespace Sando.UI.Monitoring
                             // Get SrcMLService and use its API to get the XElement
                             var srcMLService = (sender as ISrcMLGlobalService);
                             
-                            XElement xelement = null;
-                            if (!args.EventType.Equals(FileEventType.FileDeleted))
-                                xelement= srcMLService.GetXElementForSourceFile(args.FilePath);                            
+                            var xelement = GetXElementForFile(args, srcMLService);
+
 
                             var indexUpdateManager = ServiceLocator.Resolve<IndexUpdateManager>();
 
@@ -102,6 +101,23 @@ namespace Sando.UI.Monitoring
                 tasks.Add(task);
             }
             task.ContinueWith(removeTask => RemoveTask(task));
+        }
+
+        private static XElement GetXElementForFile(FileEventRaisedArgs args, ISrcMLGlobalService srcMLService)
+        {
+            XElement xelement = null;
+            if (!args.EventType.Equals(FileEventType.FileDeleted))
+            {
+                if (args.FilePath.EndsWith(".xml") || args.FilePath.EndsWith(".xaml"))
+                {
+                    var allText = File.ReadAllText(args.FilePath);
+                    xelement = XDocument.Parse(allText, LoadOptions.SetLineInfo |
+                                                        LoadOptions.PreserveWhitespace).Root;
+                }
+                else
+                    xelement = srcMLService.GetXElementForSourceFile(args.FilePath);
+            }
+            return xelement;
         }
 
         private void RemoveTask(Task task)
