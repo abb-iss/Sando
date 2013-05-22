@@ -248,8 +248,7 @@ namespace Sando.UI
             ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
             ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
             // JZ: End of code changes
-            //extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".htm", ".html", ".xml", ".resx", ".aspx" },
-                                                                  // new XMLFileParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".xml" }, new XAMLFileParser());
 			//extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
 																  // new TextFileParser());
 
