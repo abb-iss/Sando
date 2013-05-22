@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using System;
 using System.Text;
@@ -24,7 +25,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 
         public string ParentOrFile
         {
-            get
+            get 
             {
                 //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
                 var parentOrFile = "";
@@ -78,13 +79,20 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                 var raw = ProgramElement.RawSource;
                 return SourceToSnippet(raw, DefaultSnippetSize);
             }
-        }
+        } 
 
         private static int TAB = 4;
         private static int MAX_SNIPPET_LENGTH = 85;        
 
         public static string SourceToSnippet(string source, int numLines)
         {
+            // Firstly, pretty print if it is an xelment source.
+            String prettyPrintXml;
+            if (PrettyPrintXElement(source, numLines, out prettyPrintXml))
+            {
+                return prettyPrintXml;
+            }
+
             //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem            
             var lines = new List<string>(source.Split('\n'));
             int leadingSpaces = GetLeadingSpaces(lines);                                  
@@ -203,6 +211,23 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         public string Name
         {
             get { return ProgramElement.Name; }
+        }
+
+
+        private static bool PrettyPrintXElement(String source, int line, out 
+            String prettyPrint)
+        {
+            try
+            {
+                var doc = XDocument.Parse(source);
+                prettyPrint = doc.ToString();
+                return true;
+            }
+            catch (Exception e)
+            {
+                prettyPrint = source;
+                return false;
+            }
         }
     }
 }

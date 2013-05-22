@@ -470,7 +470,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\VS2010Icons\xmlIcon.png" />
+    <Resource Include="Resources\VS2010Icons\VSObject_XElement.png" />
     <Content Include="sandoThumb.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
