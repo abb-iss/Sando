@@ -76,18 +76,28 @@ namespace Sando.Core.Logging.Events
 				string fullFilePath = Path.GetFullPath(file);
 				FileInfo fileInfo = new FileInfo(fullFilePath);
 				string fileName = Path.GetFileName(fullFilePath);
-				if (fileName.StartsWith("SandoData-") && fileInfo.Length > 400)
+				if (fileName.StartsWith("SandoData-"))
 				{
-					bool success = AmazonS3LogUploader.WriteLogFile(fullFilePath, s3CredsPath);
-					if (success == true)
-					{
-						if (fullFilePath == CurrentLogFile)
-						{
-                            CloseDataCollection();
-							InitializeDataCollection(LogPath);
-						}
-                        System.IO.File.Delete(fullFilePath);
-					}
+                    if (fileInfo.Length > 400)
+                    {
+                        bool success = AmazonS3LogUploader.WriteLogFile(fullFilePath, s3CredsPath);
+                        if (success == true)
+                        {
+                            if (fullFilePath == CurrentLogFile)
+                            {
+                                CloseDataCollection();
+                                InitializeDataCollection(LogPath);
+                            }
+                            System.IO.File.Delete(fullFilePath);
+                        }
+                    }
+                    else
+                    {
+                        if (fullFilePath != CurrentLogFile)
+                        {
+                            System.IO.File.Delete(fullFilePath);
+                        }
+                    }
 				}
 			}
 		}
