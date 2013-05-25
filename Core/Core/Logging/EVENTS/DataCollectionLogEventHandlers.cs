@@ -22,7 +22,7 @@ namespace Sando.Core.Logging.Events
             if (!_initialized)
             {
                 var machineDomain = GetMachineDomain();
-                var dataFileName = Path.Combine(logPath, "SandoData-" + Environment.MachineName.GetHashCode() + "-" + machineDomain.GetHashCode() + DateTime.Now.ToString("-yyyy-MM-dd-HH.mm") + ".log");
+                var dataFileName = Path.Combine(logPath, "SandoData_v" + GetSandoVersion() + "_" + Environment.MachineName.GetHashCode() + "_" + machineDomain.GetHashCode() + DateTime.Now.ToString("_yyyy-MM-dd-HH.mm") + ".log");
                 Logger = FileLogger.CreateFileLogger("DataCollectionLogger", dataFileName);
                 CurrentLogFile = dataFileName;
                 LogPath = logPath;
@@ -76,7 +76,7 @@ namespace Sando.Core.Logging.Events
 				string fullFilePath = Path.GetFullPath(file);
 				FileInfo fileInfo = new FileInfo(fullFilePath);
 				string fileName = Path.GetFileName(fullFilePath);
-				if (fileName.StartsWith("SandoData-"))
+				if (fileName.StartsWith("SandoData"))
 				{
                     if (fileInfo.Length > 400)
                     {
@@ -101,6 +101,12 @@ namespace Sando.Core.Logging.Events
 				}
 			}
 		}
+
+        private static string GetSandoVersion()
+        {
+            //TODO: Need to get the version dynamically somehow, instead of hardcoding it
+            return "4.15";
+        }
 
 		private static string GetMachineDomain()
 		{
