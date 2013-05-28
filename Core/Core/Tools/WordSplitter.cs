@@ -14,12 +14,34 @@ namespace Sando.Core.Tools
             //Zhao, for compiled regular expression
             //word = Regex.Replace(word, @"([A-Z][a-z]+)", "_$1");
             word = _patternChars.Replace(word, "_$1");
+            word = AddUnderscoreBeforeWordsStartingWithLowerCase(word);
             //word = Regex.Replace(word, @"([A-Z]+|[0-9]+)", "_$1");
             word = _patternCharDigit.Replace(word, "_$1");
             word = word.Replace(" _", "_");
             var delimiters = new[] { '_', ':' };
             return word.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
         }
+
+
+        /// <summary>
+        /// For those variables that start with lower case, this method extracts them, such
+        /// as matches and offset in the method.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        private String AddUnderscoreBeforeWordsStartingWithLowerCase(String word)
+        {
+            var matches = _patternCharsLowerCase.Matches(word);
+            int offset = 0;
+            foreach(Match match in matches)
+            {
+                int start = match.Groups[0].Index + offset + 1;
+                word = word.Insert(start, "_");
+                offset++;
+            }
+            return word;
+        }
+
 
 
         public static List<string> ExtractSearchTerms(string searchTerms)
@@ -233,6 +255,7 @@ namespace Sando.Core.Tools
         private Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
         private Regex _patternCharDigit = new Regex(@"([A-Z]+|[0-9]+)", RegexOptions.Compiled);
         private Regex _patternSpace = new Regex(" _", RegexOptions.Compiled);
+        private Regex _patternCharsLowerCase = new Regex(@"([^a-zA-Z][a-z]+)", RegexOptions.Compiled);
 
         public static string IsLiteralSearchString(string text)
         {

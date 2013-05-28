@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CamelIdSplitter.cs" />
+    <Compile Include="ProjectDictionary.cs" />
     <Compile Include="QueryRecommender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SwumDataRecord.cs" />
@@ -200,6 +201,14 @@
     <ProjectReference Include="..\..\Core\Core\Core.csproj">
       <Project>{db482a0e-4294-4008-bc79-d22505b5b661}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Indexer\Indexer\Indexer.csproj">
+      <Project>{8B937EB7-2104-46E4-A53D-D1E6FB2B7AF6}</Project>
+      <Name>Indexer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
+      <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
+      <Name>SandoExtensionContracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

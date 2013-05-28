@@ -15,7 +15,7 @@ namespace Sando.UI.Monitoring
 		private uint _solutionEventsCookie;
 
 		public event Action OnQueryUnloadProject;
-
+	  
 		public SolutionReloadEventListener()
 		{
 			InitNullEvents();
@@ -52,6 +52,7 @@ namespace Sando.UI.Monitoring
 
 		int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution)
 		{
+
 			return VSConstants.S_OK;
 		}
 

@@ -6,7 +6,9 @@ using Configuration.OptionsPages;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.DependencyInjection;
+using Sando.ExtensionContracts.SplitterContracts;
 using Sando.Indexer.Searching;
+using Sando.Recommender;
 using Sando.SearchEngine;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Core.Tools;
@@ -37,6 +39,7 @@ namespace Sando.UI.View
                         
             try
             {
+                searchString = SplitAccordingToVacabulary(searchString);
                 var codeSearcher = new CodeSearcher(new IndexerSearcher());
                 if (String.IsNullOrEmpty(searchString))
                     return;
@@ -85,6 +88,19 @@ namespace Sando.UI.View
             }
         }
 
+        private IWordSplitter splitter = ProjectDictionary.GetInstance();
+
+        private string SplitAccordingToVacabulary(string searchString)
+        {
+            var words = splitter.ExtractWords(searchString);
+            var sb = new StringBuilder();
+            foreach (string word in words)
+            {
+                sb.Append(word + " ");
+            }
+            return sb.ToString().Trim();
+        }
+
         private bool EnsureSolutionOpen()
         {
             DocumentIndexer indexer = null;
@@ -118,5 +134,4 @@ namespace Sando.UI.View
             return builder.GetCriteria();
         }
     }
-
 }

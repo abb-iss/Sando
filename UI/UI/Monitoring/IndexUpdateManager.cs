@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
@@ -8,6 +9,7 @@ using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
 using Sando.Core.Logging.Events;
+using Sando.Recommender;
 
 namespace Sando.UI.Monitoring
 {
@@ -15,9 +17,13 @@ namespace Sando.UI.Monitoring
 	{
         private readonly DocumentIndexer _currentIndexer;
 
+        public event IndexUpdated indexUpdated;
+        public delegate void IndexUpdated(ReadOnlyCollection<ProgramElement> updatedElements);
+
         public IndexUpdateManager()
         {
             _currentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
+            indexUpdated += ProjectDictionary.GetInstance().UpdateProgramElement;
         }
 
         public void Update(string filePath, XElement xElement)
@@ -57,6 +63,7 @@ namespace Sando.UI.Monitoring
                         }
                     }
                 }
+                indexUpdated(parsed.AsReadOnly());
             }
             catch (Exception e)
             {
@@ -64,4 +71,6 @@ namespace Sando.UI.Monitoring
             }
         }
 	}
+
+   
 }
