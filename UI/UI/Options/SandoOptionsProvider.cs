@@ -6,6 +6,9 @@ using Sando.DependencyInjection;
 using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching.Criteria;
+using Sando.UI.View;
+using System.Windows.Threading;
+using Microsoft.VisualStudio.Shell;
 
 namespace Sando.UI.Options
 {
@@ -32,11 +35,34 @@ namespace Sando.UI.Options
             var allowDataCollectionLogging = true;
             if (!bool.TryParse(sandoDialogPage.AllowDataCollectionLogging, out allowDataCollectionLogging))
             {
-                allowDataCollectionLogging = true;
+                bool usersAnswer = false;
+                usersAnswer = ThreadHelper.Generic.Invoke(() => ShowWelcomePopup());                                
+                allowDataCollectionLogging = usersAnswer;
+                SaveNewSettings(sandoDialogPage, extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned, allowDataCollectionLogging);
             }
 
             var sandoOptions = new SandoOptions(extensionPointsPluginDirectoryPath, numberOfSearchResultsReturned, allowDataCollectionLogging);
             return sandoOptions;
+        }
+
+        private void SaveNewSettings(SandoDialogPage sandoDialogPage, string extensionPointsPluginDirectoryPath, int numberOfSearchResultsReturned, bool allowDataCollectionLogging)
+        {
+            if (allowDataCollectionLogging)
+                sandoDialogPage.AllowDataCollectionLogging = Boolean.TrueString;
+            else
+                sandoDialogPage.AllowDataCollectionLogging = Boolean.FalseString;
+            sandoDialogPage.ExtensionPointsPluginDirectoryPath = extensionPointsPluginDirectoryPath;
+            sandoDialogPage.NumberOfSearchResultsReturned = numberOfSearchResultsReturned+String.Empty;
+            sandoDialogPage.SaveSettingsToStorage();
+        }
+
+ 
+
+        private bool ShowWelcomePopup()
+        {
+            IntroToSando intro = new IntroToSando();
+            intro.ShowDialog();
+            return intro.UploadAllowed;
         }
     }
 }

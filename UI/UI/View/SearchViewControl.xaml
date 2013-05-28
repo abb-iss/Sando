@@ -210,75 +210,106 @@
             
             <ToggleButton  ToolTip="Expand/Collapse"   Margin="0,0,0,0" VerticalAlignment="Top" Height="25"   x:Name="expandButton"
         		KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" Checked="Toggled" Unchecked="Toggled"/>
-            
-            <Popup Name="SelectionPopup" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="350">
-                <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">
-                    <FlowDocument>
-                        <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>                     
-                        <Table>
-                            <Table.Columns>
-                                <TableColumn Width="1.85*" />
-                                <TableColumn Width="1.5*" />
-                            </Table.Columns>
-                            <TableRowGroup Paragraph.TextAlignment="left">
-                                <TableRow>
-                                    <TableCell>
-                                        <Paragraph FontFamily="Arial">Add                                            
-                                            <Italic>
-                                                <Bold>all</Bold>
-                                            </Italic> relevant terms:
-                                        </Paragraph>                                       
-                                    </TableCell>
-                                    <TableCell >                                        
-                                        <Paragraph FontFamily="Courier New">convert image
-                                        </Paragraph>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Paragraph FontFamily="Arial">Put exact phrases in quotes:
-                                        </Paragraph>
-                                    </TableCell>
-                                    <TableCell >
-                                        <Paragraph FontFamily="Courier New">"void StartMonitor("
-                                        </Paragraph>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Paragraph FontFamily="Arial">Put '-' before unwanted words:
-                                        </Paragraph>
-                                    </TableCell>
-                                    <TableCell >
-                                        <Paragraph FontFamily="Courier New">parse method -test
-                                        </Paragraph>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Paragraph FontFamily="Arial">Limit by file extension:
-                                        </Paragraph>
-                                    </TableCell>
-                                    <TableCell >
-                                        <Paragraph FontFamily="Courier New">image filetype:cs
-                                        </Paragraph>
-                                    </TableCell>
-                                </TableRow>
 
-                                <TableRow>
-                                    <TableCell>
-                                        <Paragraph FontFamily="Arial">Add '*' to end of partial words:
-                                        </Paragraph>
-                                    </TableCell>
-                                    <TableCell >
-                                        <Paragraph FontFamily="Courier New">impl*
-                                        </Paragraph>
-                                    </TableCell>
-                                </TableRow>
-                            </TableRowGroup>
-</Table>
+            <Popup Name="SelectionPopup" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="430.189">
+                <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">                    
+                        <FlowDocument >
+                            <Paragraph FontSize="5" Margin="0,0,0,0"></Paragraph>
+                            <Paragraph Margin="0,0,0,0" FontFamily="Arial">
+                                <Bold>Keyboard Usage</Bold>
+                            </Paragraph>
+                            <Table>
+                                <Table.Columns>
+                                    <TableColumn Width="0.37*" />
+                                    <TableColumn Width="1.3*" />
+                                </Table.Columns>
+                                <TableRowGroup Paragraph.TextAlignment="left" >
+                                    <TableRow>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Arial">
+                                                Alt + Shift + S
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Paragraph>Opens the Sando view and focuses on the query box.</Paragraph>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Arial">
+                                                ↑ + ↓
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Paragraph>Toggle through results following a query.</Paragraph>
+                                        </TableCell>
+                                    </TableRow>
 
-                    </FlowDocument>
+                                    <TableRow>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Arial">
+                                                Enter
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Paragraph>Opens the currently selected result in editor.</Paragraph>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableRowGroup>
+                            </Table>
+                            <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>
+                            <Table>
+                                <Table.Columns>
+                                    <TableColumn Width="1.85*" />
+                                    <TableColumn Width="1.5*" />
+                                </Table.Columns>
+                                <TableRowGroup Paragraph.TextAlignment="left">
+                                    <TableRow>
+                                        <TableCell>
+                                            <Paragraph FontFamily="Arial">Add
+                                                <Italic>
+                                                    <Bold>all</Bold>
+                                                </Italic> relevant terms:
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Courier New">convert image
+                                            </Paragraph>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Paragraph FontFamily="Arial">Put exact phrases in quotes:
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Courier New">"void StartMonitor("
+                                            </Paragraph>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Paragraph FontFamily="Arial">Put '-' before unwanted words:
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Courier New">parse method -test
+                                            </Paragraph>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Paragraph FontFamily="Arial">Limit by file extension:
+                                            </Paragraph>
+                                        </TableCell>
+                                        <TableCell >
+                                            <Paragraph FontFamily="Courier New">image filetype:cs
+                                            </Paragraph>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableRowGroup>
+                            </Table>
+                        </FlowDocument>
                 </RichTextBox>
             </Popup>            
         </StackPanel>
