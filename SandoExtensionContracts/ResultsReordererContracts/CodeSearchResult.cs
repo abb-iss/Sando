@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using System;
+using System.Text;
 
 namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
@@ -23,19 +25,40 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 
         public string ParentOrFile
         {
-            get
+            get 
             {
+                //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
+                var parentOrFile = "";
                 if (string.IsNullOrEmpty(Parent))
-                    return Path.GetFileName(FileName);
-
-                var fileName = Path.GetFileName(FileName);
-                if (fileName.StartsWith(Parent))
+                    parentOrFile = Path.GetFileName(FileName);
+                else
                 {
-                    return fileName;
+                    var fileName = Path.GetFileName(FileName);
+                    if (fileName.StartsWith(Parent))
+                    {
+                        parentOrFile = fileName;
+                    }
+                    else
+                    {
+                        parentOrFile = Parent + " (" + fileName + ")";
+                    }
                 }
-                return Parent + " (" + fileName + ")";
+                if (parentOrFile.Length > MAX_PARENT_LENGTH)
+                    return parentOrFile.Substring(0, MAX_PARENT_LENGTH + RoomLeftFromName() )+"...";
+                else
+                    return parentOrFile;
             }
         }
+
+        private int RoomLeftFromName()
+        {
+            if (Name.Length > MAX_PARENT_LENGTH - 10)
+                return 0;
+            else
+                return MAX_PARENT_LENGTH - 10 - Name.Length;
+        }
+
+        private const int MAX_PARENT_LENGTH = 33;
 
         public ProgramElementType ProgramElementType
         {
@@ -56,50 +79,138 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                 var raw = ProgramElement.RawSource;
                 return SourceToSnippet(raw, DefaultSnippetSize);
             }
+        } 
+
+        private static int TAB = 4;
+        private static int MAX_SNIPPET_LENGTH = 85;        
+
+        public string SourceToSnippet(string source, int numLines)
+        {            
+            if (IsXml())
+            {         
+                source = PrettyPrintXElement(source, numLines);
+            }
+            //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem            
+            var lines = GetLines(source);
+            int leadingSpaces = 0;
+            var shortenedLineList = ShortenSnippet(numLines, lines);
+            
+            if (!IsXml())
+            {
+                leadingSpaces = GetLeadingSpaces(lines);
+                shortenedLineList = StandardizeLeadingWhitespace(shortenedLineList, numLines);
+            }
+            StringBuilder snippet = AddTruncatedLinesToSnippet(shortenedLineList, leadingSpaces);
+            return snippet.ToString();
         }
 
-        public static string SourceToSnippet(string source, int numLines)
+        private static List<string> GetLines(string source)
         {
-            var toRemove = int.MaxValue;
             var lines = new List<string>(source.Split('\n'));
+            return lines;
+        }
+
+        private bool IsXml()
+        {
+            if(this.FileName!=null && (FileName.EndsWith(".xaml")||FileName.EndsWith(".xml")))
+                return true;
+            else
+                return false;
+        }
+
+        private static StringBuilder AddTruncatedLinesToSnippet(List<string> lines, int leadingSpaces)
+        {
+            StringBuilder snippet = new StringBuilder();
+            foreach (var aLine in lines)
+            {
+                try
+                {
+                    if (aLine.Substring(0, leadingSpaces).Trim().Equals(""))
+                        Append(snippet, aLine.Substring(leadingSpaces));
+                    else
+                        Append(snippet, aLine);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Append(snippet, aLine);
+                }
+            }
+            return snippet;
+        }
+
+        private static List<string> StandardizeLeadingWhitespace(List<string> lines, int numLines)
+        {
+            var newLines = new List<string>();
+            int count = 0;
+            var line = "";
+            foreach (var aLine in lines)
+            {
+                line = aLine;
+                if (!line.Trim().Equals(""))
+                {
+                    while (line.StartsWith(" ") || line.StartsWith("\t"))
+                    {
+                        if (line.StartsWith(" "))
+                            count++;
+                        else
+                            count = count + TAB;
+                        line = line.Substring(1);
+                    }
+                    string newLine = "";
+                    for (int i = 0; i < count; i++)
+                        newLine += " ";
+                    newLine += line + "\n";
+                    newLines.Add(newLine);
+                }
+                count = 0;
+            }
+            return newLines;
+        }
+
+        private static List<string> ShortenSnippet(int numLines, List<string> lines)
+        {
             if (numLines < lines.Count)
             {
-                lines.RemoveRange(numLines, lines.Count - numLines);
-            }
-
-            int perLineToRemove;
-
-            if (source.StartsWith("\t"))
-            {
-                perLineToRemove = source.Length - source.TrimStart('\t').Length;
-            }
-            else if (source.StartsWith(" "))
-            {
-                perLineToRemove = source.Length - source.TrimStart(' ').Length;
+                return lines.GetRange(0, numLines);
             }
             else
             {
-                perLineToRemove = 0;
+                return lines.GetRange(0,lines.Count);
             }
+        }
 
-            if (perLineToRemove < toRemove)
+        private static int GetLeadingSpaces(List<string> lines)
+        {
+            if (lines.Count > 0)
             {
-                toRemove = perLineToRemove;
-            }
-
-            //remove the empty spaces in front
-            if (toRemove > 0 && toRemove < int.MaxValue)
-            {
-                string newSnip = "";
-                foreach (string line in lines)
+                var lastLine = lines.Last();
+                if(lastLine.Trim().Equals(String.Empty))
                 {
-                    if (line.Length > toRemove + 1)
-                        newSnip += line.Remove(0, toRemove) + "\n";
+                    if (lines.Count > 2)
+                    {
+                        lastLine = lines.ElementAt(lines.Count - 2);
+                    }
                 }
-                return newSnip;
+                int count = 0;
+                while (lastLine.StartsWith(" ") || lastLine.StartsWith("\t"))
+                {
+                    if (lastLine.StartsWith(" "))
+                        count++;
+                    else
+                        count = count + TAB;
+                    lastLine = lastLine.Substring(1);
+                }
+                return count;
             }
-
-            return String.Join("\n", lines.ToArray());
+            return 0;
+        }
+           
+        private static void Append(StringBuilder snippet, string p)
+        {
+            if (p.Length < MAX_SNIPPET_LENGTH)
+                snippet.Append(p);
+            else
+                snippet.Append(p.Substring(0,MAX_SNIPPET_LENGTH)+"..."+"\n");
         }
 
         public string FileName
@@ -119,6 +230,22 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         public string Name
         {
             get { return ProgramElement.Name; }
+        }
+
+
+        private static string PrettyPrintXElement(String source, int numLines)
+        {
+            try
+            {
+                var prettyPrint = String.Empty;
+                var doc = XDocument.Parse(source);
+                prettyPrint = doc.ToString();               
+                return prettyPrint;
+            }
+            catch (Exception e)
+            {                
+                return source;
+            }
         }
     }
 }

@@ -135,6 +135,7 @@
     <Compile Include="Metrics\QueryMetrics.cs" />
     <Compile Include="Searching\QueryWeightsSupplier.cs" />
     <Compile Include="Searching\UsageType.cs" />
+    <Compile Include="Documents\XmlXElementDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

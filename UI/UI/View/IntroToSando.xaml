@@ -1,0 +1,135 @@
+﻿<Window x:Class="Sando.UI.View.IntroToSando"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
+    Title="Welcome to Sando"  Width="430.189" Height="455">
+    <StackPanel Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
+        <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">
+            <FlowDocument >
+                <Paragraph FontSize="5" Margin="0,0,0,0"></Paragraph>
+                <Paragraph Margin="0,0,0,0" FontFamily="Arial">
+                    <Bold>Keyboard Usage</Bold>
+                </Paragraph>
+                <Table>
+                    <Table.Columns>
+                        <TableColumn Width="0.37*" />
+                        <TableColumn Width="1.3*" />
+                    </Table.Columns>
+                    <TableRowGroup Paragraph.TextAlignment="left" >
+                        <TableRow>
+                            <TableCell >
+                                <Paragraph FontFamily="Arial">
+                                    Alt + Shift + S
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell>
+                                <Paragraph>Opens the Sando view and focuses on the query box.</Paragraph>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell >
+                                <Paragraph FontFamily="Arial">
+                                    ↑ + ↓
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell>
+                                <Paragraph>Toggle through results following a query.</Paragraph>
+                            </TableCell>
+                        </TableRow>
+
+                        <TableRow>
+                            <TableCell >
+                                <Paragraph FontFamily="Arial">
+                                    Enter
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell>
+                                <Paragraph>Opens the currently selected result in editor.</Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+                </Table>
+                <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>
+                <Table>
+                    <Table.Columns>
+                        <TableColumn Width="1.85*" />
+                        <TableColumn Width="1.5*" />
+                    </Table.Columns>
+                    <TableRowGroup Paragraph.TextAlignment="left">
+                        <TableRow>
+                            <TableCell>
+                                <Paragraph FontFamily="Arial">Add
+                                    <Italic>
+                                        <Bold>all</Bold>
+                                    </Italic> relevant terms:
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell >
+                                <Paragraph FontFamily="Courier New">convert image
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>
+                                <Paragraph FontFamily="Arial">Put exact phrases in quotes:
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell >
+                                <Paragraph FontFamily="Courier New">"void StartMonitor("
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>
+                                <Paragraph FontFamily="Arial">Put '-' before unwanted words:
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell >
+                                <Paragraph FontFamily="Courier New">parse method -test
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>
+                                <Paragraph FontFamily="Arial">Limit by file extension:
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell >
+                                <Paragraph FontFamily="Courier New">image filetype:cs
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+                </Table>
+                <Paragraph Margin="0,10,0,0" FontFamily="Arial">
+                    <Bold>Anonymous Usage Data</Bold>
+                </Paragraph>
+                <Table>
+                    <TableRowGroup Paragraph.TextAlignment="left" >
+                        <TableRow>
+                            <TableCell>
+                                <Paragraph>Sando collects anonymized data (e.g., TF*IDF score of queries) in order to improve search results. 
+                                    We do not collect search terms, any code, or any personally identifiable information. 
+                                    We ask that you keep this feature enabled to support ongoing code search research.  However, we respect your right to privacy
+                                    and this feature can be turned off by clicking below OR visiting Sando's options dialog.
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                    </TableRowGroup>
+                </Table>
+                <Paragraph FontSize="5" Margin="0,0,0,0"></Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <StackPanel Height="40" Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" Orientation="Horizontal" HorizontalAlignment="Stretch"  >
+            <CheckBox IsChecked="True" Click="CheckBox_Click" Margin="10,10,10,10" HorizontalAlignment="Stretch" >
+                Enable anonymous usage data to support research
+            </CheckBox>
+            <Button Margin="5,5,5,10" Click="CloseButton_Click" Content="OK" Width="75" HorizontalAlignment="Right" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                
+            </Button>
+        </StackPanel>
+    </StackPanel>
+
+</Window>

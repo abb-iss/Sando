@@ -22,9 +22,9 @@ namespace Sando.Indexer.Documents
             var fields = new List<Field>();
 			EnumElement enumElement = (EnumElement) programElement;
             fields.Add(new Field(SandoField.Namespace.ToString(), enumElement.Namespace.ToSandoSearchable(), Field.Store.YES, Field.Index.ANALYZED));
-            AddField(fields, new Field(SandoField.Body.ToString(), enumElement.RawSource.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
+            AddBodyField(fields, new Field(SandoField.Body.ToString(), enumElement.RawSource.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
             fields.Add(new Field(SandoField.AccessLevel.ToString(), enumElement.AccessLevel.ToString().ToLower(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-            AddField(fields, new Field(SandoField.Body.ToString(), enumElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
+            AddBodyField(fields, new Field(SandoField.Body.ToString(), enumElement.Body.ToSandoSearchable(), Field.Store.NO, Field.Index.ANALYZED));
             return fields;
 		}
 

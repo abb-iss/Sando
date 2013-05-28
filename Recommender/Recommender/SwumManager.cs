@@ -126,8 +126,8 @@ namespace Sando.Recommender {
             } else if(Generator != null) {
                 string outFile = Path.GetTempFileName();
                 try {
-                    var srcmlfile = Generator.GenerateSrcMLFromFile(sourcePath, outFile);
-                    fileElement = srcmlfile.FileUnits.FirstOrDefault();
+                    Generator.GenerateSrcMLFromFile(sourcePath, outFile);
+                    fileElement = SrcMLElement.Load(outFile);
                     if(fileElement == null) {
                         LogEvents.SwumErrorGeneratingSrcML(this, sourcePath);
                     }

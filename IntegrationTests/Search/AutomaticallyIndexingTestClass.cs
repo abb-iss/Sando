@@ -30,6 +30,7 @@ namespace Sando.IntegrationTests.Search
 {
     public class AutomaticallyIndexingTestClass : ISrcMLGlobalService, ISearchResultListener
     {
+        public event EventHandler<IsReadyChangedEventArgs> IsReadyChanged;
 
         [TestFixtureSetUp]
         public void Setup()
@@ -239,7 +240,7 @@ namespace Sando.IntegrationTests.Search
 
         public System.Xml.Linq.XElement GetXElementForSourceFile(string sourceFilePath)
         {
-            return _srcMLArchive.GenerateXmlAndXElementForSource(sourceFilePath);
+            return _srcMLArchive.GetXElementForSourceFile(sourceFilePath);
         }
 
         public SrcMLArchive GetSrcMLArchive()
