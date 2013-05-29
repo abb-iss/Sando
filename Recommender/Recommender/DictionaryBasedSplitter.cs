@@ -216,7 +216,8 @@ namespace Sando.Recommender
         public string[] ExtractWords(string text)
         {
             var allSplits = new List<String>();
-            var allWords = text.Split(null).Select(w => w.ToLower());
+            var allWords = text.Split(null).Select(w => w.ToLower().Trim()).
+                Where(s => !String.IsNullOrEmpty(s));
             var strategy = new GreadySplitStrategy();
 
             foreach (string word in allWords)
