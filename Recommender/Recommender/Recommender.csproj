@@ -150,9 +150,7 @@
     <Content Include="swum-data\ING.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="swum-data\JavaGlobalFrequency.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="swum-data\JavaGlobalFrequency.txt" />
     <Content Include="swum-data\modal_verbs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
