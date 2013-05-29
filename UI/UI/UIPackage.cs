@@ -77,7 +77,7 @@ namespace Sando.UI
         private SrcMLArchive _srcMLArchive;
         private ISrcMLGlobalService srcMLService;
         // End of code changes
-
+        //b
     	private SolutionEvents _solutionEvents;
 		private ExtensionPointsConfiguration _extensionPointsConfiguration;
         private DTEEvents _dteEvents;
