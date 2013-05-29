@@ -88,7 +88,7 @@ namespace Sando.UI.View
             }
         }
 
-        private IWordSplitter splitter = ProjectDictionary.GetInstance();
+        private IWordSplitter splitter = DictionaryBasedSplitter.GetInstance();
 
         private string SplitAccordingToVacabulary(string searchString)
         {

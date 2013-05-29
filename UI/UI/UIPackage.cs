@@ -405,6 +405,8 @@ namespace Sando.UI
 
                 SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), !isIndexRecreationRequired);
                 //SwumManager.Instance.Archive = _srcMLArchive;
+
+                DictionaryBasedSplitter.GetInstance().Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
                 
                 // SrcML Service starts monitoring the opened solution.
                 // Sando may define the directory of storing srcML archives

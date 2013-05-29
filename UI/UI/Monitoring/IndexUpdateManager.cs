@@ -23,7 +23,7 @@ namespace Sando.UI.Monitoring
         public IndexUpdateManager()
         {
             _currentIndexer = ServiceLocator.Resolve<DocumentIndexer>();
-            indexUpdated += ProjectDictionary.GetInstance().UpdateProgramElement;
+            indexUpdated += DictionaryBasedSplitter.GetInstance().UpdateProgramElement;
         }
 
         public void Update(string filePath, XElement xElement)
