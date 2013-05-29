@@ -44,7 +44,10 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                     }
                 }
                 if (parentOrFile.Length > MAX_PARENT_LENGTH)
-                    return parentOrFile.Substring(0, MAX_PARENT_LENGTH + RoomLeftFromName() )+"...";
+                {
+                    return parentOrFile.Substring(0, Math.Min(parentOrFile.Length-1,
+                        MAX_PARENT_LENGTH + RoomLeftFromName())) + "...";
+                }
                 else
                     return parentOrFile;
             }

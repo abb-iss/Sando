@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -22,7 +23,7 @@ namespace Sando.UI.View
         {
             UploadAllowed = true;
             InitializeComponent();
-            this.Icon = new BitmapImage(new Uri("sandosearch.bmp", UriKind.Relative));
+            this.Icon = Imaging.CreateBitmapSourceFromHBitmap(Sando.UI.Resources._523.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());            
         }
 
         public bool UploadAllowed { get; set; }
