@@ -18,7 +18,7 @@ namespace Sando.ExtensionContracts.ProgramElementContracts
         {
             get
             {
-                return ProgramElementType.XElement;
+                return ProgramElementType.XmlElement;
             }
         }
 

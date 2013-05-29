@@ -248,7 +248,7 @@ namespace Sando.UI
             ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
             ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
             // JZ: End of code changes
-            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".xml" }, new XAMLFileParser());
+            //extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".xml" }, new XAMLFileParser());
 			//extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
 																  // new TextFileParser());
 
@@ -416,7 +416,10 @@ namespace Sando.UI
                 // the directory of storing srcML archives and whether to use existing srcML archives.
                 srcMLService.StartMonitoring(useExistingSrcML, src2SrcmlDir);
                 if (srcMLService.GetSrcMLArchive().IsReady)
+                {
+                    srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));                    
                     HandleIndexingFinish(null, new IsReadyChangedEventArgs(true));
+                }
 
                 // End of code changes
 

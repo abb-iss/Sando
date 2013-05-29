@@ -107,7 +107,7 @@
             <controls:AutoCompleteBox.ToolTip>
                 <StackPanel>                                        
                     <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
-                    <TextBlock>Keyboard shortcut: ALT+S</TextBlock>
+                    <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
                 </StackPanel>
             </controls:AutoCompleteBox.ToolTip>
         </controls:AutoCompleteBox>
