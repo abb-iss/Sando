@@ -2,6 +2,7 @@
 //using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sando.UI;
+using System.Windows.Forms;
 
 namespace Sando.IntegrationTests
 {
@@ -29,7 +30,7 @@ namespace Sando.IntegrationTests
         [HostType("VS IDE")]
         public void TestMethod1()
         {
-            //Console.WriteLine("");
+            //MessageBox.Show("hi");
         }
     }
 }
