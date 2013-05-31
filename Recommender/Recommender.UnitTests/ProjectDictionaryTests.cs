@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NUnit.Framework;
 
 namespace Sando.Recommender.UnitTests
@@ -123,7 +124,7 @@ namespace Sando.Recommender.UnitTests
                 var watch = Stopwatch.StartNew();
                 var subWords = this._dictionaryBasedSplitter.ExtractWords(combinedWords);
                 var time = watch.ElapsedMilliseconds;
-                Assert.IsTrue(time < 10);
+                Assert.IsTrue(time < 20);
                 Assert.IsTrue(subWords.Count() == 2);
             }
         }
@@ -161,6 +162,86 @@ namespace Sando.Recommender.UnitTests
             var subWords = _dictionaryBasedSplitter.ExtractWords("inti");
             Assert.IsTrue(subWords[0].Equals("int"));
             Assert.IsTrue(subWords[1].Equals("i"));
+        }
+
+        
+        [Test]
+        public void SplitRandomWord()
+        {
+            for (int length = 0; length < 61; length ++)
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    var word = GenerateRandomString(length);
+                    _dictionaryBasedSplitter.ExtractWords(word);
+                }
+            }
+        }
+
+        [Test]
+        public void SplitHalfSplittableWord()
+        {
+            const int length = 30;
+            var prefixes = GenerateRandomWordList(length);
+            var middels = GenerateRandomWordList(length);
+            var suffixes = GenerateRandomWordList(length);
+            _dictionaryBasedSplitter.AddWords(prefixes);
+            _dictionaryBasedSplitter.AddWords(suffixes);
+            for (int i = 0; i < length; i ++)
+            {
+                var sb = new StringBuilder();
+                sb.Append(prefixes.ElementAt(i));
+                sb.Append(middels.ElementAt(i));
+                sb.Append(suffixes.ElementAt(i));
+                var subWords = _dictionaryBasedSplitter.ExtractWords(sb.ToString());
+                Assert.IsTrue(subWords.Count() == 3);
+                Assert.IsTrue(subWords.ElementAt(0).Equals(prefixes.ElementAt(i)));
+                Assert.IsTrue(subWords.ElementAt(1).Equals(middels.ElementAt(i)));
+                Assert.IsTrue(subWords.ElementAt(2).Equals(suffixes.ElementAt(i)));
+            }
+        }
+
+        [Test]
+        public void KeyWordTest()
+        {
+            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("int"));
+            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("void"));
+            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("float"));
+            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("byte"));
+            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist(""));
+            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist(" "));
+        }
+
+        private AutoResetEvent waitHandle ;
+        private IEnumerable<string> selectedWords;
+
+        [Test]
+        public void SimilarWordsQueryTest()
+        {
+            waitHandle = new AutoResetEvent(false);
+            const string word = "similar";
+            var words = CreateSimilarWords(word);
+            _dictionaryBasedSplitter.AddWords(words);
+            _dictionaryBasedSplitter.QueryDictionary(DictionaryQueryFactory.
+                GetSimilarWordsDictionaryQuery (word, Callback));
+            waitHandle.WaitOne();
+            Assert.IsTrue(selectedWords.Count() == 26);
+            foreach (string w in words)
+                Assert.IsTrue(selectedWords.Contains(w));
+        }
+
+        private static IEnumerable<string> CreateSimilarWords(String word)
+        {
+            var words = new List<String>();
+            for (char c = 'a'; c <= 'z'; c++ )
+                words.Add(word + c);
+            return words;
+        }
+
+        private void Callback(IEnumerable<string> selectedWords)
+        {
+            this.selectedWords = selectedWords;
+            waitHandle.Set();
         }
     }
 }

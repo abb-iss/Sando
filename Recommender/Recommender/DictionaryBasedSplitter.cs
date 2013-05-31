@@ -48,7 +48,8 @@ namespace Sando.Recommender
         {
             const string dictionaryName = "dictionary.txt";
             private string directory;
-            private readonly List<String> allWords = new List<string>();
+            private static readonly IEnumerable<String> keyWords = GetCSharpKeyWords(); 
+            private readonly List<string> allWords = new List<string>();
             
             public void Initialize(String directory)
             {
@@ -80,8 +81,6 @@ namespace Sando.Recommender
                     allWords.AddRange(allLines);
                 }
             }
-
-       
             ~FileDictionary()
             {
                 WriteWordsToFile();
@@ -92,7 +91,6 @@ namespace Sando.Recommender
                 var path = Path.Combine(directory, dictionaryName);
                 return path;
             }
-
 
             private static IEnumerable<String> GetCSharpKeyWords()
             {
@@ -111,7 +109,7 @@ namespace Sando.Recommender
                 foreach (string word in words)
                 {
                     var trimedWord = word.Trim().ToLower();
-                    if (!String.IsNullOrEmpty(trimedWord))
+                    if (!String.IsNullOrEmpty(trimedWord) && !keyWords.Contains(trimedWord))
                     {
                         bool found;
                         int smallerWordsCount = GetSmallerWordCount(trimedWord, out found);
@@ -123,9 +121,14 @@ namespace Sando.Recommender
 
             public Boolean DoesWordExist(String word)
             {
-                bool found;
-                GetSmallerWordCount(word.ToLower(), out found);
-                return found;
+                var trimmedWord = word.Trim().ToLower();
+                if (!keyWords.Contains(trimmedWord))
+                {
+                    bool found;
+                    GetSmallerWordCount(trimmedWord, out found);
+                    return found;
+                }
+                return true;
             }
 
             private int GetSmallerWordCount(string word, out bool found)
@@ -154,7 +157,10 @@ namespace Sando.Recommender
                 return min;
             }
 
-          
+            public void StartSelectingWords(IDictionaryQuery query)
+            {
+                query.StartSelectingWordsAsync(allWords);
+            }
         }
 
         public void UpdateProgramElement(ReadOnlyCollection<ProgramElement> elements)
@@ -222,9 +228,20 @@ namespace Sando.Recommender
 
             foreach (string word in allWords)
             {
-                allSplits.AddRange(strategy.SplitWord(word, s => dictionary.DoesWordExist(s)));
+                allSplits.AddRange(strategy.SplitWord(word, DoesWordExist));
             }
             return allSplits.ToArray();
+        }
+
+        public void QueryDictionary(IDictionaryQuery query)
+        {
+            if (dictionary != null)
+            {
+                lock (dictionary)
+                {
+                    dictionary.StartSelectingWords(query);
+                }
+            }
         }
 
         private interface IWordSplitStrategy
@@ -257,11 +274,13 @@ namespace Sando.Recommender
                         break;
                 }
 
+                String middel = word.Substring(prefixLength, word.Length - prefixLength - suffixLength);
+                if (middel.Equals(word))
+                    return new []{word};
+
                 if(prefixLength > 0)
                     allSubWords.Add(prefix);
-
-                String middel = word.Substring(prefixLength, word.Length - prefixLength - suffixLength);
-                
+             
                 if(middel.Length > 0)
                     allSubWords.AddRange(SplitWord(middel, doesWordExist));
 
