@@ -27,7 +27,7 @@ namespace Sando.IntegrationTests.Search
         public void FindBodyText()
         {
             string keywords = "document add";
-            var expectedLowestRank = 5;
+            var expectedLowestRank = 6;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "GetLuceneDocument");
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
         }

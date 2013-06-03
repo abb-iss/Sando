@@ -87,27 +87,67 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         private static int TAB = 4;
         private static int MAX_SNIPPET_LENGTH = 85;        
 
-        public static string SourceToSnippet(string source, int numLines)
-        {
-            // Firstly, pretty print if it is an xelment source.
-            String prettyPrintXml;
-            if (PrettyPrintXElement(source, numLines, out prettyPrintXml))
-            {
-                return prettyPrintXml;
+        public string SourceToSnippet(string source, int numLines)
+        {            
+            if (IsXml())
+            {         
+                source = PrettyPrintXElement(source, numLines);
             }
+            //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem            
+            var lines = GetLines(source);
+            int leadingSpaces = 0;
+            var shortenedLineList = ShortenSnippet(numLines, lines);
+            
+            if (!IsXml())
+            {
+                leadingSpaces = GetLeadingSpaces(lines);
+                shortenedLineList = StandardizeLeadingWhitespace(shortenedLineList, numLines);
+            }
+            StringBuilder snippet = AddTruncatedLinesToSnippet(shortenedLineList, leadingSpaces);
+            return snippet.ToString();
+        }
 
-            //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
-            StringBuilder snippet = new StringBuilder();
+        private static List<string> GetLines(string source)
+        {
             var lines = new List<string>(source.Split('\n'));
-            var newLines = new List<string>();
-            if (numLines < lines.Count)
+            return lines;
+        }
+
+        private bool IsXml()
+        {
+            if(this.FileName!=null && (FileName.EndsWith(".xaml")||FileName.EndsWith(".xml")))
+                return true;
+            else
+                return false;
+        }
+
+        private static StringBuilder AddTruncatedLinesToSnippet(List<string> lines, int leadingSpaces)
+        {
+            StringBuilder snippet = new StringBuilder();
+            foreach (var aLine in lines)
             {
-                lines.RemoveRange(numLines, lines.Count - numLines);
+                try
+                {
+                    if (aLine.Substring(0, leadingSpaces).Trim().Equals(""))
+                        Append(snippet, aLine.Substring(leadingSpaces));
+                    else
+                        Append(snippet, aLine);
+                }
+                catch (ArgumentOutOfRangeException e)
+                {
+                    Append(snippet, aLine);
+                }
             }
+            return snippet;
+        }
+
+        private static List<string> StandardizeLeadingWhitespace(List<string> lines, int numLines)
+        {
+            var newLines = new List<string>();
             int count = 0;
             var line = "";
             foreach (var aLine in lines)
-            {                                
+            {
                 line = aLine;
                 if (!line.Trim().Equals(""))
                 {
@@ -127,38 +167,47 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                 }
                 count = 0;
             }
-
-
-            count = 0; 
-            line = newLines.First();
-            if (!line.StartsWith(" ") && !line.StartsWith("\t") && newLines.Count() > 1)
-                line = newLines.ElementAt(1);
-            while (line.StartsWith(" ") || line.StartsWith("\t"))
-            {
-                if (line.StartsWith(" "))
-                    count++;
-                else
-                    count = count + TAB;
-                line = line.Substring(1);
-            }
-
-            foreach (var aLine in newLines)
-            {
-                try
-                {
-                    if (aLine.Substring(0, count).Trim().Equals(""))
-                        Append(snippet, aLine.Substring(count));
-                    else
-                        Append(snippet, aLine);
-                }
-                catch (ArgumentOutOfRangeException e)
-                {
-                    Append(snippet, aLine);
-                }
-            }
-            return snippet.ToString();
+            return newLines;
         }
 
+        private static List<string> ShortenSnippet(int numLines, List<string> lines)
+        {
+            if (numLines < lines.Count)
+            {
+                return lines.GetRange(0, numLines);
+            }
+            else
+            {
+                return lines.GetRange(0,lines.Count);
+            }
+        }
+
+        private static int GetLeadingSpaces(List<string> lines)
+        {
+            if (lines.Count > 0)
+            {
+                var lastLine = lines.Last();
+                if(lastLine.Trim().Equals(String.Empty))
+                {
+                    if (lines.Count > 2)
+                    {
+                        lastLine = lines.ElementAt(lines.Count - 2);
+                    }
+                }
+                int count = 0;
+                while (lastLine.StartsWith(" ") || lastLine.StartsWith("\t"))
+                {
+                    if (lastLine.StartsWith(" "))
+                        count++;
+                    else
+                        count = count + TAB;
+                    lastLine = lastLine.Substring(1);
+                }
+                return count;
+            }
+            return 0;
+        }
+           
         private static void Append(StringBuilder snippet, string p)
         {
             if (p.Length < MAX_SNIPPET_LENGTH)
@@ -187,19 +236,18 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         }
 
 
-        private static bool PrettyPrintXElement(String source, int line, out 
-            String prettyPrint)
+        private static string PrettyPrintXElement(String source, int numLines)
         {
             try
             {
+                var prettyPrint = String.Empty;
                 var doc = XDocument.Parse(source);
-                prettyPrint = doc.ToString();
-                return true;
+                prettyPrint = doc.ToString();               
+                return prettyPrint;
             }
             catch (Exception e)
-            {
-                prettyPrint = source;
-                return false;
+            {                
+                return source;
             }
         }
     }

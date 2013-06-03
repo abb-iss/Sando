@@ -137,7 +137,7 @@ namespace Sando.UI.View
                     new ProgramElementWrapper(true, ProgramElementType.MethodPrototype),
                     new ProgramElementWrapper(true, ProgramElementType.Property),
                     new ProgramElementWrapper(true, ProgramElementType.Struct),
-                    new ProgramElementWrapper(true, ProgramElementType.XElement)
+                    new ProgramElementWrapper(true, ProgramElementType.XmlElement)
                     //new ProgramElementWrapper(true, ProgramElementType.TextLine)
                 };
         }
