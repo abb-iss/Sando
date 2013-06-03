@@ -66,8 +66,6 @@ namespace Sando.Recommender
             return null;
         }
 
-       
-
         private static IEnumerable<String> ExtractMethodWords(MethodElement element)
         {
             return GetDefaultLetterWords(element.RawSource);
@@ -85,7 +83,7 @@ namespace Sando.Recommender
 
         private static IEnumerable<String> ExtractClassWords(ClassElement element)
         {
-            return GetDefaultLetterWords(element.GetName());
+            return GetDefaultLetterWords(element.Name + " " + element.Namespace);
         }
 
         private static IEnumerable<String> ExtractEnumWords(EnumElement element)
@@ -106,7 +104,7 @@ namespace Sando.Recommender
         private static IEnumerable<string> ExtractMethodPrototypeWords(MethodPrototypeElement
             element)
         {
-            return GetDefaultLetterWords(new []{element.Arguments, element.GetName()});
+            return GetDefaultLetterWords(new []{element.Arguments, element.Name});
         }
 
         private static IEnumerable<string> ExtractTextLineElement(TextLineElement element)
@@ -116,7 +114,7 @@ namespace Sando.Recommender
 
         private static IEnumerable<string> ExtractStructWords(StructElement element)
         {
-            return GetDefaultLetterWords(element.GetName());
+            return GetDefaultLetterWords(element.Name + " " + element.Namespace);
         }
 
         private static IEnumerable<string> ExtractUnknownElementWords(ProgramElement element)
