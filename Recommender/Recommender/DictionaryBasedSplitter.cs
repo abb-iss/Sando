@@ -10,6 +10,10 @@ using Sando.ExtensionContracts.SplitterContracts;
 
 namespace Sando.Recommender
 {
+    /// <summary>
+    /// This class keeps records of used words in the code under searching. Also, it can greedily 
+    /// split a given string by matching words in the dictionary. 
+    /// </summary>
     public class DictionaryBasedSplitter : IWordSplitter
     {
         private static DictionaryBasedSplitter instance;   
@@ -27,17 +31,17 @@ namespace Sando.Recommender
 
         public void Initialize(String directory)
         {
-            dictionary.Initialize(directory);
+            lock (dictionary)
+            {
+                dictionary.Initialize(directory);
+            }
         }
 
         public void AddWords(IEnumerable<String> words)
         {
-            if (dictionary != null)
+            lock (dictionary)
             {
-                lock (dictionary)
-                {
-                    dictionary.AddWords(words);
-                }
+                dictionary.AddWords(words);
             }
         }
 
@@ -78,6 +82,7 @@ namespace Sando.Recommender
                     allWords.AddRange(allLines);
                 }
             }
+
             ~FileDictionary()
             {
                 WriteWordsToFile();
@@ -171,18 +176,12 @@ namespace Sando.Recommender
 
         public Boolean DoesWordExist(String word)
         {
-            word = word.Trim();
-            if (dictionary != null)
+            word = word.Trim();   
+            lock (dictionary)
             {
-                lock (dictionary)
-                {
-                    return word.Equals(String.Empty) || dictionary.DoesWordExist(word);
-                }
+                return word.Equals(String.Empty) || dictionary.DoesWordExist(word);
             }
-            return true;
         }
-
-
 
         public string[] ExtractWords(string text)
         {
@@ -200,12 +199,9 @@ namespace Sando.Recommender
 
         public void QueryDictionary(IDictionaryQuery query)
         {
-            if (dictionary != null)
+            lock (dictionary)
             {
-                lock (dictionary)
-                {
-                    dictionary.StartSelectingWords(query);
-                }
+                dictionary.StartSelectingWords(query);
             }
         }
 

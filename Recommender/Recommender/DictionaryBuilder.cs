@@ -134,7 +134,7 @@ namespace Sando.Recommender
             words.AddRange(GetMatchedWords(_patternChars, code));
             words.AddRange(GetMatchedWords(_patternCharsLowerCase, code).Select
                 (TrimNonLetterPrefix));
-            return words;   
+            return words;
         }
 
         private static String TrimNonLetterPrefix(String word)
