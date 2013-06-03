@@ -39,7 +39,6 @@ namespace Sando.UI.View
                         
             try
             {
-                searchString = SplitAccordingToVacabulary(searchString);
                 var codeSearcher = new CodeSearcher(new IndexerSearcher());
                 if (String.IsNullOrEmpty(searchString))
                     return;
@@ -86,19 +85,6 @@ namespace Sando.UI.View
                 _searchResultListener.UpdateMessage("Sando is experiencing difficulties. See log file for details.");
                 LogEvents.UISandoSearchingError(this, e);
             }
-        }
-
-        private IWordSplitter splitter = DictionaryBasedSplitter.GetInstance();
-
-        private string SplitAccordingToVacabulary(string searchString)
-        {
-            var words = splitter.ExtractWords(searchString);
-            var sb = new StringBuilder();
-            foreach (string word in words)
-            {
-                sb.Append(word + " ");
-            }
-            return sb.ToString().Trim();
         }
 
         private bool EnsureSolutionOpen()

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Sando.ExtensionContracts.ProgramElementContracts;
-using Sando.Indexer.Documents;
 
-namespace Sando.Recommender
+namespace Sando.Core.Tools
 {
     internal class DictionaryBuilder
     {

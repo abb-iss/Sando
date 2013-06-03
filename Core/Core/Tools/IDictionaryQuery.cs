@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
-namespace Sando.Recommender
+namespace Sando.Core.Tools
 {
     /// <summary>
     /// Using this interface to query the dictionary.
@@ -59,8 +58,7 @@ namespace Sando.Recommender
 
             protected override IEnumerable<string> SearchForWords(IEnumerable<string> allWords)
             {
-                return allWords.AsParallel().Where(word => QueryRecommender.Distance(word, target) 
-                    < threashold).ToList();
+                throw new NotImplementedException();
             }
         }
 

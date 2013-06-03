@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 
-namespace Sando.Recommender
+namespace Sando.Core.Tools
 {
     /// <summary>
     /// This class keeps records of used words in the code under searching. Also, it can greedily 

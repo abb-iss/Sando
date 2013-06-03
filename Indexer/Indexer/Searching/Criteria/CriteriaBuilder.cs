@@ -16,7 +16,8 @@ namespace Sando.Indexer.Searching.Criteria
         public CriteriaBuilder AddSearchString(string searchString, SimpleSearchCriteria searchCriteria = null)
         {
             Initialze(searchCriteria);
-            _searchCriteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString));
+            _searchCriteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString).
+                SelectMany(DictionaryBasedSplitter.GetInstance().ExtractWords));
             return this;
         }
 

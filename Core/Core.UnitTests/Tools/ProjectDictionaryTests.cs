@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using Sando.Core.Tools;
 
-namespace Sando.Recommender.UnitTests
+namespace Sando.Core.UnitTests
 {
     [TestFixture]
     class ProjectDictionaryTests

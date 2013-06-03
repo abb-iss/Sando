@@ -3,13 +3,14 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Xml.Linq;
 using Sando.Core.Extensions;
+using Sando.Core.Tools;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer;
 using Sando.Indexer.Documents;
 using Sando.Indexer.IndexState;
 using Sando.Core.Logging.Events;
-using Sando.Recommender;
+
 
 namespace Sando.UI.Monitoring
 {
