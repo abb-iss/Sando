@@ -96,6 +96,7 @@
   <ItemGroup>
     <Compile Include="CamelIdSplitter.cs" />
     <Compile Include="DictionaryBasedSplitter.cs" />
+    <Compile Include="DictionaryBuilder.cs" />
     <Compile Include="IDictionaryQuery.cs" />
     <Compile Include="QueryRecommender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

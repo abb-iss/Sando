@@ -19,10 +19,7 @@ namespace Sando.Recommender
             return instance ?? (instance = new DictionaryBasedSplitter());
         }
 
-        private readonly FileDictionary dictionary = new FileDictionary();
-        private readonly Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
-        private readonly Regex _patternCharsLowerCase = new Regex(@"([^a-zA-Z][a-z]+)", RegexOptions.Compiled);
-        
+        private readonly FileDictionary dictionary = new FileDictionary();   
 
         private DictionaryBasedSplitter(){}
 
@@ -167,17 +164,7 @@ namespace Sando.Recommender
         {
             foreach (ProgramElement element in elements)
             {
-                if (element as MethodElement != null)
-                {
-                    AddWords(ExtractMethodWords(element as MethodElement));
-                    continue;
-                }
-
-                if (element as XmlXElement != null)
-                {
-                    AddWords(ExtractXmlWords(element as XmlXElement));
-                    continue;
-                }
+                AddWords(DictionaryBuilder.ExtractElementWords(element));
             }
         }
 
@@ -196,28 +183,6 @@ namespace Sando.Recommender
         }
 
 
-        private IEnumerable<String> ExtractXmlWords(XmlXElement element)
-        {
-            var names = new List<String>();
-            return names.AsReadOnly();
-        }
-
-        private IEnumerable<String> ExtractMethodWords(MethodElement element)
-        {
-            var words = new List<String>();
-            words.AddRange(GetMatchedWords(_patternChars, element.RawSource));
-            words.AddRange(GetMatchedWords(_patternCharsLowerCase, element.RawSource).
-                Select(s => s.Substring(1)));
-            return words;
-        }
-
-        private IEnumerable<string> GetMatchedWords(Regex pattern, String code)
-        {
-            var matches = pattern.Matches(code);
-            return matches.Cast<Match>().Select(m => m.Groups[0].Value);
-        }
- 
-       
 
         public string[] ExtractWords(string text)
         {
