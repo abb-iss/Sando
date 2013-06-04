@@ -32,17 +32,22 @@ namespace Sando.UI.Actions
                 var selection = (TextSelection)_dte.ActiveDocument.Selection;
                 selection.GotoLine(lineNumber);
 
-                var literal = WordSplitter.IsLiteralSearchString(text);
-                if (literal != null)
-                    FocusOnLiteralString(literal);
-                else
-                    HighlightLine(lineNumber);
+                // FocusBySelection(lineNumber, text);
             }
             catch (Exception e)
             {
                     LogEvents.UIOpenFileError(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType, e);
                 //ignore, we don't want this feature ever causing a crash
             }
+        }
+
+        private static void FocusBySelection(int lineNumber, string text)
+        {
+            var literal = WordSplitter.IsLiteralSearchString(text);
+            if (literal != null)
+                FocusOnLiteralString(literal);
+            else
+                HighlightLine(lineNumber);
         }
 
         private static void HighlightLine(int lineNumber)
