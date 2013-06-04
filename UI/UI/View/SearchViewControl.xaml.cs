@@ -258,6 +258,9 @@ namespace Sando.UI.View
                 {
                     var searchResult = result.Content as CodeSearchResult;
                     FileOpener.OpenItem(searchResult, searchBox.Text);
+                    HighlightedEntitySet.GetInstance().Clear();
+                    HighlightedEntitySet.GetInstance().AddEntity(searchResult.ProgramElement.FullFilePath, searchResult.
+                        ProgramElement.DefinitionLineNumber, searchResult.ProgramElement.RawSource);
 
                     var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
                     LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
