@@ -41,8 +41,8 @@ namespace Sando.IntegrationTests.LocalSearch
             //SetTargetSet();
             
             string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\ControllerAdapter.java";
-            int treeDepthThreshold = 10;
-            int stopLine = 30;
+            int treeDepthThreshold = 20;
+            int stopLine = 50;
 
             string keywords = "Saving failed"; //"Saving Failed";
             var codeSearcher = new CodeSearcher(new IndexerSearcher());            
@@ -112,8 +112,8 @@ namespace Sando.IntegrationTests.LocalSearch
 
                                 if (set)
                                 {
-                                    lookback = 10;
-                                    lookback2 = 10;
+                                    lookback = treeDepthThreshold;
+                                    lookback2 = treeDepthThreshold;
                                 }
 
                                 heuristicWeightComb configuration =

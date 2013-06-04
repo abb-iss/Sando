@@ -479,6 +479,13 @@ namespace Sando.LocalSearch
 
                         degree = ((FixedNumerator + numberOfUsersInterest) / numberOfUsers) *
                             ((numberofUsesInterest) / numberOfUses);
+
+                        //debugging
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") reinforcement: " + numberOfUsersInterest.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") reinforcement: " + numberofUsesInterest.ToString());
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") specific: " + numberOfUsers.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") specific: " + numberOfUses.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") score: " + degree.ToString());
                     }
                     
                     listOfDegree.Add(degree);
@@ -511,6 +518,13 @@ namespace Sando.LocalSearch
 
                         degree = ((FixedNumerator+numberOfCallersInterest) / numberOfCallers) *
                             ((numberOfCallsInterest) / INumOfCalls);
+
+                        //debugging
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") reinforcement: " + numberOfCallersInterest.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") reinforcement: " + numberOfCallsInterest.ToString());
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") specific: " + numberOfCallers.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") specific: " + INumOfCalls.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") score: " + degree.ToString());
                     }
 
                     if (relation == ProgramElementRelation.CallBy)
@@ -526,6 +540,13 @@ namespace Sando.LocalSearch
                         }                        
                         degree = ((FixedNumerator + numberOfCallsInterest) / numberOfCalls) *
                             ( numberOfCallersInterest / INumOfCallers);
+
+                        //debugging
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") reinforcement: " + numberOfCallsInterest.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") reinforcement: " + numberOfCallersInterest.ToString());
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") specific: " + numberOfCalls.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") specific: " + INumOfCallers.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") score: " + degree.ToString());
                     }
 
                     if (relation == ProgramElementRelation.UseBy)
@@ -541,6 +562,13 @@ namespace Sando.LocalSearch
                         }
                         degree = ((FixedNumerator + numberOfUsesInterest) / numberOfUses) *
                             ((numberOfUsersInterest) / INumOfUsers);
+
+                        //debugging
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") reinforcement: " + numberOfUsesInterest.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") reinforcement: " + numberOfUsersInterest.ToString());
+                        Console.WriteLine("   current(" + sourceAsCodeSearchRes.Name + ") specific: " + numberOfUses.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") specific: " + INumOfUsers.ToString());
+                        Console.WriteLine("   candidate(" + relatedProgramElement.Name + ") score: " + degree.ToString());
                     }
 
                     //else declaration

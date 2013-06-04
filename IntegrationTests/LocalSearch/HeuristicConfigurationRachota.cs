@@ -26,8 +26,8 @@ namespace Sando.IntegrationTests.LocalSearch
             //SetTargetSet();
 
             string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\RachotaTestFiles-orig\HistoryView.java";
-            int treeDepthThreshold = 8;
-            int stopLine = 30;
+            int treeDepthThreshold = 20;
+            int stopLine = 50;
 
             string keywords = "task"; 
             var codeSearcher = new CodeSearcher(new IndexerSearcher());
@@ -110,14 +110,13 @@ namespace Sando.IntegrationTests.LocalSearch
                                 int lookahead = 0; // 0 - 1
                                 int lookback = 1;  //1 - 3
                                 int lookback2 = 1;
-                                bool set = true;
+                                bool set = false;
                                 bool decay = false;
 
                                 if (set)
                                 {
-                                    //lookahead = 1;
-                                    //lookback = 10;
-                                    lookback2 = 10;
+                                    //lookback = treeDepthThreshold;
+                                    lookback2 = treeDepthThreshold;
                                 }
 
                                 heuristicWeightComb configuration =

@@ -41,8 +41,8 @@ namespace Sando.IntegrationTests.LocalSearch
             //SetTargetSet();
             
             string testfilePath = @"..\..\IntegrationTests\TestFiles\LocalSearchTestFiles\FreeMindTestFiles-orig\MindMapMapModel.java";
-            int treeDepthThreshold = 10;
-            int stopLine = 30;
+            int treeDepthThreshold = 20;
+            int stopLine = 50;
 
             string keywords = "Saving Failed"; //"Saving Failed";
             var codeSearcher = new CodeSearcher(new IndexerSearcher());            
@@ -91,11 +91,11 @@ namespace Sando.IntegrationTests.LocalSearch
                 targetSet.Add(target);                
             }
 
-            for (double w0 = 0; w0 <= 1; w0++ )
-                for (double w1 = 0; w1 <= 1; w1++)
-                    for (double w2 = 0; w2 <= 1; w2++)
-                        for (double w3 = 0; w3 <= 1; w3++)
-                            for (double w4 = 0; w4 <= 1; w4++)
+            for (double w0 = 0; w0 <= 0; w0++ )
+                for (double w1 = 0; w1 <= 0; w1++)
+                    for (double w2 = 1; w2 <= 1; w2++)
+                        for (double w3 = 0; w3 <= 0; w3++)
+                            for (double w4 = 0; w4 <= 0; w4++)
                         {
                             numberOfNavigation.Clear();
                             targetFound.Clear();
@@ -105,16 +105,16 @@ namespace Sando.IntegrationTests.LocalSearch
                                 targetFound.Add(false);
                             }
 
-                            int lookahead = 0; // 0 - 1
-                            int lookback = 1;  //1 - 3
+                            int lookahead = 0; 
+                            int lookback = 1;  
                             int lookback2 = 1;
                             bool set = true;
                             bool decay = false;
 
                             if (set)
                             {
-                                lookback = 10; // 3;
-                                lookback2 = 10; // 3;
+                                lookback = treeDepthThreshold; 
+                                lookback2 = treeDepthThreshold; 
                             }
 
                             heuristicWeightComb configuration =
@@ -254,8 +254,8 @@ namespace Sando.IntegrationTests.LocalSearch
             }
 
             CodeNavigationResult rootElement = rootNode.getData();
-            //Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
-            //    + " " + rootElement.ProgramElementRelation.ToString() + " " + rootElement.Score.ToString()); //debugging
+            Console.WriteLine(rootElement.Name + ": " + rootElement.RelationLineNumberAsString
+                + " " + rootElement.ProgramElementRelation.ToString() + " " + rootElement.Score.ToString()); //debugging
             for (int i = 0; i < targetSet.Count; i++)
             {
                 targetProgramElement target = targetSet[i];
@@ -291,7 +291,7 @@ namespace Sando.IntegrationTests.LocalSearch
                 config.editDistanceLookback, config.EditDistanceW,
                 config.dataFlowLookback, config.DataFlowW);
 
-            //Console.WriteLine("number of children: " + childrenElements.Count.ToString()); //debug
+            Console.WriteLine("   number of children: " + childrenElements.Count.ToString()); //debug
             if (childrenElements.Count == 0)
             {
                 gbuilder.CurrentPath.RemoveAt(gbuilder.CurrentPath.Count - 1);
