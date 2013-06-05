@@ -6,9 +6,9 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Core.Tools
 {
-    internal class DictionaryBuilder
+    internal class DictionaryHelper
     {
-
+        private static readonly Regex _quotesPattern = new Regex("-{0,1}\"[^\"]+\"", RegexOptions.Compiled);
         private static readonly Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
         private static readonly Regex _patternCharsLowerCase = new Regex(@"([^a-zA-Z][a-z]+)", RegexOptions.Compiled);
 
@@ -62,6 +62,11 @@ namespace Sando.Core.Tools
 
             //if this code is reached, contract will fail
             return null;
+        }
+
+        public static IEnumerable<String> GetQuotedStrings(String text)
+        {
+            return GetMatchedWords(_quotesPattern, text);
         }
 
         private static IEnumerable<String> ExtractMethodWords(MethodElement element)
@@ -145,6 +150,37 @@ namespace Sando.Core.Tools
         {
             var matches = pattern.Matches(code);
             return matches.Cast<Match>().Select(m => m.Groups[0].Value);
+        }
+
+        public static IEnumerable<int> GetQuoteStarts(string text)
+        {
+            var matches = RemoveChildMatches(_quotesPattern.Matches(text).Cast<Match>());
+            return matches.Select(m => m.Groups[0].Index);
+        }
+
+        public static IEnumerable<int> GetQuoteEnds(string text)
+        {
+            var matches = RemoveChildMatches(_quotesPattern.Matches(text).Cast<Match>());
+            return matches.Select(m => m.Groups[0].Index + m.Groups[0].Length - 1);
+        }
+
+        private static IEnumerable<Match> RemoveChildMatches(IEnumerable<Match> matches)
+        {
+            var simplifiedMatches = matches.ToList();
+            foreach (var match in matches)
+            {
+                if(matches.Any(m => IsMatchIncluding(m, match)))
+                {
+                    simplifiedMatches.Remove(match);
+                }
+            }
+            return simplifiedMatches;
+        }
+
+        private static Boolean IsMatchIncluding(Match m1, Match m2)
+        {
+            return !m1.Equals(m2) && m1.Groups[0].Index <= m2.Groups[0].Index &&
+                   m1.Groups[0].Length + m1.Groups[0].Index >= m2.Groups[0].Length + m2.Groups[0].Index;
         }
     }
 }

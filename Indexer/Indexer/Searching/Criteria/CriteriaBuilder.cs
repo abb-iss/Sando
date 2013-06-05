@@ -1,6 +1,7 @@
 ﻿using Sando.Core.Tools;
 using System.Collections.Generic;
 using System.Linq;
+using Sando.DependencyInjection;
 
 namespace Sando.Indexer.Searching.Criteria
 {
@@ -17,7 +18,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             Initialze(searchCriteria);
             _searchCriteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString).
-                SelectMany(DictionaryBasedSplitter.GetInstance().ExtractWords));
+                SelectMany(ServiceLocator.Resolve<DictionaryBasedSplitter>().ExtractWords));
             return this;
         }
 

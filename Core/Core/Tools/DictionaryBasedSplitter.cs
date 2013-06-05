@@ -14,20 +14,14 @@ namespace Sando.Core.Tools
     /// This class keeps records of used words in the code under searching. Also, it can greedily 
     /// split a given string by matching words in the dictionary. 
     /// </summary>
-    public class DictionaryBasedSplitter : IWordSplitter
+    public class DictionaryBasedSplitter : IWordSplitter, IDisposable
     {
-        private static DictionaryBasedSplitter instance;   
-      
-        public static DictionaryBasedSplitter GetInstance()
+        private readonly FileDictionary dictionary;   
+
+        public DictionaryBasedSplitter()
         {
-            return instance ?? (instance = new DictionaryBasedSplitter());
+            this.dictionary = new FileDictionary();
         }
-
-        private readonly FileDictionary dictionary = new FileDictionary();   
-
-        private DictionaryBasedSplitter(){}
-
-
 
         public void Initialize(String directory)
         {
@@ -45,30 +39,25 @@ namespace Sando.Core.Tools
             }
         }
 
-        private sealed class FileDictionary
+        private sealed class FileDictionary : IDisposable
         {
             const string dictionaryName = "dictionary.txt";
             private string directory;
-            private static readonly IEnumerable<String> keyWords = GetCSharpKeyWords(); 
             private readonly List<string> allWords = new List<string>();
             
             public void Initialize(String directory)
             {
-                WriteWordsToFile();
                 this.directory = directory;
                 ReadWordsFromFile();
             }
 
             private void WriteWordsToFile()
             {
-                if (directory != null)
+                using (var writer = new StreamWriter(GetDicFilePath(), false, Encoding.ASCII))
                 {
-                    using (var writer = new StreamWriter(GetDicFilePath(), false, Encoding.ASCII))
+                    foreach (string word in allWords)
                     {
-                        foreach (string word in allWords)
-                        {
-                            writer.WriteLine(word.Trim());
-                        }
+                        writer.WriteLine(word.Trim());
                     }
                 }
             }
@@ -83,27 +72,10 @@ namespace Sando.Core.Tools
                 }
             }
 
-            ~FileDictionary()
-            {
-                WriteWordsToFile();
-            }
-
             private String GetDicFilePath()
             {
                 var path = Path.Combine(directory, dictionaryName);
                 return path;
-            }
-
-            private static IEnumerable<String> GetCSharpKeyWords()
-            {
-                const string pull = @"abstract event new struct as explicit null switch
-                base extern object this bool false operator	throw
-                break finally out true byte	fixed override try case	float params typeof
-                catch for private uint char	foreach	protected ulong checked	goto public	unchecked
-                class if readonly unsafe const implicit	ref	ushort continue	in return using
-                decimal	int	sbyte virtual default interface	sealed volatile delegate internal short	void
-                do is sizeof while double lock stackalloc else long	static enum	namespace string";
-                return pull.Split(null);
             }
 
             public void AddWords(IEnumerable<String> words)
@@ -111,7 +83,7 @@ namespace Sando.Core.Tools
                 foreach (string word in words)
                 {
                     var trimedWord = word.Trim().ToLower();
-                    if (!String.IsNullOrEmpty(trimedWord) && !keyWords.Contains(trimedWord))
+                    if (!String.IsNullOrEmpty(trimedWord))
                     {
                         bool found;
                         int smallerWordsCount = GetSmallerWordCount(trimedWord, out found);
@@ -124,13 +96,9 @@ namespace Sando.Core.Tools
             public Boolean DoesWordExist(String word)
             {
                 var trimmedWord = word.Trim().ToLower();
-                if (!keyWords.Contains(trimmedWord))
-                {
-                    bool found;
-                    GetSmallerWordCount(trimmedWord, out found);
-                    return found;
-                }
-                return true;
+                bool found;
+                GetSmallerWordCount(trimmedWord, out found);
+                return found;
             }
 
             private int GetSmallerWordCount(string word, out bool found)
@@ -163,13 +131,23 @@ namespace Sando.Core.Tools
             {
                 query.StartSelectingWordsAsync(allWords);
             }
+
+            public void Dispose()
+            {
+                if (directory != null && allWords.Any())
+                {
+                    WriteWordsToFile();
+                    directory = null;
+                    allWords.Clear();
+                }
+            }
         }
 
         public void UpdateProgramElement(ReadOnlyCollection<ProgramElement> elements)
         {
             foreach (ProgramElement element in elements)
             {
-                AddWords(DictionaryBuilder.ExtractElementWords(element));
+                AddWords(DictionaryHelper.ExtractElementWords(element));
             }
         }
 
@@ -183,7 +161,48 @@ namespace Sando.Core.Tools
             }
         }
 
-        public string[] ExtractWords(string text)
+        private bool IsQuoted(String text)
+        {
+            text = text.Trim();
+            return text.StartsWith("\"") && text.EndsWith("\"");
+        }
+
+        public string[] ExtractWords (string text)
+        {
+            if (IsQuoted(text))
+            {
+                return new string[]{text};    
+            }
+
+            var allSplits = new List<String>();
+            var starts = DictionaryHelper.GetQuoteStarts(text).ToList();
+            starts.Add(text.Length);
+            var ends = DictionaryHelper.GetQuoteEnds(text).ToList();
+            ends.Insert(0, -1);
+
+            for (int i = 0; i < starts.Count; i++)
+            {
+                // Split the non-quotes part.
+                int nonQuoteLength = starts.ElementAt(i) - ends.ElementAt(i) - 1;
+                if (nonQuoteLength > 0)
+                {
+                    var nonQuote = text.Substring(ends.ElementAt(i) + 1, nonQuoteLength);
+                    allSplits.AddRange(SplitNonQuote(nonQuote));
+                }
+
+                // Keep the quotes part.
+                if (i != starts.Count - 1)
+                {
+                    var quote = text.Substring(starts.ElementAt(i), ends.ElementAt(i + 1) -
+                        starts.ElementAt(i) + 1);
+                    allSplits.Add(quote);
+                }
+            }
+            return allSplits.ToArray();
+
+        }
+
+        private IEnumerable<String> SplitNonQuote(string text)
         {
             var allSplits = new List<String>();
             var allWords = text.Split(null).Select(w => w.ToLower().Trim()).
@@ -194,8 +213,9 @@ namespace Sando.Core.Tools
             {
                 allSplits.AddRange(strategy.SplitWord(word, DoesWordExist));
             }
-            return allSplits.ToArray();
+            return allSplits;
         }
+
 
         public void QueryDictionary(IDictionaryQuery query)
         {
@@ -204,6 +224,16 @@ namespace Sando.Core.Tools
                 dictionary.StartSelectingWords(query);
             }
         }
+
+
+        public void Dispose()
+        {
+            lock (dictionary)
+            {
+                dictionary.Dispose();
+            }
+        }
+
 
         private interface IWordSplitStrategy
         {
@@ -320,5 +350,6 @@ namespace Sando.Core.Tools
                 return allSubWords;
             }
         }
+
     }
 }

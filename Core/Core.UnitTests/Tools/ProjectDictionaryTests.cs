@@ -62,7 +62,7 @@ namespace Sando.Core.UnitTests
         [SetUp]
         public void SetUp()
         {
-            this._dictionaryBasedSplitter = DictionaryBasedSplitter.GetInstance();
+            this._dictionaryBasedSplitter = new DictionaryBasedSplitter();
             CreateDirectory(tempFolder);
             _dictionaryBasedSplitter.Initialize(tempFolder);
         }
@@ -70,6 +70,7 @@ namespace Sando.Core.UnitTests
         [TearDown]
         public void DeleteCreatedFile()
         {
+            _dictionaryBasedSplitter.Dispose();
             foreach (string directory in _createdDirectory)
             {
                 if (Directory.Exists(directory))
@@ -202,17 +203,6 @@ namespace Sando.Core.UnitTests
             }
         }
 
-        [Test]
-        public void KeyWordTest()
-        {
-            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("int"));
-            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("void"));
-            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("float"));
-            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist("byte"));
-            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist(""));
-            Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist(" "));
-        }
-
         private AutoResetEvent waitHandle ;
         private IEnumerable<string> selectedWords;
 
@@ -226,9 +216,70 @@ namespace Sando.Core.UnitTests
             _dictionaryBasedSplitter.QueryDictionary(DictionaryQueryFactory.
                 GetSimilarWordsDictionaryQuery (word, Callback));
             waitHandle.WaitOne();
-            Assert.IsTrue(selectedWords.Count() == 26);
-            foreach (string w in words)
-                Assert.IsTrue(selectedWords.Contains(w));
+        }
+
+
+        [Test]
+        public void SplitSimpleQuote()
+        {
+            const string quote = "\"inti\"";
+            _dictionaryBasedSplitter.AddWords(new string[]{"int", "i"});
+            var words = _dictionaryBasedSplitter.ExtractWords(quote);
+            Assert.IsTrue(words.Count() == 1);
+            Assert.IsTrue(words.ElementAt(0).Equals(quote));
+        }
+
+        [Test]
+        public void SplitQuoteWithNonQuote()
+        {
+            const string quote = "\"inti\"";
+            const string nonQuote = "inti";
+            const string mix1 = quote + " " + nonQuote;
+            const string mix2 = nonQuote + " " + quote;
+            const string mix3 = nonQuote + " " + quote + " " + nonQuote;
+            const string mix4 = quote + " " + nonQuote + " " + quote;
+            _dictionaryBasedSplitter.AddWords(new string[] { "int", "i" });
+            
+            var words = _dictionaryBasedSplitter.ExtractWords(mix1);
+            Assert.IsTrue(words.Count() == 3);
+            Assert.IsTrue(words.ElementAt(0).Equals("\"inti\""));
+            Assert.IsTrue(words.ElementAt(1).Equals("int"));
+            Assert.IsTrue(words.ElementAt(2).Equals("i"));
+            
+            words = _dictionaryBasedSplitter.ExtractWords(mix2);
+            Assert.IsTrue(words.Count() == 3);
+            Assert.IsTrue(words.ElementAt(0).Equals("int"));
+            Assert.IsTrue(words.ElementAt(1).Equals("i"));
+            Assert.IsTrue(words.ElementAt(2).Equals("\"inti\""));
+
+            words = _dictionaryBasedSplitter.ExtractWords(mix3);
+            Assert.IsTrue(words.Count() == 5);
+            Assert.IsTrue(words.ElementAt(0).Equals("int"));
+            Assert.IsTrue(words.ElementAt(1).Equals("i"));
+            Assert.IsTrue(words.ElementAt(2).Equals("\"inti\""));
+            Assert.IsTrue(words.ElementAt(3).Equals("int"));
+            Assert.IsTrue(words.ElementAt(4).Equals("i"));
+
+            words = _dictionaryBasedSplitter.ExtractWords(mix4);
+            Assert.IsTrue(words.Count() == 1);
+        }
+
+
+        [Test]
+        public void SplitQuoteInsideQuote()
+        {
+            string keywords = "\"Assert.IsNotNull(wordSplitter, \"Default word splitter should x used!!\");\"";
+            var words = _dictionaryBasedSplitter.ExtractWords(keywords);
+            Assert.IsTrue(words.Count() == 1);
+        }
+
+        [Test]
+        public void SplitEmptyQuote()
+        {
+            const string quote = "\"\"";
+            var words = _dictionaryBasedSplitter.ExtractWords(quote);
+            Assert.IsTrue(words.Count() == 1);
+            Assert.IsTrue(words.ElementAt(0).Equals(quote));
         }
 
         private static IEnumerable<string> CreateSimilarWords(String word)

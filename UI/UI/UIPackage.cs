@@ -304,6 +304,8 @@ namespace Sando.UI
                     ServiceLocator.Resolve<IndexFilterManager>().Dispose();
                     ServiceLocator.Resolve<DocumentIndexer>().Dispose();
                 }
+                // XiGe: dispose the dictionary.
+                ServiceLocator.Resolve<DictionaryBasedSplitter>().Dispose();
             }
             catch (Exception e)
             {
@@ -406,8 +408,13 @@ namespace Sando.UI
                 SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), !isIndexRecreationRequired);
                 //SwumManager.Instance.Archive = _srcMLArchive;
 
-                DictionaryBasedSplitter.GetInstance().Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
-                
+                // xige
+                var dictionary = new DictionaryBasedSplitter();
+                dictionary.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
+                ServiceLocator.Resolve<IndexUpdateManager>().indexUpdated += dictionary.UpdateProgramElement;
+                ServiceLocator.RegisterInstance(dictionary);
+
+
                 // SrcML Service starts monitoring the opened solution.
                 // Sando may define the directory of storing srcML archives
                 string src2SrcmlDir = Path.Combine(PathManager.Instance.GetExtensionRoot(), "SrcML");                
@@ -433,7 +440,7 @@ namespace Sando.UI
                 {
                     SandoLogManager.StopDataCollectionLogging();
                 }
-
+                // TODO: xige
 
 				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
             }
