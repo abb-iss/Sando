@@ -37,6 +37,8 @@ using Lucene.Net.Analysis.Standard;
 using Sando.Core.Logging;
 using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
+using Sando.Service;
+using System.Diagnostics;
 
 
 
@@ -70,6 +72,14 @@ namespace Sando.UI
     //[ProvideAutoLoad("f1536ef8-92ec-443c-9ed7-fdadf150da82")]    
 	[ProvideOptionPage(typeof(SandoDialogPage), "Sando", "General", 1000, 1001, true)]
 	[ProvideProfile(typeof(SandoDialogPage), "Sando", "General", 1002, 1003, true)]
+
+    /// <summary>
+    /// Add the ProvideServiceAttribute to the VSPackage that provides the global service.
+    /// ProvideServiceAttribute registers SSandoGlobalService with Visual Studio. 
+    /// Only the global service must be registered.
+    /// </summary>
+    [ProvideService(typeof(SSandoGlobalService))]
+
     public sealed class UIPackage : Package, IToolWindowFinder
     {
         // JZ: SrcMLService Integration
@@ -96,11 +106,64 @@ namespace Sando.UI
         {            
             PathManager.Create(Assembly.GetAssembly(typeof(UIPackage)).Location);
             SandoLogManager.StartDefaultLogging(PathManager.Instance.GetExtensionRoot());
+
+            // Add callback methods to the service container to create the services.
+            // Here we update the list of the provided services with the ones specific for this package.
+            // Notice that we set to true the boolean flag about the service promotion for the global:
+            // to promote the service is actually to proffer it globally using the SProfferService service.
+            // For performance reasons we don’t want to instantiate the services now, but only when and 
+            // if some client asks for them, so we here define only the type of the service and a function
+            // that will be called the first time the package will receive a request for the service. 
+            // This callback function is the one responsible for creating the instance of the service 
+            // object.
+            IServiceContainer serviceContainer = this as IServiceContainer;
+            ServiceCreatorCallback callback = new ServiceCreatorCallback(CreateService);
+            serviceContainer.AddService(typeof(SSandoGlobalService), callback, true);
         }
 
         public SandoDialogPage GetSandoDialogPage()
         {
             return GetDialogPage(typeof (SandoDialogPage)) as SandoDialogPage;
+        }
+
+        /// <summary>
+        /// Implement the callback method.
+        /// This is the function that will create a new instance of the services the first time a client
+        /// will ask for a specific service type. 
+        /// It is called by the base class's implementation of IServiceProvider.
+        /// </summary>
+        /// <param name="container">The IServiceContainer that needs a new instance of the service.
+        ///                         This must be this package.</param>
+        /// <param name="serviceType">The type of service to create.</param>
+        /// <returns>The instance of the service.</returns>
+        private object CreateService(IServiceContainer container, Type serviceType)
+        {
+            //Trace.WriteLine("    SandoServicePackage.CreateService()");
+            //todo: write it to log file
+
+            // Check if the IServiceContainer is this package.
+            if (container != this)
+            {
+                //Trace.WriteLine("ServicesPackage.CreateService called from an unexpected service container.");
+                return null;
+            }
+
+            // Find the type of the requested service and create it.
+            if (typeof(SSandoGlobalService) == serviceType)
+            {
+                // Build the global service using this package as its service provider.
+                return new SandoGlobalService(this);
+            }
+            //if (typeof(SSandoLocalService) == serviceType)
+            //{
+            //    // Build the local service using this package as its service provider.
+            //    return new SandoLocalService(this);
+            //}
+
+            // If we are here the service type is unknown, so write a message on the debug output
+            // and return null.
+            //Trace.WriteLine("ServicesPackage.CreateService called for an unknown service type.");
+            return null;
         }
 
         /////////////////////////////////////////////////////////////////////////////

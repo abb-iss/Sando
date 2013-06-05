@@ -704,6 +704,10 @@
       <Project>{17aa2b71-c4f9-4397-9d05-6119763d07a5}</Project>
       <Name>SandoExtensionContracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SandoService\SandoService\SandoService.csproj">
+      <Project>{c00fe46a-6cd3-44dd-acd9-51d0ad942cf7}</Project>
+      <Name>SandoService</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Search Engine\Search Engine\Search Engine.csproj">
       <Project>{925D387B-4DF8-469E-8867-1FBC3D3131B4}</Project>
       <Name>Search Engine</Name>
