@@ -144,6 +144,7 @@ namespace Sando.Core.UnitTests
                 var words = GenerateRandomWordList(100);
                 _dictionaryBasedSplitter.AddWords(words);
                 wordDictionary.Add(project, words);
+                _dictionaryBasedSplitter.Dispose();
             }
 
             foreach (string project in projectNames)
