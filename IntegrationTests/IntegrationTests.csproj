@@ -37,6 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
+    <Reference Include="ABB.SrcML.Data, Version=2.0.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\LIBS\srcML.NET\ABB.SrcML.Data.dll</HintPath>
+    </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
       <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>

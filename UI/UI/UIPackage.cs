@@ -37,6 +37,7 @@ using Lucene.Net.Analysis.Standard;
 using Sando.Core.Logging;
 using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
+using ABB.SrcML.Utilities;
 
 
 
@@ -324,7 +325,7 @@ namespace Sando.UI
 
         public void HandleIndexingFinish(object sender, IsReadyChangedEventArgs args)
         {
-            if(args.UpdatedReadyState)
+            if(args.ReadyState)
                 CallShowProgressBar(false);
         }
 
@@ -423,8 +424,8 @@ namespace Sando.UI
 
                 // SrcMLService also has a StartMonitering() API, if Sando wants SrcML.NET to manage
                 // the directory of storing srcML archives and whether to use existing srcML archives.
-                srcMLService.StartMonitoring(useExistingSrcML, src2SrcmlDir);
-                if (srcMLService.GetSrcMLArchive().IsReady)
+                //srcMLService.StartMonitoring(useExistingSrcML, src2SrcmlDir);                
+                if (srcMLService.GetSrcMLArchive()!=null && srcMLService.IsReady)
                 {
                     srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));                    
                     HandleIndexingFinish(null, new IsReadyChangedEventArgs(true));

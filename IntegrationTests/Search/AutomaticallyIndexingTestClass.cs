@@ -25,6 +25,7 @@ using System.Diagnostics;
 using System.Text;
 using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
+using ABB.SrcML.Utilities;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -306,6 +307,16 @@ namespace Sando.IntegrationTests.Search
         public void StartMonitoring()
         {
             throw new NotImplementedException();
+        }
+
+        public ABB.SrcML.Data.DataRepository GetDataRepository()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsReady
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
 using Sando.Core.Logging.Events;
+using ABB.SrcML.Utilities;
 
 
 namespace Sando.UI.Monitoring
@@ -130,7 +131,7 @@ namespace Sando.UI.Monitoring
 
         public void StartupCompleted(object sender, IsReadyChangedEventArgs args)
         {
-            if (args.UpdatedReadyState)
+            if (args.ReadyState)
             {
                 ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>().WaitForIndexing();
                 ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
@@ -151,5 +152,7 @@ namespace Sando.UI.Monitoring
                 SwumManager.Instance.PrintSwumCache();
             }
         }
+
+        
     }
 }
