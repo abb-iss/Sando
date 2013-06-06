@@ -119,6 +119,7 @@ namespace Sando.UI
             IServiceContainer serviceContainer = this as IServiceContainer;
             ServiceCreatorCallback callback = new ServiceCreatorCallback(CreateService);
             serviceContainer.AddService(typeof(SSandoGlobalService), callback, true);
+            serviceContainer.AddService(typeof(SSandoLocalService), callback);
         }
 
         public SandoDialogPage GetSandoDialogPage()
@@ -138,13 +139,13 @@ namespace Sando.UI
         /// <returns>The instance of the service.</returns>
         private object CreateService(IServiceContainer container, Type serviceType)
         {
-            //Trace.WriteLine("    SandoServicePackage.CreateService()");
+            Trace.WriteLine("    SandoServicePackage.CreateService()");
             //todo: write it to log file
 
             // Check if the IServiceContainer is this package.
             if (container != this)
             {
-                //Trace.WriteLine("ServicesPackage.CreateService called from an unexpected service container.");
+                Trace.WriteLine("ServicesPackage.CreateService called from an unexpected service container.");
                 return null;
             }
 
@@ -154,11 +155,11 @@ namespace Sando.UI
                 // Build the global service using this package as its service provider.
                 return new SandoGlobalService(this);
             }
-            //if (typeof(SSandoLocalService) == serviceType)
-            //{
-            //    // Build the local service using this package as its service provider.
-            //    return new SandoLocalService(this);
-            //}
+            if (typeof(SSandoLocalService) == serviceType)
+            {
+                // Build the local service using this package as its service provider.
+                return new SandoLocalService(this);
+            }
 
             // If we are here the service type is unknown, so write a message on the debug output
             // and return null.
@@ -450,6 +451,10 @@ namespace Sando.UI
                 if(null == srcMLService) {
                     throw new Exception("Can not get the SrcML global service.");
                 }
+
+                //XQ: for debugging
+                ISandoGlobalService sandoService = GetService(typeof(SSandoGlobalService)) as ISandoGlobalService;
+                
 
                 // Register all types of events from the SrcML Service.
                 SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();

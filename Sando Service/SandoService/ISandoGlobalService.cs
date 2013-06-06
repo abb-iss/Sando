@@ -22,7 +22,7 @@ namespace Sando.Service {
     [ComVisible(true)]
     public interface ISandoGlobalService {
         void GlobalServiceFunction();
-        //int CallLocalService();
+        int CallLocalService();
         
     }
 

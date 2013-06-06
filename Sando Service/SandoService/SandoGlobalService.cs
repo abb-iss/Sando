@@ -54,6 +54,28 @@ namespace Sando.Service {
             HelperFunctions.WriteOnOutputWindow(serviceProvider, outputText);
         }
 
+        /// <summary>
+        /// Implementation of the function that will call a method of the local service.
+        /// Notice that this class will access the local service using as service provider the one
+        /// implemented by ServicesPackage.
+        /// </summary>
+        public int CallLocalService()
+        {
+            // Query the service provider for the local service.
+            // This object is supposed to be build by ServicesPackage and it pass its service provider
+            // to the constructor, so the local service should be found.
+            ISandoLocalService localService = serviceProvider.GetService(typeof(SSandoLocalService)) as ISandoLocalService;
+            if (null == localService)
+            {
+                // The local service was not found; write a message on the debug output and exit.
+                Trace.WriteLine("Can not get the local service from the global one.");
+                return -1;
+            }
+
+            // Now call the method of the local service. This will write a message on the output window.
+            return localService.LocalServiceFunction();
+        }
+
         #endregion        
 
     }
