@@ -118,9 +118,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\DictionaryBasedSplitter.cs" />
     <Compile Include="Tools\DictionaryHelper.cs" />
-    <Compile Include="Tools\IDictionaryQuery.cs" />
+    <Compile Include="Tools\DictionaryQueries.cs" />
     <Compile Include="Tools\LuceneDirectoryHelper.cs" />
     <Compile Include="Tools\PathManager.cs" />
+    <Compile Include="Tools\WordCorrector.cs" />
     <Compile Include="Tools\WordSplitter.cs" />
   </ItemGroup>
   <ItemGroup>

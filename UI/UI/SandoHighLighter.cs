@@ -15,19 +15,25 @@ namespace Sando.UI
 {
     public delegate void HighlightedEntityChanged(IEnumerable<HighlightedEntity> entities);
 
-    public sealed class HighlightedEntity : IEquatable<HighlightedEntity>
+    public sealed class HighlightedEntity : IEquatable<HighlightedEntity>, IDisposable
     {
         public string Path { private set;  get; }
         public int StartLineNumber { private set; get; }
         public int LineCount { private set; get; }
         public string Rawsource { private set;  get; }
+        private readonly Timer timer;
 
-        public HighlightedEntity(String Path, int StartLineNumber, string Rawsource)
+        // After five seconds, this highlight should be gone.
+        private const int TIMEOUT = 1000 * 5;
+
+        public HighlightedEntity(String Path, int StartLineNumber, string Rawsource, 
+            TimerCallback Callback)
         {
             this.Path = Path;
             this.StartLineNumber = StartLineNumber;
             this.Rawsource = Rawsource;
             this.LineCount = Rawsource.Split('\n').Length;
+            this.timer = new Timer(Callback, this, TIMEOUT, int.MaxValue);
         }
 
         public bool IsLineInEntity(int number)
@@ -39,6 +45,11 @@ namespace Sando.UI
         {
             return this.Path.Equals(other.Path) && this.StartLineNumber == other.StartLineNumber
                    && this.Rawsource.Equals(other.Rawsource);
+        }
+
+        public void Dispose()
+        {
+            timer.Dispose();
         }
     }
 
@@ -56,9 +67,18 @@ namespace Sando.UI
 
         public void AddEntity(String path, int start, String rawSource)
         {
-            var ent = new HighlightedEntity(path, start, rawSource);
             lock (entities)
             {
+                var ent = new HighlightedEntity(path, start, rawSource, state =>
+                {
+                    lock (entities)
+                    {
+                        var entity = (HighlightedEntity)state;
+                        entities.Remove(entity);
+                        entity.Dispose();
+                        entityChanged(entities.ToList());
+                    }
+                });
                 if (!entities.Contains(ent))
                 {
                     entities.Add(ent);
@@ -69,10 +89,11 @@ namespace Sando.UI
 
         public void RemoveEntity(String path, int start, String rawSource)
         {
-            var ent = new HighlightedEntity(path, start, rawSource);
             lock (entities)
             {
-                entities.Remove(ent);
+                int index = entities.FindIndex(e => e.Path.Equals(path) && e.StartLineNumber == start 
+                            && e.Rawsource.Equals(rawSource));
+                entities.RemoveAt(index);
                 entityChanged(entities.ToList());
             }
         }

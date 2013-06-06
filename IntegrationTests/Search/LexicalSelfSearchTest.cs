@@ -202,7 +202,8 @@ namespace Sando.IntegrationTests.Search
 
 	
 
- 		
+ 		//TODO: add splitter test on sando
+        // starting with some method name with all lower case.
 				
 	}
 }

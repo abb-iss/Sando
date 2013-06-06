@@ -58,6 +58,7 @@
     <Compile Include="Tools\LuceneDirectoryHelperTest.cs" />
     <Compile Include="Tools\ProjectDictionaryTests.cs" />
     <Compile Include="Tools\SplitterTest.cs" />
+    <Compile Include="Tools\WordCorrectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
