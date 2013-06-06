@@ -16,8 +16,8 @@ namespace Sando.Core.Tools
     /// </summary>
     public class DictionaryBasedSplitter : IWordSplitter, IDisposable
     {
-        private readonly FileDictionary dictionary;   
-
+        private readonly FileDictionary dictionary;
+        
         public DictionaryBasedSplitter()
         {
             this.dictionary = new FileDictionary();
@@ -25,18 +25,13 @@ namespace Sando.Core.Tools
 
         public void Initialize(String directory)
         {
-            lock (dictionary)
-            {
-                dictionary.Initialize(directory);
-            }
+            dictionary.Initialize(directory);
         }
 
         public void AddWords(IEnumerable<String> words)
         {
-            lock (dictionary)
-            {
-                dictionary.AddWords(words);
-            }
+            words = words.ToList();
+            dictionary.AddWords(words);
         }
 
         private sealed class FileDictionary : IDisposable
@@ -44,17 +39,29 @@ namespace Sando.Core.Tools
             const string dictionaryName = "dictionary.txt";
             private string directory;
             private readonly List<string> allWords = new List<string>();
+            private WordCorrector corrector;
             
+            private delegate void NewWordsAdded(IEnumerable<String> words);
+            private event NewWordsAdded addWordsEvent;
+      
             public void Initialize(String directory)
             {
-                this.directory = directory;
-                ReadWordsFromFile();
+                lock (allWords)
+                {
+                    allWords.Clear();
+                    this.directory = directory;
+
+                    corrector = new WordCorrector();
+                    addWordsEvent += corrector.AddWords;
+
+                    ReadWordsFromFile();
+                }
             }
 
             private void WriteWordsToFile()
             {
                 using (var writer = new StreamWriter(GetDicFilePath(), false, Encoding.ASCII))
-                {
+                {        
                     foreach (string word in allWords)
                     {
                         writer.WriteLine(word.Trim());
@@ -69,6 +76,7 @@ namespace Sando.Core.Tools
                     var allLines = File.ReadAllLines(GetDicFilePath());
                     allWords.Clear();
                     allWords.AddRange(allLines);
+                    addWordsEvent(allLines);
                 }
             }
 
@@ -80,25 +88,33 @@ namespace Sando.Core.Tools
 
             public void AddWords(IEnumerable<String> words)
             {
-                foreach (string word in words)
+                words = words.ToList();
+                lock (allWords)
                 {
-                    var trimedWord = word.Trim().ToLower();
-                    if (!String.IsNullOrEmpty(trimedWord))
+                    foreach (string word in words)
                     {
-                        bool found;
-                        int smallerWordsCount = GetSmallerWordCount(trimedWord, out found);
-                        if (!found)
-                            allWords.Insert(smallerWordsCount, trimedWord);
+                        var trimedWord = word.Trim().ToLower();
+                        if (!String.IsNullOrEmpty(trimedWord))
+                        {
+                            bool found = false;
+                            int smallerWordsCount = GetSmallerWordCount(trimedWord, out found);
+                            if (!found)
+                                allWords.Insert(smallerWordsCount, trimedWord);
+                        }
                     }
                 }
+                addWordsEvent(words);
             }
 
             public Boolean DoesWordExist(String word)
             {
                 var trimmedWord = word.Trim().ToLower();
-                bool found;
-                GetSmallerWordCount(trimmedWord, out found);
-                return found;
+                bool found = false;
+                lock (allWords)
+                {
+                    GetSmallerWordCount(trimmedWord, out found);
+                    return found;
+                }
             }
 
             private int GetSmallerWordCount(string word, out bool found)
@@ -127,18 +143,20 @@ namespace Sando.Core.Tools
                 return min;
             }
 
-            public void StartSelectingWords(IDictionaryQuery query)
+            public IEnumerable<String> FindSimilarWords(String word)
             {
-                query.StartSelectingWordsAsync(allWords);
+                return corrector.FindSimilarWords(word).Select(p => p.Key);
             }
 
             public void Dispose()
             {
-                if (directory != null && allWords.Any())
+                lock (allWords)
                 {
-                    WriteWordsToFile();
-                    directory = null;
-                    allWords.Clear();
+                    if (directory != null && allWords.Any())
+                    {
+                        WriteWordsToFile();
+                        directory = null;
+                    }
                 }
             }
         }
@@ -155,10 +173,7 @@ namespace Sando.Core.Tools
         public Boolean DoesWordExist(String word)
         {
             word = word.Trim();   
-            lock (dictionary)
-            {
-                return word.Equals(String.Empty) || dictionary.DoesWordExist(word);
-            }
+            return word.Equals(String.Empty) || dictionary.DoesWordExist(word);
         }
 
         private bool IsQuoted(String text)
@@ -217,21 +232,15 @@ namespace Sando.Core.Tools
         }
 
 
-        public void QueryDictionary(IDictionaryQuery query)
+        public IEnumerable<string> FindSimilarWords(String word)
         {
-            lock (dictionary)
-            {
-                dictionary.StartSelectingWords(query);
-            }
+            return dictionary.FindSimilarWords(word);
         }
 
 
         public void Dispose()
         {
-            lock (dictionary)
-            {
-                dictionary.Dispose();
-            }
+            dictionary.Dispose();
         }
 
 

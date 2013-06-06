@@ -31,7 +31,7 @@ namespace Sando.UI.Actions
             {
                 var selection = (TextSelection)_dte.ActiveDocument.Selection;
                 selection.GotoLine(lineNumber);
-
+              
                 // FocusBySelection(lineNumber, text);
             }
             catch (Exception e)

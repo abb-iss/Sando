@@ -144,6 +144,7 @@ namespace Sando.Core.UnitTests
                 var words = GenerateRandomWordList(100);
                 _dictionaryBasedSplitter.AddWords(words);
                 wordDictionary.Add(project, words);
+                _dictionaryBasedSplitter.Dispose();
             }
 
             foreach (string project in projectNames)
@@ -205,18 +206,6 @@ namespace Sando.Core.UnitTests
 
         private AutoResetEvent waitHandle ;
         private IEnumerable<string> selectedWords;
-
-        [Test]
-        public void SimilarWordsQueryTest()
-        {
-            waitHandle = new AutoResetEvent(false);
-            const string word = "similar";
-            var words = CreateSimilarWords(word);
-            _dictionaryBasedSplitter.AddWords(words);
-            _dictionaryBasedSplitter.QueryDictionary(DictionaryQueryFactory.
-                GetSimilarWordsDictionaryQuery (word, Callback));
-            waitHandle.WaitOne();
-        }
 
 
         [Test]
