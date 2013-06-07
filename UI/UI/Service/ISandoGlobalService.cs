@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
-namespace Sando.Service {
+namespace Sando.UI.Service {
     /// <summary>
     /// This is the interface that will be implemented by the global service exposed
     /// by the package defined in Sando.Service.
@@ -26,7 +26,7 @@ namespace Sando.Service {
         void GlobalServiceFunction();
         int CallLocalService();
 
-  //      List<CodeSearchResult> GetResults(string keywords);
+        List<CodeSearchResult> GetSearchResults(string searchkeywords);
         
     }
 

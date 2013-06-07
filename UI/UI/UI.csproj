@@ -236,6 +236,11 @@
     <Compile Include="Monitoring\SrcMLArchiveEventsHandlers.cs" />
     <Compile Include="Options\SandoOptionsProvider.cs" />
     <Compile Include="SandoHighLighter.cs" />
+    <Compile Include="Service\HelperFunctions.cs" />
+    <Compile Include="Service\ISandoGlobalService.cs" />
+    <Compile Include="Service\ISandoLocalService.cs" />
+    <Compile Include="Service\SandoGlobalService.cs" />
+    <Compile Include="Service\SandoLocalService.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
@@ -721,10 +726,6 @@
     <ProjectReference Include="..\..\Recommender\Recommender\Recommender.csproj">
       <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>
       <Name>Recommender</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Sando Service\SandoService\SandoService.csproj">
-      <Project>{390414dd-9d24-4ad8-a424-c1c47d76dc25}</Project>
-      <Name>SandoService</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17aa2b71-c4f9-4397-9d05-6119763d07a5}</Project>

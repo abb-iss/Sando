@@ -37,7 +37,7 @@ using Lucene.Net.Analysis.Standard;
 using Sando.Core.Logging;
 using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
-using Sando.Service;
+using Sando.UI.Service;
 using ABB.SrcML.Utilities;
 using System.Diagnostics;
 
@@ -453,11 +453,7 @@ namespace Sando.UI
                 srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
                 if(null == srcMLService) {
                     throw new Exception("Can not get the SrcML global service.");
-                }
-
-                //XQ: for debugging
-                ISandoGlobalService sandoService = GetService(typeof(SSandoGlobalService)) as ISandoGlobalService;
-                
+                }                               
 
                 // Register all types of events from the SrcML Service.
                 SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
@@ -476,6 +472,10 @@ namespace Sando.UI
 
                 SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), !isIndexRecreationRequired);
                 //SwumManager.Instance.Archive = _srcMLArchive;
+
+                ////XQ: for testing
+                //ISandoGlobalService sandoService = GetService(typeof(SSandoGlobalService)) as ISandoGlobalService;
+                //sandoService.GetSearchResults("Monster");
 
                 // xige
                 var dictionary = new DictionaryBasedSplitter();
@@ -512,6 +512,7 @@ namespace Sando.UI
                 // TODO: xige
 
 				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
+                                
             }
             catch (Exception e)
             {
