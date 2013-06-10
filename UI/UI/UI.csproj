@@ -237,8 +237,6 @@
     <Compile Include="Options\SandoOptionsProvider.cs" />
     <Compile Include="SandoHighLighter.cs" />
     <Compile Include="Service\HelperFunctions.cs" />
-    <Compile Include="Service\ISandoGlobalService.cs" />
-    <Compile Include="Service\ISandoLocalService.cs" />
     <Compile Include="Service\SandoGlobalService.cs" />
     <Compile Include="Service\SandoLocalService.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />

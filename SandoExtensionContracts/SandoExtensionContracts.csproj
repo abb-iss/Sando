@@ -110,6 +110,8 @@
     <Compile Include="ResultsReordererContracts\CodeSearchResult.cs" />
     <Compile Include="ResultsReordererContracts\IResultsReorderer.cs" />
     <Compile Include="ResultsReordererContracts\NoSearchResults.cs" />
+    <Compile Include="ServiceContracts\ISandoGlobalService.cs" />
+    <Compile Include="ServiceContracts\ISandoLocalService.cs" />
     <Compile Include="SplitterContracts\IWordSplitter.cs" />
   </ItemGroup>
   <ItemGroup>

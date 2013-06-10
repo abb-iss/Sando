@@ -475,7 +475,7 @@ namespace Sando.UI
 
                 ////XQ: for testing
                 //ISandoGlobalService sandoService = GetService(typeof(SSandoGlobalService)) as ISandoGlobalService;
-                //sandoService.GetSearchResults("Monster");
+                //var res = sandoService.GetSearchResults("Monster");
 
                 // xige
                 var dictionary = new DictionaryBasedSplitter();
