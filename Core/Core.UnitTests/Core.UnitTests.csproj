@@ -55,8 +55,10 @@
     <Compile Include="Logging\AmazonS3LogUploaderTest.cs" />
     <Compile Include="Logging\FileLoggerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\DictionaryBasedQueryReformerTests.cs" />
     <Compile Include="Tools\LuceneDirectoryHelperTest.cs" />
     <Compile Include="Tools\ProjectDictionaryTests.cs" />
+    <Compile Include="Tools\SESpecificThesaurusTests.cs" />
     <Compile Include="Tools\SplitterTest.cs" />
     <Compile Include="Tools\WordCorrectorTests.cs" />
   </ItemGroup>
@@ -73,6 +75,12 @@
       <Project>{DB482A0E-4294-4008-BC79-D22505B5B661}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\dictionary.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestFiles\TestLog.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
