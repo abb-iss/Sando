@@ -126,6 +126,9 @@
     <Compile Include="Tools\WordSplitter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Dictionaries\mined_related_unique.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="sandoKey.snk" />
   </ItemGroup>
   <ItemGroup>
