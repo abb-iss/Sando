@@ -5,6 +5,7 @@ using Sando.UI;
 using System.Windows.Forms;
 using Sando.UI.Service;
 using Microsoft.VisualStudio.Shell.Interop;
+using Sando.ExtensionContracts.ServiceContracts;
 
 namespace Sando.IntegrationTests
 {

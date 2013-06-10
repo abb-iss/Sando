@@ -40,6 +40,7 @@ using Sando.Core.Logging.Persistence;
 using Sando.UI.Service;
 using ABB.SrcML.Utilities;
 using System.Diagnostics;
+using Sando.ExtensionContracts.ServiceContracts;
 
 
 

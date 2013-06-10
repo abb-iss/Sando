@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Sando.ExtensionContracts.ServiceContracts;
 
 namespace Sando.UI.Service {
     /// <summary>
