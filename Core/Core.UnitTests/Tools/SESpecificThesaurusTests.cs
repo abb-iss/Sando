@@ -21,9 +21,12 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void QueryFreqentWord()
         {
-            var words = thesaurus.GetSynonyms("add").ToList();
-            Assert.IsNotNull(words);
-            Assert.IsTrue(words.Any());
+            AssertWordExist("add");
+            AssertWordExist("get");
+            AssertWordExist("debug");
+            AssertWordExist("retrieve");
+            AssertWordExist("file");
+            AssertWordExist("release");
         }
 
         [Test]
@@ -32,12 +35,21 @@ namespace Sando.Core.UnitTests.Tools
             AssertNonExistingWord("fafad");
             AssertNonExistingWord("");
             AssertNonExistingWord(null);
+            AssertNonExistingWord("&*##@");
+            AssertNonExistingWord("324312");
         }
 
         private void AssertNonExistingWord(String word)
         {
             var words = thesaurus.GetSynonyms(word).ToList();
             Assert.IsTrue(!words.Any());
+        }
+
+        private void AssertWordExist(String word)
+        {
+            var words = thesaurus.GetSynonyms(word).ToList();
+            Assert.IsNotNull(words);
+            Assert.IsTrue(words.Any());
         }
     }
 }
