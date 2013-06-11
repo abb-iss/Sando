@@ -5,9 +5,12 @@ using System.Text;
 
 namespace Sando.Core.Tools
 {
-    public enum QuryRecommendationLevel
+    public enum QuryReformLevel
     {
-        REPLACE,
+        NOT_REFORMED,
+        REPLACING,
+        PURE_RECOMMENDATION,
+        UNSET,
     }
 
     public enum TermChangeCategory
@@ -19,7 +22,7 @@ namespace Sando.Core.Tools
 
     public interface IReformedQuery
     {
-        QuryRecommendationLevel QuryRecommendationLevel { get; }
+        QuryReformLevel QuryReformLevel { get; }
         IEnumerable<IReformedTerm> ReformedQuery { get; }
     }
 
@@ -42,14 +45,16 @@ namespace Sando.Core.Tools
             public InternalReformedQuery()
             {
                 this.allTerms = new List<IReformedTerm>();
+                this.QuryReformLevel = QuryReformLevel.UNSET;
             }
 
             private InternalReformedQuery(IEnumerable<IReformedTerm> allTerms)
             {
                 this.allTerms = allTerms.ToList();
+                this.QuryReformLevel = QuryReformLevel.UNSET;
             }
 
-            public QuryRecommendationLevel QuryRecommendationLevel { get; private set; }
+            public QuryReformLevel QuryReformLevel { get; set; }
 
             public IEnumerable<IReformedTerm> ReformedQuery
             {
@@ -81,9 +86,19 @@ namespace Sando.Core.Tools
         public IEnumerable<IReformedQuery> GetAllPossibleReformedQueriesSoFar()
         {
             var allReformedQuries = new List<InternalReformedQuery> {new InternalReformedQuery()};
-            return reformedTermLists.Aggregate(allReformedQuries, 
+            var allQuries =  reformedTermLists.Aggregate(allReformedQuries, 
                 (current, reformedTermList) => current.SelectMany(q => 
                     GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList());
+            TagReformedQueries(allQuries);
+            return allQuries;
+        }
+
+        private void TagReformedQueries(IEnumerable<IReformedQuery> queries)
+        {
+            queries = queries.ToList();
+            new NonReformedQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
+            new ReplacingQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
+            new RecommendedQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
         }
 
         private IEnumerable<InternalReformedQuery> GenerateNewQueriesByAppendingTerms(InternalReformedQuery query, 
@@ -97,6 +112,64 @@ namespace Sando.Core.Tools
                 list.Add(extendedQuery);
             }
             return list;
+        }
+
+        private abstract class QueryTagger
+        {
+            protected abstract bool IsQuerySelected(InternalReformedQuery query);
+            protected abstract QuryReformLevel GetTag();
+
+            public void Tag(IEnumerable<InternalReformedQuery> allQueries)
+            {
+                var queries = allQueries.Where(IsQuerySelected);
+                foreach (InternalReformedQuery q in queries)
+                {
+                    q.QuryReformLevel = GetTag();
+                }
+            }
+        }
+
+        private sealed class NonReformedQueryTagger : QueryTagger
+        {
+            protected override bool IsQuerySelected(InternalReformedQuery query)
+            {
+                return query.ReformedQuery.All(t => t.Category == TermChangeCategory.NOT_CHANGED);
+            }
+
+            protected override QuryReformLevel GetTag()
+            {
+                return QuryReformLevel.NOT_REFORMED;
+            }
+        }
+
+        private sealed class ReplacingQueryTagger : QueryTagger
+        {
+            protected override bool IsQuerySelected(InternalReformedQuery query)
+            {
+                var terms = query.ReformedQuery.ToList();
+                return terms.Any(t => t.Category == TermChangeCategory.MISSPELLING_CORRECTION) &&
+                       terms.All(t => t.Category != TermChangeCategory.SYNONYM_IN_SE_THESAURUS);
+            }
+
+            protected override QuryReformLevel GetTag()
+            {
+                return QuryReformLevel.REPLACING;
+            }
+        }
+
+        private sealed class RecommendedQueryTagger : QueryTagger
+        {
+            protected override bool IsQuerySelected(InternalReformedQuery query)
+            {
+                var terms = query.ReformedQuery.ToList();
+                return terms.Any(t => t.Category == TermChangeCategory.SYNONYM_IN_SE_THESAURUS) &&
+                       terms.All(t => t.Category != TermChangeCategory.MISSPELLING_CORRECTION);
+            }
+
+            protected override QuryReformLevel GetTag()
+            {
+                return QuryReformLevel.PURE_RECOMMENDATION;
+            }
         }
     }
 }
