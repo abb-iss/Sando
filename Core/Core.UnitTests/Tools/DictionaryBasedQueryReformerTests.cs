@@ -91,13 +91,26 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void MakeSureLeavingQuotedTermUntouched()
+        {
+            AssertNotReformed(new string[]{"\"fadfs\""});
+            AssertNotReformed(new string[]{"\"?fdat\""});
+            AssertNotReformed(new string[]{"\"534q253\""});
+            AssertNotReformed(new string[]{"\"nvcd\""});
+            AssertNotReformed(new string[] { "\"nvcd\"", "\"534q253\"", "\"?fdat\"" });
+        }
+
+
+        [Test]
         public void TermChangeTypeTestForNonWord()
         {
             const string word = "addi";
             var newQueries = reformer.ReformTermsSynchronously(new string[] { word });
             AssertOriginalTerm(newQueries, word);
-            var q1 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.MISSPELLING_CORRECTION);
-            var q2 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.SYNONYM_IN_SE_THESAURUS);
+            var q1 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.
+                MISSPELLING_CORRECTION);
+            var q2 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.
+                SYNONYM_IN_SE_THESAURUS);
             Assert.IsTrue(q1.Any());
             Assert.IsTrue(!q2.Any());
         }
@@ -109,8 +122,10 @@ namespace Sando.Core.UnitTests.Tools
             const string word = "add";
             var newQueries = reformer.ReformTermsSynchronously(new string[] {word});
             AssertOriginalTerm(newQueries, word);
-            var q1 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.MISSPELLING_CORRECTION);
-            var q2 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.SYNONYM_IN_SE_THESAURUS);
+            var q1 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.
+                MISSPELLING_CORRECTION);
+            var q2 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.
+                SYNONYM_IN_SE_THESAURUS);
             Assert.IsTrue(!q1.Any());
             Assert.IsTrue(!q2.Any());
         }
@@ -121,8 +136,10 @@ namespace Sando.Core.UnitTests.Tools
             const string word = "instantiate";
             var newQueries = reformer.ReformTermsSynchronously(new string[] {word});
             AssertOriginalTerm(newQueries, word);
-            var q1 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.MISSPELLING_CORRECTION);
-            var q2 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.SYNONYM_IN_SE_THESAURUS);
+            var q1 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.
+                MISSPELLING_CORRECTION);
+            var q2 = newQueries.Where(q => q.ReformedQuery.First().Category == TermChangeCategory.
+                SYNONYM_IN_SE_THESAURUS);
             Assert.IsTrue(q1.Any());
             Assert.IsTrue(q2.Any());
             var word1 = q1.First().ReformedQuery.First().ReformedTerm;

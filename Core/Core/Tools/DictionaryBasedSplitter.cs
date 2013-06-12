@@ -36,6 +36,7 @@ namespace Sando.Core.Tools
 
         private sealed class FileDictionary : IDisposable
         {
+            private const int TERM_MINIMUM_LENGTH = 2;
             const string dictionaryName = "dictionary.txt";
             private string directory;
             private readonly List<string> allWords = new List<string>();
@@ -94,7 +95,7 @@ namespace Sando.Core.Tools
                     foreach (string word in words)
                     {
                         var trimedWord = word.Trim().ToLower();
-                        if (!String.IsNullOrEmpty(trimedWord))
+                        if (!String.IsNullOrEmpty(trimedWord) && word.Length > TERM_MINIMUM_LENGTH)
                         {
                             bool found = false;
                             int smallerWordsCount = GetSmallerWordCount(trimedWord, out found);

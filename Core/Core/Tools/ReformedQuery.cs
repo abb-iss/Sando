@@ -25,6 +25,7 @@ namespace Sando.Core.Tools
         QuryReformLevel QuryReformLevel { get; }
         IEnumerable<IReformedTerm> ReformedQuery { get; }
         IEnumerable<String> GetReformedTerms { get; }
+        String ReformExplanation { get; }
     }
 
     public interface IReformedTerm
@@ -32,6 +33,7 @@ namespace Sando.Core.Tools
         TermChangeCategory Category { get; }
         String OriginalTerm { get; }
         String ReformedTerm { get; }
+        String ReformExplanation { get; }
     }
 
     public class ReformedQueryBuilder
@@ -64,6 +66,21 @@ namespace Sando.Core.Tools
 
             public IEnumerable<string> GetReformedTerms {
                 get { return allTerms.Select(t => t.ReformedTerm).ToList(); }
+            }
+
+            public string ReformExplanation {
+                get
+                {
+                    var sb = new StringBuilder();
+                    foreach (IReformedTerm reformedTerm in allTerms)
+                    {
+                        if (reformedTerm.Category != TermChangeCategory.NOT_CHANGED)
+                        {
+                            sb.Append(reformedTerm.ReformExplanation + ";");
+                        }
+                    }
+                    return sb.ToString();
+                }
             }
 
             public object Clone()

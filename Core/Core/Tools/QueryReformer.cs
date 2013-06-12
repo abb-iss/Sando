@@ -56,7 +56,7 @@ namespace Sando.Core.Tools
 
         private IEnumerable<IReformedTerm> FindBetterTerms(String word)
         {
-            if (!dictionary.DoesWordExist(word))
+            if (!dictionary.DoesWordExist(word) && !IsWordQuoted(word))
             {
                 var list = new List<IReformedTerm>();
                 list.AddRange(FindShapeSimilarWordsInLocalDictionary(word));
@@ -64,13 +64,19 @@ namespace Sando.Core.Tools
                 return list;
             }
             return new []{new InternalReformedTerm(TermChangeCategory.NOT_CHANGED, 
-                word, word)};
+                word, word, String.Empty)};
+        }
+
+        private bool IsWordQuoted(string word)
+        {
+            word = word.Trim();
+            return word.StartsWith("\"") && word.EndsWith("\"");
         }
 
         private IEnumerable<IReformedTerm> FindShapeSimilarWordsInLocalDictionary(String word)
         {
             var list = dictionary.FindSimilarWords(word).Select(w => new InternalReformedTerm
-                (TermChangeCategory.MISSPELLING_CORRECTION, word, w)).ToList();
+                (TermChangeCategory.MISSPELLING_CORRECTION, word, w, GetCorrectionMessage(word, w))).ToList();
             if (list.Count >= SIMILAR_WORDS_MAX_COUNT)
                 list = list.GetRange(0, SIMILAR_WORDS_MAX_COUNT);
             return list;
@@ -79,11 +85,21 @@ namespace Sando.Core.Tools
         private IEnumerable<IReformedTerm> FindSynonymsInLocalDictionary(String word)
         {
             var synonyms = seThesaurus.GetSynonyms(word).Select(w => new InternalReformedTerm
-                (TermChangeCategory.SYNONYM_IN_SE_THESAURUS, word, w));
+                (TermChangeCategory.SYNONYM_IN_SE_THESAURUS, word, w, GetSynonymMessage(word, w)));
             var list = synonyms.Where(w => dictionary.DoesWordExist(w.ReformedTerm)).ToList();
             if (list.Count() >= SYNONYMS_MAX_COUNT)
                 list = list.GetRange(0, SYNONYMS_MAX_COUNT);
             return list;
+        }
+
+        private string GetCorrectionMessage(string original, string reformed)
+        {
+            return "Correct \"" + original + "\" to \"" + reformed + "\"";
+        }
+
+        private string GetSynonymMessage(string original, string reformed)
+        {
+            return "Find synonym of \"" + original + "\" with \"" + reformed + "\"";
         }
 
         private class InternalReformedTerm : IReformedTerm 
@@ -91,13 +107,15 @@ namespace Sando.Core.Tools
             public TermChangeCategory Category { get; private set; }
             public string OriginalTerm { get; private set; }
             public string ReformedTerm { get; private set; }
+            public string ReformExplanation { get; private set; }
 
             public InternalReformedTerm(TermChangeCategory category, String originalTerm, 
-                String reformedTerm)
+                String reformedTerm, String reformExplanation)
             {
                 this.Category = category;
                 this.OriginalTerm = originalTerm;
                 this.ReformedTerm = reformedTerm;
+                this.ReformExplanation = reformExplanation;
             }
         }
     }

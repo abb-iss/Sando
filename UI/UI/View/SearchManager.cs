@@ -63,6 +63,12 @@ namespace Sando.UI.View
                 results = resultsReorderer.ReorderSearchResults(results);
 
                 var returnString = new StringBuilder();
+
+                if (criteria.IsQueryReformed())
+                {
+                    returnString.Append(criteria.GetQueryReformExplanation());
+                }
+
                 if (!results.Any())
                 {
                     returnString.Append("No results found. ");
@@ -110,7 +116,7 @@ namespace Sando.UI.View
             return isOpen;
         }
 
-        private static SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
+        private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
         {            
             var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                       
             var builder = CriteriaBuilder.GetBuilder().
