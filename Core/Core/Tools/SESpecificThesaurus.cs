@@ -16,6 +16,11 @@ namespace Sando.Core.Tools
         private static SESpecificThesaurus instance;
         private SESpecificThesaurus()
         {
+            lock (locker)
+            {
+                orderedWordPairs = new List<KeyValuePair<string, string>>();
+                switchedWordPairs = new List<KeyValuePair<string, string>>();
+            }
         }
         public static SESpecificThesaurus GetInstance()
         {
@@ -25,19 +30,22 @@ namespace Sando.Core.Tools
         const string filePath = @"Dictionaries\mined_related_unique.csv";
         private List<KeyValuePair<String, String>> orderedWordPairs;
         private List<KeyValuePair<String, String>> switchedWordPairs;
+        private readonly object locker = new object();
 
         public void Initialize()
         {
-            var lines = File.ReadAllLines(filePath).Select(a => a.Split(';'));
-            IEnumerable<string> csv = (from line in lines
-                  select (from piece in line
-                          select piece).First()).Skip(1);
-            var synonyms = csv.Select(element => element.Split(new char[] {','})).
-                Select(s => new KeyValuePair<string, string>(s[0].Trim(), s[1].Trim())).
-                    ToList();
-            this.orderedWordPairs = synonyms.OrderBy(p => p.Key).ToList();
-            this.switchedWordPairs = synonyms.Select(p => new KeyValuePair<String, 
-                String>(p.Value, p.Key)).OrderBy(p => p.Key).ToList();
+            lock (locker)
+            {
+                var lines = File.ReadAllLines(filePath).Select(a => a.Split(';'));
+                IEnumerable<string> csv = (from line in lines
+                    select (from piece in line select piece).First()).Skip(1);
+                var synonyms = csv.Select(element => element.Split(new char[] { ',' })).
+                    Select(s => new KeyValuePair<string, string>(s[0].Trim(), s[1].Trim())).
+                        ToList();
+                this.orderedWordPairs = synonyms.OrderBy(p => p.Key).ToList();
+                this.switchedWordPairs = synonyms.Select(p => new KeyValuePair<String,
+                    String>(p.Value, p.Key)).OrderBy(p => p.Key).ToList();
+            }
         }
 
         private class KeyComparer : IComparer<KeyValuePair<string, string>>
@@ -55,12 +63,15 @@ namespace Sando.Core.Tools
 
         public IEnumerable<String> GetSynonyms(String word)
         {
-            if (!String.IsNullOrEmpty(word))
+            lock (locker)
             {
-                word = Preprocess(word);
-                return GetValuesOfKey(orderedWordPairs, word).Union(GetValuesOfKey(switchedWordPairs, word));
+                if (!String.IsNullOrEmpty(word))
+                {
+                    word = Preprocess(word);
+                    return GetValuesOfKey(orderedWordPairs, word).Union(GetValuesOfKey(switchedWordPairs, word));
+                }
+                return Enumerable.Empty<String>();
             }
-            return Enumerable.Empty<String>();
         }
 
         private IEnumerable<string> GetValuesOfKey(List<KeyValuePair<String, String>> keyValuePairs, 

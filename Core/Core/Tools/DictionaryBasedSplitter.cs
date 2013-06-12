@@ -40,21 +40,24 @@ namespace Sando.Core.Tools
             const string dictionaryName = "dictionary.txt";
             private string directory;
             private readonly List<string> allWords = new List<string>();
-            private WordCorrector corrector;
+            private WordCorrector corrector = new WordCorrector();
             
             private delegate void NewWordsAdded(IEnumerable<String> words);
             private event NewWordsAdded addWordsEvent;
-      
+
+
+            public FileDictionary()
+            {
+                this.corrector = new WordCorrector();
+                addWordsEvent += corrector.AddWords;
+            }
+
             public void Initialize(String directory)
             {
                 lock (allWords)
                 {
                     allWords.Clear();
                     this.directory = directory;
-
-                    corrector = new WordCorrector();
-                    addWordsEvent += corrector.AddWords;
-
                     ReadWordsFromFile();
                 }
             }
@@ -146,7 +149,10 @@ namespace Sando.Core.Tools
 
             public IEnumerable<String> FindSimilarWords(String word)
             {
-                return corrector.FindSimilarWords(word).Select(p => p.Key);
+                var similarWords = corrector.FindSimilarWords(word).ToList();
+                if(similarWords.Any())
+                    return similarWords.Select(p => p.Key);
+                return Enumerable.Empty<string>();
             }
 
             public void Dispose()

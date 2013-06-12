@@ -75,21 +75,31 @@ namespace Sando.Core.Tools
 
         private IEnumerable<IReformedTerm> FindShapeSimilarWordsInLocalDictionary(String word)
         {
-            var list = dictionary.FindSimilarWords(word).Select(w => new InternalReformedTerm
-                (TermChangeCategory.MISSPELLING_CORRECTION, word, w, GetCorrectionMessage(word, w))).ToList();
-            if (list.Count >= SIMILAR_WORDS_MAX_COUNT)
-                list = list.GetRange(0, SIMILAR_WORDS_MAX_COUNT);
-            return list;
+            var list = dictionary.FindSimilarWords(word).ToList();
+            if (list.Any())
+            {
+                IEnumerable<IReformedTerm> correctedList = list.Select(w => new InternalReformedTerm
+                    (TermChangeCategory.MISSPELLING_CORRECTION, word, w, GetCorrectionMessage(word, w))).ToList();
+                if (correctedList.Count() >= SIMILAR_WORDS_MAX_COUNT)
+                    correctedList = correctedList.ToList().GetRange(0, SIMILAR_WORDS_MAX_COUNT);
+                return correctedList;
+            }
+            return Enumerable.Empty<IReformedTerm>();
         }
 
         private IEnumerable<IReformedTerm> FindSynonymsInLocalDictionary(String word)
         {
-            var synonyms = seThesaurus.GetSynonyms(word).Select(w => new InternalReformedTerm
-                (TermChangeCategory.SYNONYM_IN_SE_THESAURUS, word, w, GetSynonymMessage(word, w)));
-            var list = synonyms.Where(w => dictionary.DoesWordExist(w.ReformedTerm)).ToList();
-            if (list.Count() >= SYNONYMS_MAX_COUNT)
-                list = list.GetRange(0, SYNONYMS_MAX_COUNT);
-            return list;
+            var synonyms = seThesaurus.GetSynonyms(word);
+            if (synonyms.Any())
+            {
+                var terms = synonyms.Select(w => new InternalReformedTerm(TermChangeCategory.
+                    SYNONYM_IN_SE_THESAURUS, word, w, GetSynonymMessage(word, w)));
+                var list = terms.Where(w => dictionary.DoesWordExist(w.ReformedTerm)).ToList();
+                if (list.Count() >= SYNONYMS_MAX_COUNT)
+                    list = list.GetRange(0, SYNONYMS_MAX_COUNT);
+                return list;
+            }
+            return Enumerable.Empty<IReformedTerm>();
         }
 
         private string GetCorrectionMessage(string original, string reformed)
