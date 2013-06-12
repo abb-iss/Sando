@@ -17,10 +17,21 @@ namespace Sando.Indexer.Searching.Criteria
         public CriteriaBuilder AddSearchString(string searchString, SimpleSearchCriteria searchCriteria = null)
         {
             Initialze(searchCriteria);
-            _searchCriteria.SearchTerms = new SortedSet<string>(WordSplitter.ExtractSearchTerms(searchString).
+            var terms = ReformQuery(WordSplitter.ExtractSearchTerms(searchString).
                 SelectMany(ServiceLocator.Resolve<DictionaryBasedSplitter>().ExtractWords));
+            _searchCriteria.SearchTerms = new SortedSet<string>(terms);
             return this;
         }
+
+        private IEnumerable<string> ReformQuery(IEnumerable<string> words)
+        {
+            words = words.ToList();
+            var reformer = ServiceLocator.Resolve<QueryReformer>();
+            var reformedQueries = reformer.ReformTermsSynchronously(words).ToList();
+            return reformedQueries.Any(q => q.QuryReformLevel == QuryReformLevel.REPLACING) ? 
+                reformedQueries.First(q => q.QuryReformLevel == QuryReformLevel.REPLACING).GetReformedTerms : words;
+        }
+
 
         private void Initialze(SimpleSearchCriteria searchCriteria)
         {

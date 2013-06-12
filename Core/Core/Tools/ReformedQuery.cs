@@ -24,6 +24,7 @@ namespace Sando.Core.Tools
     {
         QuryReformLevel QuryReformLevel { get; }
         IEnumerable<IReformedTerm> ReformedQuery { get; }
+        IEnumerable<String> GetReformedTerms { get; }
     }
 
     public interface IReformedTerm
@@ -59,6 +60,10 @@ namespace Sando.Core.Tools
             public IEnumerable<IReformedTerm> ReformedQuery
             {
                 get { return allTerms; }
+            }
+
+            public IEnumerable<string> GetReformedTerms {
+                get { return allTerms.Select(t => t.ReformedTerm).ToList(); }
             }
 
             public object Clone()
@@ -98,7 +103,7 @@ namespace Sando.Core.Tools
             queries = queries.ToList();
             new NonReformedQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
             new ReplacingQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
-            new RecommendedQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
+            new PureRecommendedQueryTagger().Tag(queries.Cast<InternalReformedQuery>());
         }
 
         private IEnumerable<InternalReformedQuery> GenerateNewQueriesByAppendingTerms(InternalReformedQuery query, 
@@ -157,7 +162,7 @@ namespace Sando.Core.Tools
             }
         }
 
-        private sealed class RecommendedQueryTagger : QueryTagger
+        private sealed class PureRecommendedQueryTagger : QueryTagger
         {
             protected override bool IsQuerySelected(InternalReformedQuery query)
             {
