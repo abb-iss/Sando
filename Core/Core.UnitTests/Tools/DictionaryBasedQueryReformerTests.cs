@@ -91,6 +91,18 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void NotReformingWordWhoseStemmingIsInDictionary()
+        {
+            AssertNotReformed(new string[]{"additive"});
+            AssertNotReformed(new string[]{"searchers"});
+            AssertNotReformed(new string[]{"absentive"});
+            AssertNotReformed(new string[]{"accessive"});
+            AssertNotReformed(new string[]{"actually"});
+            AssertNotReformed(new string[]{"automatically"});
+            AssertNotReformed(new string[]{"application"});
+        }
+
+        [Test]
         public void MakeSureLeavingQuotedTermUntouched()
         {
             AssertNotReformed(new string[]{"\"fadfs\""});
