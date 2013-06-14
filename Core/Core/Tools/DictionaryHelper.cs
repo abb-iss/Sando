@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Lucene.Net.Analysis;
+using Lucene.Net.QueryParsers;
+using Lucene.Net.Search;
+using SF.Snowball.Ext;
+using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Core.Tools
 {
-    internal class DictionaryHelper
+    public class DictionaryHelper
     {
         private static readonly Regex _quotesPattern = new Regex("-{0,1}\"[^\"]+\"", RegexOptions.Compiled);
         private static readonly Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
@@ -162,6 +167,15 @@ namespace Sando.Core.Tools
         {
             var matches = RemoveChildMatches(_quotesPattern.Matches(text).Cast<Match>());
             return matches.Select(m => m.Groups[0].Index + m.Groups[0].Length - 1);
+        }
+
+
+        public static string GetStemmedQuery(String query)
+        {
+            var stemmer = new EnglishStemmer();
+            stemmer.SetCurrent(query);
+            stemmer.Stem();
+            return stemmer.GetCurrent();
         }
 
         private static IEnumerable<Match> RemoveChildMatches(IEnumerable<Match> matches)

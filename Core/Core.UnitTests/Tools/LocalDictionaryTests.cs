@@ -8,13 +8,13 @@ using System.Threading;
 using NUnit.Framework;
 using Sando.Core.Tools;
 
-namespace Sando.Core.UnitTests
+namespace Sando.Core.UnitTests.Tools
 {
     [TestFixture]
-    class ProjectDictionaryTests
+    class LocalDictionaryTests
     {
         private const string tempFolder = @"C:\Windows\Temp\Dictionary\";
-        private static Random random = new Random((int) DateTime.Now.Ticks);
+        private static Random random = new Random((int)DateTime.Now.Ticks);
         private DictionaryBasedSplitter _dictionaryBasedSplitter;
         private List<string> _createdDirectory = new List<string>();
 
@@ -27,7 +27,6 @@ namespace Sando.Core.UnitTests
                     Floor(26 * random.NextDouble() + 97)));
                 builder.Append(ch);
             }
-
             return builder.ToString();
         }
 
@@ -44,7 +43,7 @@ namespace Sando.Core.UnitTests
         private void CreateDirectory(String path)
         {
             Directory.CreateDirectory(path);
-            if(!_createdDirectory.Contains(path))
+            if (!_createdDirectory.Contains(path))
                 _createdDirectory.Add(path);
         }
 
@@ -81,6 +80,20 @@ namespace Sando.Core.UnitTests
             _createdDirectory.Clear();
         }
 
+        [Test]
+        public void GetStemmedWord()
+        {
+            for (int i = 0; i < 1000; i ++)
+            {
+                string word = "adding";
+                var stemmedWord = DictionaryHelper.GetStemmedQuery(word);
+                Assert.IsTrue(stemmedWord.Equals("ad"));
+                word = "add";
+                stemmedWord = DictionaryHelper.GetStemmedQuery(word);
+                Assert.IsTrue(stemmedWord.Equals("add"));
+            }
+        }
+
 
         [Test]
         public void MakeSureCanNotAddShortWords()
@@ -88,8 +101,9 @@ namespace Sando.Core.UnitTests
             for (int i = 0; i < 100; i++)
             {
                 var word = GenerateRandomString(2);
-                _dictionaryBasedSplitter.AddWords(new []{word});
-                Assert.IsTrue(!_dictionaryBasedSplitter.DoesWordExist(word));
+                _dictionaryBasedSplitter.AddWords(new[] { word });
+                Assert.IsTrue(!_dictionaryBasedSplitter.DoesWordExist(word, 
+                    DictionaryOption.NoStemming));
             }
         }
 
@@ -107,7 +121,8 @@ namespace Sando.Core.UnitTests
             this._dictionaryBasedSplitter.AddWords(words);
             foreach (string word in words)
             {
-                Assert.IsTrue(this._dictionaryBasedSplitter.DoesWordExist(word));
+                Assert.IsTrue(this._dictionaryBasedSplitter.DoesWordExist(word, 
+                    DictionaryOption.NoStemming));
             }
         }
 
@@ -115,14 +130,15 @@ namespace Sando.Core.UnitTests
         public void AddManyWords()
         {
             var words = new List<String>();
-            for (int i = 0; i < 1000; i ++)
+            for (int i = 0; i < 1000; i++)
             {
                 words.Add(GenerateRandomString(30));
             }
             this._dictionaryBasedSplitter.AddWords(words);
             foreach (string word in words)
             {
-                Assert.IsTrue(this._dictionaryBasedSplitter.DoesWordExist(word));
+                Assert.IsTrue(this._dictionaryBasedSplitter.DoesWordExist(word, 
+                    DictionaryOption.NoStemming));
             }
         }
 
@@ -147,7 +163,7 @@ namespace Sando.Core.UnitTests
         {
             var projectNames = GenerateRandomWordList(10);
             var wordDictionary = new Dictionary<String, IEnumerable<String>>();
-            
+
             foreach (string project in projectNames)
             {
                 CreateDirectory(tempFolder + project + @"\");
@@ -164,7 +180,8 @@ namespace Sando.Core.UnitTests
                 var words = wordDictionary[project];
                 foreach (string word in words)
                 {
-                    Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist(word));
+                    Assert.IsTrue(_dictionaryBasedSplitter.DoesWordExist(word, 
+                        DictionaryOption.NoStemming));
                 }
             }
         }
@@ -172,17 +189,17 @@ namespace Sando.Core.UnitTests
         [Test]
         public void SplitSimpleWord()
         {
-            _dictionaryBasedSplitter.AddWords(new string[]{"int", "i"});
+            _dictionaryBasedSplitter.AddWords(new string[] { "int", "i" });
             var subWords = _dictionaryBasedSplitter.ExtractWords("inti");
             Assert.IsTrue(subWords[0].Equals("int"));
             Assert.IsTrue(subWords[1].Equals("i"));
         }
 
-        
+
         [Test]
         public void SplitRandomWord()
         {
-            for (int length = 0; length < 61; length ++)
+            for (int length = 0; length < 61; length++)
             {
                 for (int i = 0; i < 100; i++)
                 {
@@ -201,29 +218,24 @@ namespace Sando.Core.UnitTests
             var suffixes = GenerateRandomWordList(length);
             _dictionaryBasedSplitter.AddWords(prefixes);
             _dictionaryBasedSplitter.AddWords(suffixes);
-            for (int i = 0; i < length; i ++)
+            for (int i = 0; i < length; i++)
             {
                 var sb = new StringBuilder();
                 sb.Append(prefixes.ElementAt(i));
                 sb.Append(middels.ElementAt(i));
                 sb.Append(suffixes.ElementAt(i));
                 var subWords = _dictionaryBasedSplitter.ExtractWords(sb.ToString());
-                Assert.IsTrue(subWords.Count() == 3);
-                Assert.IsTrue(subWords.ElementAt(0).Equals(prefixes.ElementAt(i)));
-                Assert.IsTrue(subWords.ElementAt(1).Equals(middels.ElementAt(i)));
-                Assert.IsTrue(subWords.ElementAt(2).Equals(suffixes.ElementAt(i)));
+                Assert.IsTrue(subWords.Count() >= 3);
+                Assert.IsTrue(subWords.First().Equals(prefixes.ElementAt(i)));
+                Assert.IsTrue(subWords.Last().Equals(suffixes.ElementAt(i)));
             }
         }
-
-        private AutoResetEvent waitHandle ;
-        private IEnumerable<string> selectedWords;
-
 
         [Test]
         public void SplitSimpleQuote()
         {
             const string quote = "\"inti\"";
-            _dictionaryBasedSplitter.AddWords(new string[]{"int", "i"});
+            _dictionaryBasedSplitter.AddWords(new string[] { "int", "i" });
             var words = _dictionaryBasedSplitter.ExtractWords(quote);
             Assert.IsTrue(words.Count() == 1);
             Assert.IsTrue(words.ElementAt(0).Equals(quote));
@@ -239,13 +251,13 @@ namespace Sando.Core.UnitTests
             const string mix3 = nonQuote + " " + quote + " " + nonQuote;
             const string mix4 = quote + " " + nonQuote + " " + quote;
             _dictionaryBasedSplitter.AddWords(new string[] { "int", "i" });
-            
+
             var words = _dictionaryBasedSplitter.ExtractWords(mix1);
             Assert.IsTrue(words.Count() == 3);
             Assert.IsTrue(words.ElementAt(0).Equals("\"inti\""));
             Assert.IsTrue(words.ElementAt(1).Equals("int"));
             Assert.IsTrue(words.ElementAt(2).Equals("i"));
-            
+
             words = _dictionaryBasedSplitter.ExtractWords(mix2);
             Assert.IsTrue(words.Count() == 3);
             Assert.IsTrue(words.ElementAt(0).Equals("int"));
@@ -282,18 +294,12 @@ namespace Sando.Core.UnitTests
             Assert.IsTrue(words.ElementAt(0).Equals(quote));
         }
 
-        private static IEnumerable<string> CreateSimilarWords(String word)
+        [Test]
+        public void AddSpecialWords()
         {
-            var words = new List<String>();
-            for (char c = 'a'; c <= 'z'; c++ )
-                words.Add(word + c);
-            return words;
+            _dictionaryBasedSplitter.AddWords(new string[]{"abb"});
+            _dictionaryBasedSplitter.DoesWordExist("abb", DictionaryOption.NoStemming);
         }
 
-        private void Callback(IEnumerable<string> selectedWords)
-        {
-            this.selectedWords = selectedWords;
-            waitHandle.Set();
-        }
     }
 }
