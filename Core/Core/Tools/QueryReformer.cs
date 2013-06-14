@@ -56,7 +56,8 @@ namespace Sando.Core.Tools
 
         private IEnumerable<IReformedTerm> FindBetterTerms(String word)
         {
-            if (!dictionary.DoesWordExist(word) && !IsWordQuoted(word))
+            if (!dictionary.DoesWordExist(word, DictionaryOption.IncludingStemming) 
+                && !IsWordQuoted(word))
             {
                 var list = new List<IReformedTerm>();
                 list.AddRange(FindShapeSimilarWordsInLocalDictionary(word));
@@ -94,7 +95,8 @@ namespace Sando.Core.Tools
             {
                 var terms = synonyms.Select(w => new InternalReformedTerm(TermChangeCategory.
                     SYNONYM_IN_SE_THESAURUS, word, w, GetSynonymMessage(word, w)));
-                var list = terms.Where(w => dictionary.DoesWordExist(w.ReformedTerm)).ToList();
+                var list = terms.Where(w => dictionary.DoesWordExist(w.ReformedTerm, 
+                    DictionaryOption.NoStemming)).ToList();
                 if (list.Count() >= SYNONYMS_MAX_COUNT)
                     list = list.GetRange(0, SYNONYMS_MAX_COUNT);
                 return list;

@@ -83,7 +83,7 @@ namespace Sando.Core.UnitTests.Tools
             AssertReformed(new string[] {"addi", "add"}, new int[] {0});
             AssertReformed(new string[] {"add", "additional", "addi"}, new int[] {2});
             AssertReformed(new string[] {"san"}, new int[] {0});
-            AssertReformed(new string[] {"adjusting"}, new int[] {0});
+            AssertReformed(new string[] {"adjusting"}, new int[] {});
             AssertReformed(new string[] {"aft"}, new int[] {0});
             AssertReformed(new string[] {"alignme"}, new int[] {0});
             AssertReformed(new string[] {"addi", "aft", "alignme"}, new int[] {0, 1, 2});
