@@ -321,8 +321,7 @@
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
                         VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
-                       SelectionChanged="searchResultListbox_SelectionChanged"
-                       
+                       SelectionChanged="searchResultListbox_SelectionChanged"                       
                        >
                 <ListView.ContextMenu>
                     <ContextMenu Name="SearchResultMenu" StaysOpen="true">
@@ -334,14 +333,8 @@
                 </ListView.ContextMenu>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
-                                <Setter Property="Height" Value="24"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=expandButton, Path=IsChecked}" Value="True">
-                                <Setter Property="Height" Value="89"/>
-                            </DataTrigger>
-                        </Style.Triggers>
+                        <!--<Style.Triggers>-->
+                        <!--</Style.Triggers>-->
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>
@@ -363,8 +356,7 @@
 
                                     <Grid Margin="0,0,0,0" >
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="22"/>
-                                            <RowDefinition Height="60"/>
+                                            <RowDefinition Height="22"/>                                           
                                             <RowDefinition Height="1"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -395,7 +387,30 @@
                                             <Canvas Width="Auto" Height="0" Margin="-7,-2,0,0" Grid.Row="0" Grid.Column="0">
                                                 <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
                                             </Canvas>
-                                            <Image Source="{Binding Mode=OneWay, Path=ProgramElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" />
+                                            <Popup Name="Details" Placement="Left" StaysOpen="False" Width="Auto" AllowsTransparency="true"                                               
+                                                PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}"
+                                                IsOpen="{Binding (ListViewItem.IsSelected), RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}">
+
+                                                    <Grid Background="Gray">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="24" />
+                                                        <RowDefinition Height="24" />
+                                                        <RowDefinition Height="50" />
+                                                        <RowDefinition Height="100" />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Grid.Row="0" Margin="3" Text="{Binding Mode=OneWay, Path=Name}" />
+                                                    <TextBlock Grid.Row="1" Margin="3" Text="{Binding Mode=OneWay, Path=ParentOrFile}"/>
+                                                    <TextBlock Grid.Row="2" Margin="3" Text="{Binding Mode=OneWay, Path=Highlight}"/>
+                                                    <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="3">
+                                                        <TextBlock Margin="3" Text="{Binding Mode=OneWay, Path=Raw}"/>
+                                                    </ScrollViewer>
+                                                </Grid>
+                                            </Popup>
+                                            <Image Source="{Binding Mode=OneWay, Path=ProgramElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" >
+                                            </Image>
                                             <TextBlock Name="Name" MaxWidth="210" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
                                             <TextBlock Grid.Row="1" Grid.Column="2" FontStyle="Italic" FontWeight="Light" Margin="5,0,5,0">in</TextBlock>
                                             <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="3" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />

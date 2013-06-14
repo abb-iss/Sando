@@ -22,6 +22,9 @@ using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Indexer.Searching.Metrics;
 
+using System.Collections;
+using System.Text;
+
 namespace Sando.UI.View
 {
     public partial class SearchViewControl : ISearchResultListener
@@ -36,6 +39,7 @@ namespace Sando.UI.View
             SearchCriteria = new SimpleSearchCriteria();
             InitAccessLevels();
             InitProgramElements();
+
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += SelectFirstResult;
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += ScrollToTop;
 
@@ -171,6 +175,7 @@ namespace Sando.UI.View
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
+
             BeginSearch(searchBox.Text);
         }
 
@@ -188,6 +193,10 @@ namespace Sando.UI.View
 
         private void BeginSearch(string searchString)
         {
+
+            //Store the search key
+            this.searchKey = searchBox.Text;
+
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
             {
@@ -238,6 +247,7 @@ namespace Sando.UI.View
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
+
             OpenFileWithSelectedResult(sender);
         }
 
@@ -285,13 +295,36 @@ namespace Sando.UI.View
             }
         }
 
+        //Update for the Popup window Zhao
         private void UpdateResults(IEnumerable<CodeSearchResult> results)
         {
             SearchResults.Clear();
+            //Concurrent opportunity??
             foreach (var codeSearchResult in results)
             {
                 SearchResults.Add(codeSearchResult);
             }
+
+            //For each item in the SearchResults, generate the highlight results
+            foreach(var item in SearchResults) {
+                //The highlight is the only string that contains the search key
+                item.Highlight = GenerateHighlight(item.Raw, this.searchKey);
+            }
+        }
+
+        private string GenerateHighlight(string raw, string searchKey) {
+            
+            StringBuilder highlight = new StringBuilder();            
+            string[] lines = raw.Split('\n');
+
+            foreach(string line in lines) {
+
+                if(0 <= line.IndexOf(searchKey, StringComparison.InvariantCultureIgnoreCase)) {
+                    highlight.Append(line + "\n");
+                }
+            }
+
+            return highlight.ToString().Replace('\t', ' ');
         }
 
         public void UpdateMessage(string message)
@@ -308,6 +341,8 @@ namespace Sando.UI.View
 
         private void UpdateExpansionState(ListView view)
         {
+            return;
+
             if (view != null)
             {
                 var selectedIndex = view.SelectedIndex;
@@ -325,7 +360,7 @@ namespace Sando.UI.View
                 {
                     for (var currentIndex = 0; currentIndex < view.Items.Count; ++currentIndex)
                     {
-                        var currentItem = view.ItemContainerGenerator.ContainerFromIndex(currentIndex) as ListViewItem;
+                        var currentItem = view.ItemContainerGenerator.ContainerFromIndex(currentIndex) as ListViewItem;                        
                         if (currentItem != null)
                             currentItem.Height = currentIndex == selectedIndex ? 89 : 24;
                     }
@@ -450,6 +485,9 @@ namespace Sando.UI.View
 
         private readonly SearchManager _searchManager;
         private readonly QueryRecommender _recommender;
+        
+        //Search Key 
+        private string searchKey;
 
         private void Remove_Click_1(object sender, RoutedEventArgs e)
         {

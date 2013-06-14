@@ -82,7 +82,25 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
                 var raw = ProgramElement.RawSource;
                 return SourceToSnippet(raw, DefaultSnippetSize);
             }
-        } 
+        }
+
+        //Zhao Li, return all the RawSource to the Popup window
+        public string Raw {
+            get {
+                return ProgramElement.RawSource.Replace('\t', ' ');
+            }
+        }
+
+        //Zhao Li, return all the seach results
+        private string highlight;
+        public string Highlight {
+            get {
+                return this.highlight;
+            }
+            set {
+                this.highlight = value;
+            }
+        }
 
         private static int TAB = 4;
         private static int MAX_SNIPPET_LENGTH = 85;        
