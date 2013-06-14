@@ -292,6 +292,24 @@ namespace Sando.Core.UnitTests.Tools
             Assert.True(contractFailed, "Contract should fail!");
         }
 
+        [Test]
+        public void ExtractSearchTerms_FirstPartIsAlwaysOriginal()
+        {
+            const string term1 = "splitWord";
+            const string term2 = "splitAgain";
+            List<string> parts = WordSplitter.ExtractSearchTerms(term1);
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual(parts[0], term1.ToLower());
+
+            parts = WordSplitter.ExtractSearchTerms(term2);
+            Assert.AreEqual(3, parts.Count);
+            Assert.AreEqual(parts[0], term2.ToLower());
+
+            parts = WordSplitter.ExtractSearchTerms(term1 + " " + term2);
+            Assert.AreEqual(5, parts.Count);
+            Assert.AreEqual(parts[0], term1.ToLower());
+            Assert.AreEqual(parts[1], term2.ToLower());
+        }
 
         [Test]
         public void TestPerformance()
@@ -306,6 +324,9 @@ namespace Sando.Core.UnitTests.Tools
             watch.Stop();
             Assert.IsTrue(watch.ElapsedMilliseconds < 500);
         }
+
+
+
 
         [SetUp]
         public void ResetContract()

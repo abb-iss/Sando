@@ -82,16 +82,27 @@ namespace Sando.Core.UnitTests
         }
 
 
+        [Test]
+        public void MakeSureCanNotAddShortWords()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                var word = GenerateRandomString(2);
+                _dictionaryBasedSplitter.AddWords(new []{word});
+                Assert.IsTrue(!_dictionaryBasedSplitter.DoesWordExist(word));
+            }
+        }
 
         [Test]
         public void AddSeveralWords()
         {
             const string alpha = "abcdefghijklmnopqrstuvwxwz";
+            const int length = 3;
             var words = new List<String>();
 
-            for (int i = 0; i < 26; i++)
+            for (int i = 0; i <= 26 - length; i++)
             {
-                words.Add(alpha.Substring(26 - i - 1, 1));
+                words.Add(alpha.Substring(i, length));
             }
             this._dictionaryBasedSplitter.AddWords(words);
             foreach (string word in words)

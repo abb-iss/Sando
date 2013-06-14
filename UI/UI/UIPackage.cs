@@ -483,6 +483,11 @@ namespace Sando.UI
                 ServiceLocator.Resolve<IndexUpdateManager>().indexUpdated += dictionary.UpdateProgramElement;
                 ServiceLocator.RegisterInstance(dictionary);
 
+                var reformer = new QueryReformer(dictionary);
+                reformer.Initialize();
+                ServiceLocator.RegisterInstance(reformer);
+
+
 
                 // SrcML Service starts monitoring the opened solution.
                 // Sando may define the directory of storing srcML archives

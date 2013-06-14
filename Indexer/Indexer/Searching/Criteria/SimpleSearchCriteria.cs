@@ -19,13 +19,27 @@ namespace Sando.Indexer.Searching.Criteria
 			Locations = new SortedSet<string>();
 		}
 
-		public override string ToQueryString()
+
+	    public override string ToQueryString()
 		{
             var builder = new LuceneQueryStringBuilder(this);
             return builder.Build();
 		}
-        
-		public SortedSet<string> SearchTerms { get; set; }
+
+        public bool Reformed { set; get; }
+        public string Explanation { set; get; }
+
+	    public override bool IsQueryReformed()
+	    {
+	        return Reformed;
+	    }
+
+	    public override string GetQueryReformExplanation()
+	    {
+	        return Explanation;
+	    }
+
+	    public SortedSet<string> SearchTerms { get; set; }
 		public bool MatchCase { get; set; }
 		public bool ExactMode { get; set; }
 		public bool SearchByAccessLevel { get; set; }

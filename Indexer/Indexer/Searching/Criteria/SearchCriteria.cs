@@ -2,7 +2,6 @@
 {
 	public abstract class SearchCriteria
 	{
-
         public static int DefaultNumberOfSearchResultsReturned = 40;
 
 		public SearchCriteria()
@@ -26,5 +25,8 @@
 		}
 
 		public int NumberOfSearchResultsReturned { get; set; }
+
+	    public abstract bool IsQueryReformed();
+	    public abstract string GetQueryReformExplanation();
 	}
 }
