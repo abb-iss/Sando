@@ -35,7 +35,7 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void QueryWiredWords()
         {
-            Assert.IsFalse(thesaurus.GetSynonyms("joseph").Any());
+            Assert.IsFalse(thesaurus.GetSynonyms("obama").Any());
             Assert.IsFalse(thesaurus.GetSynonyms("georgewbush").Any());
             Assert.IsFalse(thesaurus.GetSynonyms("philly").Any());
             Assert.IsFalse(thesaurus.GetSynonyms("fdaf").Any());
@@ -53,7 +53,7 @@ namespace Sando.Core.UnitTests.Tools
             Assert.IsTrue(thesaurus.GetSynonyms("however").Contains("nevertheless"));
             Assert.IsTrue(thesaurus.GetSynonyms("however").Contains("withal"));
             Assert.IsTrue(thesaurus.GetSynonyms("however").Contains("still"));
-            Assert.IsTrue(thesaurus.GetSynonyms("however").Count() == 6);
+            Assert.IsTrue(thesaurus.GetSynonyms("however").Count() == 8);
         }
     }
 }
