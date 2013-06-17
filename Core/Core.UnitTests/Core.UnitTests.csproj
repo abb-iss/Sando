@@ -59,6 +59,7 @@
     <Compile Include="Tools\GeneralEnglishThesaurusTests.cs" />
     <Compile Include="Tools\LocalDictionaryTests.cs" />
     <Compile Include="Tools\LuceneDirectoryHelperTest.cs" />
+    <Compile Include="Tools\QueryParserTests.cs" />
     <Compile Include="Tools\SESpecificThesaurusTests.cs" />
     <Compile Include="Tools\SplitterTest.cs" />
     <Compile Include="Tools\WordCorrectorTests.cs" />
