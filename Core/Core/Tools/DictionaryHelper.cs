@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Lucene.Net.Analysis;
-using Lucene.Net.QueryParsers;
-using Lucene.Net.Search;
 using SF.Snowball.Ext;
-using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Core.Tools
