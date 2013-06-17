@@ -8,8 +8,37 @@ namespace Sando.Core.Tools
 {
     public interface IThesaurus
     {
+        void Initialize();
         IEnumerable<String> GetSynonyms(String word);
     }
+
+    public class ThesaurusHelper
+    {
+        public static IEnumerable<T> GetValuesOfKey<T>(List<KeyValuePair<String, T>> keyValuePairs,
+          string word)
+        {
+            var target = new KeyValuePair<String, T>(word, default(T));
+            var comparer = new KeyComparer<T>();
+            int endIndex = keyValuePairs.BinarySearch(target, comparer);
+            if (endIndex > -1 && endIndex < keyValuePairs.Count)
+            {
+                int startInex = endIndex;
+                for (; comparer.Compare(keyValuePairs.ElementAt(startInex - 1), target) == 0; startInex--);
+                return keyValuePairs.GetRange(startInex, endIndex - startInex + 1).Select(p => p.Value);
+            }
+            return Enumerable.Empty<T>();
+        }
+
+        private class KeyComparer<T> : IComparer<KeyValuePair<string, T>>
+        {
+            public int Compare(KeyValuePair<string, T> x, KeyValuePair<string, T> y)
+            {
+                return x.Key.CompareTo(y.Key);
+            }
+        }
+    }
+
+
 
     public class SESpecificThesaurus : IThesaurus
     {
@@ -22,7 +51,7 @@ namespace Sando.Core.Tools
                 switchedWordPairs = new List<KeyValuePair<string, string>>();
             }
         }
-        public static SESpecificThesaurus GetInstance()
+        public static IThesaurus GetInstance()
         {
             return instance ?? (instance = new SESpecificThesaurus());
         }
@@ -48,14 +77,6 @@ namespace Sando.Core.Tools
             }
         }
 
-        private class KeyComparer : IComparer<KeyValuePair<string, string>>
-        {
-            public int Compare(KeyValuePair<string, string> x, KeyValuePair<string, string> y)
-            {
-                return x.Key.CompareTo(y.Key);
-            }
-        }
-
         private String Preprocess(String word)
         {
             return word.Trim().ToLower();
@@ -68,25 +89,11 @@ namespace Sando.Core.Tools
                 if (!String.IsNullOrEmpty(word))
                 {
                     word = Preprocess(word);
-                    return GetValuesOfKey(orderedWordPairs, word).Union(GetValuesOfKey(switchedWordPairs, word));
+                    return ThesaurusHelper.GetValuesOfKey(orderedWordPairs, word).
+                        Union(ThesaurusHelper.GetValuesOfKey(switchedWordPairs, word));
                 }
                 return Enumerable.Empty<String>();
             }
-        }
-
-        private IEnumerable<string> GetValuesOfKey(List<KeyValuePair<String, String>> keyValuePairs, 
-            string word)
-        {
-            var target = new KeyValuePair<String, String>(word, "");
-            var comparer = new KeyComparer();
-            int endIndex = keyValuePairs.BinarySearch(target, comparer);
-            if (endIndex > -1 && endIndex < keyValuePairs.Count)
-            {
-                int startInex = endIndex;
-                for (; comparer.Compare(keyValuePairs.ElementAt(startInex - 1), target) == 0; startInex--) ;
-                return keyValuePairs.GetRange(startInex, endIndex - startInex + 1).Select(p => p.Value);
-            }
-            return Enumerable.Empty<String>();
         }
     }
 }
