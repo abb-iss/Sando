@@ -503,7 +503,9 @@ namespace Sando.UI
                 // TODO: xige
 
 				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
-                                
+
+                if (isIndexRecreationRequired)
+                {
                     CallShowProgressBar(true);
                     var indexingTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
                         {
@@ -519,6 +521,7 @@ namespace Sando.UI
                 else
                 {
                     CallShowProgressBar(!srcMLService.IsReady);
+                }
             }
             catch (Exception e)
             {
