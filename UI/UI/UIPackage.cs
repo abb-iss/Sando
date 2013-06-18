@@ -517,7 +517,17 @@ namespace Sando.UI
                 // TODO: xige
 
 				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
-                                
+                if (isIndexRecreationRequired)
+                {
+                    System.Threading.Tasks.Task.Factory.StartNew(() =>
+                    {
+                        var files = srcMLService.GetSrcMLArchive().GetFiles();
+                        foreach (var file in files)
+                        {
+                            srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileAdded, file));
+                        }
+                    });   
+                }
             }
             catch (Exception e)
             {
