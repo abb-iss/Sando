@@ -10,7 +10,7 @@ namespace Sando.Core.UnitTests.Tools
     [TestFixture]
     class SESpecificThesaurusTests
     {
-        private readonly IThesaurus thesaurus = SESpecificThesaurus.GetInstance();
+        private readonly IThesaurus thesaurus = SeSpecificThesaurus.GetInstance();
 
         [SetUp]
         public void SetUp()

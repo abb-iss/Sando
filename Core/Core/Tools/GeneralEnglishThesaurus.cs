@@ -19,19 +19,24 @@ namespace Sando.Core.Tools
         private readonly List<KeyValuePair<String,IEnumerable<String>>> synonymLists = 
             new List<KeyValuePair<string, IEnumerable<string>>>(); 
         private readonly object locker = new object();
+        private bool isInitialized = false;
 
         public void Initialize()
         {
             lock (locker)
             {
-                var lines = File.ReadAllLines(dictionaryFile).Select(a => a.Split(';'));
-                List<string> csv = (from line in lines
-                    select (from piece in line select piece).
-                        First()).ToList();
-                foreach (string line in csv)
+                if (!isInitialized)
                 {
-                    var pair = CreateSynonymEntry(line);
-                    synonymLists.Add(pair);
+                    var lines = File.ReadAllLines(dictionaryFile).Select(a => a.Split(';'));
+                    List<string> csv = (from line in lines
+                                        select (from piece in line select piece).
+                                            First()).ToList();
+                    foreach (string line in csv)
+                    {
+                        var pair = CreateSynonymEntry(line);
+                        synonymLists.Add(pair);
+                    }
+                    isInitialized = true;
                 }
             }
         }

@@ -15,6 +15,7 @@ using EnvDTE;
 using EnvDTE80;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
+using Sando.Core.QueryRefomers;
 using Sando.DependencyInjection;
 using Sando.Indexer;
 using Sando.Indexer.IndexFiltering;
@@ -483,7 +484,7 @@ namespace Sando.UI
                 ServiceLocator.Resolve<IndexUpdateManager>().indexUpdated += dictionary.UpdateProgramElement;
                 ServiceLocator.RegisterInstance(dictionary);
 
-                var reformer = new QueryReformer(dictionary);
+                var reformer = new QueryReformerManager(dictionary);
                 reformer.Initialize();
                 ServiceLocator.RegisterInstance(reformer);
 
