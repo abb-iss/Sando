@@ -1,4 +1,5 @@
-﻿using Sando.Core.Tools;
+﻿using Sando.Core.QueryRefomers;
+using Sando.Core.Tools;
 using System.Collections.Generic;
 using System.Linq;
 using Sando.DependencyInjection;
@@ -40,9 +41,9 @@ namespace Sando.Indexer.Searching.Criteria
         private IReformedQuery TryGetReformedQuery(IEnumerable<string> words)
         {
             words = words.ToList();
-            var reformer = ServiceLocator.Resolve<QueryReformer>();
+            var reformer = ServiceLocator.Resolve<QueryReformerManager>();
             var reformedQueries = reformer.ReformTermsSynchronously(words).ToList();
-            return reformedQueries.FirstOrDefault(q => q.QuryReformLevel == QuryReformLevel.REPLACING);
+            return reformedQueries.FirstOrDefault();
         }
 
 

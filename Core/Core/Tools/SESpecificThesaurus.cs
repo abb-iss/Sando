@@ -39,41 +39,48 @@ namespace Sando.Core.Tools
     }
 
 
-
-    public class SESpecificThesaurus : IThesaurus
+    public class SeSpecificThesaurus : IThesaurus
     {
-        private static SESpecificThesaurus instance;
-        private SESpecificThesaurus()
+        private static SeSpecificThesaurus instance;
+        private SeSpecificThesaurus()
         {
             lock (locker)
             {
                 orderedWordPairs = new List<KeyValuePair<string, string>>();
                 switchedWordPairs = new List<KeyValuePair<string, string>>();
+                this.isInitialized = false;
             }
         }
         public static IThesaurus GetInstance()
         {
-            return instance ?? (instance = new SESpecificThesaurus());
+            return instance ?? (instance = new SeSpecificThesaurus());
         }
 
         const string filePath = @"Dictionaries\mined_related_unique.csv";
         private List<KeyValuePair<String, String>> orderedWordPairs;
         private List<KeyValuePair<String, String>> switchedWordPairs;
         private readonly object locker = new object();
+        private bool isInitialized;
 
         public void Initialize()
         {
             lock (locker)
             {
-                var lines = File.ReadAllLines(filePath).Select(a => a.Split(';'));
-                IEnumerable<string> csv = (from line in lines
-                    select (from piece in line select piece).First()).Skip(1);
-                var synonyms = csv.Select(element => element.Split(new char[] { ',' })).
-                    Select(s => new KeyValuePair<string, string>(s[0].Trim(), s[1].Trim())).
-                        ToList();
-                this.orderedWordPairs = synonyms.OrderBy(p => p.Key).ToList();
-                this.switchedWordPairs = synonyms.Select(p => new KeyValuePair<String,
-                    String>(p.Value, p.Key)).OrderBy(p => p.Key).ToList();
+                if (!isInitialized)
+                {
+                    var lines = File.ReadAllLines(filePath).Select(a => a.Split(';'));
+                    IEnumerable<string> csv = (from line in lines
+                                               select (from piece in line select piece).First()).Skip(1);
+                    var synonyms = csv.Select(element => element.Split(new char[] {','})).
+                                       Select(s => new KeyValuePair<string, string>(s[0].Trim(), s[1].Trim())).
+                                       ToList();
+                    this.orderedWordPairs = synonyms.OrderBy(p => p.Key).ToList();
+                    this.switchedWordPairs = synonyms.Select(p => new KeyValuePair<String,
+                                                                      String>(p.Value, p.Key))
+                                                     .OrderBy(p => p.Key)
+                                                     .ToList();
+                    this.isInitialized = true;
+                }
             }
         }
 
