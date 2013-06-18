@@ -15,6 +15,7 @@ using EnvDTE;
 using EnvDTE80;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
+using Sando.Core.QueryRefomers;
 using Sando.DependencyInjection;
 using Sando.Indexer;
 using Sando.Indexer.IndexFiltering;
@@ -483,7 +484,7 @@ namespace Sando.UI
                 ServiceLocator.Resolve<IndexUpdateManager>().indexUpdated += dictionary.UpdateProgramElement;
                 ServiceLocator.RegisterInstance(dictionary);
 
-                var reformer = new QueryReformer(dictionary);
+                var reformer = new QueryReformerManager(dictionary);
                 reformer.Initialize();
                 ServiceLocator.RegisterInstance(reformer);
 
@@ -517,17 +518,7 @@ namespace Sando.UI
                 // TODO: xige
 
 				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
-                if (isIndexRecreationRequired)
-                {
-                    System.Threading.Tasks.Task.Factory.StartNew(() =>
-                    {
-                        var files = srcMLService.GetSrcMLArchive().GetFiles();
-                        foreach (var file in files)
-                        {
-                            srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileAdded, file));
-                        }
-                    });   
-                }
+                                
             }
             catch (Exception e)
             {
