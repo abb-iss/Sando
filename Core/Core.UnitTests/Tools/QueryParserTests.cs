@@ -17,6 +17,17 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        [TestCaseSource("ValidLocationFiltersTestCases")]
+        public void GIVEN_QueryParser_WHEN_ParseIsCalled_AND_QueryIsLocationString_THAN_ValidQueryDescriptionIsReturned(string query, string expectedQueryDescription)
+        {
+            var sandoQueryParser = new SandoQueryParser();
+            var sandoQueryDescription = sandoQueryParser.Parse(query);
+
+            Assert.IsTrue(sandoQueryDescription.IsValid);
+            Assert.AreEqual(expectedQueryDescription, sandoQueryDescription.ToString());
+        }
+
+        [Test]
         [TestCaseSource("ValidLiteralQueryTestCases")]
         public void GIVEN_QueryParser_WHEN_ParseIsCalled_AND_QueryIsLiteralString_THAN_ValidQueryDescriptionIsReturned(string query, string expectedQueryDescription)
         {
@@ -60,6 +71,17 @@ namespace Sando.Core.UnitTests.Tools
             Assert.AreEqual(expectedQueryDescription, sandoQueryDescription.ToString());
         }
 
+        [Test]
+        [TestCaseSource("ValidNormalQueryTestCases")]
+        public void GIVEN_QueryParser_WHEN_ParseIsCalled_AND_QueryIsNormalString_THAN_ValidQueryDescriptionIsReturned(string query, string expectedQueryDescription)
+        {
+            var sandoQueryParser = new SandoQueryParser();
+            var sandoQueryDescription = sandoQueryParser.Parse(query);
+
+            Assert.IsTrue(sandoQueryDescription.IsValid);
+            Assert.AreEqual(expectedQueryDescription, sandoQueryDescription.ToString());
+        }
+
 
         private static readonly object[] InvalidQueryTestCases =
             {
@@ -71,6 +93,17 @@ namespace Sando.Core.UnitTests.Tools
                 "\"  \""
             };
 
+        private static readonly object[] ValidLocationFiltersTestCases =
+            {
+                new object[]{"location:\"C:\\Temp\\Sando\"",                            "Locations:[\"C:\\Temp\\Sando\"]"},
+                new object[]{"location:D:\\Windows",                                    "Locations:[D:\\Windows]"},
+                new object[]{"location:\"C:\\Program Files\\Adobe\\*\"",                "Locations:[\"C:\\Program Files\\Adobe\\*\"]"},
+                new object[]{"location:D*",                                             "Locations:[D*]"},
+                new object[]{"location:\"C:\\Program Files*\"",                         "Locations:[\"C:\\Program Files*\"]"},
+                new object[]{"location:C:\\Adobe\\Photoshop(8) location:D",             "Locations:[C:\\Adobe\\Photoshop(8),D]"},
+                new object[]{"location:\"C:\\*\\Adobe\" location:\"D:\\Photos\\*\"",    "Locations:[\"C:\\*\\Adobe\",\"D:\\Photos\\*\"]"}
+            };
+         
         private static readonly object[] ValidLiteralQueryTestCases =
             {
                 new object[]{"\"asd^&*#@$%!()_+-=:';[]{}?/><,.żźćąśęńłó\"",             "Literal search terms:[\"asd^&*#@$%!()_+-=:';[]{}?/><,.żźćąśęńłó\"]"},
@@ -81,23 +114,22 @@ namespace Sando.Core.UnitTests.Tools
                 new object[]{"\"var sandoQueryParser\" \"new SandoQueryParser();\"",    "Literal search terms:[\"var sandoQueryParser\",\"new SandoQueryParser();\"]"},
                 new object[]{"\"name \\\"\" \" sandoQueryParser\" \"new Sando\"",       "Literal search terms:[\"name \\\"\",\" sandoQueryParser\",\"new Sando\"]"},
                 new object[]{"-\"name\" \" \t\n \"",                                    "Literal search terms:[-\"name\"]"},
-                new object[]{"-\"name \\\"\" \" -sandoQueryParser\" -\"new Sando\"",    "Literal search terms:[-\"name \\\"\",\" -sandoQueryParser\",-\"new Sando\"]"},
-                new object[]{"\"open\" file\"",                                         "Literal search terms:[\"open\"]"}
+                new object[]{"-\"name \\\"\" \" -sandoQueryParser\" -\"new Sando\"",    "Literal search terms:[-\"name \\\"\",\" -sandoQueryParser\",-\"new Sando\"]"}
             };
 
         private static readonly object[] ValidFileExtensionFiltersTestCases =
             {
                 new object[]{"file:cs",                 "File extensions:[cs]"},
-                new object[]{"file:long_entension",     "File extensions:[long_entension]"},
-                new object[]{"-file:mp3",               "File extensions:[-mp3]"},
-                new object[]{"file:txt -file:dat",      "File extensions:[txt,-dat]"}
+                new object[]{"file:long_Entension",     "File extensions:[long_entension]"},
+                new object[]{"-file:.mp3",               "File extensions:[-mp3]"},
+                new object[]{"file:txt -file:.DAT",      "File extensions:[txt,-dat]"}
             };
 
         private static readonly object[] ValidProgramElementTypeFiltersTestCases =
             {
-                new object[]{"type:class",                  "Program element types:[class]"},
+                new object[]{"type:Class",                  "Program element types:[class]"},
                 new object[]{"type:method",                 "Program element types:[method]"},
-                new object[]{"-type:enum type:field",       "Program element types:[-enum,field]"},
+                new object[]{"-type:ENUM type:field",       "Program element types:[-enum,field]"},
                 new object[]{"type:property -type:struct",  "Program element types:[property,-struct]"}
             };
 
@@ -105,8 +137,16 @@ namespace Sando.Core.UnitTests.Tools
             {
                 new object[]{"access:public",                       "Access levels:[public]"},
                 new object[]{"access:private",                      "Access levels:[private]"},
-                new object[]{"-access:protected access:internal",   "Access levels:[-protected,internal]"},
-                new object[]{"access:protected -access:public",     "Access levels:[protected,-public]"}
+                new object[]{"-access:Protected access:internal",   "Access levels:[-protected,internal]"},
+                new object[]{"access:protected -access:puBLIc",     "Access levels:[protected,-public]"}
+            };
+
+        private static readonly object[] ValidNormalQueryTestCases =
+            {
+                new object[]{"identifier",                          "Search terms:[identifier]"},
+                new object[]{"open*file",                           "Search terms:[open*,file]"},
+                new object[]{"do something special",                "Search terms:[do,something,special]"},
+                new object[]{"every*Single*Word",                   "Search terms:[every*,Single*,Word]"}
             };
     }
 }
