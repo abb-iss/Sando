@@ -1,4 +1,7 @@
-﻿namespace Sando.Indexer.Searching.Criteria
+﻿using System;
+using System.Collections.Generic;
+
+namespace Sando.Indexer.Searching.Criteria
 {
 	public abstract class SearchCriteria
 	{
@@ -28,5 +31,6 @@
 
 	    public abstract bool IsQueryReformed();
 	    public abstract string GetQueryReformExplanation();
+	    public abstract IEnumerable<String> GetRecommendedQueries();
 	}
 }

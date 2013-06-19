@@ -11,6 +11,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
@@ -99,6 +100,11 @@ namespace Sando.UI.Service {
         public void UpdateMessage(string message)
         {
             _myMessage = message;
+        }
+
+        public void UpdateRecommendedQueries(IQueryable<string> queries)
+        {
+            
         }
 
         public List<CodeSearchResult> GetSearchResults(string searchkeywords)

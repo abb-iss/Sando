@@ -44,16 +44,21 @@ namespace Sando.Core.Tools
         private KeyValuePair<String, IEnumerable<String>> CreateSynonymEntry(String line)
         {
             var words = line.Split(new char[] {','});
-            var key = words.First();
-            var value = words.Skip(1).ToList();
+            var key = words.First().ToLower();
+            var value = words.Skip(1).Select(w => w.ToLower());
             return new KeyValuePair<string, IEnumerable<string>>(key, value);
+        }
+
+        private String Preprocess(String word)
+        {
+            return word.Trim().ToLower();
         }
 
         public IEnumerable<string> GetSynonyms(string word)
         {
             lock (locker)
             {
-                var synonyms = ThesaurusHelper.GetValuesOfKey(synonymLists, word).FirstOrDefault();
+                var synonyms = ThesaurusHelper.GetValuesOfKey(synonymLists, Preprocess(word)).FirstOrDefault();
                 return synonyms ?? Enumerable.Empty<String>();
             }
         }

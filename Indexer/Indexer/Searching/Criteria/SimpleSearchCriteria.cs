@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Indexer.Searching.Criteria
@@ -28,6 +29,7 @@ namespace Sando.Indexer.Searching.Criteria
 
         public bool Reformed { set; get; }
         public string Explanation { set; get; }
+        public IEnumerable<String> RecommendedQueries { get; set; }
 
 	    public override bool IsQueryReformed()
 	    {
@@ -37,6 +39,11 @@ namespace Sando.Indexer.Searching.Criteria
 	    public override string GetQueryReformExplanation()
 	    {
 	        return Explanation;
+	    }
+
+	    public override IEnumerable<string> GetRecommendedQueries()
+	    {
+	        return RecommendedQueries;
 	    }
 
 	    public SortedSet<string> SearchTerms { get; set; }
