@@ -29,6 +29,12 @@ namespace Sando.UI.Monitoring
             SourceFileChanged(sender, args, false);
         }
 
+        public int TaskCount()
+        {
+            lock (tasksTrackerLock)
+                return tasks.Count;
+        }
+
         public void WaitForIndexing()
         {
             bool running = true;
@@ -133,9 +139,11 @@ namespace Sando.UI.Monitoring
         {
             if (args.ReadyState)
             {
-                ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>().WaitForIndexing();
-                ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
-                SwumManager.Instance.PrintSwumCache();
+                if (ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>().TaskCount() == 0)
+                {                    
+                    ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+                    SwumManager.Instance.PrintSwumCache();
+                }
             }
         }
 

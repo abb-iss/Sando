@@ -85,12 +85,23 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         }
 
         //Zhao Li, return all the RawSource to the Popup window
+        //We need to highlight the search string?
         public string Raw {
             get {
                 return ProgramElement.RawSource.Replace('\t', ' ');
             }
         }
 
+        //Highlight raw
+        private string highlightRaw;
+        public string HighlightRaw {
+            get {
+                return this.highlightRaw;
+            }
+            set {
+                this.highlightRaw = value;
+            }
+        }
         //Zhao Li, return all the seach results
         private string highlight;
         public string Highlight {
