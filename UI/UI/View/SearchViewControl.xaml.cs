@@ -24,6 +24,8 @@ using Sando.Indexer.Searching.Metrics;
 
 using System.Collections;
 using System.Text;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Sando.UI.View
 {
@@ -299,32 +301,58 @@ namespace Sando.UI.View
         private void UpdateResults(IEnumerable<CodeSearchResult> results)
         {
             SearchResults.Clear();
-            //Concurrent opportunity??
+            //Concurrent opportunity (No, SearchResults is not thread safe)
             foreach (var codeSearchResult in results)
             {
                 SearchResults.Add(codeSearchResult);
             }
 
+
             //For each item in the SearchResults, generate the highlight results
             foreach(var item in SearchResults) {
-                //The highlight is the only string that contains the search key
-                item.Highlight = GenerateHighlight(item.Raw, this.searchKey);
+                string highlight;
+                string highlightRaw;
+                GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+                item.Highlight = highlight;
+                item.HighlightRaw = highlightRaw;
             }
+
+            ////Concurrent version 
+            //Parallel.ForEach(SearchResults, item => {
+            //    string highlight;
+            //    string highlightRaw;
+            //    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+            //    item.Highlight = highlight;
+            //    item.HighlightRaw = highlightRaw;
+            //}
+            //    );
         }
 
-        private string GenerateHighlight(string raw, string searchKey) {
+        private void GenerateHighlight(string raw, string searchKey, out string highlight_out, out string highlightRaw_out) {
             
-            StringBuilder highlight = new StringBuilder();            
+            StringBuilder highlight = new StringBuilder();
+            StringBuilder highlight_Raw = new StringBuilder();
+
             string[] lines = raw.Split('\n');
+            string newLine;
 
             foreach(string line in lines) {
-
-                if(0 <= line.IndexOf(searchKey, StringComparison.InvariantCultureIgnoreCase)) {
-                    highlight.Append(line + "\n");
+                int loc = line.IndexOf(searchKey, StringComparison.InvariantCultureIgnoreCase);
+                if(0 <= loc) {
+                    string replaceKey = "|~S~|" + line.Substring(loc, searchKey.Length) + "|~E~|";
+                    newLine = Regex.Replace(line, searchKey, replaceKey, RegexOptions.IgnoreCase);
+                    highlight.Append(newLine);
+                    highlight.Append('\n');
+                    highlight_Raw.Append(newLine);
+                    highlight_Raw.Append('\n');
+                } else {
+                    highlight_Raw.Append(line);
+                    highlight_Raw.Append('\n');
                 }
             }
 
-            return highlight.ToString().Replace('\t', ' ');
+            highlight_out = highlight.ToString().Replace('\t', ' ');
+            highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
         }
 
         public void UpdateMessage(string message)

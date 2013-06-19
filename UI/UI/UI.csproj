@@ -239,6 +239,8 @@
     <Compile Include="Service\HelperFunctions.cs" />
     <Compile Include="Service\SandoGlobalService.cs" />
     <Compile Include="Service\SandoLocalService.cs" />
+    <Compile Include="TextBlockEx.cs" />
+    <Compile Include="View\Search\Converters\HighlightSearchKey.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />
     <Compile Include="View\FirstTimeIntroduction.cs" />
@@ -738,7 +740,9 @@
       <Name>Translation</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Themes\" />
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
