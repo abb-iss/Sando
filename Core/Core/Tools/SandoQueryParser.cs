@@ -7,33 +7,60 @@ namespace Sando.Core.Tools
 {
     public class SandoQueryParser
     {
-        private const string LocationFilterRegex = @"(?<filter>\-?location:(?<location>(""[\w\:\.\\\(\)\[\]\{\}\* ]+"")|[\w\:\.\\\(\)\[\]\{\}\*]+))";
+        private const string QuoteMarker = "✉∞dq";
+        private const string QuoteNormalizationRegex = @"\s*(""|\\"")\s*";
+        private const string UnpairedQuoteRegex = @"(?<!✉∞dq)""(?!✉∞dq)";
         private const string LiteralSearchRegex = @"(?<literal>\-?""(?<literalcontent>[^""\\]*(?:\\.[^""\\]*)*)"")";
-        private const string FileExtensionFilterRegex = @"(?<filter>\-?file:\.?(?<fileext>\w+))";
-        private const string ProgramElementTypeFilterRegex = @"(?<filter>\-?type:(?<type>field|method|property|enum|struct|class))";
-        private const string AccessLevelFilterRegex = @"(?<filter>\-?access:(?<access>public|private|protected|internal))";
+        private const string LocationWithLiteralsFilterRegex = @"(?<filter>(?<!\w)-?location:(?<location>(""✉∞dq[\w\:\.\\\(\)\[\]\{\}\* ]+✉∞dq"")))";
+        private const string LocationWithoutLiteralsFilterRegex = @"(?<filter>(?<!\w)-?location:(?<location>[\w\:\.\\\(\)\[\]\{\}\*]+))";
+        private const string FileExtensionFilterRegex = @"(?<filter>(?<!\w)-?file:\.?(?<fileext>\w+))";
+        private const string ProgramElementTypeFilterRegex = @"(?<filter>(?<!\w)-?type:(?<type>field|method|property|enum|struct|class))";
+        private const string AccessLevelFilterRegex = @"(?<filter>(?<!\w)-?access:(?<access>public|private|protected|internal))";
         private const string InvalidCharactersRegex = "[^a-zA-Z0-9_\\s\\*\\-]";
+        private const string NormalSearchTermsRegex = @"(?<searchterm>\-?\w+[\*?\w]*)";
+        private const string MultipleWildcardRegex = @"\*+";
 
         public SandoQueryDescription Parse(string query)
         {
             var sandoQueryDescription = new SandoQueryDescription {OriginalQuery = query};
-            var parseFunctions = GetQueryParseFunctions();
             var analyzedQuery = query;
+            if (String.IsNullOrWhiteSpace(analyzedQuery))
+                return sandoQueryDescription;
+            analyzedQuery = Regex.Replace(analyzedQuery, QuoteNormalizationRegex, "$1");
+            analyzedQuery = MarkQuotes(analyzedQuery);
+            var parseFunctions = GetQueryParseFunctions();
             foreach (var function in parseFunctions)
             {
+                analyzedQuery = function(analyzedQuery, sandoQueryDescription);
                 if (String.IsNullOrWhiteSpace(analyzedQuery))
                     return sandoQueryDescription;
-                analyzedQuery = function(analyzedQuery, sandoQueryDescription);
             }
             return sandoQueryDescription;
+        }
+
+        private static string MarkQuotes(string query)
+        {
+            var matches = Regex.Matches(query, LiteralSearchRegex);
+            foreach (Match match in matches)
+            {
+                var matchedLiteralContent = match.Groups["literalcontent"].Value;
+                if (!String.IsNullOrWhiteSpace(matchedLiteralContent))
+                {
+                    var markedQuotedMatch = QuoteMarker + matchedLiteralContent + QuoteMarker;
+                    query = query.Replace(matchedLiteralContent, markedQuotedMatch);
+                }
+            }
+            query = Regex.Replace(query, UnpairedQuoteRegex, " ");
+            return query;
         }
 
         private static IEnumerable<Func<string, SandoQueryDescription, string>> GetQueryParseFunctions()
         {
             return new List<Func<string, SandoQueryDescription, string>>
                 {
-                    ParseLocationFilters,
+                    ParseLocationWithLiteralsFilters,
                     ParseLiteralSearchTerms,
+                    ParseLocationWithoutLiteralsFilters,
                     ParseFileExtensionFilters,
                     ParseProgramElementTypeFilters,
                     ParseAccessLevelFilters,
@@ -41,25 +68,29 @@ namespace Sando.Core.Tools
                 };
         }
 
-        private static string ParseLocationFilters(string query, SandoQueryDescription sandoQueryDescription)
+        private static string ParseLocationWithLiteralsFilters(string query, SandoQueryDescription sandoQueryDescription)
         {
-            var matches = Regex.Matches(query, LocationFilterRegex, RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(query, LocationWithLiteralsFilterRegex, RegexOptions.IgnoreCase);
             foreach (Match match in matches)
             {
                 var matchedFilter = match.Groups["filter"].Value;
-                var matchedLocation = match.Groups["location"].Value;
+                var matchedLocation = match.Groups["location"].Value.Replace(QuoteMarker, String.Empty);
                 if (!String.IsNullOrWhiteSpace(matchedLocation))
                 {
-                    sandoQueryDescription.Locations.Add(matchedLocation);
+                    if (matchedFilter.StartsWith("-"))
+                        sandoQueryDescription.Locations.Add("-" + matchedLocation);
+                    else
+                        sandoQueryDescription.Locations.Add(matchedLocation);
                 }
                 query = query.Replace(matchedFilter, " ");
             }
+            query = Regex.Replace(query, QuoteMarker, String.Empty);
             return query;
         }
 
         private static string ParseLiteralSearchTerms(string query, SandoQueryDescription sandoQueryDescription)
         {
-            var matches = Regex.Matches(query, LiteralSearchRegex);
+            var matches = Regex.Matches(query, LiteralSearchRegex, RegexOptions.IgnoreCase);
             foreach (Match match in matches)
             {
                 var matchedLiteral = match.Groups["literal"].Value;
@@ -70,7 +101,26 @@ namespace Sando.Core.Tools
                 }
                 query = query.Replace(matchedLiteral, " ");
             }
-            query = query.Replace("\"", String.Empty);
+            return query;
+        }
+
+        private static string ParseLocationWithoutLiteralsFilters(string query, SandoQueryDescription sandoQueryDescription)
+        {
+            var matches = Regex.Matches(query, LocationWithoutLiteralsFilterRegex, RegexOptions.IgnoreCase);
+            foreach (Match match in matches)
+            {
+                var matchedFilter = match.Groups["filter"].Value;
+                var matchedLocation = match.Groups["location"].Value.Replace(QuoteMarker, String.Empty);
+                if (!String.IsNullOrWhiteSpace(matchedLocation))
+                {
+                    if (matchedFilter.StartsWith("-"))
+                        sandoQueryDescription.Locations.Add("-" + matchedLocation);
+                    else
+                        sandoQueryDescription.Locations.Add(matchedLocation);
+                }
+                query = query.Replace(matchedFilter, " ");
+            }
+            query = Regex.Replace(query, QuoteMarker, String.Empty);
             return query;
         }
 
@@ -125,12 +175,13 @@ namespace Sando.Core.Tools
         private static string ParseNormalSearchTerms(string query, SandoQueryDescription sandoQueryDescription)
         {
             query = Regex.Replace(query, InvalidCharactersRegex, " ");
-            var wordSplitter = new WordSplitter();
-            var searchTerms = wordSplitter.ExtractWords(query).Where(w => !String.IsNullOrWhiteSpace(w));
-            foreach (var searchTerm in searchTerms)
+            query = Regex.Replace(query, MultipleWildcardRegex, "*");
+            var matches = Regex.Matches(query, NormalSearchTermsRegex);
+            foreach (Match match in matches)
             {
-                sandoQueryDescription.SearchTerms.Add(searchTerm);
-                query = query.Replace(searchTerm, " ");
+                var matchedTerm = match.Groups["searchterm"].Value;
+                sandoQueryDescription.SearchTerms.Add(matchedTerm);
+                query = query.Replace(matchedTerm, " ");
             }
             return query;
         }
@@ -140,21 +191,21 @@ namespace Sando.Core.Tools
     {
         public SandoQueryDescription()
         {
-            SearchTerms = new List<string>();
-            LiteralSearchTerms = new List<string>();
-            FileExtensions = new List<string>();
-            ProgramElementTypes = new List<string>();
-            Locations = new List<string>();
-            AccessLevels = new List<string>();
+            SearchTerms = new SortedSet<string>();
+            LiteralSearchTerms = new SortedSet<string>();
+            FileExtensions = new SortedSet<string>();
+            ProgramElementTypes = new SortedSet<string>();
+            Locations = new SortedSet<string>();
+            AccessLevels = new SortedSet<string>();
         }
 
         public string OriginalQuery { get; set; }
-        public List<string> SearchTerms { get; set; }
-        public List<string> LiteralSearchTerms { get; set; }
-        public List<string> FileExtensions { get; set; }
-        public List<string> ProgramElementTypes { get; set; }
-        public List<string> Locations { get; set; }
-        public List<string> AccessLevels { get; set; }
+        public SortedSet<string> SearchTerms { get; set; }
+        public SortedSet<string> LiteralSearchTerms { get; set; }
+        public SortedSet<string> FileExtensions { get; set; }
+        public SortedSet<string> ProgramElementTypes { get; set; }
+        public SortedSet<string> Locations { get; set; }
+        public SortedSet<string> AccessLevels { get; set; }
 
         public bool IsValid
         {
@@ -178,16 +229,16 @@ namespace Sando.Core.Tools
         {
             return new List<string>
                 {
-                    GetDescriptionForCollection("Search terms", SearchTerms),
+                    GetDescriptionForCollection("Locations", Locations),
                     GetDescriptionForCollection("Literal search terms", LiteralSearchTerms),
                     GetDescriptionForCollection("File extensions", FileExtensions),
                     GetDescriptionForCollection("Program element types", ProgramElementTypes),
-                    GetDescriptionForCollection("Locations", Locations),
-                    GetDescriptionForCollection("Access levels", AccessLevels)
+                    GetDescriptionForCollection("Access levels", AccessLevels),
+                    GetDescriptionForCollection("Search terms", SearchTerms)
                 };
         }
 
-        private static string GetDescriptionForCollection(string collectionName, List<string> collection)
+        private static string GetDescriptionForCollection(string collectionName, SortedSet<string> collection)
         {
             return collection.Any() ? String.Format("{0}:[{1}]", collectionName,  String.Join(",", collection)) : null;
         }
