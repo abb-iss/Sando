@@ -177,8 +177,14 @@ namespace Sando.Core.UnitTests.Tools
                     "Literal search terms:[\"D:\\Photos\"], Search terms:[C,cs,method,myaccess,myfile,mylocation,mytype,public]"},
                 new object[]{"\"location:C\" \"access:public\" \"type:method\" \"file:cs\"",
                     "Literal search terms:[\"access:public\",\"file:cs\",\"location:C\",\"type:method\"]"},
-                new object[]{"access:public\" \"type:method\" \"file:cs\"",
-                    "File extensions:[cs], Program element types:[method], Access levels:[public]"}
+                new object[]{"\" \" \"al-location:F\" file:cs\" something",
+                    "Literal search terms:[\"al-location:F\"], File extensions:[cs], Search terms:[something]"},
+                new object[]{"wild****card testing",
+                    "Search terms:[testing,wild*card]"},
+                new object[]{"\" var wildcard=\\\"\" some thing",
+                    "Literal search terms:[\"var wildcard=\\\"\"], Search terms:[some,thing]"},
+                new object[]{"location:file:cs access:publication type:methodical",
+                    "Locations:[file:cs], Search terms:[access,methodical,publication,type]"}
             };
     }
 }

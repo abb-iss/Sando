@@ -14,8 +14,8 @@ namespace Sando.Core.Tools
         private const string LocationWithLiteralsFilterRegex = @"(?<filter>(?<!\w)-?location:(?<location>(""✉∞dq[\w\:\.\\\(\)\[\]\{\}\* ]+✉∞dq"")))";
         private const string LocationWithoutLiteralsFilterRegex = @"(?<filter>(?<!\w)-?location:(?<location>[\w\:\.\\\(\)\[\]\{\}\*]+))";
         private const string FileExtensionFilterRegex = @"(?<filter>(?<!\w)-?file:\.?(?<fileext>\w+))";
-        private const string ProgramElementTypeFilterRegex = @"(?<filter>(?<!\w)-?type:(?<type>field|method|property|enum|struct|class))";
-        private const string AccessLevelFilterRegex = @"(?<filter>(?<!\w)-?access:(?<access>public|private|protected|internal))";
+        private const string ProgramElementTypeFilterRegex = @"(?<filter>(?<!\w)-?type:(?<type>field|method|property|enum|struct|class))(?!\w+)";
+        private const string AccessLevelFilterRegex = @"(?<filter>(?<!\w)-?access:(?<access>public|private|protected|internal))(?!\w+)";
         private const string InvalidCharactersRegex = "[^a-zA-Z0-9_\\s\\*\\-]";
         private const string NormalSearchTermsRegex = @"(?<searchterm>\-?\w+[\*?\w]*)";
         private const string MultipleWildcardRegex = @"\*+";
