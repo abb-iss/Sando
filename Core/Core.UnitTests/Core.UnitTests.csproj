@@ -55,7 +55,7 @@
     <Compile Include="Logging\AmazonS3LogUploaderTest.cs" />
     <Compile Include="Logging\FileLoggerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\CoocurrenceMatrixTests.cs" />
+    <Compile Include="Tools\CoOccurrenceMatrixTests.cs" />
     <Compile Include="Tools\DictionaryBasedQueryReformerTests.cs" />
     <Compile Include="Tools\GeneralEnglishThesaurusTests.cs" />
     <Compile Include="Tools\InFileCoOccurrenceMatrixTests.cs" />
