@@ -58,7 +58,7 @@ namespace Sando.Core.QueryRefomers
     public interface IReformedQuery
     {
         IEnumerable<ReformedWord> ReformedQuery { get; }
-        IEnumerable<String> GetReformedTerms { get; }
+        IEnumerable<String> ReformedTerms { get; }
         String ReformExplanation { get; }
         String QueryString { get; }
     }

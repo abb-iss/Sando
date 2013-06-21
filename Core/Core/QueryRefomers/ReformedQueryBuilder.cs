@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Sando.Core.Tools;
 
 namespace Sando.Core.QueryRefomers
 {
@@ -9,6 +10,36 @@ namespace Sando.Core.QueryRefomers
     {
         private readonly List<List<ReformedWord>> reformedTermLists = new
             List<List<ReformedWord>>();
+
+        private readonly List<Predicate<IReformedQuery>> QueryFilters = new 
+            List<Predicate<IReformedQuery>>();
+
+        private readonly IWordCoOccurrenceMatrix coOccurrenceMatrix;
+
+
+        public ReformedQueryBuilder(IWordCoOccurrenceMatrix coOccurrenceMatrix)
+        {
+            this.coOccurrenceMatrix = coOccurrenceMatrix;
+            QueryFilters.Add(IsEveryWordPairExisting);
+        }
+
+
+        private Boolean IsEveryWordPairExisting(IReformedQuery query)
+        {
+            var words = query.ReformedQuery.Select(q => q.NewTerm).ToList();
+            for (int i = 0; i < words.Count - 1; i ++)
+            {
+                for (int j = i + 1; j < words.Count; j ++)
+                {
+                    if (coOccurrenceMatrix.GetCoOccurrenceCount(words.ElementAt(i),
+                        words.ElementAt(j)) == 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
 
         private class InternalReformedQuery : IReformedQuery, ICloneable, 
             IEquatable<IReformedQuery>
@@ -30,8 +61,8 @@ namespace Sando.Core.QueryRefomers
                 get { return allTerms; }
             }
 
-            public IEnumerable<string> GetReformedTerms {
-                get { return allTerms.Select(t => t.OriginalTerm).ToList(); }
+            public IEnumerable<string> ReformedTerms {
+                get { return allTerms.Select(t => t.NewTerm).ToList(); }
             }
 
             public string ReformExplanation {
@@ -93,8 +124,13 @@ namespace Sando.Core.QueryRefomers
             var allReformedQuries = new List<InternalReformedQuery> {new InternalReformedQuery()};
             var allQuries = reformedTermLists.Aggregate(allReformedQuries, 
                 (current, reformedTermList) => current.SelectMany(q => 
-                    GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList());
-            return RemoveDuplication(allQuries);
+                    GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList()).ToList();
+            return RemoveDuplication(FilterOutBadQueries(allQuries));
+        }
+
+        private IEnumerable<IReformedQuery> FilterOutBadQueries(IEnumerable<InternalReformedQuery> allQuries)
+        {
+            return allQuries.Where(q => QueryFilters.All(f => f.Invoke(q))).ToList();
         }
 
         private IEnumerable<IReformedQuery> RemoveDuplication(IEnumerable<IReformedQuery> queries)

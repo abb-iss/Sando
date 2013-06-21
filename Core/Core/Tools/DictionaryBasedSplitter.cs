@@ -16,22 +16,28 @@ namespace Sando.Core.Tools
         NoStemming
     }
 
+    public delegate void NewWordsAdded(IEnumerable<String> words);
+   
     /// <summary>
     /// This class keeps records of used words in the code under searching. Also, it can greedily 
     /// split a given string by matching words in the dictionary. 
     /// </summary>
-    public class DictionaryBasedSplitter : IWordSplitter, IDisposable
+    public class DictionaryBasedSplitter : IWordSplitter, IDisposable, IWordCoOccurrenceMatrix
     {
         private readonly FileDictionary dictionary;
+        private readonly InternalWordCoOccurrenceMatrix matrix;
         
         public DictionaryBasedSplitter()
         {
             this.dictionary = new FileDictionary();
+            this.matrix = new InternalWordCoOccurrenceMatrix();
+            this.dictionary.addWordsEvent += matrix.HandleCoOcurrentWords;
         }
 
         public void Initialize(String directory)
         {
             dictionary.Initialize(directory);
+            matrix.Initialize(directory);
         }
 
         public void AddWords(IEnumerable<String> words)
@@ -48,10 +54,7 @@ namespace Sando.Core.Tools
             private string directory;
             private readonly List<string> allWords = new List<string>();
             private WordCorrector corrector = new WordCorrector();
-            
-            private delegate void NewWordsAdded(IEnumerable<String> words);
-            private event NewWordsAdded addWordsEvent;
-
+            public event NewWordsAdded addWordsEvent;
 
             public FileDictionary()
             {
@@ -123,8 +126,8 @@ namespace Sando.Core.Tools
                                 allWords.Insert(smallerWordsCount, trimedWord);
                         }
                     }
-                    addWordsEvent(wordsToAdd);
                 }
+                addWordsEvent(wordsToAdd);
             }
 
             public Boolean DoesWordExist(String word, DictionaryOption option)
@@ -274,6 +277,7 @@ namespace Sando.Core.Tools
         public void Dispose()
         {
             dictionary.Dispose();
+            matrix.Dispose();
         }
 
 
@@ -391,6 +395,11 @@ namespace Sando.Core.Tools
                 }
                 return allSubWords;
             }
+        }
+
+        public int GetCoOccurrenceCount(string word1, string word2)
+        {
+            return matrix.GetCoOccurrenceCount(word1, word2);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Sando.Core.QueryRefomers
 
     public class QueryReformerManager
     {
-        private const int MAXIMUM_RECOMMENDATIONS_COUNT = 4;
+       
         private readonly DictionaryBasedSplitter dictionary;
       
         public QueryReformerManager(DictionaryBasedSplitter dictionary)
@@ -42,7 +42,7 @@ namespace Sando.Core.QueryRefomers
             var termList = terms.ToList();
             if (termList.Any())
             {
-                var builder = new ReformedQueryBuilder();
+                var builder = new ReformedQueryBuilder(dictionary);
                 foreach (string term in termList)
                 {
                     builder.AddReformedTerms(FindBetterTerms(term));
@@ -56,8 +56,8 @@ namespace Sando.Core.QueryRefomers
         private IEnumerable<IReformedQuery> TrimExcessiveRecommendations(IEnumerable<IReformedQuery> queries)
         {
             var list = queries.ToList();
-            return list.Count() > MAXIMUM_RECOMMENDATIONS_COUNT
-                ? list.GetRange(0,MAXIMUM_RECOMMENDATIONS_COUNT) : list;
+            return list.Count() > QuerySuggestionConfigurations.MAXIMUM_RECOMMENDATIONS_COUNT
+                ? list.GetRange(0, QuerySuggestionConfigurations.MAXIMUM_RECOMMENDATIONS_COUNT) : list;
         }
 
         private IReformedQuerySorter GetReformedQuerySorter()

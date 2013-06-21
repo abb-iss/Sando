@@ -26,7 +26,7 @@ namespace Sando.Indexer.Searching.Criteria
             var query = TryGetReformedQuery(terms.Distinct());
             if (query != null)
             {
-                terms.AddRange(query.GetReformedTerms.ToList());
+                terms.AddRange(query.ReformedTerms.ToList());
                 _searchCriteria.Explanation = query.ReformExplanation;
                 _searchCriteria.Reformed = true;
             }
@@ -35,7 +35,7 @@ namespace Sando.Indexer.Searching.Criteria
                 _searchCriteria.Reformed = false;
             }
         
-            _searchCriteria.SearchTerms = new SortedSet<string>(terms.Distinct());
+            _searchCriteria.SearchTerms = new SortedSet<string>(terms);
             return this;
         }
 

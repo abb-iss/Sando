@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Sando.Core.Logging;
+using Sando.Core.QueryRefomers;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
@@ -372,6 +373,7 @@ namespace Sando.UI.View
 
         public void UpdateRecommendedQueries(IQueryable<String> queries)
         {
+            queries = ControlRecommendedQueriesCount(queries);
             if (Thread.CurrentThread == Dispatcher.Thread)
             {
                 InternalUpdateRecommendedQueries(queries);
@@ -383,6 +385,17 @@ namespace Sando.UI.View
             }
         }
 
+        private static IQueryable<string> ControlRecommendedQueriesCount(IQueryable<string> queries)
+        {
+            if (queries.Count() > QuerySuggestionConfigurations.
+                MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE)
+            {
+                queries = queries.ToList().GetRange(0, QuerySuggestionConfigurations
+                    .MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE).AsQueryable();
+            }
+            return queries;
+        }
+
         private void InternalUpdateRecommendedQueries(IEnumerable<string> quries)
         {
             RecommendedQueryTextBlock.Inlines.Clear();
@@ -391,7 +404,7 @@ namespace Sando.UI.View
                 var hyperlink = new SandoQueryHyperLink(new Run(qury), qury);
                 hyperlink.Click += HyperlinkOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
-                RecommendedQueryTextBlock.Inlines.Add(";");
+                RecommendedQueryTextBlock.Inlines.Add("  ");
             }
         }
 
