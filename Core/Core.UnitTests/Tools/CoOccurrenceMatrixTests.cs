@@ -9,7 +9,7 @@ using Sando.Core.Tools;
 namespace Sando.Core.UnitTests.Tools
 {
     [TestFixture]
-    public class CoOcurrenceMatrixTests : RandomStringBasedTests
+    public class CoOccurrenceMatrixTests : RandomStringBasedTests
     {
         private readonly InternalWordCoOccurrenceMatrix matrix = 
             new InternalWordCoOccurrenceMatrix();

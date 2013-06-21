@@ -201,7 +201,7 @@ namespace Sando.UI.View
             //Store the search key
             this.searchKey = searchBox.Text;
 
-            //Clear the olde recommendation.
+            //Clear the old recommendation.
             UpdateRecommendedQueries(Enumerable.Empty<String>().AsQueryable());
 
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
