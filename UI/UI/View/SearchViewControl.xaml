@@ -93,7 +93,6 @@
             <RowDefinition Height="Auto" MinHeight="30"/>
             <RowDefinition Height="Auto" MinHeight="0"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
-            <RowDefinition Height="Auto" MinHeight="15"/>
             <RowDefinition Height="Auto" MinHeight="20"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
@@ -121,19 +120,11 @@
                  VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="15" IsIndeterminate="True" Visibility="Collapsed"/>
 
         <!-- info string -->
-        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="15" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
-                                  KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Top" ></TextBox>
-        <!-- info string -->
-        <TextBlock Margin="4,0,0,0" Foreground="#1F1F1F" FontSize="10" 
-                Name="RecommendedQueryTextBlock"
-                FontStyle="Italic" Background="{Binding Path=Background, 
-                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
-                Grid.Row="3" Width="Auto" HorizontalAlignment="Stretch"  
-                Grid.Column="0" Height="Auto" Grid.ColumnSpan="2"
-                KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap"></TextBlock>
-        
+        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
+                                  KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
+
         <!-- details -->
-        <Expander Grid.Row="4" Grid.Column="0" Name="LayoutRoot"
+        <Expander Grid.Row="3" Grid.Column="0" Name="LayoutRoot"
             >
             <Expander.HeaderTemplate>
                 <DataTemplate>
@@ -212,7 +203,7 @@
 
             </StackPanel>
         </Expander>
-        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,14,0,0" Grid.RowSpan="2">
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,14,0,0" Grid.RowSpan="2">
             
             <Button Name="HelpButton"  ToolTip="Help" Margin="32,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
         		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
@@ -325,7 +316,7 @@
         </StackPanel>
 
         <!--Bottom Part: Result-->
-        <DockPanel Grid.Row="5" Grid.ColumnSpan="2" 
+        <DockPanel Grid.Row="4" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"

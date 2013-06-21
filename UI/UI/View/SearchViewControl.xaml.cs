@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -49,6 +48,7 @@ namespace Sando.UI.View
 
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+
             _recommender = new QueryRecommender();
         }
 
@@ -199,9 +199,6 @@ namespace Sando.UI.View
 
             //Store the search key
             this.searchKey = searchBox.Text;
-
-            //Clear the olde recommendation.
-            UpdateRecommendedQueries(Enumerable.Empty<String>().AsQueryable());
 
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
@@ -414,52 +411,6 @@ namespace Sando.UI.View
             }
         }
 
-        public void UpdateRecommendedQueries(IQueryable<String> queries)
-        {
-            if (Thread.CurrentThread == Dispatcher.Thread)
-            {
-                InternalUpdateRecommendedQueries(queries);
-            }
-            else
-            {
-                Dispatcher.Invoke((Action)(() => 
-                    InternalUpdateRecommendedQueries(queries)));
-            }
-        }
-
-        private void InternalUpdateRecommendedQueries(IEnumerable<string> quries)
-        {
-            RecommendedQueryTextBlock.Inlines.Clear();
-            foreach (string qury in quries)
-            {
-                var hyperlink = new SandoQueryHyperLink(new Run(qury), qury);
-                hyperlink.Click += HyperlinkOnClick;
-                RecommendedQueryTextBlock.Inlines.Add(hyperlink);
-                RecommendedQueryTextBlock.Inlines.Add(";");
-            }
-        }
-
-        private class SandoQueryHyperLink : Hyperlink
-        {
-            public String Query { private set; get; }
-
-            internal SandoQueryHyperLink(Run run, String query) : base(run)
-            {
-                this.Query = query;
-            }
-        }
-
-        private void HyperlinkOnClick(object sender, RoutedEventArgs routedEventArgs)
-        {
-            if (sender as SandoQueryHyperLink != null)
-            {
-                var reformedQuery = (sender as SandoQueryHyperLink).Query;
-                searchBox.Text = reformedQuery;
-                BeginSearch(reformedQuery);
-            }
-        }
-
-
         private void UpdateExpansionState(ListView view)
         {
             return;
@@ -597,6 +548,7 @@ namespace Sando.UI.View
         public static readonly DependencyProperty SearchStatusProperty =
             DependencyProperty.Register("SearchStatus", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
+
         public static readonly DependencyProperty SearchCriteriaProperty =
             DependencyProperty.Register("SearchCriteria", typeof(SimpleSearchCriteria), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
@@ -668,6 +620,6 @@ namespace Sando.UI.View
             {
                 //ignore for now, as this is not a crucial feature
             }
-        }
+        }        
     }
 }

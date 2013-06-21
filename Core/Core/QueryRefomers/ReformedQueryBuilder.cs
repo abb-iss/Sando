@@ -10,8 +10,7 @@ namespace Sando.Core.QueryRefomers
         private readonly List<List<ReformedWord>> reformedTermLists = new
             List<List<ReformedWord>>();
 
-        private class InternalReformedQuery : IReformedQuery, ICloneable, 
-            IEquatable<IReformedQuery>
+        private class InternalReformedQuery : IReformedQuery, ICloneable
         {
             private readonly List<ReformedWord> allTerms;
 
@@ -49,18 +48,6 @@ namespace Sando.Core.QueryRefomers
                 }
             }
 
-            public string QueryString {
-                get { 
-                    var sb = new StringBuilder();
-                    foreach (ReformedWord term in allTerms)
-                    {
-                        sb.Append(term.NewTerm);
-                        sb.Append(" ");
-                    }
-                    return sb.ToString().Trim();
-                }
-            }
-
             public object Clone()
             {
                 return new InternalReformedQuery(allTerms);
@@ -69,11 +56,6 @@ namespace Sando.Core.QueryRefomers
             public void AppendTerm(ReformedWord term)
             {
                 allTerms.Add(term);
-            }
-
-            public bool Equals(IReformedQuery other)
-            {
-                return this.QueryString.Equals(other.QueryString);
             }
         }
 
@@ -94,14 +76,9 @@ namespace Sando.Core.QueryRefomers
             var allQuries = reformedTermLists.Aggregate(allReformedQuries, 
                 (current, reformedTermList) => current.SelectMany(q => 
                     GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList());
-            return RemoveDuplication(allQuries);
+            return allQuries;
         }
 
-        private IEnumerable<IReformedQuery> RemoveDuplication(IEnumerable<IReformedQuery> queries)
-        {
-            var set = new HashSet<IReformedQuery>(queries);
-            return set.AsEnumerable();
-        }
 
         private IEnumerable<InternalReformedQuery> GenerateNewQueriesByAppendingTerms(InternalReformedQuery query, 
             ICollection<ReformedWord> newTerms)

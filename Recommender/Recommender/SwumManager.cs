@@ -234,9 +234,6 @@ namespace Sando.Recommender {
             PrintSwumCache(string.IsNullOrWhiteSpace(CachePath) ? DefaultCacheFile : CachePath);
         }
 
-        object lockForPersistance = new object();
-
-
         /// <summary>
         /// Prints the SWUM cache to the specified file.
         /// </summary>
@@ -245,12 +242,8 @@ namespace Sando.Recommender {
             if(string.IsNullOrWhiteSpace(path)) {
                 throw new ArgumentException("Path is empty or null.", "path");
             }
-            lock (lockForPersistance)
-            {
-                using (StreamWriter sw = new StreamWriter(path))
-                {
-                    PrintSwumCache(sw);
-                }
+            using(StreamWriter sw = new StreamWriter(path)) {
+                PrintSwumCache(sw);
             }
         }
 
@@ -258,7 +251,7 @@ namespace Sando.Recommender {
         /// Prints the SWUM cache to the specified output stream.
         /// </summary>
         /// <param name="output">A TextWriter to print the SWUM cache to.</param>
-        private void PrintSwumCache(TextWriter output) {
+        public void PrintSwumCache(TextWriter output) {
             if(output == null) {
                 throw new ArgumentNullException("output");
             }
@@ -274,38 +267,31 @@ namespace Sando.Recommender {
         /// </summary>
         /// <param name="path">The path to the SWUM cache file.</param>
         public void ReadSwumCache(string path) {
-            using (var cacheFile = new StreamReader(path))
-            {
-                lock (signaturesToSwum)
-                {
+            using(var cacheFile = new StreamReader(path)) {
+                lock(signaturesToSwum) {
                     //clear any existing SWUMs
                     signaturesToSwum.Clear();
 
                     //read each SWUM entry from the cache file
                     string entry;
-                    while ((entry = cacheFile.ReadLine()) != null)
-                    {
+                    while((entry = cacheFile.ReadLine()) != null) {
                         //the expected format is <signature>|<SwumDataRecord.ToString()>
-                        string[] fields = entry.Split(new[] { '|' }, 2);
-                        if (fields.Length != 2)
-                        {
+                        string[] fields = entry.Split(new[] {'|'}, 2);
+                        if(fields.Length != 2) {
                             Debug.WriteLine(string.Format("Too few fields in SWUM cache entry: {0}", entry));
                             continue;
                         }
-                        try
-                        {
+                        try {
                             string sig = fields[0].Trim();
                             string data = fields[1].Trim();
                             signaturesToSwum[sig] = SwumDataRecord.Parse(data);
-                        }
-                        catch (FormatException fe)
-                        {
+                        } catch(FormatException fe) {
                             Debug.WriteLine(string.Format("Improperly formatted SwumDataRecord in Swum cache entry: {0}", entry));
                             Debug.WriteLine(fe.Message);
                         }
                     }
                 }
-            }             
+            }
         }
 
 

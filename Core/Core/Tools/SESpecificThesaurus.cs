@@ -20,7 +20,7 @@ namespace Sando.Core.Tools
             var target = new KeyValuePair<String, T>(word, default(T));
             var comparer = new KeyComparer<T>();
             int endIndex = keyValuePairs.BinarySearch(target, comparer);
-            if (endIndex > 0 && endIndex < keyValuePairs.Count)
+            if (endIndex > -1 && endIndex < keyValuePairs.Count)
             {
                 int startInex = endIndex;
                 for (; comparer.Compare(keyValuePairs.ElementAt(startInex - 1), target) == 0; startInex--);
@@ -72,11 +72,13 @@ namespace Sando.Core.Tools
                     IEnumerable<string> csv = (from line in lines
                                                select (from piece in line select piece).First()).Skip(1);
                     var synonyms = csv.Select(element => element.Split(new char[] {','})).
-                                       Select(s => new KeyValuePair<string, string>(s[0].Trim().ToLower(), 
-                                           s[1].Trim().ToLower())).ToList();
+                                       Select(s => new KeyValuePair<string, string>(s[0].Trim(), s[1].Trim())).
+                                       ToList();
                     this.orderedWordPairs = synonyms.OrderBy(p => p.Key).ToList();
-                    this.switchedWordPairs = synonyms.Select(p => new KeyValuePair<String, String>
-                        (p.Value, p.Key)).OrderBy(p => p.Key).ToList();
+                    this.switchedWordPairs = synonyms.Select(p => new KeyValuePair<String,
+                                                                      String>(p.Value, p.Key))
+                                                     .OrderBy(p => p.Key)
+                                                     .ToList();
                     this.isInitialized = true;
                 }
             }

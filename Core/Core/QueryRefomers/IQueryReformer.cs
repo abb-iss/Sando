@@ -60,7 +60,6 @@ namespace Sando.Core.QueryRefomers
         IEnumerable<ReformedWord> ReformedQuery { get; }
         IEnumerable<String> GetReformedTerms { get; }
         String ReformExplanation { get; }
-        String QueryString { get; }
     }
 
 

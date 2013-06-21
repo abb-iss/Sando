@@ -15,7 +15,6 @@ namespace Sando.Core.QueryRefomers
 
     public class QueryReformerManager
     {
-        private const int MAXIMUM_RECOMMENDATIONS_COUNT = 4;
         private readonly DictionaryBasedSplitter dictionary;
       
         public QueryReformerManager(DictionaryBasedSplitter dictionary)
@@ -47,18 +46,12 @@ namespace Sando.Core.QueryRefomers
                 {
                     builder.AddReformedTerms(FindBetterTerms(term));
                 }
-                return TrimExcessiveRecommendations(GetReformedQuerySorter().SortReformedQueries
-                    (builder.GetAllPossibleReformedQueriesSoFar()));
+                return GetReformedQuerySorter().SortReformedQueries
+                    (builder.GetAllPossibleReformedQueriesSoFar());
             }
             return Enumerable.Empty<IReformedQuery>();
         }
 
-        private IEnumerable<IReformedQuery> TrimExcessiveRecommendations(IEnumerable<IReformedQuery> queries)
-        {
-            var list = queries.ToList();
-            return list.Count() > MAXIMUM_RECOMMENDATIONS_COUNT
-                ? list.GetRange(0,MAXIMUM_RECOMMENDATIONS_COUNT) : list;
-        }
 
         private IReformedQuerySorter GetReformedQuerySorter()
         {
@@ -98,5 +91,7 @@ namespace Sando.Core.QueryRefomers
             list.AddRange(new GeneralThesaurusWordReformer(dictionary).GetReformedTarget(word));
             return list;
         }
+
+   
     }
 }
