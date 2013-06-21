@@ -1,5 +1,4 @@
-﻿using System;
-using Sando.Core.QueryRefomers;
+﻿using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Sando.Indexer.Searching.Criteria
     public class CriteriaBuilder
     {
         SimpleSearchCriteria _searchCriteria;
-     
+
         public static CriteriaBuilder GetBuilder()
         {
             return new CriteriaBuilder();
@@ -44,14 +43,7 @@ namespace Sando.Indexer.Searching.Criteria
             words = words.ToList();
             var reformer = ServiceLocator.Resolve<QueryReformerManager>();
             var reformedQueries = reformer.ReformTermsSynchronously(words).ToList();
-            _searchCriteria.RecommendedQueries = TryGetRecommendedQueries(reformedQueries);
             return reformedQueries.FirstOrDefault();
-        }
-
-        private IEnumerable<string> TryGetRecommendedQueries(List<IReformedQuery> reformedQueries)
-        {
-            return reformedQueries.Count > 1 ? reformedQueries.Skip(1).Select(q => q.QueryString) 
-                : Enumerable.Empty<string>();
         }
 
 

@@ -47,6 +47,8 @@ namespace Sando.Core.QueryRefomers
                 {
                     builder.AddReformedTerms(FindBetterTerms(term));
                 }
+                return GetReformedQuerySorter().SortReformedQueries
+                    (builder.GetAllPossibleReformedQueriesSoFar());
                 return TrimExcessiveRecommendations(GetReformedQuerySorter().SortReformedQueries
                     (builder.GetAllPossibleReformedQueriesSoFar()));
             }
@@ -98,5 +100,7 @@ namespace Sando.Core.QueryRefomers
             list.AddRange(new GeneralThesaurusWordReformer(dictionary).GetReformedTarget(word));
             return list;
         }
+
+   
     }
 }

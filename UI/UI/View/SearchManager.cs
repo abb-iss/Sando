@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -68,11 +67,6 @@ namespace Sando.UI.View
                 if (criteria.IsQueryReformed())
                 {
                     returnString.Append(criteria.GetQueryReformExplanation());
-                    IEnumerable<String> recommendations = criteria.GetRecommendedQueries().ToList();
-                    if (recommendations.Any())
-                    {
-                        _searchResultListener.UpdateRecommendedQueries(recommendations.AsQueryable());
-                    }
                 }
 
                 if (!results.Any())

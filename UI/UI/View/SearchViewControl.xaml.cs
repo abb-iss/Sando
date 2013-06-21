@@ -8,10 +8,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using Sando.Core.Logging;
-using Sando.Core.QueryRefomers;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.Indexer.Searching.Criteria;
@@ -28,6 +26,8 @@ using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Collections.Concurrent;
+using Sando.Core.Tools;
 
 namespace Sando.UI.View
 {
@@ -49,6 +49,7 @@ namespace Sando.UI.View
 
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
+
             _recommender = new QueryRecommender();
         }
 
@@ -312,43 +313,73 @@ namespace Sando.UI.View
             }
 
 
-            //For each item in the SearchResults, generate the highlight results
-            foreach(var item in SearchResults) {
-                string highlight;
-                string highlightRaw;
-                GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
-                item.Highlight = highlight;
-                item.HighlightRaw = highlightRaw;
-            }
-
-            ////Concurrent version 
-            //Parallel.ForEach(SearchResults, item => {
+            ////For each item in the SearchResults, generate the highlight results (Serial version)
+            //foreach(var item in SearchResults) {
             //    string highlight;
             //    string highlightRaw;
             //    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
             //    item.Highlight = highlight;
             //    item.HighlightRaw = highlightRaw;
             //}
-            //    );
+
+            //Concurrent version 
+            var exceptions = new ConcurrentQueue<Exception>(); 
+            Parallel.ForEach(SearchResults, item => {
+                try {
+                    string highlight;
+                    string highlightRaw;
+                    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+                    item.Highlight = highlight;
+                    item.HighlightRaw = highlightRaw;
+                } catch(Exception exc) { exceptions.Enqueue(exc); } 
+            }
+                );
+
+            //if(!exceptions.IsEmpty) 
+            //    throw new AggregateException(exceptions);
         }
 
         private void GenerateHighlight(string raw, string searchKey, out string highlight_out, out string highlightRaw_out) {
-            
+
             StringBuilder highlight = new StringBuilder();
             StringBuilder highlight_Raw = new StringBuilder();
 
             string[] lines = raw.Split('\n');
-            string newLine;
+            StringBuilder newLine = new StringBuilder();
+
+            string[] searchKeys = GetKeys(searchKey);
+            string[] containedKeys;
 
             foreach(string line in lines) {
-                int loc = line.IndexOf(searchKey, StringComparison.InvariantCultureIgnoreCase);
-                if(0 <= loc) {
-                    string replaceKey = "|~S~|" + line.Substring(loc, searchKey.Length) + "|~E~|";
-                    newLine = Regex.Replace(line, searchKey, replaceKey, RegexOptions.IgnoreCase);
-                    highlight.Append(newLine);
+                
+                containedKeys = IsContainSearchKey(searchKeys, line);
+                
+                if(containedKeys.Length != 0) {
+
+                    string temp_line = string.Copy(line);
+                    int loc;
+                    //One line contain multiple words
+                    foreach(string key in containedKeys) {
+                        newLine.Clear();
+                        while((loc = temp_line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase)) >= 0) {
+
+                            string replaceKey = "|~S~|" + temp_line.Substring(loc, key.Length) + "|~E~|";
+                            newLine.Append(temp_line.Substring(0, loc) + replaceKey);
+                            temp_line = temp_line.Remove(0, loc + key.Length);
+
+                        }
+
+                        newLine.Append(temp_line);
+                        temp_line = newLine.ToString();
+
+                    }
+
+                    highlight.Append(newLine.ToString());
                     highlight.Append('\n');
-                    highlight_Raw.Append(newLine);
+
+                    highlight_Raw.Append(newLine.ToString());
                     highlight_Raw.Append('\n');
+
                 } else {
                     highlight_Raw.Append(line);
                     highlight_Raw.Append('\n');
@@ -357,6 +388,31 @@ namespace Sando.UI.View
 
             highlight_out = highlight.ToString().Replace('\t', ' ');
             highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
+        }
+
+        private string[] GetKeys(string searchKey) {
+            SandoQueryParser parser = new SandoQueryParser();
+            var description = parser.Parse(searchKey);
+            var terms = description.SearchTerms;
+            HashSet<string> keys = new HashSet<string>();
+            foreach(var term in terms) {
+                keys.Add(DictionaryHelper.GetStemmedQuery(term));
+                keys.Add(term);
+            }
+            return keys.ToArray();
+        }
+
+        //Return the contained search key
+        private string[] IsContainSearchKey(string[] searchKeys, string line) {
+
+            List<string> containedSearchKey = new List<string>();
+
+            foreach(string key in searchKeys) 
+                if(line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase) > 0){
+                    containedSearchKey.Add(key);
+                }
+            
+            return containedSearchKey.ToArray();
         }
 
         public void UpdateMessage(string message)
@@ -370,8 +426,6 @@ namespace Sando.UI.View
                 Dispatcher.Invoke((Action)(() => SearchStatus = message));
             }
         }
-
-     
 
         private void UpdateExpansionState(ListView view)
         {
@@ -510,6 +564,7 @@ namespace Sando.UI.View
         public static readonly DependencyProperty SearchStatusProperty =
             DependencyProperty.Register("SearchStatus", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
+
         public static readonly DependencyProperty SearchCriteriaProperty =
             DependencyProperty.Register("SearchCriteria", typeof(SimpleSearchCriteria), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
@@ -581,6 +636,6 @@ namespace Sando.UI.View
             {
                 //ignore for now, as this is not a crucial feature
             }
-        }
+        }        
     }
 }

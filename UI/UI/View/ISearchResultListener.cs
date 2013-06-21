@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View
@@ -8,6 +7,5 @@ namespace Sando.UI.View
 	{
 		void Update(IQueryable<CodeSearchResult> results);
 	    void UpdateMessage(string message);
-	    void UpdateRecommendedQueries(IQueryable<String> queries);
 	}
 }

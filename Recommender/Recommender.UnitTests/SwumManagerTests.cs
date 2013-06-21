@@ -7,7 +7,6 @@ using System.Threading;
 using NUnit.Framework;
 using Sando.Recommender;
 using ABB.SrcML;
-using System.Threading.Tasks;
 
 namespace Sando.Recommender.UnitTests {
     [TestFixture]
@@ -22,60 +21,6 @@ namespace Sando.Recommender.UnitTests {
         [TearDown]
         public void Teardown() {
             manager.Clear();
-        }
-
-
-        [Test]
-        public void TestReadingMultiple()
-        {
-            Task[] tasks = new Task[1000];
-            string path = Environment.CurrentDirectory + @"\..\..\Recommender\Recommender.UnitTests\TestFiles\swum-cache.txt";
-            for (int i = 0; i < 1000; i++)
-            {
-                tasks[i] = System.Threading.Tasks.Task.Factory.StartNew(() =>
-                {
-                    manager.ReadSwumCache(path);
-                });
-            }            
-            System.Threading.Tasks.Task.WaitAll(tasks, 1000, System.Threading.CancellationToken.None);
-        }
-
-        [Test]
-        public void TestWritingMultiple()
-        {
-            manager.ReadSwumCache(@"..\..\Recommender\Recommender.UnitTests\TestFiles\swum-cache.txt");
-            Task[] tasks = new Task[50];
-            for (int i = 0; i < 50; i++)
-            {
-                tasks[i] = System.Threading.Tasks.Task.Factory.StartNew(() =>
-                {
-                    manager.PrintSwumCache();
-                });
-            }
-            System.Threading.Tasks.Task.WaitAll(tasks, 1000, System.Threading.CancellationToken.None);
-        }
-
-        [Test]
-        public void TestReadingWritingMultiple()
-        {
-            Task[] read = new Task[1000];
-            Task[] write = new Task[1000];
-            string path = Environment.CurrentDirectory+ @"\..\..\Recommender\Recommender.UnitTests\TestFiles\swum-cache.txt";
-            for (int i = 0; i < 1000; i++)
-            {
-                read[i] = System.Threading.Tasks.Task.Factory.StartNew(() =>
-                {
-                    manager.ReadSwumCache(path);
-                });
-                write[i] = System.Threading.Tasks.Task.Factory.StartNew(() =>
-                {
-                    manager.PrintSwumCache();
-                });
-
-            }
-            
-            System.Threading.Tasks.Task.WaitAll(write, 1000, System.Threading.CancellationToken.None);
-            System.Threading.Tasks.Task.WaitAll(read, 1000, System.Threading.CancellationToken.None);
         }
 
 

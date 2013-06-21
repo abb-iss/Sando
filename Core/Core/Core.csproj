@@ -125,6 +125,7 @@
     <Compile Include="QueryRefomers\ReformedQuerySorters.cs" />
     <Compile Include="QueryRefomers\ThesaurusBasedQueryReformer.cs" />
     <Compile Include="QueryRefomers\TypoCorrectionReformer.cs" />
+    <Compile Include="SandoQueryParser.cs" />
     <Compile Include="Tools\GeneralEnglishThesaurus.cs" />
     <Compile Include="Tools\Levenshtein.cs" />
     <Compile Include="QueryRefomers\QueryReformerManager.cs" />
@@ -133,7 +134,6 @@
     <Compile Include="Tools\LuceneDirectoryHelper.cs" />
     <Compile Include="Tools\PathManager.cs" />
     <Compile Include="QueryRefomers\ReformedQueryBuilder.cs" />
-    <Compile Include="Tools\SandoQueryParser.cs" />
     <Compile Include="Tools\SeSpecificThesaurus.cs" />
     <Compile Include="Tools\WordCoOccurrenceMatrix.cs" />
     <Compile Include="Tools\WordCorrector.cs" />
