@@ -27,20 +27,36 @@ namespace Sando.UI.View.Search.Converters {
              string[] lines = input.Split('\n');
 
              var span = new Span();
+            List<string> key_temp = new List<string>();
+
             foreach(string line in lines){
 
                  if(line.Contains("|~S~|")) {
-                     int first = line.IndexOf("|~S~|") + "|~S~|".Length;
-                     int last = line.IndexOf("|~E~|");
-                     string key = line.Substring(first, last - first);
 
+                     string findKey = string.Copy(line);
+
+                     while(findKey.IndexOf("|~S~|") >= 0) {
+                         int first = findKey.IndexOf("|~S~|") + "|~S~|".Length;
+                         int last = findKey.IndexOf("|~E~|");
+                         
+                         string key_candidate = findKey.Substring(first, last - first);
+
+                         if(!key_temp.Contains(key_candidate))
+                            key_temp.Add(key_candidate);
+
+                         //Remove the searched string
+                         int lengthRemove = last - first + 2 * "|~S~|".Length;
+                         findKey = findKey.Remove(first - "|~S~|".Length, lengthRemove);
+                     }
+
+                     string[] key = key_temp.ToArray();
                      string[] temp = line.Split(new[] { "|~S~|", "|~E~|" }, StringSplitOptions.RemoveEmptyEntries);
 
-                     for(int j = 0; j < temp.Length; j++) {
-                         if(temp[j].Contains(key))
-                            span.Inlines.Add(new Run(temp[j]) { FontWeight = FontWeights.Bold });
+                         foreach(string item in temp) {
+                         if(IsSearchKey(item, key))
+                            span.Inlines.Add(new Run(item) { FontWeight = FontWeights.Bold });
                          else
-                             span.Inlines.Add(new Run(temp[j]));
+                             span.Inlines.Add(new Run(item));
                      }
                  } else
                      span.Inlines.Add(new Run(line));
@@ -49,6 +65,14 @@ namespace Sando.UI.View.Search.Converters {
 
              return span;
 
+        }
+
+        private bool IsSearchKey(string input, string[] keyset) {
+            foreach(string item in keyset) {
+                if(input.Contains(item))
+                    return true;
+            }
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType,
