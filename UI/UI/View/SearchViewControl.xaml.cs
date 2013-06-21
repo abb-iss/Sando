@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
+using Sando.Core.Tools;
 
 namespace Sando.UI.View
 {
@@ -346,7 +347,7 @@ namespace Sando.UI.View
             string[] lines = raw.Split('\n');
             StringBuilder newLine = new StringBuilder();
 
-            string[] searchKeys = searchKey.Split(' ');
+            string[] searchKeys = GetKeys(searchKey);
             string[] containedKeys;
 
             foreach(string line in lines) {
@@ -387,6 +388,18 @@ namespace Sando.UI.View
 
             highlight_out = highlight.ToString().Replace('\t', ' ');
             highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
+        }
+
+        private string[] GetKeys(string searchKey) {
+            SandoQueryParser parser = new SandoQueryParser();
+            var description = parser.Parse(searchKey);
+            var terms = description.SearchTerms;
+            HashSet<string> keys = new HashSet<string>();
+            foreach(var term in terms) {
+                keys.Add(DictionaryHelper.GetStemmedQuery(term));
+                keys.Add(term);
+            }
+            return keys.ToArray();
         }
 
         //Return the contained search key
