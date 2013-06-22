@@ -43,8 +43,7 @@ namespace Sando.Core.QueryRefomers
         {
         }
 
-        public abstract void SetWordsBeforeTarget(IEnumerable<String> words);
-        public abstract void SetWordsAfterTarget(IEnumerable<String> words);
+        public abstract void SetContextWords(IEnumerable<String> words);
     }
 
     public enum TermChangeCategory
@@ -53,6 +52,7 @@ namespace Sando.Core.QueryRefomers
         MISSPELLING,
         SE_SYNONYM,
         GENERAL_SYNONYM,
+        COOCCUR,
     }
 
     public interface IReformedQuery

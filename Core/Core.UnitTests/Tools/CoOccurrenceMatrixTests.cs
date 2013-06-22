@@ -33,8 +33,8 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void AddWordsSeveralTimes()
         {
-            var listLength = 20;
-            var coocurrenceCount = 3;
+            const int listLength = 20;
+            const int coocurrenceCount = 3;
             var words = GenerateRandomWordList(listLength);
             for (int i = 0; i < coocurrenceCount; i++)
             {
@@ -50,6 +50,14 @@ namespace Sando.Core.UnitTests.Tools
                     Assert.IsTrue(count == coocurrenceCount);
                 }
             }
+        }
+
+        [Test]
+        public void ConfirmAssumptionAboutStringComparisons()
+        {
+            Assert.IsTrue("abc".CompareTo("") > 0);
+            Assert.IsTrue("a".CompareTo("") > 0);
+            Assert.IsTrue("zzzzzzzz".CompareTo("") > 0);
         }
 
         [Test]

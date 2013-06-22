@@ -14,7 +14,7 @@ namespace Sando.Core.UnitTests.Tools
 
         public InFileCoOccurrenceMatrixTests()
         {
-            this.matrix = new DictionaryBasedSplitter();
+            this.matrix = new InternalWordCoOccurrenceMatrix();
         }
 
         [SetUp]
@@ -64,8 +64,7 @@ namespace Sando.Core.UnitTests.Tools
             AssertWordPairNonExist("confidence", "apple");
             AssertWordPairNonExist("confidence", "lackof");
             AssertWordPairNonExist("confidence", "configuration");
-            AssertWordPairNonExist("configuration", "nomad");
-            
+            AssertWordPairNonExist("configuration", "nomad");   
         }
     }
 }

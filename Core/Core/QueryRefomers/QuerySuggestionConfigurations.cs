@@ -11,7 +11,7 @@ namespace Sando.Core.QueryRefomers
         public const int SIMILAR_WORDS_MAX_COUNT = 5;
 
         // The maximum of queries collected.
-        public const int MAXIMUM_RECOMMENDATIONS_COUNT = 20;
+        public const int MAXIMUM_RECOMMENDATIONS_COUNT = 30;
 
         // The maximum of queries shown at the user interface.
         public const int MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE = 3;

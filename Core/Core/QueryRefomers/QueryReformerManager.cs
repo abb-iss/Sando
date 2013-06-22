@@ -47,8 +47,6 @@ namespace Sando.Core.QueryRefomers
                 {
                     builder.AddReformedTerms(FindBetterTerms(term));
                 }
-                return GetReformedQuerySorter().SortReformedQueries
-                    (builder.GetAllPossibleReformedQueriesSoFar());
                 return TrimExcessiveRecommendations(GetReformedQuerySorter().SortReformedQueries
                     (builder.GetAllPossibleReformedQueriesSoFar()));
             }

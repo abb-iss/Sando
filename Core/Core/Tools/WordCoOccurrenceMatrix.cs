@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -12,6 +13,7 @@ namespace Sando.Core.Tools
     {
         int GetCoOccurrenceCount(String word1, String word2);
         void Initialize(String directory);
+        Dictionary<String, int> GetCoOccurredWordsAndCount(String word);
     }
 
     public class InternalWordCoOccurrenceMatrix : IDisposable, IWordCoOccurrenceMatrix
@@ -20,11 +22,13 @@ namespace Sando.Core.Tools
         {
             public String Row { get; private set; }
             public String Column { get; private set; }
-            
-            public MatrixEntry(String Row, String Column)
+            public int Count { get; private set; }
+
+            public MatrixEntry(String Row, String Column, int Count)
             {
                 this.Row = Row;
                 this.Column = Column;
+                this.Count = Count;
             }
 
             public int CompareTo(MatrixEntry other)
@@ -32,19 +36,24 @@ namespace Sando.Core.Tools
                 return (this.Row + this.Column).CompareTo(other.Row + other.Column);
             }
 
+            public void IncrementCount()
+            {
+                this.Count++;
+            }
+
+            public void ResetCount()
+            {
+                this.Count = 1;
+            }
+
             public bool Equals(MatrixEntry other)
             {
                 return CompareTo(other) == 0;
             }
-
-            public String ToString()
-            {
-                return Row + ' ' + Column;
-            }
         }
 
         private readonly object locker = new object();
-        private readonly SortedList<MatrixEntry, int> matrix = new SortedList<MatrixEntry, int>();
+        private List<MatrixEntry> matrix = new List<MatrixEntry>();
         
         private string directory;
         private const string fileName = "CooccurenceMatrix.txt";
@@ -62,6 +71,27 @@ namespace Sando.Core.Tools
             }
         }
 
+        public Dictionary<string, int> GetCoOccurredWordsAndCount(string word)
+        {
+            lock (locker)
+            {
+                var columns = new Dictionary<String, int>();
+                int start = ~matrix.BinarySearch(CreateEntry(word, ""));
+                for (int i = start; i < matrix.Count; i++)
+                {
+                    var entry = matrix.ElementAt(i);
+                    if (!entry.Row.Equals(word))
+                    {
+                        break;
+                    }
+                    columns.Add(entry.Column, entry.Count);
+                }
+                return columns;
+            }
+        }
+
+
+
         private void ReadMatrixFromFile()
         {
             if (File.Exists(GetMatrixFilePath()))
@@ -76,9 +106,10 @@ namespace Sando.Core.Tools
                         var splits = parts[i].Split(':');
                         var column = splits[0];
                         var count = Int32.Parse(splits[1]);
-                        matrix.Add(CreateEntry(row, column), count);
+                        matrix.Add(CreateEntry(row, column, count));
                     }                
                 }
+                matrix = matrix.OrderBy(m => m).ToList();
             }
         }
 
@@ -90,11 +121,11 @@ namespace Sando.Core.Tools
         private void WriteMatrixToFile()
         {
             var sb = new StringBuilder();
-            var groups = matrix.GroupBy(p => p.Key.Row);
+            var groups = matrix.GroupBy(p => p.Row);
             foreach (var group in groups)
             {
-                var row = group.First().Key.Row;
-                var line = row + ' ' + group.Select(g => g.Key.Column + ":" + g.Value).
+                var row = group.First().Row;
+                var line = row + ' ' + group.Select(g => g.Column + ":" + g.Count).
                     Aggregate((s1, s2) => s1 + ' ' +s2);
                 sb.AppendLine(line);
             }
@@ -111,9 +142,9 @@ namespace Sando.Core.Tools
         {
             lock (locker)
             {
-                int count;
-                var have = matrix.TryGetValue(CreateEntry(word1, word2), out count);
-                return have ? count : 0;
+                var target = CreateEntry(word1, word2);
+                int index = matrix.BinarySearch(target);
+                return index >=0 ? matrix.ElementAt(index).Count : 0;
             }
         }
 
@@ -149,13 +180,16 @@ namespace Sando.Core.Tools
             {
                 foreach (var target in allEntries)
                 {
-                    if (matrix.ContainsKey(target))
+                    int end = matrix.BinarySearch(target);
+                    if (end >= 0)
                     {
-                        matrix[target]++;
+                        matrix.ElementAt(end).IncrementCount();
                     }
                     else
                     {
-                        matrix.Add(target, 1);
+                        target.ResetCount();
+                        int index = ~end; 
+                        matrix.Insert(index, target);
                     }
                 }
             }
@@ -168,7 +202,7 @@ namespace Sando.Core.Tools
         }
 
 
-        private MatrixEntry CreateEntry(String word1, String word2)
+        private MatrixEntry CreateEntry(String word1, String word2, int count = 1)
         {
             word1 = Preprocess(word1);
             word2 = Preprocess(word2);
@@ -178,7 +212,7 @@ namespace Sando.Core.Tools
                 word2 = word1;
                 word1 = temp;
             }
-            return new MatrixEntry(word1, word2);
+            return new MatrixEntry(word1, word2, count);
         }
 
         public void Dispose()

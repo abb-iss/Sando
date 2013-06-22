@@ -40,6 +40,11 @@ namespace Sando.Core.Tools
             matrix.Initialize(directory);
         }
 
+        public Dictionary<string, int> GetCoOccurredWordsAndCount(string word)
+        {
+            return matrix.GetCoOccurredWordsAndCount(word);
+        }
+
         public void AddWords(IEnumerable<String> words)
         {
             words = words.ToList();
