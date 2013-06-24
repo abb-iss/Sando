@@ -18,7 +18,7 @@ namespace Sando.Core.QueryRefomers
         IEnumerable<IReformedQuery> SortReformedQueries(IEnumerable<IReformedQuery> queries);
     }
 
-    internal abstract class AbstractWordReformer
+    public abstract class AbstractWordReformer
     {
         protected readonly DictionaryBasedSplitter localDictionary;
 
@@ -36,7 +36,7 @@ namespace Sando.Core.QueryRefomers
         protected abstract IEnumerable<ReformedWord> GetReformedTargetInternal(String target);
     }
 
-    internal abstract class AbstractContextSensitiveWordReformer : AbstractWordReformer
+    public abstract class AbstractContextSensitiveWordReformer : AbstractWordReformer
     {
         protected AbstractContextSensitiveWordReformer(DictionaryBasedSplitter localDictionary) 
             : base(localDictionary)

@@ -10,6 +10,9 @@ namespace Sando.Core.QueryRefomers
         // The maximum of corrections retrieved for a misspelled word.
         public const int SIMILAR_WORDS_MAX_COUNT = 5;
 
+        // The maxium number of words that are suggested by the cooccurrence reformer.
+        public const int COOCCURRENCE_WORDS_MAX_COUNT = 5;
+
         // The maximum of queries collected.
         public const int MAXIMUM_RECOMMENDATIONS_COUNT = 30;
 
