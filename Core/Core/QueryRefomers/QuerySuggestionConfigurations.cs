@@ -7,6 +7,10 @@ namespace Sando.Core.QueryRefomers
 {
     public class QuerySuggestionConfigurations
     {
+        // Only when the word is longer than this value, our reformers try to find
+        // a recommendation to it.
+        public const int MINIMUM_WORD_LENGTH_TO_REFORM = 3;
+
         // The maximum of corrections retrieved for a misspelled word.
         public const int SIMILAR_WORDS_MAX_COUNT = 5;
 

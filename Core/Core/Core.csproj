@@ -136,6 +136,7 @@
     <Compile Include="Tools\PathManager.cs" />
     <Compile Include="QueryRefomers\ReformedQueryBuilder.cs" />
     <Compile Include="Tools\SeSpecificThesaurus.cs" />
+    <Compile Include="Tools\ToolHelpers.cs" />
     <Compile Include="Tools\WordCoOccurrenceMatrix.cs" />
     <Compile Include="Tools\WordCorrector.cs" />
     <Compile Include="Tools\WordSplitter.cs" />

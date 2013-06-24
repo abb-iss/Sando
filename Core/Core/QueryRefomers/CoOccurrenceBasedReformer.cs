@@ -17,8 +17,7 @@ namespace Sando.Core.QueryRefomers
 
         protected override IEnumerable<ReformedWord> GetReformedTargetInternal(string target)
         {
-            if (!localDictionary.DoesWordExist(target, DictionaryOption.IncludingStemming) 
-                && otherWords.Any())
+            if (otherWords.Any())
             {
                 var commonWords = otherWords.Select(w => localDictionary.GetCoOccurredWordsAndCount(w))
                     .Aggregate(GetDictionaryIntersect).ToList().OrderBy(p => - p.Value).Select(p => p.Key);

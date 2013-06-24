@@ -29,8 +29,18 @@ namespace Sando.Core.QueryRefomers
 
         public IEnumerable<ReformedWord> GetReformedTarget(String target)
         {
-            return GetReformedTargetInternal(target).Where(w => this.localDictionary.
-                DoesWordExist(w.NewTerm, DictionaryOption.IncludingStemming));
+            if (IsReformingWord(target))
+            {
+                return GetReformedTargetInternal(target).Where(w => this.localDictionary.
+                    DoesWordExist(w.NewTerm, DictionaryOption.IncludingStemming));
+            }
+            return Enumerable.Empty<ReformedWord>();
+        }
+
+        private bool IsReformingWord(string target)
+        {
+            return !localDictionary.DoesWordExist(target, DictionaryOption.IncludingStemming) && target.Length 
+                >= QuerySuggestionConfigurations.MINIMUM_WORD_LENGTH_TO_REFORM;
         }
 
         protected abstract IEnumerable<ReformedWord> GetReformedTargetInternal(String target);
@@ -55,7 +65,7 @@ namespace Sando.Core.QueryRefomers
         COOCCUR,
     }
 
-    public interface IReformedQuery
+    public interface IReformedQuery : IEquatable<IReformedQuery>
     {
         IEnumerable<ReformedWord> ReformedQuery { get; }
         IEnumerable<String> ReformedTerms { get; }
@@ -64,7 +74,7 @@ namespace Sando.Core.QueryRefomers
     }
 
 
-    public class ReformedWord
+    public class ReformedWord : IEquatable<ReformedWord>
     {
         public TermChangeCategory Category { get; private set; }
         public string OriginalTerm { get; private set; }
@@ -81,6 +91,11 @@ namespace Sando.Core.QueryRefomers
             this.ReformExplanation = reformExplanation;
             this.DistanceFromOriginal = new Levenshtein().LD(this.OriginalTerm,
                 this.NewTerm);
+        }
+
+        public bool Equals(ReformedWord other)
+        {
+            return this.OriginalTerm.Equals(other.OriginalTerm) && this.NewTerm.Equals(other.NewTerm);
         }
     }
 }

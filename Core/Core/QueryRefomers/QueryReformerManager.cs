@@ -42,7 +42,6 @@ namespace Sando.Core.QueryRefomers
             var termList = terms.ToList();
             if (termList.Any())
             {
-                
                 var builder = new ReformedQueryBuilder(dictionary);
                 foreach (string term in termList)
                 {
@@ -76,11 +75,14 @@ namespace Sando.Core.QueryRefomers
                 list.AddRange(FindShapeSimilarWordsInLocalDictionary(word));
                 list.AddRange(FindSynonymsInDictionaries(word));
                 list.AddRange(FindCoOccurredTerms(word, neigbors));
-                return list;
+                list = ToolHelpers.RemoveRedundance(list).ToList();
+                return list.Any() ? list : ToolHelpers.CreateNonChangedTerm(word);
             }
-            return new []{new ReformedWord(TermChangeCategory.NOT_CHANGED, 
-                word, word, String.Empty)};
+            return ToolHelpers.CreateNonChangedTerm(word);
         }
+
+       
+
 
         private bool IsWordQuoted(string word)
         {

@@ -41,8 +41,7 @@ namespace Sando.Core.QueryRefomers
             return true;
         }
 
-        private class InternalReformedQuery : IReformedQuery, ICloneable, 
-            IEquatable<IReformedQuery>
+        private class InternalReformedQuery : IReformedQuery, ICloneable
         {
             private readonly List<ReformedWord> allTerms;
 
@@ -135,8 +134,7 @@ namespace Sando.Core.QueryRefomers
 
         private IEnumerable<IReformedQuery> RemoveDuplication(IEnumerable<IReformedQuery> queries)
         {
-            var set = new HashSet<IReformedQuery>(queries);
-            return set.AsEnumerable();
+            return ToolHelpers.RemoveRedundance(queries);
         }
 
         private IEnumerable<InternalReformedQuery> GenerateNewQueriesByAppendingTerms(InternalReformedQuery query, 
