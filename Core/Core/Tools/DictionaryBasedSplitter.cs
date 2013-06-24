@@ -107,33 +107,35 @@ namespace Sando.Core.Tools
 
             public void AddWords(IEnumerable<String> words, DictionaryOption option)
             {
-                var wordsToAdd = words.ToList();
+                var wordsMaybeAdded = words.ToList();
 
                 if (option == DictionaryOption.IncludingStemming)
                 {
-                    var stemmedWords = wordsToAdd.Select(DictionaryHelper.GetStemmedQuery).ToList();
-                    wordsToAdd.AddRange(stemmedWords);
+                    var stemmedWords = wordsMaybeAdded.Select(DictionaryHelper.GetStemmedQuery).ToList();
+                    wordsMaybeAdded.AddRange(stemmedWords);
                 }
 
-                wordsToAdd = wordsToAdd.Distinct().ToList();
+                wordsMaybeAdded = SelectingWordsAddToDictionary(wordsMaybeAdded).ToList();
 
                 lock (allWords)
                 {
-                    foreach (string word in wordsToAdd)
+                    foreach (string word in wordsMaybeAdded)
                     {
-                        var trimedWord = word.Trim().ToLower();
-                        if (!String.IsNullOrEmpty(trimedWord) && trimedWord.Length > 
-                            TERM_MINIMUM_LENGTH)
-                        {
-                            bool found = false;
-                            int smallerWordsCount = GetSmallerWordsCount(trimedWord, out found);
-                            if (!found)
-                                allWords.Insert(smallerWordsCount, trimedWord);
-                        }
+                        var found = false;
+                        var smallerWordsCount = GetSmallerWordsCount(word, out found);
+                        if (!found)
+                            allWords.Insert(smallerWordsCount, word);
                     }
                 }
-                addWordsEvent(wordsToAdd);
+                addWordsEvent(wordsMaybeAdded);
             }
+
+            private IEnumerable<String> SelectingWordsAddToDictionary(IEnumerable<String> words)
+            {
+                return words.Select(w => w.Trim().ToLower()).Distinct().Where(w => !String.IsNullOrEmpty(w) 
+                    && w.Length > TERM_MINIMUM_LENGTH);
+            }
+
 
             public Boolean DoesWordExist(String word, DictionaryOption option)
             {
