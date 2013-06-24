@@ -35,7 +35,9 @@ namespace Sando.Indexer.Searching.Criteria
             }
             else
             {
+                _searchCriteria.Explanation = String.Empty;
                 _searchCriteria.Reformed = false;
+                _searchCriteria.RecommendedQueries = Enumerable.Empty<String>().AsQueryable();
             }
         
             _searchCriteria.SearchTerms = new SortedSet<string>(terms);

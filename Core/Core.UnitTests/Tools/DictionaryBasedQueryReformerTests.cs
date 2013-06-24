@@ -198,7 +198,7 @@ namespace Sando.Core.UnitTests.Tools
         public void TestingTermsThatNeverOccurTogetherAreFiltered()
         {
             var reformed = reformer.ReformTermsSynchronously(new string[] {"sando", "me"});
-            reformed = reformer.ReformTermsSynchronously(new string[] {"sand"});
+            reformed = reformer.ReformTermsSynchronously(new string[] {"sand", "s", "and"});
             
         }
     }

@@ -105,6 +105,27 @@ namespace Sando.Core.QueryRefomers
             {
                 return this.QueryString.Equals(other.QueryString);
             }
+
+            public InternalReformedQuery RemoveRedundantTerm()
+            {
+                var list = allTerms.Distinct(new NewTermEqualityComparer()).ToList();
+                allTerms.Clear(); 
+                allTerms.AddRange(list);
+                return this;
+            }
+
+            private class NewTermEqualityComparer : IEqualityComparer<ReformedWord>
+            {
+                public bool Equals(ReformedWord x, ReformedWord y)
+                {
+                    return x.NewTerm.Equals(y.NewTerm);
+                }
+
+                public int GetHashCode(ReformedWord obj)
+                {
+                    return 0;
+                }
+            }
         }
 
 
@@ -124,7 +145,7 @@ namespace Sando.Core.QueryRefomers
             var allQuries = reformedTermLists.Aggregate(allReformedQuries, 
                 (current, reformedTermList) => current.SelectMany(q => 
                     GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList()).ToList();
-            return RemoveDuplication(FilterOutBadQueries(allQuries));
+            return RemoveDuplication(FilterOutBadQueries(allQuries.Select(q => q.RemoveRedundantTerm())));
         }
 
         private IEnumerable<IReformedQuery> FilterOutBadQueries(IEnumerable<InternalReformedQuery> allQuries)
