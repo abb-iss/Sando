@@ -1,4 +1,5 @@
-﻿using Sando.Core.QueryRefomers;
+﻿using System;
+using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +23,15 @@ namespace Sando.Indexer.Searching.Criteria
             var dictionarySplittedTerms = terms.SelectMany(ServiceLocator.Resolve<DictionaryBasedSplitter>
                 ().ExtractWords).ToList(); 
             terms.AddRange(dictionarySplittedTerms);
-            var query = TryGetReformedQuery(terms.Distinct());
-            if (query != null)
+            var queries = GetReformedQuery(terms.Distinct()).ToList();
+            if (queries.Count > 0)
             {
+                var query = queries.First();
                 terms.AddRange(query.ReformedTerms.ToList());
                 _searchCriteria.Explanation = query.ReformExplanation;
                 _searchCriteria.Reformed = true;
+                _searchCriteria.RecommendedQueries =
+                    queries.GetRange(1, queries.Count - 1).Select(n => n.QueryString).AsQueryable();
             }
             else
             {
@@ -38,12 +42,11 @@ namespace Sando.Indexer.Searching.Criteria
             return this;
         }
 
-        private IReformedQuery TryGetReformedQuery(IEnumerable<string> words)
+        private IEnumerable<IReformedQuery> GetReformedQuery(IEnumerable<string> words)
         {
             words = words.ToList();
             var reformer = ServiceLocator.Resolve<QueryReformerManager>();
-            var reformedQueries = reformer.ReformTermsSynchronously(words).ToList();
-            return reformedQueries.FirstOrDefault();
+            return reformer.ReformTermsSynchronously(words).ToList();
         }
 
 

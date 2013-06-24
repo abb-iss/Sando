@@ -193,5 +193,12 @@ namespace Sando.Core.UnitTests.Tools
             Assert.IsTrue(!q2.Any());
             Assert.IsTrue(q3.Any());
         }
+
+        [Test]
+        public void TestingTermsThatNeverOccurTogetherAreFiltered()
+        {
+            var reformed = reformer.ReformTermsSynchronously(new string[] {"sando", "me"});
+            
+        }
     }
 }
