@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
 using Sando.Core.QueryRefomers;
+using Sando.Core.Tools;
 
 namespace Sando.UI.View
 {
@@ -25,15 +26,10 @@ namespace Sando.UI.View
             }
         }
 
-        private static IQueryable<string> ControlRecommendedQueriesCount(IQueryable<string> queries)
+        private static IQueryable<string> ControlRecommendedQueriesCount(IEnumerable<string> queries)
         {
-            if (queries.Count() > QuerySuggestionConfigurations.
-                MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE)
-            {
-                queries = queries.ToList().GetRange(0, QuerySuggestionConfigurations
-                    .MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE).AsQueryable();
-            }
-            return queries;
+            return queries.TrimIfOverlyLong(QuerySuggestionConfigurations.
+                MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE).AsQueryable();
         }
 
         private void InternalUpdateRecommendedQueries(IEnumerable<string> quries)

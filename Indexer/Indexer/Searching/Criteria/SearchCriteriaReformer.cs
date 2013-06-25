@@ -23,8 +23,8 @@ namespace Sando.Indexer.Searching.Criteria
                 terms.AddRange(query.ReformedTerms.ToList());
                 criteria.Explanation = GetExplanation(query, originalTerms);
                 criteria.Reformed = true;
-                criteria.RecommendedQueries =
-                    queries.GetRange(1, queries.Count - 1).Select(n => n.QueryString).AsQueryable();
+                criteria.RecommendedQueries = queries.GetRange(1, queries.Count - 1).
+                    Select(n => n.QueryString).AsQueryable();
             }
             else
             {

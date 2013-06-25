@@ -48,22 +48,15 @@ namespace Sando.Core.QueryRefomers
                     var neigbors = GetNeighbors(termList, term);
                     builder.AddReformedTerms(FindBetterTerms(term, neigbors));
                 }
-                return TrimExcessiveRecommendations(GetReformedQuerySorter().SortReformedQueries
-                    (builder.GetAllPossibleReformedQueriesSoFar()));
+                return GetReformedQuerySorter().SortReformedQueries
+                    (builder.GetAllPossibleReformedQueriesSoFar());
             }
             return Enumerable.Empty<IReformedQuery>();
         }
 
-        private IEnumerable<IReformedQuery> TrimExcessiveRecommendations(IEnumerable<IReformedQuery> queries)
-        {
-            var list = queries.ToList();
-            return list.Count() > QuerySuggestionConfigurations.MAXIMUM_RECOMMENDATIONS_COUNT
-                ? list.GetRange(0, QuerySuggestionConfigurations.MAXIMUM_RECOMMENDATIONS_COUNT) : list;
-        }
-
         private IReformedQuerySorter GetReformedQuerySorter()
         {
-            return ReformedQuerySorters.GetReformedQuerySorter(QuerySorterType.EDIT_DISTANCE);
+            return ReformedQuerySorters.GetReformedQuerySorter(QuerySorterType.ROBIN_HOOD);
         }
 
         private IEnumerable<ReformedWord> FindBetterTerms(string word, IEnumerable<string> neigbors)
@@ -75,7 +68,7 @@ namespace Sando.Core.QueryRefomers
                 list.AddRange(FindShapeSimilarWordsInLocalDictionary(word));
                 list.AddRange(FindSynonymsInDictionaries(word));
                 list.AddRange(FindCoOccurredTerms(word, neigbors));
-                list = ToolHelpers.RemoveRedundance(list).ToList();
+                list = list.RemoveRedundance().ToList();
                 return list.Any() ? list : ToolHelpers.CreateNonChangedTerm(word);
             }
             return ToolHelpers.CreateNonChangedTerm(word);

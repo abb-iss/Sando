@@ -118,7 +118,8 @@ namespace Sando.Core.QueryRefomers
             {
                 public bool Equals(ReformedWord x, ReformedWord y)
                 {
-                    return x.NewTerm.Equals(y.NewTerm);
+                    return x.NewTerm.Equals(y.NewTerm) || x.NewTerm.GetStemmedQuery().
+                        Equals(y.NewTerm.GetStemmedQuery());
                 }
 
                 public int GetHashCode(ReformedWord obj)
@@ -145,7 +146,9 @@ namespace Sando.Core.QueryRefomers
             var allQuries = reformedTermLists.Aggregate(allReformedQuries, 
                 (current, reformedTermList) => current.SelectMany(q => 
                     GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList()).ToList();
-            return RemoveDuplication(FilterOutBadQueries(allQuries.Select(q => q.RemoveRedundantTerm())));
+            // too strict?
+            // return RemoveDuplication(FilterOutBadQueries(allQuries.Select(q => q.RemoveRedundantTerm())));
+            return RemoveDuplication(allQuries.Select(q => q.RemoveRedundantTerm()));
         }
 
         private IEnumerable<IReformedQuery> FilterOutBadQueries(IEnumerable<InternalReformedQuery> allQuries)
@@ -155,14 +158,14 @@ namespace Sando.Core.QueryRefomers
 
         private IEnumerable<IReformedQuery> RemoveDuplication(IEnumerable<IReformedQuery> queries)
         {
-            return ToolHelpers.RemoveRedundance(queries);
+            return queries.RemoveRedundance();
         }
 
         private IEnumerable<InternalReformedQuery> GenerateNewQueriesByAppendingTerms(InternalReformedQuery query, 
             ICollection<ReformedWord> newTerms)
         {
             var list = new List<InternalReformedQuery>();
-            for (int i = 0; i < newTerms.Count; i++)
+            for (var i = 0; i < newTerms.Count; i++)
             {
                 var extendedQuery = (InternalReformedQuery) query.Clone();
                 extendedQuery.AppendTerm(newTerms.ElementAt(i));
