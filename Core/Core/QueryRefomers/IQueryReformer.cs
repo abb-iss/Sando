@@ -67,10 +67,11 @@ namespace Sando.Core.QueryRefomers
 
     public interface IReformedQuery : IEquatable<IReformedQuery>
     {
-        IEnumerable<ReformedWord> ReformedQuery { get; }
-        IEnumerable<String> ReformedTerms { get; }
+        IEnumerable<ReformedWord> ReformedWords { get; }
+        IEnumerable<String> WordsAfterReform { get; }
         String ReformExplanation { get; }
         String QueryString { get; }
+        int CoOccurrenceCount { get; }
     }
 
 

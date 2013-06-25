@@ -20,7 +20,7 @@ namespace Sando.Indexer.Searching.Criteria
             if (queries.Count > 0)
             {
                 var query = queries.First();
-                terms.AddRange(query.ReformedTerms.ToList());
+                terms.AddRange(query.WordsAfterReform.ToList());
                 criteria.Explanation = GetExplanation(query, originalTerms);
                 criteria.Reformed = true;
                 criteria.RecommendedQueries = queries.GetRange(1, queries.Count - 1).
@@ -38,7 +38,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             var sb = new StringBuilder();
             sb.Append("Added search terms:");
-            foreach (var term in query.ReformedQuery)
+            foreach (var term in query.ReformedWords)
             {
                 if (!originalTerms.Contains(term.NewTerm))
                 {

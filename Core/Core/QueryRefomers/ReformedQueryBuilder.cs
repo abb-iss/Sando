@@ -26,7 +26,7 @@ namespace Sando.Core.QueryRefomers
 
         private Boolean IsEveryWordPairExisting(IReformedQuery query)
         {
-            var words = query.ReformedQuery.Select(q => q.NewTerm).ToList();
+            var words = query.ReformedWords.Select(q => q.NewTerm).ToList();
             for (int i = 0; i < words.Count - 1; i ++)
             {
                 for (int j = i + 1; j < words.Count; j ++)
@@ -44,23 +44,26 @@ namespace Sando.Core.QueryRefomers
         private class InternalReformedQuery : IReformedQuery, ICloneable
         {
             private readonly List<ReformedWord> allTerms;
+            private readonly IWordCoOccurrenceMatrix matrix;
 
-            public InternalReformedQuery()
+            public InternalReformedQuery(IWordCoOccurrenceMatrix matrix)
             {
                 this.allTerms = new List<ReformedWord>();
+                this.matrix = matrix;
             }
 
-            private InternalReformedQuery(IEnumerable<ReformedWord> allTerms)
+            private InternalReformedQuery(IEnumerable<ReformedWord> allTerms, IWordCoOccurrenceMatrix matrix)
             {
                 this.allTerms = allTerms.ToList();
+                this.matrix = matrix;
             }
 
-            public IEnumerable<ReformedWord> ReformedQuery
+            public IEnumerable<ReformedWord> ReformedWords
             {
                 get { return allTerms; }
             }
 
-            public IEnumerable<string> ReformedTerms {
+            public IEnumerable<string> WordsAfterReform {
                 get { return allTerms.Select(t => t.NewTerm).ToList(); }
             }
 
@@ -91,9 +94,25 @@ namespace Sando.Core.QueryRefomers
                 }
             }
 
+            public int CoOccurrenceCount { 
+                get
+                {
+                    int count = 0;
+                    int length = allTerms.Count;
+                    for (var i = 0; i < length - 1; i ++)
+                    {
+                        var word1 = allTerms.ElementAt(i).NewTerm;
+                        var left = allTerms.GetRange(i + 1, length - i - 1).Select(t => t.NewTerm);
+                        count += left.Where(word2 => !word1.Equals(word2)).Sum
+                            (word2 => matrix.GetCoOccurrenceCount(word1, word2));
+                    }
+                    return count;
+                }
+            }
+
             public object Clone()
             {
-                return new InternalReformedQuery(allTerms);
+                return new InternalReformedQuery(allTerms, matrix);
             }
 
             public void AppendTerm(ReformedWord term)
@@ -142,7 +161,8 @@ namespace Sando.Core.QueryRefomers
 
         public IEnumerable<IReformedQuery> GetAllPossibleReformedQueriesSoFar()
         {
-            var allReformedQuries = new List<InternalReformedQuery> {new InternalReformedQuery()};
+            var allReformedQuries = new List<InternalReformedQuery> {new 
+                InternalReformedQuery(this.coOccurrenceMatrix)};
             var allQuries = reformedTermLists.Aggregate(allReformedQuries, 
                 (current, reformedTermList) => current.SelectMany(q => 
                     GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList()).ToList();
