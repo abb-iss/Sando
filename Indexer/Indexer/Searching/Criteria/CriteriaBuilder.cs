@@ -25,7 +25,6 @@ namespace Sando.Indexer.Searching.Criteria
             return this;
         }
 
-
         private void Initialze(SimpleSearchCriteria searchCriteria)
         {
             if (_searchCriteria == null)

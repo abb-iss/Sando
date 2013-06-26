@@ -72,6 +72,7 @@ namespace Sando.Core.QueryRefomers
         String ReformExplanation { get; }
         String QueryString { get; }
         int CoOccurrenceCount { get; }
+        int EditDistance { get; }
     }
 
 

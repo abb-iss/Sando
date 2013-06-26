@@ -18,9 +18,9 @@ namespace Sando.Core.UnitTests.Tools
                 this.iNumber = iNumber;
                 this.fNumber = fNumber;
             }
-            public string text { set; get; }
-            public int iNumber { get; set; }
-            public float fNumber { get; set; }
+            public string text { get; private set; }
+            public int iNumber { get; private set; }
+            public float fNumber { get; private set; }
         }
 
         [Test]

@@ -54,9 +54,11 @@ namespace Sando.Core.QueryRefomers
             return Enumerable.Empty<IReformedQuery>();
         }
 
+
+
         private IReformedQuerySorter GetReformedQuerySorter()
         {
-            return ReformedQuerySorters.GetReformedQuerySorter(QuerySorterType.ROBIN_HOOD);
+            return ReformedQuerySorters.GetReformedQuerySorter(QuerySorterType.SCORE);
         }
 
         private IEnumerable<ReformedWord> FindBetterTerms(string word, IEnumerable<string> neigbors)
@@ -73,9 +75,6 @@ namespace Sando.Core.QueryRefomers
             }
             return ToolHelpers.CreateNonChangedTerm(word);
         }
-
-       
-
 
         private bool IsWordQuoted(string word)
         {
@@ -108,7 +107,5 @@ namespace Sando.Core.QueryRefomers
             reformer.SetContextWords(neighbors);
             return reformer.GetReformedTarget(word);
         }
-
-   
     }
 }

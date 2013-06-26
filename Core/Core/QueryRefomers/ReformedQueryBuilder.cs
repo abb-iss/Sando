@@ -110,6 +110,10 @@ namespace Sando.Core.QueryRefomers
                 }
             }
 
+            public int EditDistance {
+                get { return allTerms.Sum(t => t.DistanceFromOriginal); }
+            }
+
             public object Clone()
             {
                 return new InternalReformedQuery(allTerms, matrix);
@@ -146,6 +150,21 @@ namespace Sando.Core.QueryRefomers
                     return 0;
                 }
             }
+
+            public InternalReformedQuery RemoveShortTerms()
+            {
+                var list = allTerms.ToList();
+                for (int i = 0; i < allTerms.Count; i++)
+                {
+                    if (allTerms.ElementAt(i).NewTerm.Length < 2)
+                    {
+                        list.RemoveAt(i);
+                    }
+                }
+                allTerms.Clear();
+                allTerms.AddRange(list);
+                return this;
+            }
         }
 
 
@@ -168,7 +187,7 @@ namespace Sando.Core.QueryRefomers
                     GenerateNewQueriesByAppendingTerms(q, reformedTermList)).ToList()).ToList();
             // too strict?
             // return RemoveDuplication(FilterOutBadQueries(allQuries.Select(q => q.RemoveRedundantTerm())));
-            return RemoveDuplication(allQuries.Select(q => q.RemoveRedundantTerm()));
+            return RemoveDuplication(allQuries.Select(q => q.RemoveRedundantTerm().RemoveShortTerms()));
         }
 
         private IEnumerable<IReformedQuery> FilterOutBadQueries(IEnumerable<InternalReformedQuery> allQuries)

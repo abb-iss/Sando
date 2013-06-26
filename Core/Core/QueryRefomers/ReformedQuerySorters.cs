@@ -10,11 +10,12 @@ namespace Sando.Core.QueryRefomers
         EDIT_DISTANCE,
         COOCCURRENCE,
         ROBIN_HOOD,
+        SCORE,
         NULL_SORTER,
     }
 
 
-    internal class ReformedQuerySorters
+    internal partial class ReformedQuerySorters
     {
         private class EditDistanceSorter : IReformedQuerySorter
         {
@@ -118,6 +119,8 @@ namespace Sando.Core.QueryRefomers
                 return new RobinHoodSorter();
             if(type == QuerySorterType.COOCCURRENCE)
                 return new CoOccurrenceSorter();
+            if(type == QuerySorterType.SCORE)
+                return new ScoreBasedSorter();
             return new NullSorter();
         }
     }

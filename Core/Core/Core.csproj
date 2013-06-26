@@ -123,6 +123,7 @@
     <Compile Include="QueryRefomers\CoOccurrenceBasedReformer.cs" />
     <Compile Include="QueryRefomers\IQueryReformer.cs" />
     <Compile Include="QueryRefomers\QuerySuggestionConfigurations.cs" />
+    <Compile Include="QueryRefomers\ReformedQueryScoreSorter.cs" />
     <Compile Include="QueryRefomers\ReformedQuerySorters.cs" />
     <Compile Include="QueryRefomers\ThesaurusBasedQueryReformer.cs" />
     <Compile Include="QueryRefomers\TypoCorrectionReformer.cs" />
