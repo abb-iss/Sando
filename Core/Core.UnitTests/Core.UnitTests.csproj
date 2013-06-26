@@ -66,6 +66,7 @@
     <Compile Include="Tools\SeSpecificThesaurusTests.cs" />
     <Compile Include="Tools\SplitterTest.cs" />
     <Compile Include="Tools\RandomStringBasedTests.cs" />
+    <Compile Include="Tools\ToolHelpersTests.cs" />
     <Compile Include="Tools\WordCorrectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
