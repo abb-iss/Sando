@@ -8,6 +8,7 @@ namespace Sando.Core.QueryRefomers
     internal enum QuerySorterType
     {
         EDIT_DISTANCE,
+        COOCCURRENCE,
         ROBIN_HOOD,
         NULL_SORTER,
     }
@@ -115,6 +116,8 @@ namespace Sando.Core.QueryRefomers
                 return new EditDistanceSorter();
             if(type == QuerySorterType.ROBIN_HOOD)
                 return new RobinHoodSorter();
+            if(type == QuerySorterType.COOCCURRENCE)
+                return new CoOccurrenceSorter();
             return new NullSorter();
         }
     }
