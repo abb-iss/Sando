@@ -254,7 +254,6 @@ namespace Sando.UI.View
 
         private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
-
             OpenFileWithSelectedResult(sender);
         }
 
@@ -273,11 +272,12 @@ namespace Sando.UI.View
                 var result = sender as ListBoxItem;
                 if (result != null)
                 {
+                    string[] searchKeys = GetKeys(this.searchKey);
                     var searchResult = result.Content as CodeSearchResult;
                     FileOpener.OpenItem(searchResult, searchBox.Text);
                     HighlightedEntitySet.GetInstance().Clear();
                     HighlightedEntitySet.GetInstance().AddEntity(searchResult.ProgramElement.FullFilePath, searchResult.
-                        ProgramElement.DefinitionLineNumber, searchResult.ProgramElement.RawSource);
+                        ProgramElement.DefinitionLineNumber, searchResult.ProgramElement.RawSource, searchKeys);
 
                     var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
                     LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
@@ -313,28 +313,29 @@ namespace Sando.UI.View
             }
 
 
-            ////For each item in the SearchResults, generate the highlight results (Serial version)
-            //foreach(var item in SearchResults) {
-            //    string highlight;
-            //    string highlightRaw;
-            //    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
-            //    item.Highlight = highlight;
-            //    item.HighlightRaw = highlightRaw;
-            //}
-
-            //Concurrent version 
-            var exceptions = new ConcurrentQueue<Exception>(); 
-            Parallel.ForEach(SearchResults, item => {
-                try {
-                    string highlight;
-                    string highlightRaw;
-                    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
-                    item.Highlight = highlight;
-                    item.HighlightRaw = highlightRaw;
-                } catch(Exception exc) { exceptions.Enqueue(exc); } 
+            //For each item in the SearchResults, generate the highlight results (Serial version)
+            foreach(var item in SearchResults) {
+                string highlight;
+                string highlightRaw;
+                GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+                item.Highlight = highlight;
+                item.HighlightRaw = highlightRaw;
             }
-                );
 
+            ////Concurrent version 
+            //var exceptions = new ConcurrentQueue<Exception>();
+            //Parallel.ForEach(SearchResults, item => {
+            //    try {
+            //        string highlight;
+            //        string highlightRaw;
+            //        GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+            //        item.Highlight = highlight;
+            //        item.HighlightRaw = highlightRaw;
+            //    } catch(Exception exc) { exceptions.Enqueue(exc); }
+            //}
+            //    );
+
+            //Donot consider capture the exception for the time being
             //if(!exceptions.IsEmpty) 
             //    throw new AggregateException(exceptions);
         }
@@ -399,6 +400,8 @@ namespace Sando.UI.View
                 keys.Add(DictionaryHelper.GetStemmedQuery(term));
                 keys.Add(term);
             }
+            foreach(var quote in description.LiteralSearchTerms)
+                keys.Add(quote.Trim('"'));
             return keys.ToArray();
         }
 
@@ -636,6 +639,21 @@ namespace Sando.UI.View
             {
                 //ignore for now, as this is not a crucial feature
             }
-        }        
+        }
+
+
+        private void ListViewItem_LostFocus(object sender, RoutedEventArgs e) {
+            //searchResultListbox.SelectedItem = null;
+            //// Mark as handled to prevent this event from bubbling up the element tree.
+            //e.Handled = true;
+        }
+
+        private void MouseLeaveEvent(object sender, MouseEventArgs e) {
+            searchResultListbox.SelectedItem = null;
+            // Mark as handled to prevent this event from bubbling up the element tree.
+            e.Handled = true;
+
+        }
+
     }
 }
