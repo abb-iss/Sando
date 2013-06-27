@@ -201,9 +201,6 @@ namespace Sando.UI.View
             //Store the search key
             this.searchKey = searchBox.Text;
 
-            //Clear the old recommendation.
-            UpdateRecommendedQueries(Enumerable.Empty<String>().AsQueryable());
-
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
             {
@@ -313,27 +310,27 @@ namespace Sando.UI.View
             }
 
 
-            //For each item in the SearchResults, generate the highlight results (Serial version)
-            foreach(var item in SearchResults) {
-                string highlight;
-                string highlightRaw;
-                GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
-                item.Highlight = highlight;
-                item.HighlightRaw = highlightRaw;
-            }
-
-            ////Concurrent version 
-            //var exceptions = new ConcurrentQueue<Exception>();
-            //Parallel.ForEach(SearchResults, item => {
-            //    try {
-            //        string highlight;
-            //        string highlightRaw;
-            //        GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
-            //        item.Highlight = highlight;
-            //        item.HighlightRaw = highlightRaw;
-            //    } catch(Exception exc) { exceptions.Enqueue(exc); }
+            ////For each item in the SearchResults, generate the highlight results (Serial version)
+            //foreach(var item in SearchResults) {
+            //    string highlight;
+            //    string highlightRaw;
+            //    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+            //    item.Highlight = highlight;
+            //    item.HighlightRaw = highlightRaw;
             //}
-            //    );
+
+            //Concurrent version 
+            var exceptions = new ConcurrentQueue<Exception>();
+            Parallel.ForEach(SearchResults, item => {
+                try {
+                    string highlight;
+                    string highlightRaw;
+                    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+                    item.Highlight = highlight;
+                    item.HighlightRaw = highlightRaw;
+                } catch(Exception exc) { exceptions.Enqueue(exc); }
+            }
+                );
 
             //Donot consider capture the exception for the time being
             //if(!exceptions.IsEmpty) 

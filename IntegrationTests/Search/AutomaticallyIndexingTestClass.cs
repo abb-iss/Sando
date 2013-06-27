@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
@@ -277,11 +276,6 @@ namespace Sando.IntegrationTests.Search
         public void UpdateMessage(string message)
         {
             _myMessage = message;            
-        }
-
-        public void UpdateRecommendedQueries(IQueryable<string> queries)
-        {
-           
         }
 
         public class FakeOptionsProvider : ISandoOptionsProvider
