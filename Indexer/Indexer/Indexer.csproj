@@ -124,6 +124,7 @@
     <Compile Include="Metrics\PostRetrievalMetrics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Searching\Criteria\CriteriaBuilder.cs" />
+    <Compile Include="Searching\Criteria\SearchCriteriaReformer.cs" />
     <Compile Include="Searching\DefaultQueryRewriter.cs" />
     <Compile Include="Searching\Criteria\SimpleSearchCriteria.cs" />
     <Compile Include="Searching\IIndexerSearcher.cs" />

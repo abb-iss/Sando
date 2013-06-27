@@ -16,22 +16,33 @@ namespace Sando.Core.Tools
         NoStemming
     }
 
+    public delegate void NewWordsAdded(IEnumerable<String> words);
+   
     /// <summary>
     /// This class keeps records of used words in the code under searching. Also, it can greedily 
     /// split a given string by matching words in the dictionary. 
     /// </summary>
-    public class DictionaryBasedSplitter : IWordSplitter, IDisposable
+    public class DictionaryBasedSplitter : IWordSplitter, IDisposable, IWordCoOccurrenceMatrix
     {
         private readonly FileDictionary dictionary;
+        private readonly InternalWordCoOccurrenceMatrix matrix;
         
         public DictionaryBasedSplitter()
         {
             this.dictionary = new FileDictionary();
+            this.matrix = new InternalWordCoOccurrenceMatrix();
+            this.dictionary.addWordsEvent += matrix.HandleCoOcurrentWords;
         }
 
         public void Initialize(String directory)
         {
             dictionary.Initialize(directory);
+            matrix.Initialize(directory);
+        }
+
+        public Dictionary<string, int> GetCoOccurredWordsAndCount(string word)
+        {
+            return matrix.GetCoOccurredWordsAndCount(word);
         }
 
         public void AddWords(IEnumerable<String> words)
@@ -48,10 +59,7 @@ namespace Sando.Core.Tools
             private string directory;
             private readonly List<string> allWords = new List<string>();
             private WordCorrector corrector = new WordCorrector();
-            
-            private delegate void NewWordsAdded(IEnumerable<String> words);
-            private event NewWordsAdded addWordsEvent;
-
+            public event NewWordsAdded addWordsEvent;
 
             public FileDictionary()
             {
@@ -99,33 +107,35 @@ namespace Sando.Core.Tools
 
             public void AddWords(IEnumerable<String> words, DictionaryOption option)
             {
-                var wordsToAdd = words.ToList();
+                var wordsMaybeAdded = words.ToList();
 
                 if (option == DictionaryOption.IncludingStemming)
                 {
-                    var stemmedWords = wordsToAdd.Select(DictionaryHelper.GetStemmedQuery).ToList();
-                    wordsToAdd.AddRange(stemmedWords);
+                    var stemmedWords = wordsMaybeAdded.Select(DictionaryHelper.GetStemmedQuery).ToList();
+                    wordsMaybeAdded.AddRange(stemmedWords);
                 }
 
-                wordsToAdd = wordsToAdd.Distinct().ToList();
+                wordsMaybeAdded = SelectingWordsAddToDictionary(wordsMaybeAdded).ToList();
 
                 lock (allWords)
                 {
-                    foreach (string word in wordsToAdd)
+                    foreach (string word in wordsMaybeAdded)
                     {
-                        var trimedWord = word.Trim().ToLower();
-                        if (!String.IsNullOrEmpty(trimedWord) && trimedWord.Length > 
-                            TERM_MINIMUM_LENGTH)
-                        {
-                            bool found = false;
-                            int smallerWordsCount = GetSmallerWordsCount(trimedWord, out found);
-                            if (!found)
-                                allWords.Insert(smallerWordsCount, trimedWord);
-                        }
+                        var found = false;
+                        var smallerWordsCount = GetSmallerWordsCount(word, out found);
+                        if (!found)
+                            allWords.Insert(smallerWordsCount, word);
                     }
-                    addWordsEvent(wordsToAdd);
                 }
+                addWordsEvent(wordsMaybeAdded);
             }
+
+            private IEnumerable<String> SelectingWordsAddToDictionary(IEnumerable<String> words)
+            {
+                return words.Select(w => w.Trim().ToLower()).Distinct().Where(w => !String.IsNullOrEmpty(w) 
+                    && w.Length > TERM_MINIMUM_LENGTH);
+            }
+
 
             public Boolean DoesWordExist(String word, DictionaryOption option)
             {
@@ -274,6 +284,7 @@ namespace Sando.Core.Tools
         public void Dispose()
         {
             dictionary.Dispose();
+            matrix.Dispose();
         }
 
 
@@ -391,6 +402,11 @@ namespace Sando.Core.Tools
                 }
                 return allSubWords;
             }
+        }
+
+        public int GetCoOccurrenceCount(string word1, string word2)
+        {
+            return matrix.GetCoOccurrenceCount(word1, word2);
         }
     }
 }

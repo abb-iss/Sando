@@ -7,7 +7,7 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Core.Tools
 {
-    public class DictionaryHelper
+    public static class DictionaryHelper
     {
         private static readonly Regex _quotesPattern = new Regex("-{0,1}\"[^\"]+\"", RegexOptions.Compiled);
         private static readonly Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
@@ -166,7 +166,7 @@ namespace Sando.Core.Tools
         }
 
 
-        public static string GetStemmedQuery(String query)
+        public static string GetStemmedQuery(this String query)
         {
             var stemmer = new EnglishStemmer();
             stemmer.SetCurrent(query);
