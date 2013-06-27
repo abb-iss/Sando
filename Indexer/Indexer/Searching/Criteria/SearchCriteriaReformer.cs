@@ -40,12 +40,9 @@ namespace Sando.Indexer.Searching.Criteria
         {
             var sb = new StringBuilder();
             sb.Append("Added search terms:");
-            foreach (var term in query.ReformedWords)
+            foreach (var term in query.ReformedWords.Where(term => !originalTerms.Contains(term.NewTerm)))
             {
-                if (!originalTerms.Contains(term.NewTerm))
-                {
-                    sb.Append(term.NewTerm + ", ");
-                }
+                sb.Append(term.NewTerm + ", ");
             }
             return sb.ToString().TrimEnd(new char[]{',', ' '}) + ". ";
         }
