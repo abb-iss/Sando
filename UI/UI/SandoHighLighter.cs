@@ -52,8 +52,8 @@ namespace Sando.UI
         //Highlight individual lines that containts the search key Zhao
         public bool IsLineInEntity(int number) {
             //Justify the line number
-            if(!RawinLine[0].Contains('('))
-                number++;
+            //if(!RawinLine[0].Contains('('))
+            //    number++;
             if(number >= StartLineNumber && number < StartLineNumber + LineCount) {
                 foreach(string keyword in Keywords)
                     if(RawinLine[number - StartLineNumber].IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase) >= 0)
