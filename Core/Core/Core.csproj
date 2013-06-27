@@ -120,10 +120,7 @@
     <Compile Include="Logging\Events\LogEvents.cs" />
     <Compile Include="Logging\Events\DefaultLogEventHandlers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryRefomers\CoOccurrenceBasedReformer.cs" />
     <Compile Include="QueryRefomers\IQueryReformer.cs" />
-    <Compile Include="QueryRefomers\QuerySuggestionConfigurations.cs" />
-    <Compile Include="QueryRefomers\ReformedQueryScoreSorter.cs" />
     <Compile Include="QueryRefomers\ReformedQuerySorters.cs" />
     <Compile Include="QueryRefomers\ThesaurusBasedQueryReformer.cs" />
     <Compile Include="QueryRefomers\TypoCorrectionReformer.cs" />
@@ -137,8 +134,7 @@
     <Compile Include="Tools\PathManager.cs" />
     <Compile Include="QueryRefomers\ReformedQueryBuilder.cs" />
     <Compile Include="Tools\SeSpecificThesaurus.cs" />
-    <Compile Include="Tools\ToolHelpers.cs" />
-    <Compile Include="Tools\WordCoOccurrenceMatrix.cs" />
+    <Compile Include="Tools\WordCooccurenceMatrix.cs" />
     <Compile Include="Tools\WordCorrector.cs" />
     <Compile Include="Tools\WordSplitter.cs" />
   </ItemGroup>

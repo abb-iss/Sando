@@ -11,11 +11,53 @@ using Sando.Core.Tools;
 namespace Sando.Core.UnitTests.Tools
 {
     [TestFixture]
-    class LocalDictionaryTests : RandomStringBasedTests
+    class LocalDictionaryTests
     {
         private const string tempFolder = @"C:\Windows\Temp\Dictionary\";
+        private static Random random = new Random((int)DateTime.Now.Ticks);
         private DictionaryBasedSplitter _dictionaryBasedSplitter;
-    
+        private List<string> _createdDirectory = new List<string>();
+
+        private string GenerateRandomString(int size)
+        {
+            var builder = new StringBuilder();
+            for (int i = 0; i < size; i++)
+            {
+                char ch = Convert.ToChar(Convert.ToInt32(Math.
+                    Floor(26 * random.NextDouble() + 97)));
+                builder.Append(ch);
+            }
+            return builder.ToString();
+        }
+
+        private List<string> GenerateRandomWordList(int length)
+        {
+            var words = new List<String>();
+            for (int i = 0; i < length; i++)
+            {
+                words.Add(GenerateRandomString(15));
+            }
+            return words;
+        }
+
+        private void CreateDirectory(String path)
+        {
+            Directory.CreateDirectory(path);
+            if (!_createdDirectory.Contains(path))
+                _createdDirectory.Add(path);
+        }
+
+        private string CombiningWords(IEnumerable<String> words, int wordCount)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < wordCount; i++)
+            {
+                int index = random.Next() % words.Count();
+                sb.Append(words.ElementAt(index));
+            }
+            return sb.ToString();
+        }
+
         [SetUp]
         public void SetUp()
         {
@@ -25,12 +67,18 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [TearDown]
-        public void Disposing()
+        public void DeleteCreatedFile()
         {
             _dictionaryBasedSplitter.Dispose();
-            DeleteCreatedFile();
+            foreach (string directory in _createdDirectory)
+            {
+                if (Directory.Exists(directory))
+                {
+                    Directory.Delete(directory, true);
+                }
+            }
+            _createdDirectory.Clear();
         }
-
 
         [Test]
         public void GetStemmedWord()
@@ -82,7 +130,7 @@ namespace Sando.Core.UnitTests.Tools
         public void AddManyWords()
         {
             var words = new List<String>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 words.Add(GenerateRandomString(30));
             }

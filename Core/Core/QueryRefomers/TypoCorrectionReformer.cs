@@ -9,7 +9,7 @@ namespace Sando.Core.QueryRefomers
 {
     internal class TypoCorrectionReformer : AbstractWordReformer
     {
-        
+        const int SIMILAR_WORDS_MAX_COUNT = 2;
         
         internal TypoCorrectionReformer(DictionaryBasedSplitter localDictionary) 
             : base(localDictionary)
@@ -29,9 +29,8 @@ namespace Sando.Core.QueryRefomers
                 IEnumerable<ReformedWord> correctedList = list.Select(w => new ReformedWord
                       (TermChangeCategory.MISSPELLING, target, w,
                         GetReformMessage(target, w))).ToList();
-                if (correctedList.Count() >= QuerySuggestionConfigurations.SIMILAR_WORDS_MAX_COUNT)
-                    correctedList = correctedList.ToList().GetRange(0,
-                        QuerySuggestionConfigurations.SIMILAR_WORDS_MAX_COUNT);
+                if (correctedList.Count() >= SIMILAR_WORDS_MAX_COUNT)
+                    correctedList = correctedList.ToList().GetRange(0, SIMILAR_WORDS_MAX_COUNT);
                 return correctedList;
             }
             return Enumerable.Empty<ReformedWord>();

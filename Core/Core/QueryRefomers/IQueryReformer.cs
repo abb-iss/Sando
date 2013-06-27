@@ -18,7 +18,7 @@ namespace Sando.Core.QueryRefomers
         IEnumerable<IReformedQuery> SortReformedQueries(IEnumerable<IReformedQuery> queries);
     }
 
-    public abstract class AbstractWordReformer
+    internal abstract class AbstractWordReformer
     {
         protected readonly DictionaryBasedSplitter localDictionary;
 
@@ -29,31 +29,22 @@ namespace Sando.Core.QueryRefomers
 
         public IEnumerable<ReformedWord> GetReformedTarget(String target)
         {
-            if (IsReformingWord(target))
-            {
-                return GetReformedTargetInternal(target).Where(w => this.localDictionary.
-                    DoesWordExist(w.NewTerm, DictionaryOption.IncludingStemming));
-            }
-            return Enumerable.Empty<ReformedWord>();
-        }
-
-        private bool IsReformingWord(string target)
-        {
-            return !localDictionary.DoesWordExist(target, DictionaryOption.IncludingStemming) && target.Length 
-                >= QuerySuggestionConfigurations.MINIMUM_WORD_LENGTH_TO_REFORM;
+            return GetReformedTargetInternal(target).Where(w => this.localDictionary.
+                DoesWordExist(w.NewTerm, DictionaryOption.IncludingStemming));
         }
 
         protected abstract IEnumerable<ReformedWord> GetReformedTargetInternal(String target);
     }
 
-    public abstract class AbstractContextSensitiveWordReformer : AbstractWordReformer
+    internal abstract class AbstractContextSensitiveWordReformer : AbstractWordReformer
     {
         protected AbstractContextSensitiveWordReformer(DictionaryBasedSplitter localDictionary) 
             : base(localDictionary)
         {
         }
 
-        public abstract void SetContextWords(IEnumerable<String> words);
+        public abstract void SetWordsBeforeTarget(IEnumerable<String> words);
+        public abstract void SetWordsAfterTarget(IEnumerable<String> words);
     }
 
     public enum TermChangeCategory
@@ -62,21 +53,17 @@ namespace Sando.Core.QueryRefomers
         MISSPELLING,
         SE_SYNONYM,
         GENERAL_SYNONYM,
-        COOCCUR,
     }
 
-    public interface IReformedQuery : IEquatable<IReformedQuery>
+    public interface IReformedQuery
     {
-        IEnumerable<ReformedWord> ReformedWords { get; }
-        IEnumerable<String> WordsAfterReform { get; }
+        IEnumerable<ReformedWord> ReformedQuery { get; }
+        IEnumerable<String> GetReformedTerms { get; }
         String ReformExplanation { get; }
-        String QueryString { get; }
-        int CoOccurrenceCount { get; }
-        int EditDistance { get; }
     }
 
 
-    public class ReformedWord : IEquatable<ReformedWord>
+    public class ReformedWord
     {
         public TermChangeCategory Category { get; private set; }
         public string OriginalTerm { get; private set; }
@@ -93,11 +80,6 @@ namespace Sando.Core.QueryRefomers
             this.ReformExplanation = reformExplanation;
             this.DistanceFromOriginal = new Levenshtein().LD(this.OriginalTerm,
                 this.NewTerm);
-        }
-
-        public bool Equals(ReformedWord other)
-        {
-            return this.OriginalTerm.Equals(other.OriginalTerm) && this.NewTerm.Equals(other.NewTerm);
         }
     }
 }

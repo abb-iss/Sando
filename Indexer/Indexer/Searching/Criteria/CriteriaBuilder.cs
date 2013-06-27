@@ -1,5 +1,4 @@
-﻿using System;
-using Sando.Core.QueryRefomers;
+﻿using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +19,33 @@ namespace Sando.Indexer.Searching.Criteria
         {
             Initialze(searchCriteria);
             var terms = WordSplitter.ExtractSearchTerms(searchString).ToList();
-            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria, terms);
-            _searchCriteria.SearchTerms = new SortedSet<string>(terms);
+            var dictionarySplittedTerms = terms.SelectMany(ServiceLocator.Resolve<DictionaryBasedSplitter>
+                ().ExtractWords).ToList(); 
+            terms.AddRange(dictionarySplittedTerms);
+            var query = TryGetReformedQuery(terms.Distinct());
+            if (query != null)
+            {
+                terms.AddRange(query.GetReformedTerms.ToList());
+                _searchCriteria.Explanation = query.ReformExplanation;
+                _searchCriteria.Reformed = true;
+            }
+            else
+            {
+                _searchCriteria.Reformed = false;
+            }
+        
+            _searchCriteria.SearchTerms = new SortedSet<string>(terms.Distinct());
             return this;
         }
+
+        private IReformedQuery TryGetReformedQuery(IEnumerable<string> words)
+        {
+            words = words.ToList();
+            var reformer = ServiceLocator.Resolve<QueryReformerManager>();
+            var reformedQueries = reformer.ReformTermsSynchronously(words).ToList();
+            return reformedQueries.FirstOrDefault();
+        }
+
 
         private void Initialze(SimpleSearchCriteria searchCriteria)
         {
