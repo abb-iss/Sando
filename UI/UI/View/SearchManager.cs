@@ -83,6 +83,7 @@ namespace Sando.UI.View
                 }
                 _searchResultListener.Update(results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
+                _searchResultListener.UpdateRecommendedQueries(criteria.GetRecommendedQueries());
 				
 				LogEvents.PostSearch(this, results.Count(), criteria.NumberOfSearchResultsReturned, PostRetrievalMetrics.AvgScore(results.ToList()), PostRetrievalMetrics.StdDevScore(results.ToList()));
             }

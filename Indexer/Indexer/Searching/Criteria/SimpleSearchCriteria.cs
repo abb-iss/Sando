@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
 
 namespace Sando.Indexer.Searching.Criteria
@@ -39,6 +40,12 @@ namespace Sando.Indexer.Searching.Criteria
 	        return Explanation;
 	    }
 
+	    public override IQueryable<string> GetRecommendedQueries()
+	    {
+	        return RecommendedQueries;
+	    }
+
+	    public IQueryable<string> RecommendedQueries { set; get; }
 	    public SortedSet<string> SearchTerms { get; set; }
 		public bool MatchCase { get; set; }
 		public bool ExactMode { get; set; }

@@ -15,6 +15,7 @@ namespace Sando.Core.QueryRefomers
 
     public class QueryReformerManager
     {
+       
         private readonly DictionaryBasedSplitter dictionary;
       
         public QueryReformerManager(DictionaryBasedSplitter dictionary)
@@ -41,10 +42,11 @@ namespace Sando.Core.QueryRefomers
             var termList = terms.ToList();
             if (termList.Any())
             {
-                var builder = new ReformedQueryBuilder();
+                var builder = new ReformedQueryBuilder(dictionary);
                 foreach (string term in termList)
                 {
-                    builder.AddReformedTerms(FindBetterTerms(term));
+                    var neigbors = GetNeighbors(termList, term);
+                    builder.AddReformedTerms(FindBetterTerms(term, neigbors));
                 }
                 return GetReformedQuerySorter().SortReformedQueries
                     (builder.GetAllPossibleReformedQueriesSoFar());
@@ -53,12 +55,13 @@ namespace Sando.Core.QueryRefomers
         }
 
 
+
         private IReformedQuerySorter GetReformedQuerySorter()
         {
-            return ReformedQuerySorters.GetReformedQuerySorter(QuerySorterType.EDIT_DISTANCE);
+            return ReformedQuerySorters.GetReformedQuerySorter(QuerySorterType.SCORE);
         }
 
-        private IEnumerable<ReformedWord> FindBetterTerms(String word)
+        private IEnumerable<ReformedWord> FindBetterTerms(string word, IEnumerable<string> neigbors)
         {
             if (!dictionary.DoesWordExist(word, DictionaryOption.IncludingStemming) 
                 && !IsWordQuoted(word))
@@ -66,10 +69,11 @@ namespace Sando.Core.QueryRefomers
                 var list = new List<ReformedWord>();
                 list.AddRange(FindShapeSimilarWordsInLocalDictionary(word));
                 list.AddRange(FindSynonymsInDictionaries(word));
-                return list;
+                list.AddRange(FindCoOccurredTerms(word, neigbors));
+                list = list.RemoveRedundance().ToList();
+                return list.Any() ? list : ToolHelpers.CreateNonChangedTerm(word);
             }
-            return new []{new ReformedWord(TermChangeCategory.NOT_CHANGED, 
-                word, word, String.Empty)};
+            return ToolHelpers.CreateNonChangedTerm(word);
         }
 
         private bool IsWordQuoted(string word)
@@ -92,6 +96,16 @@ namespace Sando.Core.QueryRefomers
             return list;
         }
 
-   
+        private IEnumerable<String> GetNeighbors(IEnumerable<String> words, String target)
+        {
+            return words.Where(w => !w.Equals(target));
+        }
+        
+        private IEnumerable<ReformedWord> FindCoOccurredTerms(String word, IEnumerable<String> neighbors)
+        {
+            var reformer = new CoOccurrenceBasedReformer(dictionary);
+            reformer.SetContextWords(neighbors);
+            return reformer.GetReformedTarget(word);
+        }
     }
 }

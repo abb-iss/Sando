@@ -55,13 +55,18 @@
     <Compile Include="Logging\AmazonS3LogUploaderTest.cs" />
     <Compile Include="Logging\FileLoggerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\CoOccurrenceBasedReformerTests.cs" />
+    <Compile Include="Tools\CoOccurrenceMatrixTests.cs" />
     <Compile Include="Tools\DictionaryBasedQueryReformerTests.cs" />
     <Compile Include="Tools\GeneralEnglishThesaurusTests.cs" />
+    <Compile Include="Tools\InFileCoOccurrenceMatrixTests.cs" />
     <Compile Include="Tools\LocalDictionaryTests.cs" />
     <Compile Include="Tools\LuceneDirectoryHelperTest.cs" />
     <Compile Include="Tools\QueryParserTests.cs" />
-    <Compile Include="Tools\SESpecificThesaurusTests.cs" />
+    <Compile Include="Tools\SeSpecificThesaurusTests.cs" />
     <Compile Include="Tools\SplitterTest.cs" />
+    <Compile Include="Tools\RandomStringBasedTests.cs" />
+    <Compile Include="Tools\ToolHelpersTests.cs" />
     <Compile Include="Tools\WordCorrectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +84,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestFiles\CooccurenceMatrix.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestFiles\dictionary.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

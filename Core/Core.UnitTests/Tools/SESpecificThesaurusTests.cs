@@ -8,7 +8,7 @@ using Sando.Core.Tools;
 namespace Sando.Core.UnitTests.Tools
 {
     [TestFixture]
-    class SESpecificThesaurusTests
+    class SeSpecificThesaurusTests
     {
         private readonly IThesaurus thesaurus = SeSpecificThesaurus.GetInstance();
 
