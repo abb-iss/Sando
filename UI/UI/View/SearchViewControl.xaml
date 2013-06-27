@@ -322,7 +322,7 @@
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
                         VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
-                       SelectionChanged="searchResultListbox_SelectionChanged"                       
+                       SelectionChanged="searchResultListbox_SelectionChanged" MouseLeave="MouseLeaveEvent"                    
                        >
                 <ListView.ContextMenu>
                     <ContextMenu Name="SearchResultMenu" StaysOpen="true">
@@ -342,6 +342,7 @@
                         <Setter Property="Height" Value="24"/>
                         <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
                         <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>
+                        <EventSetter Event="LostFocus" Handler="ListViewItem_LostFocus"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>

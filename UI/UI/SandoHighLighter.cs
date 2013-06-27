@@ -21,24 +21,45 @@ namespace Sando.UI
         public int StartLineNumber { private set; get; }
         public int LineCount { private set; get; }
         public string Rawsource { private set;  get; }
+
+        public string[] RawinLine { set; get; }
+        public string[] Keywords { set; get; }
+
         private readonly Timer timer;
 
         // After five seconds, this highlight should be gone.
-        private const int TIMEOUT = 1000 * 5;
+        private const int TIMEOUT = 10000 * 5;
 
-        public HighlightedEntity(String Path, int StartLineNumber, string Rawsource, 
+        public HighlightedEntity(String Path, int StartLineNumber, string Rawsource, string[] keywords,
             TimerCallback Callback)
         {
             this.Path = Path;
             this.StartLineNumber = StartLineNumber;
             this.Rawsource = Rawsource;
             this.LineCount = Rawsource.Split('\n').Length;
+
+            this.RawinLine = Rawsource.Split('\n');
+            this.Keywords = keywords;
+
             this.timer = new Timer(Callback, this, TIMEOUT, int.MaxValue);
         }
 
-        public bool IsLineInEntity(int number)
-        {
-            return number >= StartLineNumber && number < StartLineNumber + LineCount;
+        ////The original highlight function
+        //public bool IsLineInEntity(int number) {
+        //    return number >= StartLineNumber && number < StartLineNumber + LineCount;
+        //}
+
+        //Highlight individual lines that containts the search key Zhao
+        public bool IsLineInEntity(int number) {
+            //Justify the line number
+            if(!RawinLine[0].Contains('('))
+                number++;
+            if(number >= StartLineNumber && number < StartLineNumber + LineCount) {
+                foreach(string keyword in Keywords)
+                    if(RawinLine[number - StartLineNumber].IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                        return true;
+            }
+            return false;
         }
 
         public bool Equals(HighlightedEntity other)
@@ -65,11 +86,11 @@ namespace Sando.UI
         private readonly List<HighlightedEntity> entities = new List<HighlightedEntity>();
         public event HighlightedEntityChanged entityChanged;
 
-        public void AddEntity(String path, int start, String rawSource)
+        public void AddEntity(String path, int start, String rawSource, String[] keywords)
         {
             lock (entities)
             {
-                var ent = new HighlightedEntity(path, start, rawSource, state =>
+                var ent = new HighlightedEntity(path, start, rawSource, keywords, state =>
                 {
                     lock (entities)
                     {
@@ -195,8 +216,10 @@ namespace Sando.UI
                 var findData = new FindData(".*\n", snapshot);
                 findData.FindOptions = FindOptions.UseRegularExpressions;
                 var allLines = TextSearchService.FindAll(findData);
+
                 highLightedSpans.AddRange(allLines.Where(l => entity.IsLineInEntity(l.Start.
                     GetContainingLine().LineNumber + 1)));
+
             }
             return new NormalizedSnapshotSpanCollection(highLightedSpans);
         }
