@@ -36,8 +36,16 @@ namespace Sando.Core.Tools
             foreach(Match match in matches)
             {
                 int start = match.Groups[0].Index + offset + 1;
-                word = word.Insert(start, "_");
-                offset++;
+                if (start == 0 || !word.ToCharArray()[start - 1].Equals('-'))
+                {
+                    word = word.Insert(start, "_");
+                    offset++;
+                }
+                else
+                {
+                    word = word.Insert(start-1, "_");
+                    offset++;
+                }
             }
             return word;
         }

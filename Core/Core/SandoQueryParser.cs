@@ -125,13 +125,22 @@ namespace Sando.Core.Tools
         private static string ParseNormalSearchTerms(string query, SandoQueryDescription sandoQueryDescription)
         {
             query = Regex.Replace(query, InvalidCharactersRegex, " ");
+            //ensure non-split query terms are added too.
+            var nonSplitTerms = query.Split(' ');
+            foreach (var nonSplit in nonSplitTerms)
+            {
+                if(!String.Empty.Equals(nonSplit))
+                    sandoQueryDescription.SearchTerms.Add(nonSplit.Trim());
+            }
             var wordSplitter = new WordSplitter();
             var searchTerms = wordSplitter.ExtractWords(query).Where(w => !String.IsNullOrWhiteSpace(w));
             foreach (var searchTerm in searchTerms)
             {
-                sandoQueryDescription.SearchTerms.Add(searchTerm);
+                sandoQueryDescription.SearchTerms.Add(searchTerm.Trim());
                 query = query.Replace(searchTerm, " ");
             }
+        
+            sandoQueryDescription.SearchTerms = sandoQueryDescription.SearchTerms.Distinct().ToList();
             return query;
         }
     }

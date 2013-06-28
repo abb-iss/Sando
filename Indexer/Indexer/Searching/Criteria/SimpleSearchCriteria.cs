@@ -8,16 +8,17 @@ namespace Sando.Indexer.Searching.Criteria
 	{
 		public SimpleSearchCriteria()
 		{
-			SearchTerms = new SortedSet<string>();
-			MatchCase = false;
-			ExactMode = true;
-			SearchByAccessLevel = false;
-			AccessLevels = new SortedSet<AccessLevel>();
-			SearchByProgramElementType = false;
-			ProgramElementTypes = new SortedSet<ProgramElementType>();
+            AccessLevels = new SortedSet<AccessLevel>();
+            ExactMode = true;
+            FileExtensions = new SortedSet<string>();
+            Locations = new SortedSet<string>();
+            MatchCase = false;
+            ProgramElementTypes = new SortedSet<ProgramElementType>();
+            SearchByAccessLevel = false;
+            SearchByProgramElementType = false;
+            SearchTerms = new SortedSet<string>();									
 			SearchByUsageType = false;
-			UsageTypes = new SortedSet<UsageType>();
-			Locations = new SortedSet<string>();
+			UsageTypes = new SortedSet<UsageType>();			
 		}
 
 
@@ -60,12 +61,11 @@ namespace Sando.Indexer.Searching.Criteria
         public bool SearchByFileExtension { get; set; }
         public SortedSet<string> FileExtensions { get; set; }
 
-        public bool RequiresWildcards()
+        public bool IsLiteralSearch()
         {
             foreach (var term in SearchTerms)
-            {
-                var temp = LuceneQueryStringBuilder.GetTransformed(term);
-                if (!temp.Equals(term))                
+            {                
+                if (term.StartsWith("\""))             
                     return true;
             }
             return false;

@@ -21,7 +21,7 @@ namespace Sando.Indexer.Searching
 		{
 			var penalizeClasses = false;
 			var searchQueryString = searchCriteria.ToQueryString();
-			if(searchCriteria as SimpleSearchCriteria != null && (searchCriteria as SimpleSearchCriteria).RequiresWildcards())
+			if(searchCriteria as SimpleSearchCriteria != null && (searchCriteria as SimpleSearchCriteria).IsLiteralSearch())
 			{
 				_documentIndexer.QueryParser.SetAllowLeadingWildcard(true);
 				_documentIndexer.QueryParser.SetLowercaseExpandedTerms(false);

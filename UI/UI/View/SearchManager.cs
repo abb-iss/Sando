@@ -119,11 +119,11 @@ namespace Sando.UI.View
 
         private SearchCriteria GetCriteria(string searchString, SimpleSearchCriteria searchCriteria = null)
         {            
-            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();                       
+            var sandoOptions = ServiceLocator.Resolve<ISandoOptionsProvider>().GetSandoOptions();
+            var description = new SandoQueryParser().Parse(searchString);            
             var builder = CriteriaBuilder.GetBuilder().
                 AddCriteria(searchCriteria).                
-                NumResults(sandoOptions.NumberOfSearchResultsReturned).
-                Ext(searchString).AddSearchString(searchString);
+                NumResults(sandoOptions.NumberOfSearchResultsReturned).AddFromDescription(description);
             return builder.GetCriteria();
         }
     }

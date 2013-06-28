@@ -58,5 +58,17 @@ namespace Sando.Indexer.Searching.Criteria
             _searchCriteria.SearchByFileExtension = _searchCriteria.FileExtensions.Any();
             return this;
         }
+
+        public CriteriaBuilder AddFromDescription(SandoQueryDescription description, SimpleSearchCriteria searchCriteria = null)
+        {
+            Initialze(searchCriteria);
+            //_searchCriteria.AccessLevels.UnionWith(description.AccessLevels.AsEnumerable());
+            _searchCriteria.FileExtensions.UnionWith(description.FileExtensions);
+            _searchCriteria.SearchTerms.UnionWith(description.LiteralSearchTerms);
+            _searchCriteria.Locations.UnionWith(description.Locations);
+            //_searchCriteria.ProgramElementTypes.UnionWith(description.ProgramElementTypes);
+            _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
+            return this;
+        }
     }
 }

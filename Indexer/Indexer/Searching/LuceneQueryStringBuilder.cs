@@ -175,7 +175,7 @@ namespace Sando.Indexer.Searching
                 }
                 else
                 {
-                    searchTermEscaped = Transform(searchTermEscaped);
+                    searchTermEscaped = EscapeForLucene(searchTermEscaped);
                 }
                 int usageTypesLeft = _criteria.UsageTypes.Count;
                 foreach (UsageType usageType in _criteria.UsageTypes)
@@ -198,42 +198,23 @@ namespace Sando.Indexer.Searching
             stringBuilder.Append(")");
         }
 
-        private static string Transform(string searchTermEscaped)
+        private static string EscapeForLucene(string searchTermEscaped)
         {
-            var temp = GetTransformed(searchTermEscaped);
-            if (!temp.Equals(searchTermEscaped))
-                temp = "*" + temp + "*";
-            searchTermEscaped = temp;
-            return searchTermEscaped;
-        }
-
-        public static string GetTransformed(string searchTermEscaped)
-        {
-            var temp = searchTermEscaped;
             if (searchTermEscaped.StartsWith("\"") && searchTermEscaped.EndsWith("\""))
             {
-                temp = temp.Substring(1);
-                temp = temp.Substring(0, temp.Length - 1);
+                searchTermEscaped = "*" + searchTermEscaped.Trim('"') + "*";
+                searchTermEscaped = EscapeChars(searchTermEscaped);                
             }
-            temp = EscapeSpecialCharacters(temp);
-            return temp;
+            return searchTermEscaped;
+            
         }
 
-        public static string EscapeSpecialCharacters(string searchTerm)
-        {            
-            searchTerm = EscapeSlashesInQuotes(searchTerm, '"',false);
-            searchTerm = EscapeSlashesInQuotes(searchTerm, '\'',false);
-            searchTerm = EscapeSlashesInQuotes(searchTerm, '"', true);
-            searchTerm = EscapeSlashesInQuotes(searchTerm, '\'', true);
-            searchTerm = searchTerm.Replace("✉∞dq",@"\""");
-            searchTerm = searchTerm.Replace("✉∞q",@"\'");
-
-            searchTerm = EscapeChars(searchTerm);
-            return searchTerm;
-        }
-
+ 
         public static string EscapeChars(string searchTerm)
         {
+
+            //+ - && || ! ( ) { } [ ] ^ " ~ * ? : \
+            // " ~ * ? : \            
             searchTerm = searchTerm.Replace("+", "\\+");
             searchTerm = searchTerm.Replace("-", "\\-");
             searchTerm = searchTerm.Replace("&&", "\\&\\&");
@@ -246,74 +227,14 @@ namespace Sando.Indexer.Searching
             searchTerm = searchTerm.Replace("[", "\\[");
             searchTerm = searchTerm.Replace("]", "\\]");
             searchTerm = searchTerm.Replace("^", "\\^");
-            searchTerm = searchTerm.Replace("<", "\\<");
-            searchTerm = searchTerm.Replace(">", "\\>");
-            searchTerm = searchTerm.Replace("=", "\\=");
-            searchTerm = searchTerm.Replace(";", "\\;");
             searchTerm = searchTerm.Replace("~", "\\~");
             searchTerm = searchTerm.Replace(":", "\\:");
-            searchTerm = searchTerm.Replace(".", "\\.");
-            //escapedSearchTermBuilder.Replace("\"", "\\\"");
+            searchTerm = searchTerm.Replace("?", "\\?");
             searchTerm = searchTerm.Replace(" ", "?");
             return searchTerm;
         }
 
-        private static string EscapeSlashesInQuotes(string searchTerm, char boundaryChar, bool changeIt)
-        {
-            var split = ("✉∞%" + searchTerm + "✉∞%").Split(boundaryChar);
-            if (split.Length != 0 && split.Length % 2 == 1)
-            {
-                StringBuilder buildItBack = new StringBuilder();
-                int counter = 0;
-                foreach (var term in split)
-                {
-                    counter++;
-                    if (counter > 1)
-                    {
-                        if(changeIt)
-                            buildItBack.Append("\\" + boundaryChar);
-                        else
-                            buildItBack.Append(boundaryChar);
-                    }
-                    if (counter % 2 == 0)
-                    {
-                        if (boundaryChar.Equals('"'))
-                        {
-                            if (changeIt)
-                            {
-                                var fixedTerm = term.Replace(@"\", @"\\\\");
-                                buildItBack.Append(fixedTerm);
-                            }
-                            else
-                            {
-                                var fixedTerm = term.Replace(@"'", @"✉∞q");
-                                buildItBack.Append(fixedTerm);
-                            }
-                        }
-                        else
-                        {
-                            if (changeIt)
-                            {
-                                var fixedTerm = term.Replace(@"\", @"\\");
-                                fixedTerm = fixedTerm.Replace(@"""", @"\""");
-                                buildItBack.Append(fixedTerm);
-                            }
-                            else
-                            {
-                                var fixedTerm = term.Replace(@"""", @"✉∞dq");
-                                buildItBack.Append(fixedTerm);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        buildItBack.Append(term);
-                    }
-                }
-                searchTerm = buildItBack.ToString().Trim().Replace("✉∞%", "");
-            }
-            return searchTerm;
-        }
+ 
 
         private void SingleUsageTypeCriteriaToString(StringBuilder stringBuilder, UsageType usageType, string searchTerm)
         {

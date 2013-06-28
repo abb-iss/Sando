@@ -39,6 +39,28 @@ namespace Sando.Core.UnitTests.Tools
         }
 
         [Test]
+        public void ParseFileH()
+        {
+            var sandoQueryParser = new SandoQueryParser();
+            var sandoQueryDescription = sandoQueryParser.Parse("open file:h");
+
+            Assert.IsTrue(sandoQueryDescription.IsValid);
+            Assert.IsTrue(sandoQueryDescription.SearchTerms.Count == 1);
+        }
+
+        
+        [Test]        
+        public void ParseWithNegation()
+        {
+            var sandoQueryParser = new SandoQueryParser();
+            var sandoQueryDescription = sandoQueryParser.Parse("reorder search results -test");
+
+            Assert.IsTrue(sandoQueryDescription.IsValid);
+            Assert.IsTrue(sandoQueryDescription.SearchTerms.Count == 4);
+        }
+
+
+        [Test]
         [TestCaseSource("ValidFileExtensionFiltersTestCases")]
         public void GIVEN_QueryParser_WHEN_ParseIsCalled_AND_QueryIsFileExtensionString_THAN_ValidQueryDescriptionIsReturned(string query, string expectedQueryDescription)
         {
