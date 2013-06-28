@@ -30,7 +30,7 @@ namespace Sando.Indexer.Searching.Criteria
             if (_searchCriteria == null)
             {
                 _searchCriteria = searchCriteria ?? new SimpleSearchCriteria();
-            }   
+            }
         }
 
         public SearchCriteria GetCriteria()

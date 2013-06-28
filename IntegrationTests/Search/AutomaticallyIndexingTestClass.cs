@@ -281,7 +281,7 @@ namespace Sando.IntegrationTests.Search
 
         public void UpdateRecommendedQueries(IQueryable<string> queries)
         {
-           
+            
         }
 
         public class FakeOptionsProvider : ISandoOptionsProvider

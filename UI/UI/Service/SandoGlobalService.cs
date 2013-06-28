@@ -104,7 +104,6 @@ namespace Sando.UI.Service {
 
         public void UpdateRecommendedQueries(IQueryable<string> queries)
         {
-          
         }
 
         public List<CodeSearchResult> GetSearchResults(string searchkeywords)

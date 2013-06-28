@@ -34,7 +34,9 @@ namespace Sando.UI.View
 
         private void InternalUpdateRecommendedQueries(IEnumerable<string> quries)
         {
+            quries = quries.ToList();
             RecommendedQueryTextBlock.Inlines.Clear();
+            RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Show results for: " : "");
             foreach (string qury in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(qury), qury);

@@ -43,12 +43,17 @@ namespace Sando.Recommender {
                         return nextPair.Value.CompareTo(firstPair.Value);
                     }
                 );
-                return listForSorting.Select(kvp => kvp.Key).ToArray();
+                return SortRecommendations(query, listForSorting.Select(kvp => kvp.Key).ToArray());
             }
             catch (Exception e)
             {
                 return new string[0];
             }
+        }
+
+        private string[] SortRecommendations(string query, string[] queries)
+        {
+            return new SwumQueriesSorter().SortSwumRecommendations(query, queries);
         }
 
 

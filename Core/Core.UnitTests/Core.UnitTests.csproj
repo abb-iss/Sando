@@ -63,9 +63,9 @@
     <Compile Include="Tools\LocalDictionaryTests.cs" />
     <Compile Include="Tools\LuceneDirectoryHelperTest.cs" />
     <Compile Include="Tools\QueryParserTests.cs" />
-    <Compile Include="Tools\SeSpecificThesaurusTests.cs" />
-    <Compile Include="Tools\SplitterTest.cs" />
     <Compile Include="Tools\RandomStringBasedTests.cs" />
+    <Compile Include="Tools\SESpecificThesaurusTests.cs" />
+    <Compile Include="Tools\SplitterTest.cs" />
     <Compile Include="Tools\ToolHelpersTests.cs" />
     <Compile Include="Tools\WordCorrectorTests.cs" />
   </ItemGroup>
@@ -90,8 +90,8 @@
     <Content Include="TestFiles\dictionary.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestFiles\TestLog.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

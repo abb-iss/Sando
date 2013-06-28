@@ -54,7 +54,7 @@ namespace Sando.Core.Tools
 
         private readonly object locker = new object();
         private List<MatrixEntry> matrix = new List<MatrixEntry>();
-        
+
         private string directory;
         private const string fileName = "CooccurenceMatrix.txt";
 
@@ -101,13 +101,13 @@ namespace Sando.Core.Tools
                 {
                     var parts = line.Split();
                     var row = parts[0];
-                    for (int i = 1; i < parts.Count(); i ++)
+                    for (int i = 1; i < parts.Count(); i++)
                     {
                         var splits = parts[i].Split(':');
                         var column = splits[0];
                         var count = Int32.Parse(splits[1]);
                         matrix.Add(CreateEntry(row, column, count));
-                    }                
+                    }
                 }
                 matrix = matrix.OrderBy(m => m).ToList();
             }
@@ -126,7 +126,7 @@ namespace Sando.Core.Tools
             {
                 var row = group.First().Row;
                 var line = row + ' ' + group.Select(g => g.Column + ":" + g.Count).
-                    Aggregate((s1, s2) => s1 + ' ' +s2);
+                    Aggregate((s1, s2) => s1 + ' ' + s2);
                 sb.AppendLine(line);
             }
             File.WriteAllText(GetMatrixFilePath(), sb.ToString());
@@ -144,7 +144,7 @@ namespace Sando.Core.Tools
             {
                 var target = CreateEntry(word1, word2);
                 int index = matrix.BinarySearch(target);
-                return index >=0 ? matrix.ElementAt(index).Count : 0;
+                return index >= 0 ? matrix.ElementAt(index).Count : 0;
             }
         }
 
@@ -153,10 +153,10 @@ namespace Sando.Core.Tools
             var list = LimitWordNumber(FilterOutBadWords(words).
                 Distinct().ToList()).ToList();
             var allEntries = new List<MatrixEntry>();
-            for (int i = 0; i < list.Count; i ++)
+            for (int i = 0; i < list.Count; i++)
             {
                 var word1 = list.ElementAt(i);
-                for (int j = i; j < list.Count; j ++)
+                for (int j = i; j < list.Count; j++)
                 {
                     var word2 = list.ElementAt(j);
                     allEntries.Add(CreateEntry(word1, word2));
@@ -188,7 +188,7 @@ namespace Sando.Core.Tools
                     else
                     {
                         target.ResetCount();
-                        int index = ~end; 
+                        int index = ~end;
                         matrix.Insert(index, target);
                     }
                 }
@@ -197,7 +197,7 @@ namespace Sando.Core.Tools
 
         private IEnumerable<String> FilterOutBadWords(IEnumerable<String> words)
         {
-            return words.Where(w => w.Length >= MAX_WORD_LENGTH 
+            return words.Where(w => w.Length >= MAX_WORD_LENGTH
                 || w.Contains(' ') || w.Contains(':'));
         }
 
