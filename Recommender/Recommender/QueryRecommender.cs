@@ -34,7 +34,7 @@ namespace Sando.Recommender {
                 //WeightByFrequency(query);
                 //WeightBySameField(query);
                 //WeightBySameField_WordsInOrder(query);
-                WeightByPartOfSpeech(query, recommendations);
+                AddRecommendationForEachTerm(query, recommendations);
 
                 //return the recommendations sorted by score in descending order
                 List<KeyValuePair<string, int>> listForSorting = recommendations.ToList();
@@ -53,7 +53,7 @@ namespace Sando.Recommender {
 
         private string[] SortRecommendations(string query, string[] queries)
         {
-            return new SwumQueriesSorter().SortSwumRecommendations(query, queries);
+            return new SwumQueriesSorter().SelectSortSwumRecommendations(query, queries);
         }
 
 
@@ -76,6 +76,15 @@ namespace Sando.Recommender {
                 AddRecommendation(methodDeclarationNode.Name.Trim(), NormalWeight, recommendations);
         }
 
+
+        private void AddRecommendationForEachTerm(String query, Dictionary<String, int> recommendations)
+        {
+            var terms = query.Split().Where(t => !String.IsNullOrWhiteSpace(t));
+            foreach (var term in terms)
+            {
+                WeightByPartOfSpeech(term, recommendations);
+            }
+        }
 
         /// <summary>
         /// Generates query recommendations. Nouns and verbs are weighted higher than other parts of speech.

@@ -67,8 +67,13 @@ namespace Sando.Indexer.Searching.Criteria
             _searchCriteria.SearchTerms.UnionWith(description.LiteralSearchTerms);
             _searchCriteria.Locations.UnionWith(description.Locations);
             //_searchCriteria.ProgramElementTypes.UnionWith(description.ProgramElementTypes);
-            _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
+            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria, description.SearchTerms);
+            // _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
             return this;
         }
+
+       
+
+
     }
 }
