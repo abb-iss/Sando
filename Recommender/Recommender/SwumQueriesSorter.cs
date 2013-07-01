@@ -12,9 +12,9 @@ namespace Sando.Recommender
         private class ScoredQuery
         {
             public string Query { set; get; }
-            public int Score { set; get; }
+            public double Score { set; get; }
 
-            internal ScoredQuery(string Query, int Score)
+            internal ScoredQuery(string Query, double Score)
             {
                 this.Query = Query;
                 this.Score = Score;
@@ -31,9 +31,29 @@ namespace Sando.Recommender
             
             public String[] SortQueries(String[] queries)
             {
+                queries = queries.Select(RemoveDupWords).Where(s => !s.Equals
+                    (originalQuery.Trim(), StringComparison.InvariantCultureIgnoreCase)).
+                        ToArray();
                 queries = InternalSortQueries(queries);
                 return queries;
             }
+
+            private String RemoveDupWords(String input)
+            {
+                var list = new List<String>();
+                var words = input.Split();
+                for (var i = words.Count() - 1; i >= 0; i--)
+                {
+                    var word = words.ElementAt(i);
+                    var subList = words.SubArray(0, i);
+                    if (!subList.Contains(word, ToolHelpers.
+                        GetCaseInsensitiveEqualityComparer()))
+                    {
+                        list.Insert(0, word);
+                    }
+                }
+                return list.Aggregate((s1, s2) => s1 + " " + s2).Trim();
+            }           
 
             protected AbstractQueryInputState(String originalQuery)
             {
@@ -50,19 +70,29 @@ namespace Sando.Recommender
             }
 
             protected String[] SortQueriesByWordsCoOccurrence(IEnumerable<string> knownWords, 
-                IEnumerable<string> queries, Func<string, string> GetWordInQuery)
+                IEnumerable<string> queries, Func<string, IEnumerable<string>> GetWordsInQuery)
             {
                 var list = new List<ScoredQuery>();
                 knownWords = knownWords.ToList();
                 var table = ServiceLocator.Resolve<DictionaryBasedSplitter>();
                 foreach (var query in queries)
                 {
-                    var word = GetWordInQuery(query);
-                    int cooccur = knownWords.Sum(km => table.GetCoOccurrenceCount(word, km));
-                    list.Add(new ScoredQuery(query, cooccur));
+                    var words = GetWordsInQuery(query);
+                    double averageCoOccur = CalculateAverageCoOccurrence(knownWords.ToArray(), words.ToArray());
+                    list.Add(new ScoredQuery(query, averageCoOccur));
                 }
                 return list.OrderByDescending(sq => sq.Score).Select(sq => sq.Query).ToArray();
             }
+
+            private double CalculateAverageCoOccurrence(String[] knownWords, String[] words)
+            {
+                var table = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+                double pairCount = (knownWords.Count()*words.Count())/2.0;
+                double sum = knownWords.Aggregate<string, double>(0, (current1, word1) => words.Aggregate(current1, 
+                    (current, word2) => current + table.GetCoOccurrenceCount(word1, word2)));
+                return sum/pairCount;
+            }
+
 
             protected IEnumerable<string> SplitQuery(String query)
             {
@@ -86,14 +116,14 @@ namespace Sando.Recommender
             protected override string[] InternalSortQueries(string[] queries)
             {
                 queries = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery);
-                queries = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, queries, GetWordInQuery);
+                queries = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, queries, GetWordsInQuery);
                 return queries;
             }
 
-            private string GetWordInQuery(string q)
+            private IEnumerable<string> GetWordsInQuery(string q)
             {
-                var last = SplitQuery(q).Last();
-                return wordsInOriginalQuery.Contains(last) ? String.Empty : last;
+                return SplitQuery(q).Except(wordsInOriginalQuery, ToolHelpers.
+                        GetCaseInsensitiveEqualityComparer());
             }
         }
 
@@ -122,16 +152,19 @@ namespace Sando.Recommender
                 if (wordsInOriginalQuery.Count() > 1)
                 {
                     group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0, 
-                        wordsInOriginalQuery.Count() - 1), queries, GetWordInQuery).ToList();
+                        wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
                 }
 
                 group1.AddRange(group2);
                 return group1.ToArray();
             }
 
-            private string GetWordInQuery(string query)
+            private IEnumerable<string> GetWordsInQuery(string query)
             {
-                return SplitQuery(query).Last();
+                var knownWords = wordsInOriginalQuery.Count() > 1 ? wordsInOriginalQuery.SubArray(0,
+                    wordsInOriginalQuery.Count() - 1) : new String[] { };
+                return SplitQuery(query).Except(knownWords, ToolHelpers.
+                    GetCaseInsensitiveEqualityComparer());
             }
         }
 
@@ -158,16 +191,18 @@ namespace Sando.Recommender
                 if (wordsInOriginalQuery.Count() > 1)
                 {
                     group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0,
-                        wordsInOriginalQuery.Count() - 1), queries, GetWordInQuery).ToList();
+                        wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
                 }
 
                 group1.AddRange(group2);
                 return group1.ToArray();
             }
 
-            private string GetWordInQuery(string query)
+            private IEnumerable<string> GetWordsInQuery(string query)
             {
-                return SplitQuery(query).Last();
+                var knownWords = wordsInOriginalQuery.Count() > 1 ? wordsInOriginalQuery.SubArray(0, 
+                    wordsInOriginalQuery.Count() - 1) : new String[] {};
+                return SplitQuery(query).Except(knownWords, ToolHelpers.GetCaseInsensitiveEqualityComparer());
             }
         }
        
