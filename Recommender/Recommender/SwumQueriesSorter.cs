@@ -74,22 +74,29 @@ namespace Sando.Recommender
             {
                 var list = new List<ScoredQuery>();
                 knownWords = knownWords.ToList();
-                var table = ServiceLocator.Resolve<DictionaryBasedSplitter>();
                 foreach (var query in queries)
                 {
-                    var words = GetWordsInQuery(query);
+                    var words = GetWordsInQuery(query).ToArray();
                     double averageCoOccur = CalculateAverageCoOccurrence(knownWords.ToArray(), words.ToArray());
                     list.Add(new ScoredQuery(query, averageCoOccur));
                 }
-                return list.OrderByDescending(sq => sq.Score).Select(sq => sq.Query).ToArray();
+                var sortedList = list.OrderByDescending(sq => sq.Score).ToArray();
+
+                return sortedList.Select(sq => sq.Query).ToArray();
             }
 
             private double CalculateAverageCoOccurrence(String[] knownWords, String[] words)
             {
                 var table = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-                double pairCount = (knownWords.Count()*words.Count())/2.0;
-                double sum = knownWords.Aggregate<string, double>(0, (current1, word1) => words.Aggregate(current1, 
-                    (current, word2) => current + table.GetCoOccurrenceCount(word1, word2)));
+                double pairCount = knownWords.Count() * words.Count();
+                double sum = 0.0;
+                foreach (var word1 in words)
+                {
+                    foreach (var word2 in knownWords)
+                    {
+                        sum += table.GetCoOccurrenceCount(word1, word2);
+                    }
+                }
                 return sum/pairCount;
             }
 
