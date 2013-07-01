@@ -54,6 +54,7 @@ namespace Sando.Core.Tools
 
         private readonly object locker = new object();
         private List<MatrixEntry> matrix = new List<MatrixEntry>();
+        private readonly WorkQueueBasedProcess queue = new WorkQueueBasedProcess();
 
         private string directory;
         private const string fileName = "CooccurenceMatrix.txt";
@@ -147,11 +148,22 @@ namespace Sando.Core.Tools
                 return index >= 0 ? matrix.ElementAt(index).Count : 0;
             }
         }
+ 
 
-        public void HandleCoOcurrentWords(IEnumerable<String> words)
+        public void HandleCoOcurrentWordsSync(IEnumerable<String> words)
+        {
+            AddMatrixEntriesSync(words);
+        }
+
+        public void HandleCoOcurrentWordsAsync(IEnumerable<String> words)
+        {
+            queue.Enqueue(AddMatrixEntriesSync, words);
+        }
+
+        private IEnumerable<MatrixEntry> GetEntries(IEnumerable<string> words)
         {
             var list = LimitWordNumber(FilterOutBadWords(words).
-                Distinct().ToList()).ToList();
+                                           Distinct().ToList()).ToList();
             var allEntries = new List<MatrixEntry>();
             for (int i = 0; i < list.Count; i++)
             {
@@ -162,9 +174,8 @@ namespace Sando.Core.Tools
                     allEntries.Add(CreateEntry(word1, word2));
                 }
             }
-            AddMatrixEntriesSync(allEntries);
+            return allEntries;
         }
-
 
         private IEnumerable<String> LimitWordNumber(List<string> words)
         {
@@ -174,8 +185,9 @@ namespace Sando.Core.Tools
         }
 
 
-        private void AddMatrixEntriesSync(IEnumerable<MatrixEntry> allEntries)
+        private int AddMatrixEntriesSync(IEnumerable<String> words)
         {
+            var allEntries = GetEntries(words);
             lock (locker)
             {
                 foreach (var target in allEntries)
@@ -193,6 +205,7 @@ namespace Sando.Core.Tools
                     }
                 }
             }
+            return 0;
         }
 
         private IEnumerable<String> FilterOutBadWords(IEnumerable<String> words)

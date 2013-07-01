@@ -71,9 +71,5 @@ namespace Sando.Indexer.Searching.Criteria
             // _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
             return this;
         }
-
-       
-
-
     }
 }

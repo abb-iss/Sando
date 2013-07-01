@@ -81,6 +81,9 @@
       <HintPath>..\..\LIBS\AWSSDK.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BlackHen.Threading">
+      <HintPath>..\..\LIBS\BlackHen.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\libs\log4net.dll</HintPath>
     </Reference>
@@ -177,6 +180,7 @@
     <Compile Include="Tools\WordSplitter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tools\WorkQueueBasedProcess.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dictionaries\mined_related_unique.csv">
