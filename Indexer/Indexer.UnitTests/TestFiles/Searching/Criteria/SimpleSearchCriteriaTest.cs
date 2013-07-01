@@ -29,9 +29,10 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
 		public void SimpleSearchCriteria_ExactMatchToQueryString()
 		{
 			SimpleSearchCriteria simpleSearchCriteria = new SimpleSearchCriteria();
-            simpleSearchCriteria.SearchTerms.Add("ServiceLocator.Resolve<DTE2>();");
+            simpleSearchCriteria.SearchTerms.Add("\"ServiceLocator.Resolve<DTE2>();\"");
 			string queryString = simpleSearchCriteria.ToQueryString();
-            Assert.IsTrue(queryString.Contains("Source:*ServiceLocator\\.Resolve\\<DTE2\\>\\(\\)\\;*"), "Created query string is invalid!");
+            //     Source:*ServiceLocator.Resolve<DTE2>\(\);*
+            Assert.IsTrue(queryString.Contains("Source:*ServiceLocator.Resolve<DTE2>\\(\\);*"), "Created query string is invalid!");
 		}
 
 
@@ -41,7 +42,7 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
             SimpleSearchCriteria simpleSearchCriteria = new SimpleSearchCriteria();
             simpleSearchCriteria.SearchTerms.Add("\"ServiceLocator.Resolve<DTE2>();\"");
             string queryString = simpleSearchCriteria.ToQueryString();
-            Assert.IsTrue(queryString.Contains("Source:*ServiceLocator\\.Resolve\\<DTE2\\>\\(\\)\\;*"), "Created query string is invalid!");
+            Assert.IsTrue(queryString.Contains("Source:*ServiceLocator.Resolve<DTE2>\\(\\);*"), "Created query string is invalid!");
         }
 
         [Test]

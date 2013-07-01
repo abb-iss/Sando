@@ -62,13 +62,13 @@ namespace Sando.Indexer.Searching.Criteria
         public CriteriaBuilder AddFromDescription(SandoQueryDescription description, SimpleSearchCriteria searchCriteria = null)
         {
             Initialze(searchCriteria);
-            //_searchCriteria.AccessLevels.UnionWith(description.AccessLevels.AsEnumerable());
+            _searchCriteria.AddAccessLevels(description.AccessLevels);
             _searchCriteria.FileExtensions.UnionWith(description.FileExtensions);
             _searchCriteria.SearchTerms.UnionWith(description.LiteralSearchTerms);
             _searchCriteria.Locations.UnionWith(description.Locations);
-            //_searchCriteria.ProgramElementTypes.UnionWith(description.ProgramElementTypes);
-            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria, description.SearchTerms);
-            // _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
+            _searchCriteria.AddProgramElementTypes(description.ProgramElementTypes);
+            _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
+            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria, description.SearchTerms);            
             return this;
         }
     }

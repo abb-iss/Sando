@@ -166,9 +166,9 @@ namespace Sando.Core.UnitTests.Tools
         private static readonly object[] ValidNormalQueryTestCases =
             {
                 new object[]{"identifier",                          "Search terms:[identifier]"},
-                new object[]{"open*file",                           "Search terms:[open*,file]"},
+                new object[]{"open*file",                           "Search terms:[open*file,open*,file]"},
                 new object[]{"do something special",                "Search terms:[do,something,special]"},
-                new object[]{"every*Single*Word",                   "Search terms:[every*,Single*,Word]"}
+                new object[]{"every*Single*Word",                   "Search terms:[every*Single*Word,every*,Single*,Word]"}
             };
     }
 }

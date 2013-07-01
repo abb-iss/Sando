@@ -126,12 +126,21 @@ namespace Sando.Core.Tools
         {
             query = Regex.Replace(query, InvalidCharactersRegex, " ");
             var wordSplitter = new WordSplitter();
+            
+            //add unsplit words
+            var splitTerms = query.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string term in splitTerms)
+            {
+                sandoQueryDescription.SearchTerms.Add(term.Trim());           
+            }
+
             var searchTerms = wordSplitter.ExtractWords(query).Where(w => !String.IsNullOrWhiteSpace(w));
             foreach (var searchTerm in searchTerms)
             {
-                sandoQueryDescription.SearchTerms.Add(searchTerm);
+                sandoQueryDescription.SearchTerms.Add(searchTerm.Trim());
                 query = query.Replace(searchTerm, " ");
             }
+            sandoQueryDescription.SearchTerms = sandoQueryDescription.SearchTerms.Distinct().ToList();
             return query;
         }
     }

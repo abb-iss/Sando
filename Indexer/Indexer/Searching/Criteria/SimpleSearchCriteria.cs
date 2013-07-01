@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Sando.ExtensionContracts.ProgramElementContracts;
+using System;
 
 namespace Sando.Indexer.Searching.Criteria
 {
@@ -71,6 +72,40 @@ namespace Sando.Indexer.Searching.Criteria
                     return true;
             }
             return false;
+        }
+
+        internal void AddAccessLevels(List<string> list)
+        {
+            foreach (var accessLevel in list)
+            {
+                try
+                {
+                    AccessLevel value = (AccessLevel)Enum.Parse(typeof(AccessLevel), accessLevel);
+                    if (value != null)
+                        AccessLevels.Add(value);
+                }
+                catch (ArgumentException)
+                {
+                    //ignore invalid values
+                }
+            }                
+        }
+
+        internal void AddProgramElementTypes(List<string> list)
+        {
+            foreach (var elementType in list)
+            {
+                try
+                {
+                    ProgramElementType value = (ProgramElementType)Enum.Parse(typeof(ProgramElementType), elementType);
+                    if (value != null)
+                        ProgramElementTypes.Add(value);
+                }
+                catch (ArgumentException)
+                {
+                    //ignore invalid values
+                }
+            }   
         }
     }
 }
