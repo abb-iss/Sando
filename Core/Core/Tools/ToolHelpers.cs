@@ -61,5 +61,23 @@ namespace Sando.Core.Tools
             Array.Copy(data, index, result, 0, length);
             return result;
         }
+
+        public static IEqualityComparer<String> GetCaseInsensitiveEqualityComparer()
+        {
+            return new InternalStringComparer();
+        }
+
+        private class InternalStringComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y)
+            {
+                return x.Equals(y, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            public int GetHashCode(string obj)
+            {
+                return 0;
+            }
+        }
     }
 }

@@ -15,7 +15,6 @@ namespace Sando.Core.Tools
         public WorkQueueBasedProcess()
         {
             queue = new WorkQueue {ConcurrentLimit = 1};
-
         }
 
         public void Enqueue<T1, T2>(Func<T1, T2> function, T1 input, 
