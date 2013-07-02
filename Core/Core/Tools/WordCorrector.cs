@@ -27,7 +27,7 @@ namespace Sando.Core.Tools
             }
         }
 
-        public IEnumerable<KeyValuePair<string, int>> FindSimilarWords(String word)
+        public IEnumerable<string> FindSimilarWords(String word)
         {
             word = word.ToLower();
             lock (locker)
@@ -47,8 +47,15 @@ namespace Sando.Core.Tools
                         }
                     }
                 }
-                return results.OrderBy(n => -n.Value);
+                return RankSimilarWords(results, word);
             }
+        }
+
+        private String[] RankSimilarWords(Dictionary<String, int> results, string originalWord)
+        {
+            var de = new Levenshtein();
+            var correctionWords = results.OrderByDescending(r => r.Value).Select(r => r.Key).TrimIfOverlyLong(10);
+            return correctionWords.OrderBy(w => de.LD(w, originalWord)).ToArray();
         }
 
         private void AddWord(String word)

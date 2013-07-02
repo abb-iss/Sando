@@ -82,10 +82,10 @@ namespace Sando.Core.UnitTests.Tools
                 string word = GenerateRandomString(20);
                 corrector.AddWords(GenerateRandomWordList(200));
                 corrector.AddWords(new string[] {word});
-                KeyValuePair<string, int>[] results = corrector.FindSimilarWords(word).ToArray();
+                var results = corrector.FindSimilarWords(word).ToArray();
                 Assert.IsNotNull(results);
                 Assert.IsTrue(results.Any());
-                Assert.IsTrue(results.First().Key.Equals(word));
+                Assert.IsTrue(results.First().Equals(word));
             }
         }
 
@@ -100,10 +100,10 @@ namespace Sando.Core.UnitTests.Tools
                 int splitIndex = GenerateRandomInt(0, word.Length - 1);
                 var changedWord = word.Substring(0, splitIndex + 1) + GenerateRandomChar() + word.
                     Substring(splitIndex + 1);
-                KeyValuePair<string, int>[] results = corrector.FindSimilarWords(changedWord).ToArray();
+                var results = corrector.FindSimilarWords(changedWord).ToArray();
                 Assert.IsNotNull(results);
                 Assert.IsTrue(results.Any());
-                Assert.IsTrue(results.First().Key.Equals(word));
+                Assert.IsTrue(results.First().Equals(word));
             }
         }
     }
