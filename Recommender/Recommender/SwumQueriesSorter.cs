@@ -75,7 +75,7 @@ namespace Sando.Recommender
                     GetCaseInsensitiveEqualityComparer()))).ToArray();
             }
 
-            protected String[] SortQueriesByWordsCoOccurrence(IEnumerable<string> knownWords, 
+            protected IEnumerable<string> SortQueriesByWordsCoOccurrence(IEnumerable<string> knownWords, 
                 IEnumerable<string> queries, Func<string, IEnumerable<string>> GetWordsInQuery)
             {
                 var list = new List<ScoredQuery>();

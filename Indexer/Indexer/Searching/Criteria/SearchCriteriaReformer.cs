@@ -38,13 +38,15 @@ namespace Sando.Indexer.Searching.Criteria
 
         private static String GetExplanation(IReformedQuery query, List<String> originalTerms)
         {
+            var appended = false;
             var sb = new StringBuilder();
             sb.Append("Added search terms:");
             foreach (var term in query.ReformedWords.Where(term => !originalTerms.Contains(term.NewTerm)))
             {
-                sb.Append(term.NewTerm + ", ");
+                appended = true;
+                sb.Append(" " + term.NewTerm + ", ");
             }
-            return sb.ToString().TrimEnd(new char[]{',', ' '}) + ". ";
+            return appended ? sb.ToString().TrimEnd(new char[]{',', ' '}) + ". " : String.Empty;
         }
 
         private static IEnumerable<IReformedQuery> GetReformedQuery(IEnumerable<string> words)
