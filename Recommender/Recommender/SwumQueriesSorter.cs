@@ -21,11 +21,10 @@ namespace Sando.Recommender
             }
         }
 
-
         private abstract class AbstractQueryInputState
         {
-            protected string originalQuery;
-            protected string[] wordsInOriginalQuery;
+            protected readonly string originalQuery;
+            protected readonly string[] wordsInOriginalQuery;
             public abstract bool IsInState();
             protected abstract String[] InternalSortQueries(String[] queries);
             
@@ -69,27 +68,41 @@ namespace Sando.Recommender
                         select query).ToArray();
             }
 
-            protected String[] SortQueriesByWordsCoOccurrence(IEnumerable<string> knownWords, 
+
+            protected String[] SelectQueriesByContainedTerms(IEnumerable<String> queries, IEnumerable<string> terms)
+            {
+                return queries.Where(q => SplitQuery(q).Any(t => terms.Contains(t, ToolHelpers.
+                    GetCaseInsensitiveEqualityComparer()))).ToArray();
+            }
+
+            protected IEnumerable<string> SortQueriesByWordsCoOccurrence(IEnumerable<string> knownWords, 
                 IEnumerable<string> queries, Func<string, IEnumerable<string>> GetWordsInQuery)
             {
                 var list = new List<ScoredQuery>();
                 knownWords = knownWords.ToList();
-                var table = ServiceLocator.Resolve<DictionaryBasedSplitter>();
                 foreach (var query in queries)
                 {
-                    var words = GetWordsInQuery(query);
+                    var words = GetWordsInQuery(query).ToArray();
                     double averageCoOccur = CalculateAverageCoOccurrence(knownWords.ToArray(), words.ToArray());
                     list.Add(new ScoredQuery(query, averageCoOccur));
                 }
-                return list.OrderByDescending(sq => sq.Score).Select(sq => sq.Query).ToArray();
+                var sortedList = list.OrderByDescending(sq => sq.Score).ToArray();
+
+                return sortedList.Select(sq => sq.Query).ToArray();
             }
 
             private double CalculateAverageCoOccurrence(String[] knownWords, String[] words)
             {
                 var table = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-                double pairCount = (knownWords.Count()*words.Count())/2.0;
-                double sum = knownWords.Aggregate<string, double>(0, (current1, word1) => words.Aggregate(current1, 
-                    (current, word2) => current + table.GetCoOccurrenceCount(word1, word2)));
+                double pairCount = knownWords.Count() * words.Count();
+                double sum = 0.0;
+                foreach (var word1 in words)
+                {
+                    foreach (var word2 in knownWords)
+                    {
+                        sum += table.GetCoOccurrenceCount(word1, word2);
+                    }
+                }
                 return sum/pairCount;
             }
 
@@ -115,9 +128,16 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery);
-                queries = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, queries, GetWordsInQuery);
-                return queries;
+                queries = SelectQueriesByContainedTerms(queries, wordsInOriginalQuery);
+
+                var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).ToList();
+                var group2 = queries.Except(group1).ToList();
+
+                group1 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, group1, GetWordsInQuery).ToList();
+                group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, group2, GetWordsInQuery).ToList();
+                group1.AddRange(group2);
+
+                return group1.ToArray();
             }
 
             private IEnumerable<string> GetWordsInQuery(string q)
@@ -141,7 +161,7 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery.
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, wordsInOriginalQuery.
                     SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).ToList();
@@ -153,6 +173,10 @@ namespace Sando.Recommender
                 {
                     group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0, 
                         wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
+                }
+                else
+                {
+                    group2 = group2.OrderBy(q => q).ToList();
                 }
 
                 group1.AddRange(group2);
@@ -182,8 +206,8 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery.
-                    SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
+                    wordsInOriginalQuery.SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).OrderBy(q => q).ToList();
                 var group2 = queries.Except(group1).ToList();
@@ -192,6 +216,10 @@ namespace Sando.Recommender
                 {
                     group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0,
                         wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
+                }
+                else
+                {
+                    group2 = group2.OrderBy(q => q).ToList();
                 }
 
                 group1.AddRange(group2);

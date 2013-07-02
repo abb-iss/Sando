@@ -61,6 +61,7 @@ namespace Sando.Core.Tools
 
         private const int MAX_WORD_LENGTH = 3;
         private const int MAX_COOCCURRENCE_WORDS_COUNT = 100;
+        private const int GRAM_NUMBER = 3;
 
         public void Initialize(String directory)
         {
@@ -177,6 +178,26 @@ namespace Sando.Core.Tools
             return allEntries;
         }
 
+        private IEnumerable<MatrixEntry> GetBigramEntries(IEnumerable<string> words)
+        {
+            var list = words.ToList();
+            var allEntries = new List<MatrixEntry>();
+            int i;
+            for (i = 0; i + GRAM_NUMBER - 1 < list.Count; i++)
+            {
+                allEntries.AddRange(GetEntries(list.GetRange(i, GRAM_NUMBER)));
+            }
+
+            // Check if having leftovers.
+            if (i + GRAM_NUMBER - 1 != list.Count - 1 && list.Any())
+            {
+                allEntries.AddRange(GetEntries(list.GetRange(i, list.Count - i)));
+            }
+            
+            return allEntries;
+        }
+
+
         private IEnumerable<String> LimitWordNumber(List<string> words)
         {
             return (words.Count > MAX_COOCCURRENCE_WORDS_COUNT)
@@ -187,7 +208,7 @@ namespace Sando.Core.Tools
 
         private int AddMatrixEntriesSync(IEnumerable<String> words)
         {
-            var allEntries = GetEntries(words);
+            var allEntries = GetBigramEntries(words);
             lock (locker)
             {
                 foreach (var target in allEntries)

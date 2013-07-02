@@ -40,15 +40,12 @@ namespace Sando.Core.UnitTests.Tools
             {
                 matrix.HandleCoOcurrentWordsSync(words);   
             }
-            for (int i = 0; i < listLength; i ++)
+            for (int i = 0; i < listLength - 1; i ++)
             {
-                for (int j = 0; j < listLength; j ++)
-                {
-                    var word1 = words.ElementAt(i);
-                    var word2 = words.ElementAt(j);
-                    var count = matrix.GetCoOccurrenceCount(word1, word2);
-                    Assert.IsTrue(count == coocurrenceCount);
-                }
+                var word1 = words.ElementAt(i);
+                var word2 = words.ElementAt(i + 1);
+                var count = matrix.GetCoOccurrenceCount(word1, word2);
+                Assert.IsTrue(count > 0);
             }
         }
 
