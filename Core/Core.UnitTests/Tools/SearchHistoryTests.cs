@@ -11,7 +11,6 @@ namespace Sando.Core.UnitTests.Tools
     [TestFixture]
     public class SearchHistoryTests : RandomStringBasedTests
     {
-        private const String directory = @"C:\Windows\Temp\";
         private SearchHistory history;
 
         public SearchHistoryTests()
@@ -32,10 +31,12 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void TestMultiQueries()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 900; i++)
             {
                 var query = GenerateRandomString(20);
                 history.IssuedSearchString(query);
+                Assert.IsTrue(history.GetSearchHistoryItems(item => item.SearchString.
+                    Equals(query)).Any());
             }
         }
     }
@@ -58,8 +59,9 @@ namespace Sando.Core.UnitTests.Tools
         {
             var path = Path.Combine(directory, SearchHistory.FILE_NAME);
             File.Delete(path);
+            queries.Clear();
             history.Initiatalize(directory);
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 900; i++)
             {
                 var query = GenerateRandomString(20);
                 history.IssuedSearchString(query);
@@ -86,8 +88,8 @@ namespace Sando.Core.UnitTests.Tools
                 var entry = history.GetSearchHistoryItems(item => item.SearchString.Equals(q)).First();
                 Assert.IsTrue(entry.TimeStamp < now);
 
-                // The gap should be less than 10 seconds.
-                Assert.IsTrue(now - entry.TimeStamp < 10*1000*1000);
+                // The gap should be less than 1 seconds.
+                Assert.IsTrue(now - entry.TimeStamp < 1*1000*10000);
             }
         }
     }

@@ -34,8 +34,11 @@ namespace Sando.Core.UnitTests.Tools
             }
         }
 
-        private void AssertReformed(String[] words, int[] changedIndexes)
+        private void AssertReformed(String[] words, int[] changedIndexes, String[] expectedReforms)
         {
+            if(changedIndexes.Count() != expectedReforms.Count())
+                Assert.IsTrue(false);
+            var reformForEachWord = new List<String>[words.Count()];
             var newQueries = reformer.ReformTermsSynchronously(words).ToList();
             Assert.IsTrue(newQueries.Any());
             var termLists = newQueries.Select(q => q.ReformedWords.Select(p => p.NewTerm));
@@ -47,12 +50,28 @@ namespace Sando.Core.UnitTests.Tools
                     if (changedIndexes.Contains(i))
                     {
                         Assert.IsTrue(!list.ElementAt(i).Equals(words.ElementAt(i)));
+                        if (reformForEachWord[i] == null)
+                        {
+                            reformForEachWord[i] = new List<string>();
+                        }
+                        var reform = reformForEachWord[i];
+                        reform.Add(list.ElementAt(i));
                     }
                     else
                     {
                         Assert.IsTrue(list.ElementAt(i).Equals(words.ElementAt(i)));
                     }
                 }
+            }
+
+            for (int i = 0; i < changedIndexes.Count(); i++)
+            {
+                var index = changedIndexes.ElementAt(i);
+                var expected = expectedReforms.ElementAt(i);
+                var reformWords = reformForEachWord[index];
+                Assert.IsNotNull(reformWords);
+                Assert.IsTrue(reformWords.Any());
+                Assert.IsTrue(reformWords.Contains(expected));
             }
         }
 
@@ -88,14 +107,16 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void ReformOneTermNotInDictionary()
         {
-            AssertReformed(new string[] {"addi"}, new int[] {0});
-            AssertReformed(new string[] {"addi", "add"}, new int[] {0});
-            AssertReformed(new string[] {"add", "additional", "addi"}, new int[] {2});
-            AssertReformed(new string[] {"san"}, new int[] {0});
-            AssertReformed(new string[] {"adjusting"}, new int[] {});
-            AssertReformed(new string[] {"aft"}, new int[] {0});
-            AssertReformed(new string[] {"alignme"}, new int[] {0});
-            AssertReformed(new string[] {"Sano", "Sand", "Sando"}, new int[] {0, 1});
+            AssertReformed(new string[] {"addi"}, new int[] {0}, new string[]{"add"});
+            AssertReformed(new string[] {"addi", "add"}, new int[] {0}, new string[]{"add"});
+            AssertReformed(new string[] {"add", "additional", "addi"}, new int[] {2}, 
+                new string[]{"adding"});
+            AssertReformed(new string[] {"san"}, new int[] {0}, new string[]{"sando"});
+            AssertReformed(new string[] {"adjusting"}, new int[] {}, new string[]{});
+            AssertReformed(new string[] {"aft"}, new int[] {0}, new string[]{"after"});
+            AssertReformed(new string[] {"alignme"}, new int[] {0}, new string[]{"alignment"});
+            AssertReformed(new string[] {"Sano", "Sand", "Sando"}, new int[] {0, 1}, new 
+                string[]{"sando", "sando"});
         }
 
         [Test]

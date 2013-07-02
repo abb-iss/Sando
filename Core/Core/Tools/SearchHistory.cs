@@ -18,6 +18,7 @@ namespace Sando.Core.Tools
         private readonly List<InternalSearchHistoryItem> allItems;
         private string directory;
         public const string FILE_NAME = "SandoSearchHistory.txt";
+        public const int MAXIMUM_COUNT = 1000;
 
         public SearchHistory()
         {
@@ -63,7 +64,7 @@ namespace Sando.Core.Tools
                 this.TimeStamp = long.Parse(timepart);
             }
 
-            public String ToString()
+            public override String ToString()
             {
                 return SearchString + " " + TimeStamp;
             }
@@ -79,6 +80,10 @@ namespace Sando.Core.Tools
             lock (locker)
             {
                 allItems.Add(item);
+                if (allItems.Count > MAXIMUM_COUNT)
+                {
+                    allItems.RemoveAt(0);
+                }
             }
         }
 
