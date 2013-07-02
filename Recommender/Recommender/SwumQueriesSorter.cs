@@ -24,8 +24,8 @@ namespace Sando.Recommender
 
         private abstract class AbstractQueryInputState
         {
-            protected string originalQuery;
-            protected string[] wordsInOriginalQuery;
+            protected readonly string originalQuery;
+            protected readonly string[] wordsInOriginalQuery;
             public abstract bool IsInState();
             protected abstract String[] InternalSortQueries(String[] queries);
             
@@ -67,6 +67,13 @@ namespace Sando.Recommender
                 return (from query in queries let removeSpace = query.Replace(" ", "") 
                         where removeSpace.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) 
                         select query).ToArray();
+            }
+
+
+            protected String[] SelectQueriesByContainedTerms(IEnumerable<String> queries, IEnumerable<string> terms)
+            {
+                return queries.Where(q => SplitQuery(q).Any(t => terms.Contains(t, ToolHelpers.
+                    GetCaseInsensitiveEqualityComparer()))).ToArray();
             }
 
             protected String[] SortQueriesByWordsCoOccurrence(IEnumerable<string> knownWords, 
@@ -122,9 +129,16 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery);
-                queries = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, queries, GetWordsInQuery);
-                return queries;
+                queries = SelectQueriesByContainedTerms(queries, wordsInOriginalQuery);
+
+                var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).ToList();
+                var group2 = queries.Except(group1).ToList();
+
+                group1 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, group1, GetWordsInQuery).ToList();
+                group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, group2, GetWordsInQuery).ToList();
+                group1.AddRange(group2);
+
+                return group1.ToArray();
             }
 
             private IEnumerable<string> GetWordsInQuery(string q)
@@ -148,7 +162,7 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery.
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, wordsInOriginalQuery.
                     SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).ToList();
@@ -189,7 +203,7 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery.
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, wordsInOriginalQuery.
                     SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).OrderBy(q => q).ToList();
