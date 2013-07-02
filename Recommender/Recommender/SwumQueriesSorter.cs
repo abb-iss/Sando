@@ -21,7 +21,6 @@ namespace Sando.Recommender
             }
         }
 
-
         private abstract class AbstractQueryInputState
         {
             protected readonly string originalQuery;
@@ -175,6 +174,10 @@ namespace Sando.Recommender
                     group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0, 
                         wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
                 }
+                else
+                {
+                    group2 = group2.OrderBy(q => q).ToList();
+                }
 
                 group1.AddRange(group2);
                 return group1.ToArray();
@@ -203,8 +206,8 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, wordsInOriginalQuery.
-                    SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
+                    wordsInOriginalQuery.SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).OrderBy(q => q).ToList();
                 var group2 = queries.Except(group1).ToList();
@@ -213,6 +216,10 @@ namespace Sando.Recommender
                 {
                     group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0,
                         wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
+                }
+                else
+                {
+                    group2 = group2.OrderBy(q => q).ToList();
                 }
 
                 group1.AddRange(group2);
