@@ -35,21 +35,17 @@ namespace Sando.IntegrationTests
 
         }
 
-        //[TestMethod]
-        //[HostType("VS IDE")]
-        //public void TestMethod1()
-        //{
-        //    MessageBox.Show("hihi");
-           
-        //}
+        [TestMethod]
+        [HostType("VS IDE")]
+        public void TestMethod1()
+        {
+            //pass me           
+        }
 
         [ClassCleanup]
         public static void ClassCleanup()
         {
             sandoService = null;
-            package.SetSite(null);
-            package.Close();
-            package = null;
         }
     }
 }
