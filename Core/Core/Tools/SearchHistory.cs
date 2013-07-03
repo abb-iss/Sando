@@ -98,7 +98,16 @@ namespace Sando.Core.Tools
         {
             lock (locker)
             {
-                return allItems.Where(selector.Invoke).Cast<ISearchHistoryItem>().ToArray();
+                return allItems.Where(selector.Invoke).Cast<ISearchHistoryItem>().OrderByDescending
+                    (item => item.TimeStamp).ToArray();
+            }
+        }
+
+        public void ClearHistory()
+        {
+            lock (locker)
+            {
+                allItems.Clear();
             }
         }
 

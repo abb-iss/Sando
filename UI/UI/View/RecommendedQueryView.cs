@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Input;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
@@ -75,5 +76,14 @@ namespace Sando.UI.View
             history.IssuedSearchString(query);
         }
 
+        private void SearchBoxOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            if (searchBox.Text.Equals(String.Empty))
+            {
+                var history = ServiceLocator.Resolve<SearchHistory>();
+                var items = history.GetSearchHistoryItems(i => true).Select(i => i.SearchString);
+                UpdateRecommendations(items, String.Empty);
+            }
+        }
     }
 }

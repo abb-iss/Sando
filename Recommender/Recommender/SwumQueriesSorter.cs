@@ -161,7 +161,8 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, wordsInOriginalQuery.
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
+                    wordsInOriginalQuery.
                     SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).ToList();
