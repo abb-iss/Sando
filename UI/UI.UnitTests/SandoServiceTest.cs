@@ -36,7 +36,14 @@ namespace Sando.IntegrationTests
 
             //Assert.IsTrue(false, Directory.GetCurrentDirectory());
             var solution = VsIdeTestHostContext.Dte.Solution;
-            solution.Open(@"..\..\..\..\UI\UI.UnitTests\TestFiles\tictactoeproject\TicTacToe.sln");
+            try
+            {
+                solution.Open(@"..\..\..\..\UI\UI.UnitTests\TestFiles\tictactoeproject\TicTacToe.sln");
+            }
+            catch (Exception e)
+            {
+                solution.Open(@"C:\TestFiles\tictactoeproject\TicTacToe.sln");
+            }
 
             Thread.Sleep(8000);
 
