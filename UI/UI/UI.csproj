@@ -754,27 +754,6 @@
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets. -->
-  <UsingTask TaskName="SetVsSDKEnvironmentVariables" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <ProjectDirectory Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Code Type="Fragment" Language="cs"> 
-		  System.Environment.SetEnvironmentVariable("VsSDKToolsPath", System.IO.Path.GetFullPath(ProjectDirectory + @"..\..\..\LIBS\Extensions\bin")); 
-		</Code>
-    </Task>
-  </UsingTask>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Target Name="SetVsSDKEnvironmentVariables" BeforeTargets="VSCTCompile">
-    <SetVsSDKEnvironmentVariables ProjectDirectory="$(MSBuildProjectDirectory)" />
-  </Target>
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
 </Project>
