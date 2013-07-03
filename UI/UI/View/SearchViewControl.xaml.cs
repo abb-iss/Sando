@@ -40,7 +40,7 @@ namespace Sando.UI.View
 
             _searchManager = new SearchManager(this);
             SearchResults = new ObservableCollection<CodeSearchResult>();
-            SearchCriteria = new SimpleSearchCriteria();
+            //SearchCriteria = new SimpleSearchCriteria();
             InitAccessLevels();
             InitProgramElements();
 
@@ -80,12 +80,7 @@ namespace Sando.UI.View
             private set { SetValue(SearchStatusProperty, value); }
         }
 
-        public SimpleSearchCriteria SearchCriteria
-        {
-            get { return (SimpleSearchCriteria) GetValue(SearchCriteriaProperty); }
-            set { SetValue(SearchCriteriaProperty, value); }
-        }
-
+ 
         public string SearchLabel
         {
             get { return Translator.GetTranslation(TranslationCode.SearchLabel); }
@@ -201,6 +196,8 @@ namespace Sando.UI.View
         {
             AddSearchHistory(searchString);
 
+            SimpleSearchCriteria Criteria = new SimpleSearchCriteria();
+
             //Store the search key
             this.searchKey = searchBox.Text;
             
@@ -210,29 +207,29 @@ namespace Sando.UI.View
             var selectedAccessLevels = AccessLevels.Where(a => a.Checked).Select(a => a.Access).ToList();
             if (selectedAccessLevels.Any())
             {
-                SearchCriteria.SearchByAccessLevel = true;
-                SearchCriteria.AccessLevels = new SortedSet<AccessLevel>(selectedAccessLevels);
+                Criteria.SearchByAccessLevel = true;
+                Criteria.AccessLevels = new SortedSet<AccessLevel>(selectedAccessLevels);
             }
             else
             {
-                SearchCriteria.SearchByAccessLevel = false;
-                SearchCriteria.AccessLevels.Clear();
+                Criteria.SearchByAccessLevel = false;
+                Criteria.AccessLevels.Clear();
             }
 
             var selectedProgramElementTypes =
                 ProgramElements.Where(e => e.Checked).Select(e => e.ProgramElement).ToList();
             if (selectedProgramElementTypes.Any())
             {
-                SearchCriteria.SearchByProgramElementType = true;
-                SearchCriteria.ProgramElementTypes = new SortedSet<ProgramElementType>(selectedProgramElementTypes);
+                Criteria.SearchByProgramElementType = true;
+                Criteria.ProgramElementTypes = new SortedSet<ProgramElementType>(selectedProgramElementTypes);
             }
             else
             {
-                SearchCriteria.SearchByProgramElementType = false;
-                SearchCriteria.ProgramElementTypes.Clear();
+                Criteria.SearchByProgramElementType = false;
+                Criteria.ProgramElementTypes.Clear();
             }
 
-            SearchAsync(searchString, SearchCriteria);
+            SearchAsync(searchString, Criteria);
         }
 
         private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)

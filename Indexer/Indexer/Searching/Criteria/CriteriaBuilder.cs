@@ -35,6 +35,11 @@ namespace Sando.Indexer.Searching.Criteria
 
         public SearchCriteria GetCriteria()
         {
+            _searchCriteria.SearchByAccessLevel = _searchCriteria.AccessLevels.Any();
+            _searchCriteria.SearchByLocation = _searchCriteria.Locations.Any();
+            _searchCriteria.SearchByProgramElementType = _searchCriteria.ProgramElementTypes.Any();
+            _searchCriteria.SearchByUsageType = _searchCriteria.UsageTypes.Any();
+            _searchCriteria.SearchByFileExtension = _searchCriteria.FileExtensions.Any();
             return _searchCriteria;
         }
 
