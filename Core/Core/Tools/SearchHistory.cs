@@ -46,7 +46,8 @@ namespace Sando.Core.Tools
             return Path.Combine(directory, FILE_NAME);
         }
 
-        private class InternalSearchHistoryItem : ISearchHistoryItem
+        private class InternalSearchHistoryItem : ISearchHistoryItem, 
+            IEquatable<InternalSearchHistoryItem>
         {
             public string SearchString { get; private set; }
             public long TimeStamp { get; private set; }
@@ -64,6 +65,11 @@ namespace Sando.Core.Tools
                 this.TimeStamp = long.Parse(timepart);
             }
 
+            public bool Equals(InternalSearchHistoryItem other)
+            {
+                return this.SearchString.Equals(other.SearchString);
+            }
+
             public override String ToString()
             {
                 return SearchString + " " + TimeStamp;
@@ -79,6 +85,7 @@ namespace Sando.Core.Tools
             var item = new InternalSearchHistoryItem(query, time);
             lock (locker)
             {
+                allItems.Remove(item);
                 allItems.Add(item);
                 if (allItems.Count > MAXIMUM_COUNT)
                 {

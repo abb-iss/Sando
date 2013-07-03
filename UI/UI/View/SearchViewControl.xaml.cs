@@ -197,6 +197,7 @@ namespace Sando.UI.View
 
         private void BeginSearch(string searchString)
         {
+            AddSearchHistory(searchString);
 
             //Store the search key
             this.searchKey = searchBox.Text;

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Documents;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
+using Sando.DependencyInjection;
 
 namespace Sando.UI.View
 {
@@ -65,6 +66,13 @@ namespace Sando.UI.View
                 searchBox.Text = reformedQuery;
                 BeginSearch(reformedQuery);
             }
+        }
+
+
+        private void AddSearchHistory(String query)
+        {
+            var history = ServiceLocator.Resolve<SearchHistory>();
+            history.IssuedSearchString(query);
         }
 
     }
