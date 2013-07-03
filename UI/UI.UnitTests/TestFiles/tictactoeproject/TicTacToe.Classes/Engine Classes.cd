@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TicTacToe.Classes.GameEngine">
+    <Position X="6.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAEgAAAIgCAACAAAwACACIAAAgAkAAAJQBBgCAAAY=</HashCode>
+      <FileName>GameEngine.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="HumanPlayer" />
+      <Property Name="PCPlayer" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TicTacToe.Classes.Player">
+    <Position X="3.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQgAAAEIAgAgAAIAAQAAAA=</HashCode>
+      <FileName>Player.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GameMove" />
+      <Property Name="GameEngine" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TicTacToe.Classes.HumanPlayer">
+    <Position X="2.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAA=</HashCode>
+      <FileName>HumanPlayer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TicTacToe.Classes.PCPlayer">
+    <Position X="4.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAAA=</HashCode>
+      <FileName>PCPlayer.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="IPlayerBrain" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TicTacToe.Classes.GameMove">
+    <Position X="0.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAgAAAAIAAAAAAEAAAAgAAAAAQAAAA=</HashCode>
+      <FileName>GameMove.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="XOSymbol" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="TicTacToe.Classes.MinimaxPlayerBrain">
+    <Position X="7.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EoAAEgAAAAgEAQAAAAYAAAEAIIAAAAAIAAAAIAAAAAA=</HashCode>
+      <FileName>MinimaxPlayerBrain.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="TicTacToe.Classes.GamePadNode">
+    <Position X="10.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAQAAAAAAAAAAAAhAAAgIAAAIBgAAAAY=</HashCode>
+      <FileName>GamePadNode.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="GameMove" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="TicTacToe.Classes.IPlayerBrain">
+    <Position X="7.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>IPlayerBrain.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="TicTacToe.Classes.XOSymbol">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAgAQAA=</HashCode>
+      <FileName>XOEnum.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
