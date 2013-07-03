@@ -98,7 +98,7 @@ namespace Sando.IntegrationTests.Search
             string keywords = "reorder search results -test";            
             var expectedLowestRank = 20;
             try{
-                Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "ReorderSearchResults") && (el.ProgramElement.FullFilePath.Contains("Test"));
+                Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method && (el.ProgramElement.Name == "ReorderSearchResults") && (el.ProgramElement.Name.Contains("Test"));
                 EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);                
             }catch(Exception e){
                 //expected
