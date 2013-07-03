@@ -165,6 +165,7 @@
     <Compile Include="Tools\SandoQueryParser.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tools\SearchHistory.cs" />
     <Compile Include="Tools\SeSpecificThesaurus.cs">
       <SubType>Code</SubType>
     </Compile>

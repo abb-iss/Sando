@@ -372,6 +372,7 @@ namespace Sando.UI
                 }
                 // XiGe: dispose the dictionary.
                 ServiceLocator.Resolve<DictionaryBasedSplitter>().Dispose();
+                ServiceLocator.Resolve<SearchHistory>().Dispose();
             }
             catch (Exception e)
             {
@@ -478,12 +479,19 @@ namespace Sando.UI
                 // xige
                 var dictionary = new DictionaryBasedSplitter();
                 dictionary.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
-                ServiceLocator.Resolve<IndexUpdateManager>().indexUpdated += dictionary.UpdateProgramElement;
+                ServiceLocator.Resolve<IndexUpdateManager>().indexUpdated += 
+                    dictionary.UpdateProgramElement;
                 ServiceLocator.RegisterInstance(dictionary);
 
                 var reformer = new QueryReformerManager(dictionary);
                 reformer.Initialize();
                 ServiceLocator.RegisterInstance(reformer);
+
+                var history = new SearchHistory();
+                history.Initiatalize(PathManager.Instance.GetIndexPath
+                    (ServiceLocator.Resolve<SolutionKey>()));
+                ServiceLocator.RegisterInstance(history);
+                
 
                 if (srcMLService.GetSrcMLArchive()!=null && srcMLService.IsReady)
                 {

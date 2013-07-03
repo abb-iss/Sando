@@ -161,7 +161,8 @@ namespace Sando.Recommender
 
             protected override string[] InternalSortQueries(string[] queries)
             {
-                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, wordsInOriginalQuery.
+                queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
+                    wordsInOriginalQuery.
                     SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
                 var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).ToList();
@@ -228,9 +229,10 @@ namespace Sando.Recommender
 
             private IEnumerable<string> GetWordsInQuery(string query)
             {
-                var knownWords = wordsInOriginalQuery.Count() > 1 ? wordsInOriginalQuery.SubArray(0, 
-                    wordsInOriginalQuery.Count() - 1) : new String[] {};
-                return SplitQuery(query).Except(knownWords, ToolHelpers.GetCaseInsensitiveEqualityComparer());
+                var knownWords = wordsInOriginalQuery.Count() > 1 ? wordsInOriginalQuery.
+                    SubArray(0, wordsInOriginalQuery.Count() - 1) : new String[] {};
+                return SplitQuery(query).Except(knownWords,
+                    ToolHelpers.GetCaseInsensitiveEqualityComparer());
             }
         }
        
@@ -242,8 +244,10 @@ namespace Sando.Recommender
 
         public string[] SelectSortSwumRecommendations(string originalQuery, string[] queries)
         {
+            var list = GetSearchHistoryItemStartingWith(originalQuery);
             var state = GetQueryInputState(originalQuery);
-            return state.SortQueries(queries);
+            list.AddRange(state.SortQueries(queries));
+            return list.ToArray();
         }
 
         private AbstractQueryInputState GetQueryInputState(String query)
@@ -255,6 +259,13 @@ namespace Sando.Recommender
                 new FinishedWordInputState(query)
             };
             return states.First(s => s.IsInState());
+        }
+
+        private List<string> GetSearchHistoryItemStartingWith(String prefix)
+        {
+            var history = ServiceLocator.Resolve<SearchHistory>();
+            return history.GetSearchHistoryItems(item => item.SearchString.
+                StartsWith(prefix)).Select(i => i.SearchString).ToList();
         }
     }
 }

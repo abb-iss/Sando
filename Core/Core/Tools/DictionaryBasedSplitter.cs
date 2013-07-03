@@ -184,10 +184,7 @@ namespace Sando.Core.Tools
 
             public IEnumerable<String> FindSimilarWords(String word)
             {
-                var similarWords = corrector.FindSimilarWords(word).ToList();
-                if(similarWords.Any())
-                    return similarWords.Select(p => p.Key);
-                return Enumerable.Empty<string>();
+                return corrector.FindSimilarWords(word).ToList();
             }
 
             public void Dispose()

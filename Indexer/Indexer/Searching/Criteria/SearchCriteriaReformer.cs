@@ -15,8 +15,9 @@ namespace Sando.Indexer.Searching.Criteria
         public static void ReformSearchCriteria(SimpleSearchCriteria criteria, List<String> terms)
         {
             var originalTerms = terms.ToList();
-            var dictionarySplittedTerms = terms.SelectMany(ServiceLocator.Resolve<DictionaryBasedSplitter>
-                ().ExtractWords).Where(t => t.Length >= TERM_MINIMUM_LENGTH).ToList();
+            var dictionarySplittedTerms = terms.SelectMany
+                    (ServiceLocator.Resolve<DictionaryBasedSplitter>().
+                        ExtractWords).Where(t => t.Length >= TERM_MINIMUM_LENGTH).ToList();
             terms.AddRange(dictionarySplittedTerms);
             var queries = GetReformedQuery(terms.Distinct()).ToList();
             if (queries.Count > 0)
