@@ -6,6 +6,8 @@ using System.Text;
 using ABB.Swum;
 using ABB.Swum.Nodes;
 using System.Diagnostics;
+using Sando.Core.Tools;
+using Sando.DependencyInjection;
 
 namespace Sando.Recommender {
     public class QueryRecommender {
@@ -22,6 +24,10 @@ namespace Sando.Recommender {
 
         public string[] GenerateRecommendations(string query) {
             if(string.IsNullOrEmpty(query)) {
+                if (query != null)
+                {
+                    return GetAllSearchHistoryItems();
+                }
                 return new string[0];
             }
             try
@@ -54,6 +60,13 @@ namespace Sando.Recommender {
         private string[] SortRecommendations(string query, string[] queries)
         {
             return new SwumQueriesSorter().SelectSortSwumRecommendations(query, queries);
+        }
+
+
+        private string[] GetAllSearchHistoryItems()
+        {
+            var history = ServiceLocator.Resolve<SearchHistory>();
+            return history.GetSearchHistoryItems(i => true).Select(i => i.SearchString).ToArray();
         }
 
 

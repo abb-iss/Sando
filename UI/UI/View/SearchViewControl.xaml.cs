@@ -46,7 +46,6 @@ namespace Sando.UI.View
 
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += SelectFirstResult;
             ((INotifyCollectionChanged)searchResultListbox.Items).CollectionChanged += ScrollToTop;
-            searchBox.MouseDoubleClick += SearchBoxOnMouseDoubleClick;
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
 
