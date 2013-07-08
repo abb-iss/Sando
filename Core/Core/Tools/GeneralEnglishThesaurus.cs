@@ -49,12 +49,12 @@ namespace Sando.Core.Tools
             return new KeyValuePair<string, IEnumerable<string>>(key, value);
         }
 
-        public IEnumerable<string> GetSynonyms(string word)
+        public IEnumerable<SynonymInfo> GetSynonyms(string word)
         {
             lock (locker)
             {
                 var synonyms = ThesaurusHelper.GetValuesOfKey(synonymLists, word).FirstOrDefault();
-                return synonyms ?? Enumerable.Empty<String>();
+                return synonyms == null ? Enumerable.Empty<SynonymInfo>() : synonyms.Select(s => new SynonymInfo(s));
             }
         }
     }

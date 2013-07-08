@@ -46,12 +46,20 @@ namespace Sando.Core.QueryRefomers
                 queries = queries.ToList();
                 var mispellings = SortCorrectionByEditDistance(GetCorrectedQueries(queries)).ToList();
                 var others = queries.Except(mispellings).ToList();
-                var othersWithSynonym = SortByCoOccurCount(GetSynonymQueries(others)).ToList();
+                var othersWithSynonym = SortByCoOccurCount(SortBySynonymSimilarity
+                    (GetSynonymQueries(others))).ToList();
                 var othersWithoutSynonym = SortByCoOccurCount(others.Except(othersWithSynonym)).ToList();
                 others.Clear(); 
                 others.AddRange(othersWithSynonym);
                 others.AddRange(othersWithoutSynonym);
                 return MergetList(mispellings, others);
+            }
+
+            private IEnumerable<IReformedQuery> SortBySynonymSimilarity(IEnumerable<IReformedQuery>
+                queries)
+            {
+                return queries.OrderByDescending(q => q.ReformedWords.Sum(w => w as SynonymReformedWord != null
+                    ? (w as SynonymReformedWord).SynonymSimilarityScore : 0));
             }
 
 

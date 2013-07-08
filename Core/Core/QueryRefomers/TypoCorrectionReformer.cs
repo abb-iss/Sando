@@ -28,13 +28,15 @@ namespace Sando.Core.QueryRefomers
             {
                 IEnumerable<ReformedWord> correctedList = list.Select(w => new ReformedWord
                       (TermChangeCategory.MISSPELLING, target, w,
-                        GetReformMessage(target, w))).ToList();
-                if (correctedList.Count() >= QuerySuggestionConfigurations.SIMILAR_WORDS_MAX_COUNT)
-                    correctedList = correctedList.ToList().GetRange(0,
-                        QuerySuggestionConfigurations.SIMILAR_WORDS_MAX_COUNT);
+                            GetReformMessage(target, w))).OrderBy(t => t.DistanceFromOriginal);
                 return correctedList;
             }
             return Enumerable.Empty<ReformedWord>();
+        }
+
+        protected override int GetMaximumReformCount()
+        {
+            return QuerySuggestionConfigurations.SIMILAR_WORDS_MAX_COUNT;
         }
     }
 }

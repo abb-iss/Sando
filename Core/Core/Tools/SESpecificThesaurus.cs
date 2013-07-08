@@ -9,7 +9,19 @@ namespace Sando.Core.Tools
     public interface IThesaurus
     {
         void Initialize();
-        IEnumerable<String> GetSynonyms(String word);
+        IEnumerable<SynonymInfo> GetSynonyms(String word);
+    }
+
+    public class SynonymInfo
+    {
+        public string Synonym { get; private set; }
+        public int SimilarityScore { get; private set; }
+
+        public SynonymInfo(String Synonym, int SimilarityScore = 0)
+        {
+            this.Synonym = Synonym;
+            this.SimilarityScore = SimilarityScore;
+        }
     }
 
     public class ThesaurusHelper
@@ -123,7 +135,7 @@ namespace Sando.Core.Tools
             }
         }
 
-        public IEnumerable<String> GetSynonyms(String word)
+        public IEnumerable<SynonymInfo> GetSynonyms(String word)
         {
             lock (locker)
             {
@@ -132,9 +144,10 @@ namespace Sando.Core.Tools
                     word = Preprocess(word);
                     return GetEntriesByFirstWord(orderedWordPairs, word)
                             .Union(GetEntriesByFirstWord(switchedWordPairs, word)).
-                                Select(entry => entry.SecondWord);
+                                Select(entry => new SynonymInfo(entry.SecondWord, 
+                                    entry.Score));
                 }
-                return Enumerable.Empty<String>();
+                return Enumerable.Empty<SynonymInfo>();
             }
         }
     }

@@ -48,11 +48,11 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void GetSynonymsCorrectly()
         {
-            Assert.IsTrue(thesaurus.GetSynonyms("see").Contains("watch"));
-            Assert.IsTrue(thesaurus.GetSynonyms("get").Contains("have"));
-            Assert.IsTrue(thesaurus.GetSynonyms("however").Contains("nevertheless"));
-            Assert.IsTrue(thesaurus.GetSynonyms("however").Contains("withal"));
-            Assert.IsTrue(thesaurus.GetSynonyms("however").Contains("still"));
+            Assert.IsTrue(thesaurus.GetSynonyms("see").Select(s => s.Synonym).Contains("watch"));
+            Assert.IsTrue(thesaurus.GetSynonyms("get").Select(s => s.Synonym).Contains("have"));
+            Assert.IsTrue(thesaurus.GetSynonyms("however").Select(s => s.Synonym).Contains("nevertheless"));
+            Assert.IsTrue(thesaurus.GetSynonyms("however").Select(s => s.Synonym).Contains("withal"));
+            Assert.IsTrue(thesaurus.GetSynonyms("however").Select(s => s.Synonym).Contains("still"));
             Assert.IsTrue(thesaurus.GetSynonyms("however").Count() == 8);
         }
     }

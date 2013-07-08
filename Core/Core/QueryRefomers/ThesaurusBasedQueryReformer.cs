@@ -16,8 +16,11 @@ namespace Sando.Core.QueryRefomers
         protected override IEnumerable<ReformedWord> GetReformedTargetInternal(String word)
         {
             var thesaurus = GetThesaurus();
-            return thesaurus.GetSynonyms(word).Select(s => new ReformedWord
-                (GetTermChangeCategory(), word, s, GetReformMessage(word, s)));
+            var list = thesaurus.GetSynonyms(word).OrderByDescending(s => s.SimilarityScore).
+                Select(s => new SynonymReformedWord (GetTermChangeCategory(), word, 
+                    s.Synonym, GetReformMessage(word, s.Synonym), 
+                        s.SimilarityScore)).ToList();
+            return list;
         }
 
         protected abstract string GetReformMessage(string originalWord, string newWord);
@@ -47,6 +50,11 @@ namespace Sando.Core.QueryRefomers
         {
             return TermChangeCategory.SE_SYNONYM;
         }
+
+        protected override int GetMaximumReformCount()
+        {
+            return QuerySuggestionConfigurations.SYNONYMS_MAX_COUNT;
+        }
     }
 
     internal class GeneralThesaurusWordReformer : SynonymBasedWordReformer
@@ -69,6 +77,11 @@ namespace Sando.Core.QueryRefomers
         protected override TermChangeCategory GetTermChangeCategory()
         {
             return TermChangeCategory.GENERAL_SYNONYM;
+        }
+
+        protected override int GetMaximumReformCount()
+        {
+            return QuerySuggestionConfigurations.SYNONYMS_MAX_COUNT;
         }
     }
 }

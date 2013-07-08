@@ -20,16 +20,21 @@ namespace Sando.Core.QueryRefomers
             if (otherWords.Any())
             {
                 var commonWords = otherWords.Select(w => localDictionary.GetCoOccurredWordsAndCount(w))
-                    .Aggregate(GetDictionaryIntersect).ToList().OrderBy(p => - p.Value).Select(p => p.Key);
-                commonWords = TrimExcessiveWords(commonWords);
+                    .Aggregate(GetDictionaryIntersect).ToList().OrderBy(p => -p.Value).Select(p => p.Key);
                 return commonWords.Select(w => new ReformedWord(TermChangeCategory.COOCCUR, target, 
                     w, GetMessage(target, w)));
             }
             return Enumerable.Empty<ReformedWord>();
         }
 
+        protected override int GetMaximumReformCount()
+        {
+            return QuerySuggestionConfigurations.COOCCURRENCE_WORDS_MAX_COUNT;
+        }
 
-        private Dictionary<string, int> GetDictionaryIntersect(Dictionary<string, int> dict1, Dictionary<string, int> dict2)
+
+        private Dictionary<string, int> GetDictionaryIntersect(Dictionary<string, int> dict1, 
+            Dictionary<string, int> dict2)
         {
             var dictionary = new Dictionary<string, int>();
             var list1 = dict1.ToList();
@@ -42,14 +47,6 @@ namespace Sando.Core.QueryRefomers
                 }
             }
             return dictionary;
-        }
-
-
-        private IEnumerable<String> TrimExcessiveWords(IEnumerable<String> words)
-        {
-            var list = words.ToList();
-            const int limit = QuerySuggestionConfigurations.COOCCURRENCE_WORDS_MAX_COUNT;
-            return list.Count() > limit ? list.GetRange(0, limit) : list;
         }
 
         private string GetMessage(string original, string reformed)
