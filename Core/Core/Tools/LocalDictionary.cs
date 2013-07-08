@@ -44,7 +44,7 @@ namespace Sando.Core.Tools
             {
                 lock (locker)
                 {
-                    if (directory != null && originalWords.Any())
+                    if (directory != null)
                     {
                         WriteWordsToFile(GetDicFilePath(), originalWords);
                         WriteWordsToFile(GetStemDicPath(), stemmedWords);
@@ -117,7 +117,7 @@ namespace Sando.Core.Tools
                 lock (locker)
                 {
                     addedWords.AddRange(AddWordsToList(originalWords, originalWordsToAdd));
-                    addedWords.AddRange(AddWordsToList(stemmedWords, stemmedWordsToAdd));
+                    AddWordsToList(stemmedWords, stemmedWordsToAdd);
                 }
 
                 addWordsEvent(addedWords);
