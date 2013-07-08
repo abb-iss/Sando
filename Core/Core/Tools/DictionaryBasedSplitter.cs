@@ -68,15 +68,10 @@ namespace Sando.Core.Tools
             return word.Equals(String.Empty) || dictionary.DoesWordExist(word, option);
         }
 
-        private bool IsQuoted(String text)
-        {
-            text = text.Trim();
-            return text.StartsWith("\"") && text.EndsWith("\"");
-        }
-
         public string[] ExtractWords (string text)
         {
-            if (IsQuoted(text) || DoesWordExist(text, DictionaryOption.IncludingStemming))
+            if (text.IsWordQuoted() || text.IsWordFlag() || 
+                DoesWordExist(text, DictionaryOption.IncludingStemming))
             {
                 return new string[]{text};    
             }

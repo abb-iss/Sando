@@ -64,7 +64,7 @@ namespace Sando.Core.QueryRefomers
         private IEnumerable<ReformedWord> FindBetterTerms(string word, IEnumerable<string> neigbors)
         {
             if (!dictionary.DoesWordExist(word, DictionaryOption.IncludingStemming) 
-                && !IsWordQuoted(word))
+                && !word.IsWordQuoted() && !word.IsWordFlag())
             {
                 var list = new List<ReformedWord>();
                 list.AddRange(FindShapeSimilarWordsInLocalDictionary(word));
@@ -74,12 +74,6 @@ namespace Sando.Core.QueryRefomers
                 return list.Any() ? list : ToolHelpers.CreateNonChangedTerm(word);
             }
             return ToolHelpers.CreateNonChangedTerm(word);
-        }
-
-        private bool IsWordQuoted(string word)
-        {
-            word = word.Trim();
-            return word.StartsWith("\"") && word.EndsWith("\"");
         }
 
         private IEnumerable<ReformedWord> FindShapeSimilarWordsInLocalDictionary(String word)

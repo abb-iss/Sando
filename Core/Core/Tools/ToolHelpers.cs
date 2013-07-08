@@ -97,5 +97,15 @@ namespace Sando.Core.Tools
             }
             return Enumerable.Empty<T>();
         }
+
+        public static bool IsWordFlag(this string word)
+        {
+            return word.StartsWith("-");
+        }
+
+        public static bool IsWordQuoted(this string word)
+        {
+            return word.Trim().StartsWith("\"") && word.EndsWith("\"");
+        }
     }
 }
