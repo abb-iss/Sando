@@ -122,7 +122,7 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void NotReformingWordWhoseStemmingIsInDictionary()
         {
-            AssertNotReformed(new string[]{"additive"});
+            AssertNotReformed(new string[]{"adapted"});
             AssertNotReformed(new string[]{"searchers"});
             AssertNotReformed(new string[]{"absentive"});
             AssertNotReformed(new string[]{"accessive"});

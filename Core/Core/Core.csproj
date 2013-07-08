@@ -156,6 +156,7 @@
     <Compile Include="Tools\Levenshtein.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tools\LocalDictionary.cs" />
     <Compile Include="Tools\LuceneDirectoryHelper.cs">
       <SubType>Code</SubType>
     </Compile>
