@@ -57,11 +57,14 @@ namespace Sando.Core.Tools
         private readonly WorkQueueBasedProcess queue = new WorkQueueBasedProcess();
 
         private string directory;
+        private Action saveAction;
+
         private const string fileName = "CooccurenceMatrix.txt";
 
         private const int MAX_WORD_LENGTH = 3;
         private const int MAX_COOCCURRENCE_WORDS_COUNT = 100;
         private const int GRAM_NUMBER = 3;
+        private const int SAVE_EVERY_MINUTES = 10;
 
         public void Initialize(String directory)
         {
@@ -70,6 +73,10 @@ namespace Sando.Core.Tools
                 matrix.Clear();
                 this.directory = directory;
                 ReadMatrixFromFile();
+
+                saveAction = new Action(WriteMatrixToFile);
+                TimedProcessor.GetInstance().AddTimedTask(saveAction, 
+                    SAVE_EVERY_MINUTES * 60 * 1000);
             }
         }
 
@@ -91,8 +98,6 @@ namespace Sando.Core.Tools
                 return columns;
             }
         }
-
-
 
         private void ReadMatrixFromFile()
         {
@@ -255,6 +260,8 @@ namespace Sando.Core.Tools
             {
                 WriteMatrixToFile();
                 matrix.Clear();
+                TimedProcessor.GetInstance().RemoveTimedTask(saveAction);
+                directory = null;
             }
         }
     }

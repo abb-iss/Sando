@@ -11,14 +11,17 @@ namespace Sando.Core.Tools
         private sealed class FileDictionary : IDisposable
         {
             private const int TERM_MINIMUM_LENGTH = 2;
+            private const int SAVE_EVERY_MINUTES = 10;
             private const string dictionaryName = "dictionary.txt";
             private const string stemDictionary = "stemDictionary.txt";
             private string directory;
-            
+            private Action autoSaveAction;
+
             private readonly object locker = new object();
             private readonly List<string> originalWords = new List<string>();
             private readonly List<string> stemmedWords = new List<string>();
             private readonly WordCorrector corrector = new WordCorrector();
+            
 
             public event NewWordsAdded addWordsEvent;
 
@@ -37,6 +40,11 @@ namespace Sando.Core.Tools
                     stemmedWords.Clear();
                     ReadWordsFromFile(GetDicFilePath(), originalWords);
                     ReadWordsFromFile(GetStemDicPath(), stemmedWords);
+
+                    // Save to the local dictionarty every 10 minutes.
+                    this.autoSaveAction = new Action(WriteToFiles);
+                    TimedProcessor.GetInstance().AddTimedTask(autoSaveAction, 
+                        SAVE_EVERY_MINUTES * 60 * 1000);
                 }
             }
 
@@ -46,11 +54,17 @@ namespace Sando.Core.Tools
                 {
                     if (directory != null)
                     {
-                        WriteWordsToFile(GetDicFilePath(), originalWords);
-                        WriteWordsToFile(GetStemDicPath(), stemmedWords);
+                        WriteToFiles();
+                        TimedProcessor.GetInstance().RemoveTimedTask(autoSaveAction);
                         directory = null;
                     }
                 }
+            }
+
+            private void WriteToFiles()
+            {
+                WriteWordsToFile(GetDicFilePath(), originalWords);
+                WriteWordsToFile(GetStemDicPath(), stemmedWords);
             }
 
             private void WriteWordsToFile(String path, IEnumerable<String> wordsToWrite)

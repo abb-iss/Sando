@@ -80,6 +80,12 @@ namespace Sando.Core.Tools
             }
         }
 
+        public static bool IsIndexInRange<T>(this IEnumerable<T> list, int index)
+        {
+            var array = list.ToArray();
+            return index >= 0 && index < array.Count();
+        }
+
         public static IEnumerable<T> CustomBinarySearch<T>(this List<T> list, T target, IComparer<T> comparer)
         {
             var endIndex = list.BinarySearch(target, comparer);
