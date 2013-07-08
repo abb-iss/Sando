@@ -79,5 +79,17 @@ namespace Sando.Core.Tools
                 return 0;
             }
         }
+
+        public static IEnumerable<T> CustomBinarySearch<T>(this List<T> list, T target, IComparer<T> comparer)
+        {
+            var endIndex = list.BinarySearch(target, comparer);
+            if (endIndex > -1 && endIndex < list.Count)
+            {
+                int startInex = endIndex;
+                for (; comparer.Compare(list.ElementAt(startInex - 1), target) == 0; startInex--);
+                return list.GetRange(startInex, endIndex - startInex + 1);
+            }
+            return Enumerable.Empty<T>();
+        }
     }
 }
