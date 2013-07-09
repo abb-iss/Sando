@@ -121,11 +121,11 @@
                  VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="15" IsIndeterminate="True" Visibility="Collapsed"/>
 
         <!-- info string -->
-        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="10" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
+        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- info string -->
-        <TextBlock Margin="4,0,0,0" Foreground="#1F1F1F" FontSize="10" 
+        <TextBlock Margin="4,0,0,0" Foreground="#1F1F1F" FontSize="11" 
                 Name="RecommendedQueryTextBlock"
                 FontStyle="Italic" Background="{Binding Path=Background, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 

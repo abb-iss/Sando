@@ -64,7 +64,7 @@ namespace Sando.Recommender
             {
                 var prefix = startTerms.Aggregate((s1, s2) => s1 + s2);
                 return (from query in queries let removeSpace = query.Replace(" ", "") 
-                        where removeSpace.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) 
+                    where removeSpace.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) 
                         select query).ToArray();
             }
 
@@ -170,16 +170,11 @@ namespace Sando.Recommender
 
                 group1 = group1.OrderBy(q => q).ToList();
 
-                if (wordsInOriginalQuery.Count() > 1)
-                {
-                    group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0, 
-                        wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
-                }
-                else
-                {
-                    group2 = group2.OrderBy(q => q).ToList();
-                }
-
+                group2 = wordsInOriginalQuery.Count() > 1 ?
+                    SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0, 
+                        wordsInOriginalQuery.Count() - 1), queries, 
+                            GetWordsInQuery).ToList() : group2.OrderBy(q => q).ToList();
+   
                 group1.AddRange(group2);
                 return group1.ToArray();
             }
@@ -210,19 +205,14 @@ namespace Sando.Recommender
                 queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
                     wordsInOriginalQuery.SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
 
-                var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).OrderBy(q => q).ToList();
+                var group1 = SelectQueriesByPrefixTerms(queries, wordsInOriginalQuery).
+                    OrderBy(q => q).ToList();
                 var group2 = queries.Except(group1).ToList();
 
-                if (wordsInOriginalQuery.Count() > 1)
-                {
-                    group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery.SubArray(0,
-                        wordsInOriginalQuery.Count() - 1), queries, GetWordsInQuery).ToList();
-                }
-                else
-                {
-                    group2 = group2.OrderBy(q => q).ToList();
-                }
-
+                group2 = wordsInOriginalQuery.Count() > 1 ? SortQueriesByWordsCoOccurrence
+                    (wordsInOriginalQuery.SubArray(0, wordsInOriginalQuery.Count() - 1), 
+                        queries, GetWordsInQuery).ToList() : group2.OrderBy(q => q).ToList();
+                
                 group1.AddRange(group2);
                 return group1.ToArray();
             }
@@ -244,10 +234,11 @@ namespace Sando.Recommender
 
         public string[] SelectSortSwumRecommendations(string originalQuery, string[] queries)
         {
+            var filters = new AllFilters();
             var list = GetSearchHistoryItemStartingWith(originalQuery);
             var state = GetQueryInputState(originalQuery);
             list.AddRange(state.SortQueries(queries));
-            return list.ToArray();
+            return HandleCornerCases(originalQuery, filters.FilterBadQueries(list.ToArray()));
         }
 
         private AbstractQueryInputState GetQueryInputState(String query)
@@ -266,6 +257,103 @@ namespace Sando.Recommender
             var history = ServiceLocator.Resolve<SearchHistory>();
             return history.GetSearchHistoryItems(item => item.SearchString.
                 StartsWith(prefix)).Select(i => i.SearchString).ToList();
+        }
+
+        private interface IRecommendedQueryFilter
+        {
+            String[] FilterBadQueries(String[] queries);
+        }
+
+        private class AllFilters : IRecommendedQueryFilter
+        {
+            public string[] FilterBadQueries(string[] queries)
+            {
+                var filters = new IRecommendedQueryFilter[]
+                {
+                    new DuplicateQueriesFilter(),
+                    new ContainingNonLocalWordsQueriesFilter()
+                };
+                return filters.Aggregate(queries, (current, filter) => 
+                    filter.FilterBadQueries(current));
+            }
+        }
+
+
+        private class DuplicateQueriesFilter : IRecommendedQueryFilter
+        {
+            public string[] FilterBadQueries(string[] queries)
+            {
+                var set = new HashSet<String>(queries, new StringEqualityComparer());
+                return set.ToArray();
+            }
+
+            private class StringEqualityComparer : IEqualityComparer<string>
+            {
+                public bool Equals(string x, string y)
+                {
+                    return x.Trim().Equals(y.Trim(), 
+                        StringComparison.InvariantCultureIgnoreCase);
+                }
+
+                public int GetHashCode(string obj)
+                {
+                    return 0;
+                }
+            }
+        }
+
+        private class ContainingNonLocalWordsQueriesFilter : IRecommendedQueryFilter
+        {
+            public string[] FilterBadQueries(string[] queries)
+            {
+                var badQueries = queries.Where(q => q.Trim().Contains(" ") && !AllWordsInDictionary(q));
+                return queries.Except(badQueries).ToArray();
+            }
+
+            private bool AllWordsInDictionary(string s)
+            {
+                var words = s.Split();
+                var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+                return words.All(w => dictionary.DoesWordExist(w, DictionaryOption.NoStemming));
+            }
+        }
+
+        private String[] HandleCornerCases(String original, String[] recommended)
+        {
+            var allHandlers = new ICornerCaseHandler[]
+            {
+                new PreferVariableWhenNoSpace()
+            };
+            var handlers = allHandlers.Where(h => h.IsCornerCase(original));
+            return handlers.Any() ? handlers.First().Handle(recommended) : recommended;
+        }
+
+        private interface ICornerCaseHandler
+        {
+            bool IsCornerCase(String originalQuery);
+            String[] Handle(String[] queries);
+        }
+
+        private class PreferVariableWhenNoSpace : ICornerCaseHandler
+        {
+            public bool IsCornerCase(string originalQuery)
+            {
+                return !originalQuery.TrimStart().Contains(" ");
+            }
+
+            public string[] Handle(string[] queries)
+            {
+                var variableList = new List<String>();
+                var othersList = new List<String>();
+                foreach (var query in queries)
+                {
+                    var list = query.Trim().Contains(" ") ? othersList : 
+                        variableList;
+                    list.Add(query);
+                }
+                variableList.AddRange(othersList);
+                return variableList.ToArray();
+            }
         }
     }
 }
