@@ -16,7 +16,7 @@ using Sando.ExtensionContracts.ServiceContracts;
 
 namespace Sando.UI.Service {
     /// <summary>
-    /// Implement the local service class.
+    /// Implement the local service class. (never used)
     /// This is the class that implements the local service. It implements ISandoLocalService
     /// because this is the interface that we want to use, but it also implements the empty
     /// interface SSandoLocalService in order to notify the service creator that it actually
