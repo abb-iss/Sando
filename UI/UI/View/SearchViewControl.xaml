@@ -130,8 +130,8 @@
                 FontStyle="Italic" Background="{Binding Path=Background, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
                 Grid.Row="3" Width="Auto" HorizontalAlignment="Stretch"  
-                Grid.Column="0" Height="Auto" Grid.ColumnSpan="2"
-                KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap"></TextBlock>
+                Grid.Column="0" Height="15" Grid.ColumnSpan="2"
+                KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Bottom"></TextBlock>
         
         <!-- details -->
         <Expander Grid.Row="4" Grid.Column="0" Name="LayoutRoot"
@@ -213,7 +213,7 @@
 
             </StackPanel>
         </Expander>
-        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" VerticalAlignment="Bottom" Margin="0,14,0,0" Grid.RowSpan="2">
+        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
             
             <Button Name="HelpButton"  ToolTip="Help" Margin="32,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
         		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
