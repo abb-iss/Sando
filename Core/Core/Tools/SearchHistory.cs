@@ -19,6 +19,7 @@ namespace Sando.Core.Tools
         private string directory;
         public const string FILE_NAME = "SandoSearchHistory.txt";
         public const int MAXIMUM_COUNT = 1000;
+        private const int SAVE_EVERY_MINUTES = 10;
 
         public SearchHistory()
         {
@@ -28,17 +29,19 @@ namespace Sando.Core.Tools
 
         public void Initiatalize(string directory)
         {
-            this.directory = directory;
-            if (File.Exists(GetFilePath()))
+            lock (locker)
             {
-                var lines = File.ReadAllLines(GetFilePath());
-                var items = lines.Select(l => new InternalSearchHistoryItem(l));
-                lock (locker)
+                this.directory = directory;
+                if (File.Exists(GetFilePath()))
                 {
+                    var lines = File.ReadAllLines(GetFilePath());
+                    var items = lines.Select(l => new InternalSearchHistoryItem(l));
                     allItems.Clear();
                     allItems.AddRange(items);
                 }
             }
+            TimedProcessor.GetInstance().AddTimedTask(WriteToFile,
+                SAVE_EVERY_MINUTES * 60 * 1000);
         }
 
         private string GetFilePath()
@@ -79,12 +82,12 @@ namespace Sando.Core.Tools
 
         public void IssuedSearchString(String query)
         {
-            if(String.IsNullOrWhiteSpace(query))
-                return;
-            var time = DateTime.Now.Ticks;
-            var item = new InternalSearchHistoryItem(query, time);
             lock (locker)
             {
+                if(String.IsNullOrWhiteSpace(query))
+                    return;
+                var time = DateTime.Now.Ticks;
+                var item = new InternalSearchHistoryItem(query, time); 
                 allItems.Remove(item);
                 allItems.Add(item);
                 if (allItems.Count > MAXIMUM_COUNT)
@@ -113,14 +116,22 @@ namespace Sando.Core.Tools
 
         public void Dispose()
         {
-            String[] lines;
+            WriteToFile();
+            TimedProcessor.GetInstance().RemoveTimedTask(WriteToFile);
             lock (locker)
             {
-                lines = allItems.Select(item => item.ToString()).ToArray();
                 allItems.Clear();
+                this.directory = null;
             }
-            File.WriteAllLines(GetFilePath(), lines);
-            this.directory = null;
+        }
+
+        private void WriteToFile()
+        {
+            lock (locker)
+            {
+                String[] lines = allItems.Select(item => item.ToString()).ToArray();
+                File.WriteAllLines(GetFilePath(), lines);
+            }
         }
     }
 }
