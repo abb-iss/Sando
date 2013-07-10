@@ -24,6 +24,7 @@ namespace Sando.Core.Tools
             
 
             public event NewWordsAdded addWordsEvent;
+            public event NewWordsAdded rawWordsEvent;
 
             public FileDictionary()
             {
@@ -135,6 +136,7 @@ namespace Sando.Core.Tools
                 }
 
                 addWordsEvent(addedWords);
+                rawWordsEvent(originalWordsToAdd);
             }
 
             private IEnumerable<String> SelectingWordsAddToDictionary(IEnumerable<String> words)

@@ -22,7 +22,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                          Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" 
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" 
                                     Value="True">
@@ -42,7 +45,7 @@
         <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
         <converters:NullOrEmptyToVisibility x:Key="NullOrEmptyToVisibility"/>
         <converters:HighlightSearchKey x:Key="HighlightSearchKey"/>
-
+        
         <ObjectDataProvider x:Key="ProgramElementType" MethodName="GetValues" ObjectType="{x:Type ExContract:ProgramElementType}">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="ExContract:ProgramElementType"/>
@@ -125,15 +128,30 @@
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- info string -->
-        <TextBlock Margin="4,0,0,0" Foreground="#1F1F1F" FontSize="11" 
+        <TextBlock Margin="0,0,0,0" Foreground="#1F1F1F" FontSize="11" 
                 Name="RecommendedQueryTextBlock"
                 FontStyle="Italic" Background="{Binding Path=Background, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
                 Grid.Row="3" Width="Auto" HorizontalAlignment="Stretch"  
                 Grid.Column="0" Height="15" Grid.ColumnSpan="2"
                 KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Bottom"></TextBlock>
-        
-        <!-- details -->
+
+
+        <Button Name="TagCloudButton"  Grid.Row="3" Grid.Column ="1" Margin="0,0,0,0" 
+                FontFamily="ExtraBold" IsEnabled="{Binding ElementName=TagCloudPopUpWindow, 
+                Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                Click="TagCloudPopUp" FontWeight="ExtraBold" Height="17" VerticalAlignment="Bottom">TagCloud
+        </Button>
+
+        <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="600" IsEnabled="False" 
+               Grid.Row="3" Grid.Column="2">
+            <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="False" Background="Azure" HorizontalAlignment="Stretch" 
+                       TextWrapping="Wrap">
+            </TextBlock>
+        </Popup>
+           
+            <!-- details -->
         <Expander Grid.Row="4" Grid.Column="0" Name="LayoutRoot"
             >
             <Expander.HeaderTemplate>

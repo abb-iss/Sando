@@ -14,6 +14,7 @@ namespace Sando.Core.Tools
         int GetCoOccurrenceCount(String word1, String word2);
         void Initialize(String directory);
         Dictionary<String, int> GetCoOccurredWordsAndCount(String word);
+        Dictionary<string, int> GetAllWordsAndCount();
     }
 
     public class InternalWordCoOccurrenceMatrix : IDisposable, IWordCoOccurrenceMatrix
@@ -262,6 +263,15 @@ namespace Sando.Core.Tools
                 matrix.Clear();
                 TimedProcessor.GetInstance().RemoveTimedTask(saveAction);
                 directory = null;
+            }
+        }
+
+        public Dictionary<string, int> GetAllWordsAndCount()
+        {
+            lock (locker)
+            {
+                return matrix.Where(entry => entry.Column.Equals(entry.Row)).
+                    ToDictionary(entry => entry.Row, entry => entry.Count);
             }
         }
     }

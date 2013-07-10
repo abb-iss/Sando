@@ -81,5 +81,34 @@ namespace Sando.UI.View
             var history = ServiceLocator.Resolve<SearchHistory>();
             history.IssuedSearchString(query);
         }
+
+        private void TagCloudPopUp(object sender, RoutedEventArgs e)
+        {
+            CreateTagCloud();
+            if (!TagCloudPopUpWindow.IsOpen)
+            {
+                TagCloudPopUpWindow.IsOpen = true;
+            }
+        }
+
+        private void CreateTagCloud()
+        {
+            var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+            var builder = new TagCloudBuilder(dictionary);
+            var runs = builder.Build().Select(CreateRunByShapedWord);
+            if (!TagCloudTextBlock.Inlines.Any()){
+                foreach (var run in runs)
+                {
+                    TagCloudTextBlock.Inlines.Add(run);
+                    TagCloudTextBlock.Inlines.Add(" ");
+                }
+            }
+        }
+
+        private Run CreateRunByShapedWord(IShapedWord shapedWord)
+        {
+            var run = new Run(shapedWord.Word) {FontSize = shapedWord.FontSize};
+            return run;
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace Sando.Core.Tools
         {
             this.dictionary = new FileDictionary();
             this.matrix = new InternalWordCoOccurrenceMatrix();
-            this.dictionary.addWordsEvent += matrix.HandleCoOcurrentWordsAsync;
+            this.dictionary.rawWordsEvent += matrix.HandleCoOcurrentWordsAsync;
         }
 
         public void Initialize(String directory)
@@ -50,7 +50,12 @@ namespace Sando.Core.Tools
             words = words.ToList();
             dictionary.AddWords(words, DictionaryOption.IncludingStemming);
         }
-       
+
+
+        public Dictionary<String, int> GetAllWordsAndCount()
+        {
+            return matrix.GetAllWordsAndCount();
+        }
 
       
         public void UpdateProgramElement(ReadOnlyCollection<ProgramElement> elements)

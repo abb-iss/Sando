@@ -66,5 +66,15 @@ namespace Sando.Core.UnitTests.Tools
             AssertWordPairNonExist("confidence", "configuration");
             AssertWordPairNonExist("configuration", "nomad");   
         }
+
+        [Test]
+        public void AssertCanGetWordsAndCount()
+        {
+            var dic = matrix.GetAllWordsAndCount();
+            Assert.IsNotNull(dic);
+            Assert.IsTrue(dic.Any());
+            var builder = new TagCloudBuilder(matrix);
+            var tags = builder.Build();
+        }
     }
 }
