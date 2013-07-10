@@ -64,7 +64,8 @@ namespace Sando.Core.Tools
             internal InternalSearchHistoryItem(string text)
             {
                 var timepart = (text.Split().Last());
-                this.SearchString = text.Substring(0, text.Count() - timepart.Count() - 1);
+                this.SearchString = text.Substring(0, text.Count() - 
+                    timepart.Count() - 1);
                 this.TimeStamp = long.Parse(timepart);
             }
 
@@ -90,7 +91,7 @@ namespace Sando.Core.Tools
                 var item = new InternalSearchHistoryItem(query, time); 
                 allItems.Remove(item);
                 allItems.Add(item);
-                if (allItems.Count > MAXIMUM_COUNT)
+                if(allItems.Count > MAXIMUM_COUNT)
                 {
                     allItems.RemoveAt(0);
                 }
@@ -101,8 +102,8 @@ namespace Sando.Core.Tools
         {
             lock (locker)
             {
-                return allItems.Where(selector.Invoke).Cast<ISearchHistoryItem>().OrderByDescending
-                    (item => item.TimeStamp).ToArray();
+                return allItems.Where(selector.Invoke).Cast<ISearchHistoryItem>().
+                    OrderByDescending(item => item.TimeStamp).ToArray();
             }
         }
 

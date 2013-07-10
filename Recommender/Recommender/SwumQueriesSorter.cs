@@ -234,7 +234,7 @@ namespace Sando.Recommender
 
         public string[] SelectSortSwumRecommendations(string originalQuery, string[] queries)
         {
-            var filters = new AllFilters();
+            var filters = new AllFilters(originalQuery);
             var list = GetSearchHistoryItemStartingWith(originalQuery);
             var state = GetQueryInputState(originalQuery);
             list.AddRange(state.SortQueries(queries));
@@ -266,12 +266,20 @@ namespace Sando.Recommender
 
         private class AllFilters : IRecommendedQueryFilter
         {
+            private readonly string originalQuery;
+
+            public AllFilters(String originalQuery)
+            {
+                this.originalQuery = originalQuery;
+            }
+
             public string[] FilterBadQueries(string[] queries)
             {
                 var filters = new IRecommendedQueryFilter[]
                 {
                     new DuplicateQueriesFilter(),
-                    new ContainingNonLocalWordsQueriesFilter()
+                    new ContainingNonLocalWordsQueriesFilter(),
+                    new SameWithOriginalAfterStemmingFilter(originalQuery), 
                 };
                 return filters.Aggregate(queries, (current, filter) => 
                     filter.FilterBadQueries(current));
@@ -299,6 +307,22 @@ namespace Sando.Recommender
                 {
                     return 0;
                 }
+            }
+        }
+
+        private class SameWithOriginalAfterStemmingFilter : IRecommendedQueryFilter
+        {
+            private readonly string originalQuery;
+
+            public SameWithOriginalAfterStemmingFilter(String originalQuery)
+            {
+                this.originalQuery = originalQuery;
+            }
+
+            public string[] FilterBadQueries(string[] queries)
+            {
+                return queries.Where( q => !q.GetStemmedQuery().ToLowerAndTrim().
+                    Equals(this.originalQuery.ToLowerAndTrim())).ToArray();
             }
         }
 

@@ -107,5 +107,10 @@ namespace Sando.Core.Tools
         {
             return word.Trim().StartsWith("\"") && word.EndsWith("\"");
         }
+
+        public static String ToLowerAndTrim(this string text)
+        {
+            return text.ToLower().Trim();
+        }
     }
 }

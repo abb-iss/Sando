@@ -16,7 +16,7 @@ namespace Sando.UI.View
     {
         public void UpdateRecommendedQueries(IQueryable<String> queries)
         {
-            queries = ControlRecommendedQueriesCount(queries);
+            queries = SortRecommendedQueriesInUI(ControlRecommendedQueriesCount(queries));
             if (Thread.CurrentThread == Dispatcher.Thread)
             {
                 InternalUpdateRecommendedQueries(queries);
@@ -28,11 +28,17 @@ namespace Sando.UI.View
             }
         }
 
-        private static IQueryable<string> ControlRecommendedQueriesCount(IEnumerable<string> queries)
+        private static IEnumerable<string> ControlRecommendedQueriesCount(IEnumerable<string> queries)
         {
             return queries.TrimIfOverlyLong(QuerySuggestionConfigurations.
                 MAXIMUM_RECOMMENDED_QUERIES_IN_USER_INTERFACE).AsQueryable();
         }
+
+        private IQueryable<string> SortRecommendedQueriesInUI(IEnumerable<string> queries)
+        {
+            return queries.OrderBy(q => q.Split().Count()).AsQueryable();
+        }
+
 
         private void InternalUpdateRecommendedQueries(IEnumerable<string> quries)
         {
