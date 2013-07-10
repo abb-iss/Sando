@@ -11,7 +11,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Sando.UI.Service {
+namespace Sando.ExtensionContracts.ServiceContracts
+{
     /// <summary>
     /// This is the interface implemented by the local service.
     /// Notice that we have to define this interface as COM visible so that 

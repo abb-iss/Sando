@@ -13,7 +13,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
-namespace Sando.UI.Service {
+namespace Sando.ExtensionContracts.ServiceContracts
+{
     /// <summary>
     /// This is the interface that will be implemented by the global service exposed
     /// by the package defined in Sando.Service.

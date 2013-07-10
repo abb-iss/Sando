@@ -21,6 +21,7 @@ using Sando.SearchEngine;
 using System.Collections.Generic;
 using Sando.UI.View;
 using System.Threading;
+using Sando.ExtensionContracts.ServiceContracts;
 
 
 namespace Sando.UI.Service {

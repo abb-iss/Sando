@@ -10,6 +10,7 @@ using Microsoft.VSSDK.Tools.VsIdeTesting;
 using System.Threading;
 using Microsoft.VisualStudio.ComponentModelHost;
 using System.IO;
+using Sando.ExtensionContracts.ServiceContracts;
 
 namespace Sando.IntegrationTests
 {
