@@ -44,7 +44,7 @@ namespace Sando.UI.View
         {
             quries = quries.ToList();
             RecommendedQueryTextBlock.Inlines.Clear();
-            RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Show results for: " : "");
+            RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Search instead for: " : "");
             foreach (string qury in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(qury), qury);

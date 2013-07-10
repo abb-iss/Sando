@@ -41,7 +41,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             var appended = false;
             var sb = new StringBuilder();
-            sb.Append("Added search terms:");
+            sb.Append("Showing results for:");
             foreach (var term in query.ReformedWords.Where(term => !originalTerms.Contains(term.NewTerm)))
             {
                 appended = true;
