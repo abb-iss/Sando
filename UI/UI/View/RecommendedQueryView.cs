@@ -94,7 +94,7 @@ namespace Sando.UI.View
 
         private void CreateTagCloud()
         {
-            if (!TagCloudTextBlock.Inlines.Any()){
+            if (TagCloudTextBlock.Inlines.Count < 5){
                 var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
                 var builder = new TagCloudBuilder(dictionary);
                 var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
@@ -110,11 +110,11 @@ namespace Sando.UI.View
         {
             var link = new SandoQueryHyperLink(new Run(shapedWord.Word), 
                 shapedWord.Word)
-                           {
-                               FontSize = shapedWord.FontSize,
-                               Foreground = Brushes.Navy,
-                               IsEnabled = true,
-                           };
+            {
+                FontSize = shapedWord.FontSize,
+                Foreground = Brushes.Navy,
+                IsEnabled = true,
+            };
             link.Click += HyperlinkOnClick;
             link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;
