@@ -76,7 +76,9 @@ namespace Sando.Core.UnitTests.Tools
             Assert.IsTrue(dic.Any());
             var builder = new TagCloudBuilder(matrix);
             var tags = builder.Build();
-            var s = SpecialWords.MostCommonVerbs().Aggregate((w1, w2) => w1 + " " + w2);
+            var s = SpecialWords.StopWords().Aggregate((w1, w2) => w1.Trim() + " " + w2.Trim());
+            // File.WriteAllLines(@"C:\downloads\ss.txt", new string[]{s});
+
         }
     }
 }
