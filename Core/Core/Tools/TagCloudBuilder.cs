@@ -15,7 +15,7 @@ namespace Sando.Core.Tools
     {
         private readonly IWordCoOccurrenceMatrix matrix;
         private const int MAX_WORD_COUNT = 200;
-        private readonly int[] FONT_POOL = {10, 15, 20, 25, 30};
+        private readonly int[] FONT_POOL = {15, 20, 25, 30, 35};
 
         private class WordWithShape : IShapedWord
         {

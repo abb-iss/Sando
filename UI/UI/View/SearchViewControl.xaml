@@ -144,7 +144,7 @@
                 Click="TagCloudPopUp" FontWeight="ExtraBold" Height="17" VerticalAlignment="Bottom">TagCloud
         </Button>
 
-        <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="600" IsEnabled="False" 
+        <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="False" 
                Grid.Row="3" Grid.Column="2">
             <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="False" Background="Azure" HorizontalAlignment="Stretch" 
                        TextWrapping="Wrap">

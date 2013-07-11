@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
@@ -107,7 +108,9 @@ namespace Sando.UI.View
 
         private Run CreateRunByShapedWord(IShapedWord shapedWord)
         {
-            var run = new Run(shapedWord.Word) {FontSize = shapedWord.FontSize};
+            var run = new Run(shapedWord.Word) {
+                FontSize = shapedWord.FontSize, 
+                Foreground = Brushes.Navy};
             return run;
         }
     }
