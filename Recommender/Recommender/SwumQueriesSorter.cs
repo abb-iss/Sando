@@ -63,7 +63,7 @@ namespace Sando.Recommender
             protected String[] SelectQueriesByPrefixTerms(IEnumerable<string> queries, IEnumerable<string> startTerms)
             {
                 var prefix = startTerms.Aggregate((s1, s2) => s1 + s2);
-                return (from query in queries let removeSpace = query.Replace(" ", "") 
+                return (from query in queries let removeSpace = query.Replace(" ", String.Empty).Replace("_", String.Empty)
                     where removeSpace.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) 
                         select query).ToArray();
             }
