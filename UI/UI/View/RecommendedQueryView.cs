@@ -94,24 +94,30 @@ namespace Sando.UI.View
 
         private void CreateTagCloud()
         {
-            var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-            var builder = new TagCloudBuilder(dictionary);
-            var runs = builder.Build().Select(CreateRunByShapedWord);
             if (!TagCloudTextBlock.Inlines.Any()){
-                foreach (var run in runs)
+                var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+                var builder = new TagCloudBuilder(dictionary);
+                var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
+                foreach (var link in hyperlinks)
                 {
-                    TagCloudTextBlock.Inlines.Add(run);
+                    TagCloudTextBlock.Inlines.Add(link);
                     TagCloudTextBlock.Inlines.Add(" ");
                 }
             }
         }
 
-        private Run CreateRunByShapedWord(IShapedWord shapedWord)
+        private Hyperlink CreateHyperLinkByShapedWord(IShapedWord shapedWord)
         {
-            var run = new Run(shapedWord.Word) {
-                FontSize = shapedWord.FontSize, 
-                Foreground = Brushes.Navy};
-            return run;
+            var link = new SandoQueryHyperLink(new Run(shapedWord.Word), 
+                shapedWord.Word)
+                           {
+                               FontSize = shapedWord.FontSize,
+                               Foreground = Brushes.Navy,
+                               IsEnabled = true,
+                           };
+            link.Click += HyperlinkOnClick;
+            link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
+            return link;
         }
     }
 }
