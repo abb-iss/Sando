@@ -128,7 +128,7 @@
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- info string -->
-        <TextBlock Margin="0,0,0,0" Foreground="#1F1F1F" FontSize="11" 
+        <TextBlock Margin="4,0,0,0" Foreground="#1F1F1F" FontSize="11" 
                 Name="RecommendedQueryTextBlock"
                 FontStyle="Italic" Background="{Binding Path=Background, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
