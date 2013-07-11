@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -75,6 +76,7 @@ namespace Sando.Core.UnitTests.Tools
             Assert.IsTrue(dic.Any());
             var builder = new TagCloudBuilder(matrix);
             var tags = builder.Build();
+            var s = SpecialWords.MostCommonVerbs().Aggregate((w1, w2) => w1 + " " + w2);
         }
     }
 }
