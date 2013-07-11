@@ -77,7 +77,7 @@ namespace Sando.Core.UnitTests.Tools
             var builder = new TagCloudBuilder(matrix);
             var tags = builder.Build();
             var s = SpecialWords.StopWords().Aggregate((w1, w2) => w1.Trim() + " " + w2.Trim());
-            // File.WriteAllLines(@"C:\downloads\ss.txt", new string[]{s});
+            File.WriteAllLines(@"C:\downloads\ss.txt", new string[]{s});
 
         }
     }
