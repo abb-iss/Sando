@@ -38,12 +38,28 @@ namespace Sando.Core.Tools
         
         public IShapedWord[] Build()
         {
-            var wordsAndCount = matrix.GetAllWordsAndCount().Where(p => !SpecialWords.
-                NonInformativeWords().Contains(p.Key));
-            var list = wordsAndCount.OrderByDescending(p => p.Value).TrimIfOverlyLong
-                (MAX_WORD_COUNT).Select(p => new WordWithShape(p.Key, p.Value)).ToArray();
+            var list = CollectWordsFromPool().Select(p => new 
+                WordWithShape(p.Key, p.Value)).ToArray();
             SetWordFont(list);
             return list.Cast<IShapedWord>().OrderBy(w => w.Word).ToArray();
+        }
+
+        private Dictionary<String, int> CollectWordsFromPool()
+        {
+            var trivialWords = SpecialWords.NonInformativeWords();
+            var wordsAndCounts = matrix.GetAllWordsAndCount().OrderByDescending(p => p.Value).
+                TrimIfOverlyLong(MAX_WORD_COUNT * 2).ToList();
+            wordsAndCounts = wordsAndCounts.Where(p => !trivialWords.Contains(p.Key)).ToList();
+           
+            for (int i = wordsAndCounts.Count() - 1; i >= 0; i--)
+            {
+                var pair = wordsAndCounts.ElementAt(i);
+                var beforePairs = wordsAndCounts.GetRange(0, i);
+                if (trivialWords.Contains(pair.Key.GetStemmedQuery()) || 
+                    beforePairs.Any(bp => bp.Key.IsStemSameTo(pair.Key)))
+                        wordsAndCounts.RemoveAt(i);        
+            }
+            return wordsAndCounts.TrimIfOverlyLong(MAX_WORD_COUNT).ToDictionary(p => p.Key, p=> p.Value);
         }
 
         private int[] DivideToRanges(int totalLength, int area)

@@ -91,10 +91,8 @@ namespace Sando.Core.Tools
                 var item = new InternalSearchHistoryItem(query, time); 
                 allItems.Remove(item);
                 allItems.Add(item);
-                if(allItems.Count > MAXIMUM_COUNT)
-                {
+                if(allItems.Count > MAXIMUM_COUNT) 
                     allItems.RemoveAt(0);
-                }
             }
         }
 

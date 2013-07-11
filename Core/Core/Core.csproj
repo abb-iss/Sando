@@ -170,6 +170,7 @@
     <Compile Include="Tools\SeSpecificThesaurus.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tools\SpecialWords.cs" />
     <Compile Include="Tools\TagCloudBuilder.cs" />
     <Compile Include="Tools\TimedProcessor.cs" />
     <Compile Include="Tools\ToolHelpers.cs">

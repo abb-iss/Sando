@@ -112,5 +112,10 @@ namespace Sando.Core.Tools
         {
             return text.ToLower().Trim();
         }
+
+        public static bool IsStemSameTo(this string word1, string word2)
+        {
+            return word1.GetStemmedQuery().Equals(word2.GetStemmedQuery());
+        }
     }
 }
