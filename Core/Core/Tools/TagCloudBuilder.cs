@@ -49,7 +49,9 @@ namespace Sando.Core.Tools
             var trivialWords = SpecialWords.NonInformativeWords();
             var wordsAndCounts = matrix.GetAllWordsAndCount().OrderByDescending(p => p.Value).
                 TrimIfOverlyLong(MAX_WORD_COUNT * 2).ToList();
-            wordsAndCounts = wordsAndCounts.Where(p => !trivialWords.Contains(p.Key)).ToList();
+            wordsAndCounts = wordsAndCounts.Where(p => !trivialWords.Contains(p.Key)).Select(
+                pair => new KeyValuePair<String, int>(TryGetExpandedWord(pair.Key), pair.Value)).
+                    ToList();
            
             for (int i = wordsAndCounts.Count() - 1; i >= 0; i--)
             {
@@ -60,6 +62,13 @@ namespace Sando.Core.Tools
                         wordsAndCounts.RemoveAt(i);        
             }
             return wordsAndCounts.TrimIfOverlyLong(MAX_WORD_COUNT).ToDictionary(p => p.Key, p=> p.Value);
+        }
+
+        private string TryGetExpandedWord(string word)
+        {
+            string result;
+            var dic = SpecialWords.HyperCommonAcronyms();
+            return dic.TryGetValue(word, out result) ? result : word;
         }
 
         private int[] DivideToRanges(int totalLength, int area)

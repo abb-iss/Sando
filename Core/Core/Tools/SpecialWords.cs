@@ -73,5 +73,36 @@ namespace Sando.Core.Tools
             wonder burn cook drop give know notice realize send suppose work buy copy eat go last obtain receive separate survive worry call correct enable
             grow laugh occur recognize serve take would can cost encourage handle lay offer record set talk write".Split();
         }
+
+
+        public static Dictionary<string, string> HyperCommonAcronyms()
+        {
+            var map = new Dictionary<String, String>
+            {
+                {"int", "integer"},
+                {"impl", "implement"},
+                {"obj", "object"},
+                {"pos", "position"},
+                {"init", "initial"},
+                {"len", "length"},
+                {"attr", "attribute"},
+                {"num", "number"},
+                {"env", "environment"},
+                {"val", "value"},
+                {"str", "string"},
+                {"doc", "document"},
+                {"buf", "buffer"},
+                {"ctx", "context"},
+                {"msg", "message"},
+                {"var", "variable"},
+                {"param", "parameter"},
+                {"decl", "declare"},
+                {"arg", "argument"},
+                {"rect", "rectangle"},
+                {"expr", "express"},
+                {"dir", "directory"}
+            };
+            return map;
+        }
     }
 }
