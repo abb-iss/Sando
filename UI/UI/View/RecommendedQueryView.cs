@@ -112,7 +112,7 @@ namespace Sando.UI.View
                 shapedWord.Word)
             {
                 FontSize = shapedWord.FontSize,
-                Foreground = Brushes.Navy,
+                Foreground = shapedWord.Color,
                 IsEnabled = true,
             };
             link.Click += HyperlinkOnClick;

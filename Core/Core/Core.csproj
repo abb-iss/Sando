@@ -101,6 +101,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -171,7 +172,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tools\SpecialWords.cs" />
-    <Compile Include="Tools\TagCloudBuilder.cs" />
     <Compile Include="Tools\TimedProcessor.cs" />
     <Compile Include="Tools\ToolHelpers.cs">
       <SubType>Code</SubType>

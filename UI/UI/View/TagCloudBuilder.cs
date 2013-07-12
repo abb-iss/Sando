@@ -1,33 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Windows.Media;
+using Sando.Core.Tools;
 
-namespace Sando.Core.Tools
+namespace Sando.UI.View
 {
     public interface IShapedWord
     {
         String Word { get; }
         int FontSize { get; }
+        Brush Color { get; }
     }
 
     public class TagCloudBuilder
     {
         private readonly IWordCoOccurrenceMatrix matrix;
         private const int MAX_WORD_COUNT = 200;
+
+        // The count of font and color should be same.
         private readonly int[] FONT_POOL = {15, 20, 25, 30, 35};
+        private readonly Brush[] colorPool = { Brushes.LightBlue, Brushes.LightSkyBlue, 
+            Brushes.Blue, Brushes.Navy, Brushes.MidnightBlue};
 
         private class WordWithShape : IShapedWord
         {
             public string Word { set; get; }
             public int Count { set; get; }
             public int FontSize { set; get; }
+            public Brush Color { get; set; }
 
-            public WordWithShape(String Word, int Count, int FontSize = 0)
+            public WordWithShape(String Word, int Count, Brush Color=null, int FontSize = 0)
             {
                 this.Word = Word;
                 this.Count = Count;
                 this.FontSize = FontSize;
+                this.Color = Color;
             }
         }
 
@@ -40,7 +48,7 @@ namespace Sando.Core.Tools
         {
             var list = CollectWordsFromPool().Select(p => new 
                 WordWithShape(p.Key, p.Value)).ToArray();
-            SetWordFont(list);
+            SetWordShape(list);
             return list.Cast<IShapedWord>().OrderBy(w => w.Word).ToArray();
         }
 
@@ -85,24 +93,33 @@ namespace Sando.Core.Tools
         }
 
 
-        private void SetWordFont(WordWithShape[] list)
+        private void SetWordShape(WordWithShape[] list)
         {
             list = list.OrderBy(w => w.Count).ToArray();
             var starts = DivideToRanges(list.Count(), FONT_POOL.Count());
-            var map = new Dictionary<Predicate<int>, int>();
+            var fontMap = new Dictionary<Predicate<int>, int>();
+            var colorMap = new Dictionary<Predicate<int>, Brush>();
 
             for (int i = 0; i < starts.Count(); i++)
             {
                 var start = starts.ElementAt(i);
-                var end = i == starts.Count() - 1 ? list.Count() - 1 : starts.ElementAt(i + 1) - 1;
-                map.Add(j => j >= start && j <= end, FONT_POOL.ElementAt(i));
+                var end = i == starts.Count() - 1 ? list.Count() - 1 : 
+                    starts.ElementAt(i + 1) - 1;
+                fontMap.Add(j => j >= start && j <= end, FONT_POOL.ElementAt(i));
+                colorMap.Add(j => j >= start && j <= end, colorPool.ElementAt(i));
             }
             for (int i = 0; i < list.Count(); i++)
             {
-                var key = map.Keys.First(k => k.Invoke(i));
-                var value = map[key];
-                list.ElementAt(i).FontSize = value;
+                var fontKey = fontMap.Keys.First(k => k.Invoke(i));
+                var font = fontMap[fontKey];
+                list.ElementAt(i).FontSize = font;
+
+                var colorKey = colorMap.Keys.First(k => k.Invoke(i));
+                var color = colorMap[colorKey];
+                list.ElementAt(i).Color = color;
             }
         }
+
+
     }
 }
