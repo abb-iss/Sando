@@ -117,5 +117,12 @@ namespace Sando.Core.Tools
         {
             return word1.GetStemmedQuery().Equals(word2.GetStemmedQuery());
         }
+
+        public static List<T> AddImmutably<T>(this List<T> list, T element)
+        {
+            var newList = list.ToList();
+            newList.Add(element);
+            return newList;
+        }
     }
 }

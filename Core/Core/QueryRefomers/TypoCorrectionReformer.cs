@@ -9,8 +9,6 @@ namespace Sando.Core.QueryRefomers
 {
     internal class TypoCorrectionReformer : AbstractWordReformer
     {
-        
-        
         internal TypoCorrectionReformer(DictionaryBasedSplitter localDictionary) 
             : base(localDictionary)
         {

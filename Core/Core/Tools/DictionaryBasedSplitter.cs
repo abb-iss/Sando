@@ -57,7 +57,12 @@ namespace Sando.Core.Tools
             return matrix.GetAllWordsAndCount();
         }
 
-      
+        public IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate)
+        {
+            return matrix.GetEntries(predicate);
+        }
+
+
         public void UpdateProgramElement(ReadOnlyCollection<ProgramElement> elements)
         {
             foreach (ProgramElement element in elements)

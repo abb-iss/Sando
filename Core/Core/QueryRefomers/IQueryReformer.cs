@@ -66,6 +66,7 @@ namespace Sando.Core.QueryRefomers
         SE_SYNONYM,
         GENERAL_SYNONYM,
         COOCCUR,
+        ACRONYM_EXPAND
     }
 
     public interface IReformedQuery : IEquatable<IReformedQuery>

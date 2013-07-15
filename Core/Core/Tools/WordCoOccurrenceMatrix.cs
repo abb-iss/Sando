@@ -9,17 +9,25 @@ using Sando.Core.QueryRefomers;
 
 namespace Sando.Core.Tools
 {
+    public interface IMatrixEntry
+    {
+        string Row { get; }
+        string Column { get; }
+        int Count { get; }
+    }
+
     public interface IWordCoOccurrenceMatrix
     {
         int GetCoOccurrenceCount(String word1, String word2);
         void Initialize(String directory);
         Dictionary<String, int> GetCoOccurredWordsAndCount(String word);
         Dictionary<string, int> GetAllWordsAndCount();
+        IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate);
     }
 
     public class InternalWordCoOccurrenceMatrix : IDisposable, IWordCoOccurrenceMatrix
     {
-        private class MatrixEntry : IComparable<MatrixEntry>, IEquatable<MatrixEntry>
+        private class MatrixEntry : IComparable<MatrixEntry>, IEquatable<MatrixEntry>, IMatrixEntry
         {
             public String Row { get; private set; }
             public String Column { get; private set; }
@@ -287,6 +295,14 @@ namespace Sando.Core.Tools
             {
                 return matrix.Where(entry => entry.Column.Equals(entry.Row)).
                     ToDictionary(entry => entry.Row, entry => entry.Count);
+            }
+        }
+
+        public IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate)
+        {
+            lock (locker)
+            {
+                return matrix.Where(predicate.Invoke);
             }
         }
     }

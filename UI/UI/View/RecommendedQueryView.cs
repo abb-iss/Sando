@@ -50,7 +50,7 @@ namespace Sando.UI.View
             foreach (string query in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(query), query);
-                hyperlink.Click += HyperlinkOnClick;
+                hyperlink.Click += RecommendedQueryOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
             }
@@ -67,16 +67,35 @@ namespace Sando.UI.View
             }
         }
 
-        private void HyperlinkOnClick(object sender, RoutedEventArgs routedEventArgs)
+        private void RecommendedQueryOnClick(object sender, RoutedEventArgs routedEventArgs)
+        {
+            if (sender as SandoQueryHyperLink != null)
+            {
+                StartSearchAfterClick(sender, routedEventArgs);
+            }
+        }
+
+        private void TagCloudTagOnClick(object sender, RoutedEventArgs routedEventArgs)
+        {
+            if (sender as SandoQueryHyperLink != null)
+            {
+                var reformedQuery = (sender as SandoQueryHyperLink).Query;
+                StartSearchAfterClick(sender, routedEventArgs);
+                CreateTagCloud(reformedQuery);
+            }
+        }
+
+
+        private void StartSearchAfterClick(object sender, RoutedEventArgs routedEventArgs)
         {
             if (sender as SandoQueryHyperLink != null)
             {
                 var reformedQuery = (sender as SandoQueryHyperLink).Query;
                 searchBox.Text = reformedQuery;
-                BeginSearch(reformedQuery);
-                CreateTagCloud(reformedQuery);
+                BeginSearch(reformedQuery); 
             }
         }
+
 
 
         private void AddSearchHistory(String query)
@@ -128,7 +147,7 @@ namespace Sando.UI.View
                 Foreground = shapedWord.Color,
                 IsEnabled = true,
             };
-            link.Click += HyperlinkOnClick;
+            link.Click += TagCloudTagOnClick;
            // link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;
         }
