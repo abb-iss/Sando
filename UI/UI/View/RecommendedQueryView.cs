@@ -47,9 +47,9 @@ namespace Sando.UI.View
             quries = quries.ToList();
             RecommendedQueryTextBlock.Inlines.Clear();
             RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Search instead for: " : "");
-            foreach (string qury in quries)
+            foreach (string query in quries)
             {
-                var hyperlink = new SandoQueryHyperLink(new Run(qury), qury);
+                var hyperlink = new SandoQueryHyperLink(new Run(query), query);
                 hyperlink.Click += HyperlinkOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
@@ -95,7 +95,7 @@ namespace Sando.UI.View
             var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
             var builder = new TagCloudBuilder(dictionary, word);
             var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
-         
+
             if (Thread.CurrentThread == Dispatcher.Thread)
             {
                 UpdateTagCloudWindow(hyperlinks);
@@ -106,6 +106,7 @@ namespace Sando.UI.View
             }
         }
 
+    
         private void UpdateTagCloudWindow(IEnumerable<Hyperlink> hyperlinks)
         {
             TagCloudPopUpWindow.IsOpen = false;

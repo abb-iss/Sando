@@ -20,7 +20,7 @@ namespace Sando.UI.View
 
         // The count of font and color should be same.
         private readonly int[] FONT_POOL = {15, 20, 25, 30, 35};
-        private readonly Brush[] colorPool = { Brushes.LightBlue, Brushes.LightSkyBlue, 
+        private readonly Brush[] colorPool = { Brushes.LightSkyBlue, Brushes.LightSkyBlue, 
             Brushes.Blue, Brushes.Navy, Brushes.MidnightBlue};
 
         private readonly string rootWord;
