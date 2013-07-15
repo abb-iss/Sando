@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -71,8 +72,8 @@ namespace Sando.UI.View
             if (sender as SandoQueryHyperLink != null)
             {
                 var reformedQuery = (sender as SandoQueryHyperLink).Query;
-           //     searchBox.Text = reformedQuery;
-           //     BeginSearch(reformedQuery);
+                searchBox.Text = reformedQuery;
+                BeginSearch(reformedQuery);
                 CreateTagCloud(reformedQuery);
             }
         }

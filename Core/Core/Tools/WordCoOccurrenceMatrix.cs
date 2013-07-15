@@ -87,6 +87,8 @@ namespace Sando.Core.Tools
             {
                 var columns = new Dictionary<String, int>();
                 int start = ~matrix.BinarySearch(CreateEntry(word, ""));
+                if (start < 0 || start >= matrix.Count)
+                    return new Dictionary<string, int>();
                 for (int i = start; i < matrix.Count; i++)
                 {
                     var entry = matrix.ElementAt(i);
