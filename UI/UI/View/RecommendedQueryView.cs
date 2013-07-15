@@ -71,8 +71,9 @@ namespace Sando.UI.View
             if (sender as SandoQueryHyperLink != null)
             {
                 var reformedQuery = (sender as SandoQueryHyperLink).Query;
-                searchBox.Text = reformedQuery;
-                BeginSearch(reformedQuery);
+           //     searchBox.Text = reformedQuery;
+           //     BeginSearch(reformedQuery);
+                CreateTagCloud(reformedQuery);
             }
         }
 
@@ -85,25 +86,35 @@ namespace Sando.UI.View
 
         private void TagCloudPopUp(object sender, RoutedEventArgs e)
         {
-            CreateTagCloud();
-            if (!TagCloudPopUpWindow.IsOpen)
+            CreateTagCloud();       
+        }
+
+        private void CreateTagCloud(String word = null)
+        {
+            var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+            var builder = new TagCloudBuilder(dictionary, word);
+            var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
+         
+            if (Thread.CurrentThread == Dispatcher.Thread)
             {
-                TagCloudPopUpWindow.IsOpen = true;
+                UpdateTagCloudWindow(hyperlinks);
+            }
+            else
+            {
+                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(hyperlinks)));
             }
         }
 
-        private void CreateTagCloud()
+        private void UpdateTagCloudWindow(IEnumerable<Hyperlink> hyperlinks)
         {
-            if (TagCloudTextBlock.Inlines.Count < 5){
-                var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-                var builder = new TagCloudBuilder(dictionary);
-                var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
-                foreach (var link in hyperlinks)
-                {
-                    TagCloudTextBlock.Inlines.Add(link);
-                    TagCloudTextBlock.Inlines.Add(" ");
-                }
+            TagCloudPopUpWindow.IsOpen = false;
+            TagCloudTextBlock.Inlines.Clear();
+            foreach (var link in hyperlinks)
+            {
+                TagCloudTextBlock.Inlines.Add(link);
+                TagCloudTextBlock.Inlines.Add(" ");
             }
+            TagCloudPopUpWindow.IsOpen = true;
         }
 
         private Hyperlink CreateHyperLinkByShapedWord(IShapedWord shapedWord)
@@ -116,7 +127,7 @@ namespace Sando.UI.View
                 IsEnabled = true,
             };
             link.Click += HyperlinkOnClick;
-            link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
+           // link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;
         }
     }

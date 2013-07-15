@@ -23,6 +23,8 @@ namespace Sando.UI.View
         private readonly Brush[] colorPool = { Brushes.LightBlue, Brushes.LightSkyBlue, 
             Brushes.Blue, Brushes.Navy, Brushes.MidnightBlue};
 
+        private readonly string rootWord;
+
         private class WordWithShape : IShapedWord
         {
             public string Word { set; get; }
@@ -39,38 +41,55 @@ namespace Sando.UI.View
             }
         }
 
-        public TagCloudBuilder(IWordCoOccurrenceMatrix matrix)
+        public TagCloudBuilder(IWordCoOccurrenceMatrix matrix, String rootWord = null)
         {
             this.matrix = matrix;
+            this.rootWord = rootWord;
         }
         
         public IShapedWord[] Build()
         {
-            var list = CollectWordsFromPool().Select(p => new 
-                WordWithShape(p.Key, p.Value)).ToArray();
+            var wordsAndCount = rootWord == null ? CollectWordsFromPool() : CollectNeighborWords(rootWord);
+            var list = wordsAndCount.Select(p => new WordWithShape(p.Key, p.Value)).ToArray();
             SetWordShape(list);
             return list.Cast<IShapedWord>().OrderBy(w => w.Word).ToArray();
         }
 
         private Dictionary<String, int> CollectWordsFromPool()
         {
-            var trivialWords = SpecialWords.NonInformativeWords();
             var wordsAndCounts = matrix.GetAllWordsAndCount().OrderByDescending(p => p.Value).
                 TrimIfOverlyLong(MAX_WORD_COUNT * 2).ToList();
+            var trivialWords = SpecialWords.NonInformativeWords();
+            return SelectWordsAndCount(wordsAndCounts, trivialWords);
+        }
+
+        private Dictionary<string, int> SelectWordsAndCount(List<KeyValuePair<string, int>> wordsAndCounts, 
+            string[] trivialWords)
+        {
             wordsAndCounts = wordsAndCounts.Where(p => !trivialWords.Contains(p.Key)).Select(
                 pair => new KeyValuePair<String, int>(TryGetExpandedWord(pair.Key), pair.Value)).
-                    ToList();
-           
+                    OrderByDescending(p => p.Value).ToList();
+
             for (int i = wordsAndCounts.Count() - 1; i >= 0; i--)
             {
                 var pair = wordsAndCounts.ElementAt(i);
                 var beforePairs = wordsAndCounts.GetRange(0, i);
-                if (trivialWords.Contains(pair.Key.GetStemmedQuery()) || 
+                if (trivialWords.Contains(pair.Key.GetStemmedQuery()) ||
                     beforePairs.Any(bp => bp.Key.IsStemSameTo(pair.Key)))
-                        wordsAndCounts.RemoveAt(i);        
+                        wordsAndCounts.RemoveAt(i);
             }
-            return wordsAndCounts.TrimIfOverlyLong(MAX_WORD_COUNT).ToDictionary(p => p.Key, p=> p.Value);
+            return wordsAndCounts.TrimIfOverlyLong(MAX_WORD_COUNT).ToDictionary(p => p.Key, p => p.Value);
         }
+
+        private Dictionary<String, int> CollectNeighborWords(String word)
+        {
+            var trivialWords = SpecialWords.NonInformativeWords();
+            var wordsAndCounts = matrix.GetCoOccurredWordsAndCount(word).
+                OrderByDescending(p => p.Value).TrimIfOverlyLong
+                    (MAX_WORD_COUNT * 2).ToList();
+            return SelectWordsAndCount(wordsAndCounts, trivialWords);
+        }
+
 
         private string TryGetExpandedWord(string word)
         {
@@ -119,7 +138,5 @@ namespace Sando.UI.View
                 list.ElementAt(i).Color = color;
             }
         }
-
-
     }
 }
