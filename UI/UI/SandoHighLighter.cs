@@ -54,7 +54,7 @@ namespace Sando.UI
             //Justify the line number
             //if(!RawinLine[0].Contains('('))
             //    number++;
-            if(number >= StartLineNumber && number < StartLineNumber + LineCount) {
+            if(number >= StartLineNumber && number < (StartLineNumber + LineCount)) {
                 foreach(string keyword in Keywords)
                     if(RawinLine[number - StartLineNumber].IndexOf(keyword, StringComparison.InvariantCultureIgnoreCase) >= 0)
                         return true;
@@ -213,13 +213,19 @@ namespace Sando.UI
             var highLightedSpans = new List<SnapshotSpan>();
             foreach (var entity in entities)
             {
-                var findData = new FindData(".*\n", snapshot);
-                findData.FindOptions = FindOptions.UseRegularExpressions;
-                var allLines = TextSearchService.FindAll(findData);
+                //var findData = new FindData(".*\n", snapshot);
+                //findData.FindOptions = FindOptions.UseRegularExpressions;
+                //var allLines = TextSearchService.FindAll(findData);
 
-                highLightedSpans.AddRange(allLines.Where(l => entity.IsLineInEntity(l.Start.
-                    GetContainingLine().LineNumber + 1)));
+                //highLightedSpans.AddRange(allLines.Where(l => entity.IsLineInEntity(l.Start.
+                //    GetContainingLine().LineNumber + 1)));
 
+                string[] keywords = entity.Keywords;
+                foreach(string keyword in keywords) {
+                    FindData findData = new FindData(keyword, snapshot);
+                    findData.FindOptions = FindOptions.None;
+                    highLightedSpans.AddRange(TextSearchService.FindAll(findData));
+                }
             }
             return new NormalizedSnapshotSpanCollection(highLightedSpans);
         }
