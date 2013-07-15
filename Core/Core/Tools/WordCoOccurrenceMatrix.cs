@@ -86,9 +86,22 @@ namespace Sando.Core.Tools
             lock (locker)
             {
                 var columns = new Dictionary<String, int>();
+                foreach (var entry in matrix)
+                {
+                    if (entry.Column.CompareTo(word) == 0 || entry.Row.CompareTo(word) == 0)
+                    {
+                        var key = entry.Column.CompareTo(word) == 0 ? entry.Row : entry.Column;
+                        columns.Add(key, entry.Count);
+                    }
+                }
+                return columns;
+                /*
                 int start = ~matrix.BinarySearch(CreateEntry(word, ""));
                 if (start < 0 || start >= matrix.Count)
-                    return new Dictionary<string, int>();
+                    return columns;
+
+                for (; !matrix.ElementAt(start).Row.Equals(word); start ++);
+                
                 for (int i = start; i < matrix.Count; i++)
                 {
                     var entry = matrix.ElementAt(i);
@@ -98,7 +111,7 @@ namespace Sando.Core.Tools
                     }
                     columns.Add(entry.Column, entry.Count);
                 }
-                return columns;
+                return columns;*/
             }
         }
 
