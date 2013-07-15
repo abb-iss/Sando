@@ -335,7 +335,7 @@ namespace Sando.UI.View
             }
                 );
 
-            //Donot consider capture the exception for the time being
+            //Donot consider capture the exception for the time being 
             //if(!exceptions.IsEmpty) 
             //    throw new AggregateException(exceptions);
         }
