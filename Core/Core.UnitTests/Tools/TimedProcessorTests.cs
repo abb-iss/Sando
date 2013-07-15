@@ -55,7 +55,6 @@ namespace Sando.Core.UnitTests.Tools
             EnsureFieldCondition(i => i > 50);
             EnsureFieldCondition(i => i < 100);
             processor.RemoveTimedTask(incrementField);
-            Assert.IsFalse(processor.HasTasks());
         }
 
         [Test]
@@ -68,7 +67,6 @@ namespace Sando.Core.UnitTests.Tools
             EnsureFieldCondition(i => i < 100);
             processor.RemoveTimedTask(incrementField);
             processor.RemoveTimedTask(decrementField);
-            Assert.IsFalse(processor.HasTasks());
         }
 
     }
