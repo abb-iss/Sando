@@ -197,7 +197,28 @@ namespace Sando.Core.QueryRefomers
 
         private IEnumerable<IReformedQuery> RemoveDuplication(IEnumerable<IReformedQuery> queries)
         {
-            return queries.RemoveRedundance();
+            queries = queries.ToArray();
+            var queryList = queries.ToList();
+            var stemmedNewQueries = queries.Select(GetStemmedNewQuery).ToList();
+            for (int i = stemmedNewQueries.Count() - 1; i >= 0; i--)
+            {
+                var current = stemmedNewQueries.ElementAt(i);
+                var before = stemmedNewQueries.GetRange(0, i);
+                if(before.Contains(current))
+                    queryList.RemoveAt(i);
+            }
+            return queryList;
+        }
+
+        private string GetStemmedNewQuery(IReformedQuery query)
+        {
+            var sb = new StringBuilder();
+            foreach (var word in query.ReformedWords.Select(w => w.NewTerm))
+            {
+                sb.Append(word.GetStemmedQuery());
+                sb.Append(" ");
+            }
+            return sb.ToString().Trim();
         }
 
         private IEnumerable<InternalReformedQuery> GenerateNewQueriesByAppendingTerms(InternalReformedQuery query, 
