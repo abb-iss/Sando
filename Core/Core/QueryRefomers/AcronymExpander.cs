@@ -6,13 +6,13 @@ using Sando.Core.Tools;
 
 namespace Sando.Core.QueryRefomers
 {
-    internal class AcronymExpander
+    public class AcronymExpander
     {
-        private readonly DictionaryBasedSplitter localDictionary;
+        private readonly IWordCoOccurrenceMatrix localCoOccurMatrix;
 
-        public AcronymExpander(DictionaryBasedSplitter localDictionary)
+        public AcronymExpander(IWordCoOccurrenceMatrix localCoOccurMatrix)
         {
-            this.localDictionary = localDictionary;
+            this.localCoOccurMatrix = localCoOccurMatrix;
         }
 
         private class ExtendedAcronym
@@ -25,12 +25,22 @@ namespace Sando.Core.QueryRefomers
             }
 
             public IEnumerable<ExtendedAcronym> GetCommonCoOccurWords(IWordCoOccurrenceMatrix 
-                matrix, char letter) 
+                matrix, char letter)
             {
-                return Words.Select(matrix.GetCoOccurredWordsAndCount).Aggregate
-                    ((d1, d2) => d1.Keys.Intersect(d2.Keys).ToDictionary(k => k, v => 0)).
-                        Keys.Where(k => k.StartsWith(letter.ToString())).Select(k => 
-                            new ExtendedAcronym(Words.AddImmutably(k)));
+                var results = new List<String>();
+                matrix.GetEntries(entry => IsEntryCorrect(matrix, entry, letter, Words.ToArray(), results));
+                return results.Select(k => new ExtendedAcronym (Words.AddImmutably(k)));
+            }
+
+
+            private bool IsEntryCorrect(IWordCoOccurrenceMatrix matrix, IMatrixEntry entry, char start, string[] words, 
+                List<string> results)
+            {
+                var otherWord = words.Contains(entry.Column) ? entry.Row : entry.Column;
+                if (words.Contains(otherWord) || !otherWord.StartsWith(start.ToString())) 
+                    return false;
+                return words.All(w => matrix.GetCoOccurrenceCount(w, otherWord) > 0) 
+                    && results.AddImmutably(otherWord) != null;
             }
 
             public int ComputeCoOccurrenceCount(IWordCoOccurrenceMatrix matrix)
@@ -62,7 +72,6 @@ namespace Sando.Core.QueryRefomers
                     this.QueryString = this.WordsAfterReform.Aggregate((w1, w2) => w1 + " " + w2);
                     this.EditDistance = this.WordsAfterReform.Sum(s => s.Count() - 1);
                     this.ReformExplanation = "Expanding an acronym.";
-
                 }
 
                 public bool Equals(IReformedQuery other)
@@ -89,16 +98,16 @@ namespace Sando.Core.QueryRefomers
         public IEnumerable<IReformedQuery> GetExpandedQueries(string target)
         {
             if (!IsPreconditionMet(target)) return Enumerable.Empty<IReformedQuery>();
-            var entries = localDictionary.GetEntries(en => IsEntryStartWith(en, target[0], target[1])
+            var entries = localCoOccurMatrix.GetEntries(en => IsEntryStartWith(en, target[0], target[1])
                 && !en.Column.Equals(en.Row)).ToList();
-            var acronyms = CreateInitialAcronym(entries, target[0], target[1]);
+            var acronyms = CreateInitialAcronym(entries, target[0], target[1]).ToArray();
 
             for (int i = 2; i < target.Count(); i++)
             {
-                acronyms = acronyms.SelectMany(a => a.GetCommonCoOccurWords(localDictionary, 
-                    target.ElementAt(i)));
+                acronyms = acronyms.SelectMany(a => a.GetCommonCoOccurWords(localCoOccurMatrix, 
+                    target.ElementAt(i))).ToArray();
             }
-            return acronyms.Select(a => a.ToReformedQuery(localDictionary)).
+            return acronyms.Select(a => a.ToReformedQuery(localCoOccurMatrix)).
                 OrderByDescending(query => query.CoOccurrenceCount).
                     TrimIfOverlyLong(GetMaximumCount());
         }
