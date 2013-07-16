@@ -31,10 +31,13 @@ namespace Sando.Core.UnitTests.Tools
         {
             var queries = expander.GetExpandedQueries("abc");
             Assert.IsNotNull(queries);
+            Assert.IsTrue(queries.Any());
             queries = expander.GetExpandedQueries("bcd");
             Assert.IsNotNull(queries);
+            Assert.IsTrue(queries.Any());
             queries = expander.GetExpandedQueries("def");
             Assert.IsNotNull(queries);
+            Assert.IsTrue(queries.Any());
         }
 
         [Test]
@@ -42,6 +45,19 @@ namespace Sando.Core.UnitTests.Tools
         {
             var queries = expander.GetExpandedQueries("ab");
             Assert.IsTrue(queries.Any());
+            queries = expander.GetExpandedQueries("em");
+            Assert.IsTrue(queries.Any());
+         }
+
+        [Test]
+        public void ExpandMoreLetters()
+        {
+            var queries = expander.GetExpandedQueries("abfdsafdsafdc");
+            Assert.IsNotNull(queries);
+            queries = expander.GetExpandedQueries("bcfdasfdsad");
+            Assert.IsNotNull(queries);
+            queries = expander.GetExpandedQueries("defdasfdsaf");
+            Assert.IsNotNull(queries);
         }
     }
 }
