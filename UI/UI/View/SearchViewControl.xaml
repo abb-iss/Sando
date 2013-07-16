@@ -45,6 +45,7 @@
         <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
         <converters:NullOrEmptyToVisibility x:Key="NullOrEmptyToVisibility"/>
         <converters:HighlightSearchKey x:Key="HighlightSearchKey"/>
+        <converters:SwumTypeToColorConverter x:Key="SwumTypeToColorConverter"/>
         
         <ObjectDataProvider x:Key="ProgramElementType" MethodName="GetValues" ObjectType="{x:Type ExContract:ProgramElementType}">
             <ObjectDataProvider.MethodParameters>
@@ -104,17 +105,25 @@
             <ColumnDefinition Width="*" MinWidth="100"/>
             <ColumnDefinition Width="65" />
         </Grid.ColumnDefinitions>
-
+        
         <!-- Top Part: Query -->
-        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
+        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" 
+                                  Height="25" BorderBrush="DimGray" 
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
-                                  MinimumPrefixLength="0" MaxDropDownHeight="290">
+                                  MinimumPrefixLength="0" MaxDropDownHeight="290"
+                                  ValueMemberBinding="{Binding ISwumRecommendedQuery}">
+          
             <controls:AutoCompleteBox.ToolTip>
                 <StackPanel>                                        
                     <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
                     <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
                 </StackPanel>
             </controls:AutoCompleteBox.ToolTip>
+            <controls:AutoCompleteBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Query}" Foreground="{Binding Type,Converter={StaticResource SwumTypeToColorConverter}}"/>
+                </DataTemplate>
+            </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
