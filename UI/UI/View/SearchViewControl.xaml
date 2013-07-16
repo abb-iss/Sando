@@ -137,12 +137,7 @@
                 KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Bottom"></TextBlock>
 
 
-        <Button Name="TagCloudButton"  Grid.Row="3" Grid.Column ="1" Margin="0,0,0,0" 
-                FontFamily="ExtraBold" IsEnabled="{Binding ElementName=TagCloudPopUpWindow, 
-                Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
-        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
-                Click="TagCloudPopUp" FontWeight="ExtraBold" Height="17" VerticalAlignment="Bottom">TagCloud
-        </Button>
+     
 
         <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="True" 
                Grid.Row="3" Grid.Column="2">
@@ -232,8 +227,15 @@
             </StackPanel>
         </Expander>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
-            
-            <Button Name="HelpButton"  ToolTip="Help" Margin="32,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+
+            <Button Name="TagCloudButton"  Margin="16,0,0,0" 
+                FontFamily="ExtraBold" IsEnabled="{Binding ElementName=TagCloudPopUpWindow, 
+                Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                Click="TagCloudPopUp" FontWeight="ExtraBold" Height="25" VerticalAlignment="Top">[T]
+            </Button>
+
+            <Button Name="HelpButton"  ToolTip="Help" Margin="0,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
         		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
             </Button>
             
