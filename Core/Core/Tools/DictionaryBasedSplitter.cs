@@ -22,7 +22,7 @@ namespace Sando.Core.Tools
     /// This class keeps records of used words in the code under searching. Also, it can greedily 
     /// split a given string by matching words in the dictionary. 
     /// </summary>
-    public partial class DictionaryBasedSplitter : IWordSplitter, IDisposable, IWordCoOccurrenceMatrix
+    public partial class DictionaryBasedSplitter : IWordSplitter, IWordCoOccurrenceMatrix
     {
         private readonly FileDictionary dictionary;
         private readonly InternalWordCoOccurrenceMatrix matrix;
@@ -61,7 +61,6 @@ namespace Sando.Core.Tools
         {
             return matrix.GetEntries(predicate);
         }
-
 
         public void UpdateProgramElement(ReadOnlyCollection<ProgramElement> elements)
         {

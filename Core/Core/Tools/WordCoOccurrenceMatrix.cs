@@ -16,7 +16,7 @@ namespace Sando.Core.Tools
         int Count { get; }
     }
 
-    public interface IWordCoOccurrenceMatrix
+    public interface IWordCoOccurrenceMatrix : IDisposable
     {
         int GetCoOccurrenceCount(String word1, String word2);
         void Initialize(String directory);
@@ -25,42 +25,9 @@ namespace Sando.Core.Tools
         IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate);
     }
 
-    public class InternalWordCoOccurrenceMatrix : IDisposable, IWordCoOccurrenceMatrix
+    public class InternalWordCoOccurrenceMatrix : IWordCoOccurrenceMatrix
     {
-        private class MatrixEntry : IComparable<MatrixEntry>, IEquatable<MatrixEntry>, IMatrixEntry
-        {
-            public String Row { get; private set; }
-            public String Column { get; private set; }
-            public int Count { get; private set; }
-
-            public MatrixEntry(String Row, String Column, int Count)
-            {
-                this.Row = Row;
-                this.Column = Column;
-                this.Count = Count;
-            }
-
-            public int CompareTo(MatrixEntry other)
-            {
-                return (this.Row + this.Column).CompareTo(other.Row + other.Column);
-            }
-
-            public void IncrementCount()
-            {
-                this.Count++;
-            }
-
-            public void ResetCount()
-            {
-                this.Count = 1;
-            }
-
-            public bool Equals(MatrixEntry other)
-            {
-                return CompareTo(other) == 0;
-            }
-        }
-
+       
         private readonly object locker = new object();
         private List<MatrixEntry> matrix = new List<MatrixEntry>();
         private readonly WorkQueueBasedProcess queue = new WorkQueueBasedProcess();
@@ -180,52 +147,7 @@ namespace Sando.Core.Tools
         }
  
 
-        public void HandleCoOcurrentWordsSync(IEnumerable<String> words)
-        {
-            AddMatrixEntriesSync(words);
-        }
-
-        public void HandleCoOcurrentWordsAsync(IEnumerable<String> words)
-        {
-            queue.Enqueue(AddMatrixEntriesSync, words);
-        }
-
-        private IEnumerable<MatrixEntry> GetEntries(IEnumerable<string> words)
-        {
-            var list = LimitWordNumber(FilterOutBadWords(words).
-                                           Distinct().ToList()).ToList();
-            var allEntries = new List<MatrixEntry>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                var word1 = list.ElementAt(i);
-                for (int j = i; j < list.Count; j++)
-                {
-                    var word2 = list.ElementAt(j);
-                    allEntries.Add(CreateEntry(word1, word2));
-                }
-            }
-            return allEntries;
-        }
-
-        private IEnumerable<MatrixEntry> GetBigramEntries(IEnumerable<string> words)
-        {
-            var list = words.ToList();
-            var allEntries = new List<MatrixEntry>();
-            int i;
-            for (i = 0; i + GRAM_NUMBER - 1 < list.Count; i++)
-            {
-                allEntries.AddRange(GetEntries(list.GetRange(i, GRAM_NUMBER)));
-            }
-
-            // Check if having leftovers.
-            if (i + GRAM_NUMBER - 1 != list.Count - 1 && list.Any())
-            {
-                allEntries.AddRange(GetEntries(list.GetRange(i, list.Count - i)));
-            }
-            
-            return allEntries;
-        }
-
+      
 
         private IEnumerable<String> LimitWordNumber(List<string> words)
         {
@@ -296,6 +218,87 @@ namespace Sando.Core.Tools
                 return matrix.Where(entry => entry.Column.Equals(entry.Row)).
                     ToDictionary(entry => entry.Row, entry => entry.Count);
             }
+        }
+
+
+        protected class MatrixEntry : IComparable<MatrixEntry>, IEquatable<MatrixEntry>, IMatrixEntry
+        {
+            public String Row { get; private set; }
+            public String Column { get; private set; }
+            public int Count { get; private set; }
+
+            public MatrixEntry(String Row, String Column, int Count)
+            {
+                this.Row = Row;
+                this.Column = Column;
+                this.Count = Count;
+            }
+
+            public int CompareTo(MatrixEntry other)
+            {
+                return (this.Row + this.Column).CompareTo(other.Row + other.Column);
+            }
+
+            public void IncrementCount()
+            {
+                this.Count++;
+            }
+
+            public void ResetCount()
+            {
+                this.Count = 1;
+            }
+
+            public bool Equals(MatrixEntry other)
+            {
+                return CompareTo(other) == 0;
+            }
+        }
+
+        public void HandleCoOcurrentWordsSync(IEnumerable<String> words)
+        {
+            AddMatrixEntriesSync(words);
+        }
+
+        public void HandleCoOcurrentWordsAsync(IEnumerable<String> words)
+        {
+            queue.Enqueue(AddMatrixEntriesSync, words);
+        }
+
+        private IEnumerable<MatrixEntry> GetEntries(IEnumerable<string> words)
+        {
+            var list = LimitWordNumber(FilterOutBadWords(words).
+                                           Distinct().ToList()).ToList();
+            var allEntries = new List<MatrixEntry>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                var word1 = list.ElementAt(i);
+                for (int j = i; j < list.Count; j++)
+                {
+                    var word2 = list.ElementAt(j);
+                    allEntries.Add(CreateEntry(word1, word2));
+                }
+            }
+            return allEntries;
+        }
+
+        private IEnumerable<MatrixEntry> GetBigramEntries(IEnumerable<string> words)
+        {
+            var list = words.ToList();
+            var allEntries = new List<MatrixEntry>();
+            int i;
+            for (i = 0; i + GRAM_NUMBER - 1 < list.Count; i++)
+            {
+                allEntries.AddRange(GetEntries(list.GetRange(i, GRAM_NUMBER)));
+            }
+
+            // Check if having leftovers.
+            if (i + GRAM_NUMBER - 1 != list.Count - 1 && list.Any())
+            {
+                allEntries.AddRange(GetEntries(list.GetRange(i, list.Count - i)));
+            }
+
+            return allEntries;
         }
 
         public IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate)

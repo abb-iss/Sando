@@ -121,7 +121,9 @@
             </controls:AutoCompleteBox.ToolTip>
             <controls:AutoCompleteBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Query}" Foreground="{Binding Type,Converter={StaticResource SwumTypeToColorConverter}}"/>
+                    <TextBlock Text="{Binding Query}" 
+                        Foreground="{Binding Type, 
+                        Converter={StaticResource SwumTypeToColorConverter}}"/>
                 </DataTemplate>
             </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>

@@ -67,6 +67,7 @@
     <Compile Include="Tools\RandomStringBasedTests.cs" />
     <Compile Include="Tools\SearchHistoryTests.cs" />
     <Compile Include="Tools\SESpecificThesaurusTests.cs" />
+    <Compile Include="Tools\SparseCoOccurrenceMatrixTests.cs" />
     <Compile Include="Tools\SplitterTest.cs" />
     <Compile Include="Tools\TimedProcessorTests.cs" />
     <Compile Include="Tools\ToolHelpersTests.cs" />

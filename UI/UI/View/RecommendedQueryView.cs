@@ -150,6 +150,7 @@ namespace Sando.UI.View
                 IsEnabled = true,
             };
             link.Click += TagCloudTagOnClick;
+            
            // link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;
         }
