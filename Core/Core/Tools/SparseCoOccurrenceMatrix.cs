@@ -101,6 +101,7 @@ namespace Sando.Core.Tools
         private const int MAX_WORD_LENGTH = 3;
         private const int MAX_COOCCURRENCE_WORDS_COUNT = 100;
 
+        private readonly WorkQueueBasedProcess queue = new WorkQueueBasedProcess();
         private const string fileName = "CooccurenceMatrix.txt";
         private string directory;
 
@@ -151,6 +152,13 @@ namespace Sando.Core.Tools
             }
         }
 
+        public void HandleCoOcurrentWordsAsync(IEnumerable<String> words)
+        {
+            queue.Enqueue(n => { 
+                HandleCoOcurrentWordsSync(n);
+                return 0;
+            }, words);
+        }
 
         public Dictionary<string, int> GetCoOccurredWordsAndCount(string word)
         {
@@ -174,7 +182,24 @@ namespace Sando.Core.Tools
 
         public IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate)
         {
-            throw new NotImplementedException();
+            var results = new List<IMatrixEntry>();
+            for (int i = 0; i < JA.Count; i++)
+            {
+                var row = GetRowByAIndex(i);
+                var column = JA.ElementAt(i).Value;
+                var count = A.ElementAt(i).Value;
+
+                var rowWord = allWords.ElementAt(row);
+                var columnWord = allWords.ElementAt(column);
+                results.Add(new MatrixEntry(rowWord, columnWord, count));
+            }
+            return results.Where(predicate.Invoke);
+        }
+
+        private int GetRowByAIndex(int aIndex)
+        {
+            var IAIndex = IA.BinarySearch(new BoxedInt(aIndex));
+            return IAIndex >= 0 ? IAIndex : ~IAIndex - 1;
         }
 
         public void HandleCoOcurrentWordsSync(IEnumerable<string> words)

@@ -65,5 +65,14 @@ namespace Sando.Core.UnitTests.Tools
                 Assert.IsTrue(matrix.GetCoOccurrenceCount(word1, word2) == 0);
             }
         }
+
+        [Test]
+        public void GetAllEntriesFast()
+        {
+            var matrix = new SparseCoOccurrenceMatrix();
+            var words = GenerateRandomWordList(30);
+            matrix.HandleCoOcurrentWordsSync(words);
+            var entries = matrix.GetEntries(n => true);
+        }
     }
 }

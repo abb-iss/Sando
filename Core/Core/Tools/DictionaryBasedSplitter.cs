@@ -25,12 +25,12 @@ namespace Sando.Core.Tools
     public partial class DictionaryBasedSplitter : IWordSplitter, IWordCoOccurrenceMatrix
     {
         private readonly FileDictionary dictionary;
-        private readonly InternalWordCoOccurrenceMatrix matrix;
+        private readonly SparseCoOccurrenceMatrix matrix;
         
         public DictionaryBasedSplitter()
         {
             this.dictionary = new FileDictionary();
-            this.matrix = new InternalWordCoOccurrenceMatrix();
+            this.matrix = new SparseCoOccurrenceMatrix();
             this.dictionary.rawWordsEvent += matrix.HandleCoOcurrentWordsAsync;
         }
 
