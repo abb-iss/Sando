@@ -168,9 +168,27 @@
 
         <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="True" 
                Grid.Row="3" Grid.Column="2">
-            <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="True" Background="Azure" HorizontalAlignment="Stretch" 
-                       TextWrapping="Wrap">
-            </TextBlock>
+            <StackPanel Background="Azure">
+                <DockPanel Background="Azure" Margin="0, 0, 0,0" HorizontalAlignment="Center">
+                    <Button Name="previousTagButton"  Margin="0,0,0,0" Width="20" HorizontalAlignment="Right"
+                        FontFamily="ExtraBold" IsEnabled="True"
+        		        KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                        Click="ChangeSelectedTag" FontWeight="ExtraBold" Height="40" VerticalAlignment="Top" 
+                        ToolTip="Previous Word" Content="&lt;" FontSize="30">
+                    </Button>
+                    <Label Name="tagCloudTitle" Content="YYYpp" HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="20" Height="40">
+                    </Label>
+                    <Button Name="nextTagButton"  Margin="0,0,0,0" Width="20" HorizontalAlignment="Left"
+                        FontFamily="ExtraBold" IsEnabled="True" FontSize="30" 
+        		        KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                        Click="ChangeSelectedTag" FontWeight="ExtraBold" Height="40" VerticalAlignment="Top" 
+                        ToolTip="Next word" Content="&gt;">
+                    </Button>
+                </DockPanel>
+                <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="True" Background="Azure" HorizontalAlignment="Stretch" 
+                    TextWrapping="Wrap">
+                </TextBlock>
+            </StackPanel>
         </Popup>
            
             <!-- details -->

@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
@@ -99,15 +93,84 @@ namespace Sando.UI.View
         private void TagCloudPopUp(object sender, RoutedEventArgs e)
         {
             var text = searchBox.Text;
-            var terms = text.Split();
-            CreateTagCloud(string.IsNullOrWhiteSpace(text) ? null : 
-                terms.First(t => !string.IsNullOrWhiteSpace(t)));
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                CreateTagCloud();
+            }
+            else
+            {
+                TagCloudNavigationSession.CreateNewSession(text);
+                CreateTagCloud(TagCloudNavigationSession.
+                    CurrentSession().GetNextTerm());
+            }
         }
 
         private void ClearSearchHistory(object sender, RoutedEventArgs e)
         {
             var history = ServiceLocator.Resolve<SearchHistory>();
             history.ClearHistory();
+        }
+
+        private void ChangeSelectedTag(object sender, RoutedEventArgs e)
+        {
+            var term = sender == previousTagButton
+                ? TagCloudNavigationSession.CurrentSession().GetPreviousTerm()
+                    : TagCloudNavigationSession.CurrentSession().GetNextTerm();
+            CreateTagCloud(term);
+        }
+ 
+        private class TagCloudNavigationSession
+        {
+            private static TagCloudNavigationSession session;
+            private readonly string[] terms;
+            private readonly object locker = new object();
+            private int index;
+
+
+            public static TagCloudNavigationSession CurrentSession()
+            {
+                return session;
+            }
+
+            public static void CreateNewSession(String query)
+            {
+                session = new TagCloudNavigationSession(query);
+            }
+
+            private TagCloudNavigationSession(String query)
+            {
+                terms = query.Split().Where(s => !string.IsNullOrWhiteSpace(s)).
+                    Distinct().ToArray();
+                index = terms.Count() * 10;
+            }
+
+            public string GetNextTerm()
+            {
+                lock (locker)
+                {
+                    var term = terms[MakeModulePositive()];
+                    index++;
+                    return term;
+                }
+            }
+
+            public string GetPreviousTerm()
+            {
+                lock (locker)
+                {
+                    var term = terms[MakeModulePositive()];
+                    index--;
+                    return term;
+                }
+            }
+
+            private int MakeModulePositive()
+            {
+                var result = index;
+                for (; result < 0; result += terms.Count());
+                for (; result >= terms.Count(); result -= terms.Count());
+                return result;
+            }
         }
 
         private void CreateTagCloud(String word = null)
@@ -118,16 +181,28 @@ namespace Sando.UI.View
 
             if (Thread.CurrentThread == Dispatcher.Thread)
             {
-                UpdateTagCloudWindow(hyperlinks);
+                UpdateTagCloudWindow(word, hyperlinks);
             }
             else
             {
-                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(hyperlinks)));
+                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(word, hyperlinks)));
             }
         }
     
-        private void UpdateTagCloudWindow(IEnumerable<Hyperlink> hyperlinks)
+        private void UpdateTagCloudWindow(string title, IEnumerable<Hyperlink> hyperlinks)
         {
+            if (title == null)
+            {
+                tagCloudTitle.Content = "Overall";
+                previousTagButton.Visibility = Visibility.Hidden;
+                nextTagButton.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                tagCloudTitle.Content = title;
+                previousTagButton.Visibility = Visibility.Visible;
+                nextTagButton.Visibility = Visibility.Visible;
+            }
             TagCloudPopUpWindow.IsOpen = false;
             TagCloudTextBlock.Inlines.Clear();
             foreach (var link in hyperlinks)
