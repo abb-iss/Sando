@@ -124,11 +124,11 @@
 
         <!-- Top Part: Query -->
         <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" 
-                                  Name="searchBox" Margin="5,5,20,0" FilterMode="None" 
+                                  Name="searchBox" Margin="5,8,20,0" FilterMode="None" 
                                   Height="25" BorderBrush="DimGray" 
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
                                   MinimumPrefixLength="0" MaxDropDownHeight="290" 
-                                  ValueMemberPath="Query">
+                                  ValueMemberPath="Query" VerticalAlignment="Top">
           
             <controls:AutoCompleteBox.ToolTip>
                 <StackPanel>                                        
