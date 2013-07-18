@@ -107,11 +107,12 @@
         </Grid.ColumnDefinitions>
         
         <!-- Top Part: Query -->
-        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" 
+        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" 
+                                  Name="searchBox" Margin="5,5,5,0" FilterMode="None" 
                                   Height="25" BorderBrush="DimGray" 
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
-                                  MinimumPrefixLength="0" MaxDropDownHeight="290"
-                                  ValueMemberBinding="{Binding ISwumRecommendedQuery}">
+                                  MinimumPrefixLength="0" MaxDropDownHeight="290" 
+                                  ValueMemberPath="Query">
           
             <controls:AutoCompleteBox.ToolTip>
                 <StackPanel>                                        
@@ -122,8 +123,7 @@
             <controls:AutoCompleteBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Query}" 
-                        Foreground="{Binding Type, 
-                        Converter={StaticResource SwumTypeToColorConverter}}"/>
+                        Foreground="{Binding Type, Converter={StaticResource SwumTypeToColorConverter}}"/>
                 </DataTemplate>
             </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>
