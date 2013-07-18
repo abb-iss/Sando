@@ -34,7 +34,7 @@ namespace Sando.Core.Tools
         {
             var columnNumbers = GetNonZeroColumnNumbers(row).ToList();
             var allRow = A.GetRange(IA.ElementAt(row).Value, columnNumbers.Count);
-            int index = columnNumbers.BinarySearch(new BoxedInt(column));
+            var index = columnNumbers.BinarySearch(new BoxedInt(column));
             return index >= 0 ? allRow.ElementAt(index).Value : 0;
         }
 
@@ -50,8 +50,8 @@ namespace Sando.Core.Tools
         {
             // Update A.
             var AIndex = IA.Count > index && index >= 0 ? IA.ElementAt(index).Value :
-                index - 1 >= 0 && index - 1 < IA.Count ?
-                    IA.ElementAt(index - 1).Value + GetNonZeroColumnNumbers(index - 1).Count() : 0;
+                index - 1 >= 0 && index - 1 < IA.Count ? IA.ElementAt(index - 1).Value 
+                    + GetNonZeroColumnNumbers(index - 1).Count() : 0;
             A.Insert(AIndex, new BoxedInt(value));
 
             // Update IA.
@@ -102,7 +102,7 @@ namespace Sando.Core.Tools
         private const int MAX_COOCCURRENCE_WORDS_COUNT = 100;
 
         private readonly WorkQueueBasedProcess queue = new WorkQueueBasedProcess();
-        private const string fileName = "CooccurenceMatrix.txt";
+        private const string fileName = "SparseMatrix.txt";
         private string directory;
 
        
@@ -182,18 +182,22 @@ namespace Sando.Core.Tools
 
         public IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate)
         {
-            var results = new List<IMatrixEntry>();
-            for (int i = 0; i < JA.Count; i++)
+            lock (locker)
             {
-                var row = GetRowByAIndex(i);
-                var column = JA.ElementAt(i).Value;
-                var count = A.ElementAt(i).Value;
+                var results = new List<IMatrixEntry>();
+                for (int i = 0; i < JA.Count; i++)
+                {
+                    var row = GetRowByAIndex(i);
+                    var column = JA.ElementAt(i).Value;
+                    var count = A.ElementAt(i).Value;
 
-                var rowWord = allWords.ElementAt(row);
-                var columnWord = allWords.ElementAt(column);
-                results.Add(new MatrixEntry(rowWord, columnWord, count));
+                    var rowWord = allWords.ElementAt(row);
+                    var columnWord = allWords.ElementAt(column);
+                    var entry = new MatrixEntry(rowWord, columnWord, count);
+                    if (predicate.Invoke(entry)) results.Add(entry);
+                }
+                return results;
             }
-            return results.Where(predicate.Invoke);
         }
 
         private int GetRowByAIndex(int aIndex)
@@ -228,7 +232,6 @@ namespace Sando.Core.Tools
                 }
             }
         }
-
 
         private void ComputeWordPosition(String rowWord, string columnWord, 
             out int row, out int column)
