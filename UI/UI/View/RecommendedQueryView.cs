@@ -95,13 +95,13 @@ namespace Sando.UI.View
             var text = searchBox.Text;
             if (string.IsNullOrWhiteSpace(text))
             {
-                CreateTagCloud();
+                CreateTagCloud(new string[]{});
             }
             else
             {
                 TagCloudNavigationSession.CreateNewSession(text);
-                CreateTagCloud(TagCloudNavigationSession.
-                    CurrentSession().GetNextTerm());
+                CreateTagCloud(new []{TagCloudNavigationSession.
+                    CurrentSession().GetNextTerm()});
             }
         }
 
@@ -116,7 +116,7 @@ namespace Sando.UI.View
             var term = sender == previousTagButton
                 ? TagCloudNavigationSession.CurrentSession().GetPreviousTerm()
                     : TagCloudNavigationSession.CurrentSession().GetNextTerm();
-            CreateTagCloud(term);
+            CreateTagCloud(new []{term});
         }
  
         private class TagCloudNavigationSession
@@ -173,25 +173,27 @@ namespace Sando.UI.View
             }
         }
 
-        private void CreateTagCloud(String word = null)
+        private void CreateTagCloud(String[] words)
         {
             var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-            var builder = new TagCloudBuilder(dictionary, word);
+            var builder = new TagCloudBuilder(dictionary, words);
             var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
 
             if (Thread.CurrentThread == Dispatcher.Thread)
             {
-                UpdateTagCloudWindow(word, hyperlinks);
+                UpdateTagCloudWindow(words, hyperlinks);
             }
             else
             {
-                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(word, hyperlinks)));
+                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(words
+                    , hyperlinks)));
             }
         }
-    
-        private void UpdateTagCloudWindow(string title, IEnumerable<Hyperlink> hyperlinks)
+
+
+        private void UpdateTagCloudWindow(string[] title, IEnumerable<Hyperlink> hyperlinks)
         {
-            if (title == null)
+            if (!title.Any())
             {
                 tagCloudTitle.Content = "Overall";
                 previousTagButton.Visibility = Visibility.Hidden;
@@ -199,7 +201,7 @@ namespace Sando.UI.View
             }
             else
             {
-                tagCloudTitle.Content = title;
+                tagCloudTitle.Content = title.Aggregate((w1, w2) => w1 + " " + w2);
                 previousTagButton.Visibility = Visibility.Visible;
                 nextTagButton.Visibility = Visibility.Visible;
             }
