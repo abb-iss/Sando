@@ -51,6 +51,7 @@ namespace Sando.UI.View
         {
             var wordsAndCount = rootWord == null ? CollectWordsFromPool() : CollectNeighborWords(rootWord);
             var list = wordsAndCount.Select(p => new WordWithShape(p.Key, p.Value)).ToArray();
+            list = rootWord != null ? list.Where(w => !w.Word.Equals(rootWord)).ToArray() : list;
             SetWordShape(list);
             return list.Cast<IShapedWord>().OrderBy(w => w.Word).ToArray();
         }
