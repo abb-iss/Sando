@@ -16,7 +16,7 @@ namespace Sando.Core.UnitTests.Tools
 
         public AcronymExpanderTests()
         {
-            this.matrix = new InternalWordCoOccurrenceMatrix();
+            this.matrix = new SparseCoOccurrenceMatrix();
             this.expander = new AcronymExpander(matrix);
         }
 

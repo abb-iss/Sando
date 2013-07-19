@@ -140,7 +140,7 @@ namespace Sando.Core.Tools
         {
             lock (locker)
             {
-                if (Directory.Exists(directory))
+                if (Directory.Exists(directory) && allWords.Any())
                 {
                     var lineOne = allWords.Aggregate((w1, w2) => w1 + " " + w2);
                     var lineTwo = A.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);

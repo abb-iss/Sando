@@ -15,7 +15,7 @@ namespace Sando.Core.UnitTests.Tools
 
         public InFileCoOccurrenceMatrixTests()
         {
-            this.matrix = new InternalWordCoOccurrenceMatrix();
+            this.matrix = new SparseCoOccurrenceMatrix();
         }
 
         [SetUp]
@@ -53,9 +53,12 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void DifferentWordPairsThatExist()
         {
-            AssertWordPairExist("confidence", "false");
-            AssertWordPairExist("confidence", "locat");
-            AssertWordPairExist("configuration", "middle");
+            AssertWordPairExist("method", "name");
+            AssertWordPairExist("assert", "true");
+            AssertWordPairExist("search", "result");
+            AssertWordPairExist("assert", "null");
+            AssertWordPairExist("sando", "search");
+            AssertWordPairExist("directory", "update");
             AssertWordPairExist("configuration", "results");
         }
 
