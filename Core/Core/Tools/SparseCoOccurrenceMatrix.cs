@@ -15,6 +15,13 @@ namespace Sando.Core.Tools
         private readonly List<BoxedInt> JA = new List<BoxedInt>();
         private readonly object locker = new object();
 
+
+
+        public SparseCoOccurrenceMatrix()
+        {
+            TimedProcessor.GetInstance().AddTimedTask(SaveToFile, 10 * 60 * 1000);
+        }
+
         private class BoxedInt : IComparable<BoxedInt>
         {
             public int Value { get; set; }
@@ -121,34 +128,51 @@ namespace Sando.Core.Tools
             lock (locker)
             {
                 this.directory = directory;
-                this.allWords.Clear();
-                this.A.Clear();
-                this.IA.Clear();
-                this.JA.Clear();
-                if (File.Exists(GetMatrixFilePath()))
-                {
-                    var lines = File.ReadAllLines(GetMatrixFilePath());
-                    allWords.AddRange(lines[0].Split());
-                    A.AddRange(lines[1].Split().Select(i => new BoxedInt(int.Parse(i))));
-                    IA.AddRange(lines[2].Split().Select(i => new BoxedInt(int.Parse(i))));
-                    JA.AddRange(lines[3].Split().Select(i => new BoxedInt(int.Parse(i))));
-                }
+                ClearMemory();
+                ReadFromFile();
             }            
+        }
+
+        private void ReadFromFile()
+        {
+            if (File.Exists(GetMatrixFilePath()))
+            {
+                var lines = File.ReadAllLines(GetMatrixFilePath());
+                allWords.AddRange(lines[0].Split());
+                A.AddRange(lines[1].Split().Select(i => new BoxedInt(int.Parse(i))));
+                IA.AddRange(lines[2].Split().Select(i => new BoxedInt(int.Parse(i))));
+                JA.AddRange(lines[3].Split().Select(i => new BoxedInt(int.Parse(i))));
+            }
+        }
+
+        private void ClearMemory()
+        {
+            this.allWords.Clear();
+            this.A.Clear();
+            this.IA.Clear();
+            this.JA.Clear();
         }
 
         public void Dispose()
         {
             lock (locker)
             {
-                if (Directory.Exists(directory) && allWords.Any())
-                {
-                    var lineOne = allWords.Aggregate((w1, w2) => w1 + " " + w2);
-                    var lineTwo = A.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
-                    var lineThree = IA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
-                    var lineFour = JA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
-                    var lines = new string[] {lineOne, lineTwo, lineThree, lineFour};
-                    File.WriteAllLines(GetMatrixFilePath(), lines);
-                }
+                TimedProcessor.GetInstance().RemoveTimedTask(SaveToFile);
+                SaveToFile();
+                ClearMemory();
+            }
+        }
+
+        private void SaveToFile()
+        {
+            if (Directory.Exists(directory) && allWords.Any())
+            {
+                var lineOne = allWords.Aggregate((w1, w2) => w1 + " " + w2);
+                var lineTwo = A.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                var lineThree = IA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                var lineFour = JA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                var lines = new string[] { lineOne, lineTwo, lineThree, lineFour };
+                File.WriteAllLines(GetMatrixFilePath(), lines);
             }
         }
 
