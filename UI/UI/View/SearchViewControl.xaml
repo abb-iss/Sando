@@ -176,8 +176,10 @@
                         Click="ChangeSelectedTag" FontWeight="ExtraBold" Height="40" VerticalAlignment="Top" 
                         ToolTip="Previous Word" Content="&lt;" FontSize="30">
                     </Button>
-                    <Label Name="tagCloudTitle" Content="YYYpp" HorizontalAlignment="Center" Margin="0,0,0,0" FontSize="20" Height="40">
-                    </Label>
+                    <TextBlock Name="tagCloudTitleTextBlock" Margin="0,0,0,0" Visibility="Visible" IsEnabled="True" 
+                                HorizontalAlignment="Stretch" Background ="Azure" FontSize="28">
+                    </TextBlock>
+
                     <Button Name="nextTagButton"  Margin="0,0,0,0" Width="20" HorizontalAlignment="Left"
                         FontFamily="ExtraBold" IsEnabled="True" FontSize="30" 
         		        KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 

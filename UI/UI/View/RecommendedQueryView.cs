@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
@@ -191,12 +192,39 @@ namespace Sando.UI.View
         }
 
 
+        private void UpdateLabel(string[] highlightedTerms)
+        {
+            var terms = searchBox.Text.Split().Select(s => s.Trim().
+                ToLower()).Distinct().Where(t => !string.IsNullOrWhiteSpace(t)).
+                    ToArray();
+            tagCloudTitleTextBlock.Inlines.Clear();
+            if (!terms.Any())
+            {
+                tagCloudTitleTextBlock.Inlines.Add(new Run("Overall")
+                    {
+                      //  FontSize = 24, 
+                        Foreground = Brushes.Navy
+                    });
+            }
+            else
+            {
+                var runs = terms.Select(t => new Run(t + " ")
+                    {
+                        FontSize = highlightedTerms.Contains(t) ? 28 : 24,
+                        Foreground = highlightedTerms.Contains(t)
+                                        ? Brushes.Navy : Brushes.LightBlue
+                    }).ToArray();
+                runs.Last().Text = runs.Last().Text.Trim();
+                tagCloudTitleTextBlock.Inlines.AddRange(runs);
+            }
+        }
+
         private void UpdateTagCloudWindow(string[] title, IEnumerable<Hyperlink> hyperlinks)
         {
             string currentQuery;
             if (!title.Any())
             {
-                tagCloudTitle.Content = "Overall";
+                UpdateLabel(new string[]{});
                 previousTagButton.Visibility = Visibility.Hidden;
                 nextTagButton.Visibility = Visibility.Hidden;
                 currentQuery = string.Empty;
@@ -204,7 +232,7 @@ namespace Sando.UI.View
             else
             {
                 currentQuery = title.Aggregate((w1, w2) => w1 + " " + w2);
-                tagCloudTitle.Content = currentQuery;
+                UpdateLabel(title);
                 previousTagButton.Visibility = Visibility.Visible;
                 nextTagButton.Visibility = Visibility.Visible;
             }
@@ -229,7 +257,7 @@ namespace Sando.UI.View
                 IsEnabled = true,
             };
             link.Click += (sender, args) => LogEvents.AddWordFromTagCloud(searchBox.Text,
-                (String)tagCloudTitle.Content, shapedWord.Word);
+                "TOFIXTHE", shapedWord.Word);
             link.Click += StartSearchAfterClick;
             link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;
