@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Documents;
+using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
@@ -68,6 +69,7 @@ namespace Sando.UI.View
             if (sender as SandoQueryHyperLink != null)
             {
                 StartSearchAfterClick(sender, routedEventArgs);
+                LogEvents.SelectRecommendedQuery((sender as SandoQueryHyperLink).Query);
             }
         }
 
@@ -81,8 +83,6 @@ namespace Sando.UI.View
                 BeginSearch(reformedQuery); 
             }
         }
-
-
 
         private void AddSearchHistory(String query)
         {
@@ -193,15 +193,18 @@ namespace Sando.UI.View
 
         private void UpdateTagCloudWindow(string[] title, IEnumerable<Hyperlink> hyperlinks)
         {
+            string currentQuery;
             if (!title.Any())
             {
                 tagCloudTitle.Content = "Overall";
                 previousTagButton.Visibility = Visibility.Hidden;
                 nextTagButton.Visibility = Visibility.Hidden;
+                currentQuery = string.Empty;
             }
             else
             {
-                tagCloudTitle.Content = title.Aggregate((w1, w2) => w1 + " " + w2);
+                currentQuery = title.Aggregate((w1, w2) => w1 + " " + w2);
+                tagCloudTitle.Content = currentQuery;
                 previousTagButton.Visibility = Visibility.Visible;
                 nextTagButton.Visibility = Visibility.Visible;
             }
@@ -213,6 +216,7 @@ namespace Sando.UI.View
                 TagCloudTextBlock.Inlines.Add(" ");
             }
             TagCloudPopUpWindow.IsOpen = true;
+            LogEvents.TagCloudShowing(currentQuery);
         }
 
         private Hyperlink CreateHyperLinkByShapedWord(IShapedWord shapedWord)
@@ -224,6 +228,8 @@ namespace Sando.UI.View
                 Foreground = shapedWord.Color,
                 IsEnabled = true,
             };
+            link.Click += (sender, args) => LogEvents.AddWordFromTagCloud(searchBox.Text,
+                (String)tagCloudTitle.Content, shapedWord.Word);
             link.Click += StartSearchAfterClick;
             link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;

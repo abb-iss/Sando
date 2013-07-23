@@ -133,6 +133,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="QueryRefomers\QuerySuggestionConfigurations.cs" />
+    <Compile Include="QueryRefomers\RecommendationRelatedEvents.cs" />
     <Compile Include="QueryRefomers\ReformedQueryBuilder.cs">
       <SubType>Code</SubType>
     </Compile>

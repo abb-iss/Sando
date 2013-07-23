@@ -75,6 +75,7 @@ namespace Sando.Core.QueryRefomers
         IEnumerable<String> WordsAfterReform { get; }
         String ReformExplanation { get; }
         String QueryString { get; }
+        String OriginalQueryString { get; }
         int CoOccurrenceCount { get; }
         int EditDistance { get; }
     }

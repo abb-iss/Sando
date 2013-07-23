@@ -15,8 +15,6 @@ namespace Sando.Core.Tools
         private readonly List<BoxedInt> JA = new List<BoxedInt>();
         private readonly object locker = new object();
 
-
-
         public SparseCoOccurrenceMatrix()
         {
             TimedProcessor.GetInstance().AddTimedTask(SaveToFile, 10 * 60 * 1000);
@@ -165,14 +163,17 @@ namespace Sando.Core.Tools
 
         private void SaveToFile()
         {
-            if (Directory.Exists(directory) && allWords.Any())
+            lock (locker)
             {
-                var lineOne = allWords.Aggregate((w1, w2) => w1 + " " + w2);
-                var lineTwo = A.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
-                var lineThree = IA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
-                var lineFour = JA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
-                var lines = new string[] { lineOne, lineTwo, lineThree, lineFour };
-                File.WriteAllLines(GetMatrixFilePath(), lines);
+                if (Directory.Exists(directory) && allWords.Any())
+                {
+                    var lineOne = allWords.Aggregate((w1, w2) => w1 + " " + w2);
+                    var lineTwo = A.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                    var lineThree = IA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                    var lineFour = JA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                    var lines = new string[] {lineOne, lineTwo, lineThree, lineFour};
+                    File.WriteAllLines(GetMatrixFilePath(), lines);
+                }
             }
         }
 
@@ -305,8 +306,8 @@ namespace Sando.Core.Tools
         {
             words = FilterOutBadWords(words).ToList();
             words = (words.Count > MAX_COOCCURRENCE_WORDS_COUNT)
-                       ? words.GetRange(0, MAX_COOCCURRENCE_WORDS_COUNT)
-                       : words;
+                ? words.GetRange(0, MAX_COOCCURRENCE_WORDS_COUNT)
+                   : words;
             return words.Distinct();
         }
 

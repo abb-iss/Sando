@@ -7,7 +7,7 @@ using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.Core.Logging.Events
 {
-	public class LogEvents
+	public partial class LogEvents
 	{
         public static void TestLogging(Object sender)
         {

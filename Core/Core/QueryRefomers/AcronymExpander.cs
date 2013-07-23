@@ -67,6 +67,7 @@ namespace Sando.Core.QueryRefomers
                 public IEnumerable<string> WordsAfterReform { get; private set; }
                 public string ReformExplanation { get; private set; }
                 public string QueryString { get; private set; }
+                public string OriginalQueryString { get; private set; }
                 public int CoOccurrenceCount { get; private set; }
                 public int EditDistance { get; private set; }
 
@@ -77,6 +78,8 @@ namespace Sando.Core.QueryRefomers
                         ACRONYM_EXPAND, ew.First().ToString(), ew, "")).ToArray();
                     this.WordsAfterReform = this.ReformedWords.Select(rw => rw.NewTerm).ToArray();
                     this.QueryString = this.WordsAfterReform.Aggregate((w1, w2) => w1 + " " + w2);
+                    this.OriginalQueryString = this.ReformedWords.Select(rw => rw.OriginalTerm).
+                        Aggregate((w1, w2) => w1 + " " + w2);
                     this.EditDistance = this.WordsAfterReform.Sum(s => s.Count() - 1);
                     this.ReformExplanation = "Expanding an acronym.";
                 }
