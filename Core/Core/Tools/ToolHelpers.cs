@@ -91,9 +91,10 @@ namespace Sando.Core.Tools
             var endIndex = list.BinarySearch(target, comparer);
             if (endIndex > -1 && endIndex < list.Count)
             {
-                int startInex = endIndex;
-                for (; comparer.Compare(list.ElementAt(startInex - 1), target) == 0; startInex--);
-                return list.GetRange(startInex, endIndex - startInex + 1);
+                int startIndex = endIndex;
+                for (; startIndex >=0 && comparer.Compare(list.ElementAt(startIndex - 1), target) == 0; startIndex--);
+                startIndex = startIndex < 0 ? 0 : startIndex;
+                return list.GetRange(startIndex, endIndex - startIndex + 1);
             }
             return Enumerable.Empty<T>();
         }

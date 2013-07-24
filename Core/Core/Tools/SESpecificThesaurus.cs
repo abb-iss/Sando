@@ -34,8 +34,9 @@ namespace Sando.Core.Tools
             int endIndex = keyValuePairs.BinarySearch(target, comparer);
             if (endIndex > -1 && endIndex < keyValuePairs.Count)
             {
-                int startInex = endIndex;
-                for (; comparer.Compare(keyValuePairs.ElementAt(startInex - 1), target) == 0; startInex--);
+                int startInex;
+                for (startInex = endIndex; startInex > 0 && comparer.Compare(keyValuePairs.ElementAt(startInex - 1), 
+                    target) == 0; startInex--);
                 return keyValuePairs.GetRange(startInex, endIndex - startInex + 1).Select(p => p.Value);
             }
             return Enumerable.Empty<T>();

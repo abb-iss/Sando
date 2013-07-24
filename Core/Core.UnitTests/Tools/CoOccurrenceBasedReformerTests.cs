@@ -67,7 +67,6 @@ namespace Sando.Core.UnitTests.Tools
         {
             AssertReformProperly("somewiredwodnotindictionary", new string[] { "activator", "add" });
             AssertReformProperly("somewiredwodnotindictionary", new string[] { "allow", "add" });
-            AssertReformProperly("somewiredwodnotindictionary", new string[]{ "allow", "along"});
             AssertNotReformed("sando", new string[]{"add", "activator"});
             AssertNotReformed("sando", new string[]{"add", "allow"});
         }

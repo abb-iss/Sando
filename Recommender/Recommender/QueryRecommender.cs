@@ -22,13 +22,13 @@ namespace Sando.Recommender {
         }
 
 
-        public string[] GenerateRecommendations(string query) {
+        public ISwumRecommendedQuery[] GenerateRecommendations(string query) {
             if(string.IsNullOrEmpty(query)) {
                 if (query != null)
                 {
                     return GetAllSearchHistoryItems();
                 }
-                return new string[0];
+                return new ISwumRecommendedQuery[0];
             }
             try
             {
@@ -53,20 +53,19 @@ namespace Sando.Recommender {
             }
             catch (Exception e)
             {
-                return new string[0];
+                return new ISwumRecommendedQuery[0];
             }
         }
 
-        private string[] SortRecommendations(string query, string[] queries)
+        private ISwumRecommendedQuery[] SortRecommendations(string query, string[] queries)
         {
             return new SwumQueriesSorter().SelectSortSwumRecommendations(query, queries);
         }
 
 
-        private string[] GetAllSearchHistoryItems()
+        private ISwumRecommendedQuery[] GetAllSearchHistoryItems()
         {
-            var history = ServiceLocator.Resolve<SearchHistory>();
-            return history.GetSearchHistoryItems(i => true).Select(i => i.SearchString).ToArray();
+            return new SwumQueriesSorter().GetAllHistoryItems();
         }
 
 

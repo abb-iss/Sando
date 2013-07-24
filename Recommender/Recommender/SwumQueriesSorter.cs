@@ -7,6 +7,19 @@ using Sando.DependencyInjection;
 
 namespace Sando.Recommender
 {
+
+    public enum SwumRecommnedationType
+    {
+        History,
+        Other,
+    }
+
+    public interface ISwumRecommendedQuery
+    {
+        string Query { get; }
+        SwumRecommnedationType Type { get; }
+    }
+
     internal class SwumQueriesSorter
     {
         private class ScoredQuery
@@ -21,21 +34,35 @@ namespace Sando.Recommender
             }
         }
 
+        private class InternalSwumRecommendedQuey : ISwumRecommendedQuery
+        {
+            public string Query { get; set; }
+            public SwumRecommnedationType Type { get; set; }
+
+            internal InternalSwumRecommendedQuey(string Query, 
+                SwumRecommnedationType Type)
+            {
+                this.Query = Query;
+                this.Type = Type;
+            }
+        }
+
         private abstract class AbstractQueryInputState
         {
             protected readonly string originalQuery;
             protected readonly string[] wordsInOriginalQuery;
             public abstract bool IsInState();
-            protected abstract String[] InternalSortQueries(String[] queries);
-            
-            public String[] SortQueries(String[] queries)
+            protected abstract IEnumerable<ISwumRecommendedQuery> InternalSortQueries(String[] queries);
+
+            public IEnumerable<ISwumRecommendedQuery> SortQueries(String[] queries)
             {
                 queries = queries.Select(RemoveDupWords).Where(s => !s.Equals
                     (originalQuery.Trim(), StringComparison.InvariantCultureIgnoreCase)).
                         ToArray();
-                queries = InternalSortQueries(queries);
-                return queries;
+                var sorted = InternalSortQueries(queries);
+                return sorted;
             }
+
 
             private String RemoveDupWords(String input)
             {
@@ -126,7 +153,7 @@ namespace Sando.Recommender
                 return originalQuery.EndsWith(" ");
             }
 
-            protected override string[] InternalSortQueries(string[] queries)
+            protected override IEnumerable<ISwumRecommendedQuery> InternalSortQueries(string[] queries)
             {
                 queries = SelectQueriesByContainedTerms(queries, wordsInOriginalQuery);
 
@@ -137,7 +164,7 @@ namespace Sando.Recommender
                 group2 = SortQueriesByWordsCoOccurrence(wordsInOriginalQuery, group2, GetWordsInQuery).ToList();
                 group1.AddRange(group2);
 
-                return group1.ToArray();
+                return group1.Select(s => new InternalSwumRecommendedQuey(s, SwumRecommnedationType.Other));
             }
 
             private IEnumerable<string> GetWordsInQuery(string q)
@@ -159,7 +186,7 @@ namespace Sando.Recommender
                 return !originalQuery.EndsWith(" ") && !IsWordInDictionary(wordsInOriginalQuery.Last());
             }
 
-            protected override string[] InternalSortQueries(string[] queries)
+            protected override IEnumerable<ISwumRecommendedQuery> InternalSortQueries(string[] queries)
             {
                 queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
                     wordsInOriginalQuery.
@@ -176,7 +203,8 @@ namespace Sando.Recommender
                             GetWordsInQuery).ToList() : group2.OrderBy(q => q).ToList();
    
                 group1.AddRange(group2);
-                return group1.ToArray();
+                return group1.Select(s => new InternalSwumRecommendedQuey(s, 
+                    SwumRecommnedationType.Other));
             }
 
             private IEnumerable<string> GetWordsInQuery(string query)
@@ -200,7 +228,7 @@ namespace Sando.Recommender
                 return !originalQuery.EndsWith(" ") && IsWordInDictionary(wordsInOriginalQuery.Last());
             }
 
-            protected override string[] InternalSortQueries(string[] queries)
+            protected override IEnumerable<ISwumRecommendedQuery> InternalSortQueries(string[] queries)
             {
                 queries = wordsInOriginalQuery.Count() > 1 ? SelectQueriesByContainedTerms(queries, 
                     wordsInOriginalQuery.SubArray(0, wordsInOriginalQuery.Count() - 1)) : queries;
@@ -214,7 +242,7 @@ namespace Sando.Recommender
                         queries, GetWordsInQuery).ToList() : group2.OrderBy(q => q).ToList();
                 
                 group1.AddRange(group2);
-                return group1.ToArray();
+                return group1.Select(s => new InternalSwumRecommendedQuey(s, SwumRecommnedationType.Other));
             }
 
             private IEnumerable<string> GetWordsInQuery(string query)
@@ -232,13 +260,22 @@ namespace Sando.Recommender
             return dictionary.DoesWordExist(word, DictionaryOption.NoStemming);
         }
 
-        public string[] SelectSortSwumRecommendations(string originalQuery, string[] queries)
+        public ISwumRecommendedQuery[] SelectSortSwumRecommendations(string originalQuery, string[] queries)
         {
             var filters = new AllFilters(originalQuery);
             var list = GetSearchHistoryItemStartingWith(originalQuery);
             var state = GetQueryInputState(originalQuery);
             list.AddRange(state.SortQueries(queries));
             return HandleCornerCases(originalQuery, filters.FilterBadQueries(list.ToArray()));
+        }
+
+
+        public ISwumRecommendedQuery[] GetAllHistoryItems()
+        {
+            var history = ServiceLocator.Resolve<SearchHistory>();
+            return history.GetSearchHistoryItems(i => true).Select(i => i.SearchString).Select
+                (s => new InternalSwumRecommendedQuey(s, SwumRecommnedationType.History)).
+                    Cast<ISwumRecommendedQuery>().ToArray();
         }
 
         private AbstractQueryInputState GetQueryInputState(String query)
@@ -252,16 +289,18 @@ namespace Sando.Recommender
             return states.First(s => s.IsInState());
         }
 
-        private List<string> GetSearchHistoryItemStartingWith(String prefix)
+        private List<ISwumRecommendedQuery> GetSearchHistoryItemStartingWith(String prefix)
         {
             var history = ServiceLocator.Resolve<SearchHistory>();
             return history.GetSearchHistoryItems(item => item.SearchString.
-                StartsWith(prefix)).Select(i => i.SearchString).ToList();
+                StartsWith(prefix)).Select(i => i.SearchString).Select(s => new 
+                    InternalSwumRecommendedQuey(s, SwumRecommnedationType.History)).
+                        Cast<ISwumRecommendedQuery>().ToList();
         }
 
         private interface IRecommendedQueryFilter
         {
-            String[] FilterBadQueries(String[] queries);
+            ISwumRecommendedQuery[] FilterBadQueries(ISwumRecommendedQuery[] queries);
         }
 
         private class AllFilters : IRecommendedQueryFilter
@@ -273,7 +312,7 @@ namespace Sando.Recommender
                 this.originalQuery = originalQuery;
             }
 
-            public string[] FilterBadQueries(string[] queries)
+            public ISwumRecommendedQuery[] FilterBadQueries(ISwumRecommendedQuery[] queries)
             {
                 var filters = new IRecommendedQueryFilter[]
                 {
@@ -289,21 +328,23 @@ namespace Sando.Recommender
 
         private class DuplicateQueriesFilter : IRecommendedQueryFilter
         {
-            public string[] FilterBadQueries(string[] queries)
+            public ISwumRecommendedQuery[] FilterBadQueries(ISwumRecommendedQuery[] queries)
             {
-                var set = new HashSet<String>(queries, new StringEqualityComparer());
+                var set = new HashSet<ISwumRecommendedQuery>(queries, new 
+                    ISwumRecommendedQueryEqualityComparer());
                 return set.ToArray();
             }
 
-            private class StringEqualityComparer : IEqualityComparer<string>
+            private class ISwumRecommendedQueryEqualityComparer : 
+                IEqualityComparer<ISwumRecommendedQuery>
             {
-                public bool Equals(string x, string y)
+                public bool Equals(ISwumRecommendedQuery x, ISwumRecommendedQuery y)
                 {
-                    return x.Trim().Equals(y.Trim(), 
+                    return x.Query.Trim().Equals(y.Query.Trim(), 
                         StringComparison.InvariantCultureIgnoreCase);
                 }
 
-                public int GetHashCode(string obj)
+                public int GetHashCode(ISwumRecommendedQuery obj)
                 {
                     return 0;
                 }
@@ -319,18 +360,19 @@ namespace Sando.Recommender
                 this.originalQuery = originalQuery;
             }
 
-            public string[] FilterBadQueries(string[] queries)
+            public ISwumRecommendedQuery[] FilterBadQueries(ISwumRecommendedQuery[] queries)
             {
-                return queries.Where( q => !q.GetStemmedQuery().ToLowerAndTrim().
+                return queries.Where( q => !q.Query.GetStemmedQuery().ToLowerAndTrim().
                     Equals(this.originalQuery.ToLowerAndTrim())).ToArray();
             }
         }
 
         private class ContainingNonLocalWordsQueriesFilter : IRecommendedQueryFilter
         {
-            public string[] FilterBadQueries(string[] queries)
+            public ISwumRecommendedQuery[] FilterBadQueries(ISwumRecommendedQuery[] queries)
             {
-                var badQueries = queries.Where(q => q.Trim().Contains(" ") && !AllWordsInDictionary(q));
+                var badQueries = queries.Where(q => q.Query.Trim().Contains(" ") && 
+                    !AllWordsInDictionary(q.Query));
                 return queries.Except(badQueries).ToArray();
             }
 
@@ -342,7 +384,7 @@ namespace Sando.Recommender
             }
         }
 
-        private String[] HandleCornerCases(String original, String[] recommended)
+        private ISwumRecommendedQuery[] HandleCornerCases(String original, ISwumRecommendedQuery[] recommended)
         {
             var allHandlers = new ICornerCaseHandler[]
             {
@@ -355,7 +397,7 @@ namespace Sando.Recommender
         private interface ICornerCaseHandler
         {
             bool IsCornerCase(String originalQuery);
-            String[] Handle(String[] queries);
+            ISwumRecommendedQuery[] Handle(ISwumRecommendedQuery[] queries);
         }
 
         private class PreferVariableWhenNoSpace : ICornerCaseHandler
@@ -365,13 +407,13 @@ namespace Sando.Recommender
                 return !originalQuery.TrimStart().Contains(" ");
             }
 
-            public string[] Handle(string[] queries)
+            public ISwumRecommendedQuery[] Handle(ISwumRecommendedQuery[] queries)
             {
-                var variableList = new List<String>();
-                var othersList = new List<String>();
+                var variableList = new List<ISwumRecommendedQuery>();
+                var othersList = new List<ISwumRecommendedQuery>();
                 foreach (var query in queries)
                 {
-                    var list = query.Trim().Contains(" ") ? othersList : 
+                    var list = query.Query.Trim().Contains(" ") ? othersList : 
                         variableList;
                     list.Add(query);
                 }

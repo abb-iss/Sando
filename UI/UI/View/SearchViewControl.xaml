@@ -45,6 +45,7 @@
         <converters:NullOrEmptyIsHidden x:Key="NullOrEmptyIsHidden"/>
         <converters:NullOrEmptyToVisibility x:Key="NullOrEmptyToVisibility"/>
         <converters:HighlightSearchKey x:Key="HighlightSearchKey"/>
+        <converters:SwumTypeToColorConverter x:Key="SwumTypeToColorConverter"/>
         
         <ObjectDataProvider x:Key="ProgramElementType" MethodName="GetValues" ObjectType="{x:Type ExContract:ProgramElementType}">
             <ObjectDataProvider.MethodParameters>
@@ -105,16 +106,42 @@
             <ColumnDefinition Width="65" />
         </Grid.ColumnDefinitions>
 
+
+        <StackPanel Margin="0,5,5,0" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Button Name="TagCloudButton"  Margin="0,0,0,0"
+                FontFamily="ExtraBold" IsEnabled="{Binding ElementName=TagCloudPopUpWindow, 
+                Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                Click="TagCloudPopUp" FontWeight="ExtraBold" Height="15" VerticalAlignment="Top" ToolTip="Tag cloud">T
+            </Button>
+            <Button Name="ClearHistoryButton"  Margin="0,0,0,0"
+                FontFamily="ExtraBold" IsEnabled="True"
+        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                Click="ClearSearchHistory" FontWeight="ExtraBold" Height="15" VerticalAlignment="Top" 
+                ToolTip="Clear search history">C
+            </Button>
+        </StackPanel>
+
         <!-- Top Part: Query -->
-        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" Name="searchBox" Margin="5,5,5,0" FilterMode="None" Height="25" BorderBrush="DimGray" 
+        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" 
+                                  Name="searchBox" Margin="5,8,20,0" FilterMode="None" 
+                                  Height="25" BorderBrush="DimGray" 
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
-                                  MinimumPrefixLength="0" MaxDropDownHeight="290">
+                                  MinimumPrefixLength="0" MaxDropDownHeight="290" 
+                                  ValueMemberPath="Query" VerticalAlignment="Top">
+          
             <controls:AutoCompleteBox.ToolTip>
                 <StackPanel>                                        
                     <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
                     <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
                 </StackPanel>
             </controls:AutoCompleteBox.ToolTip>
+            <controls:AutoCompleteBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Query}" 
+                        Foreground="{Binding Type, Converter={StaticResource SwumTypeToColorConverter}}"/>
+                </DataTemplate>
+            </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>
 
         <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
@@ -137,18 +164,33 @@
                 KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Bottom"></TextBlock>
 
 
-        <Button Name="TagCloudButton"  Grid.Row="3" Grid.Column ="1" Margin="0,0,0,0" 
-                FontFamily="ExtraBold" IsEnabled="{Binding ElementName=TagCloudPopUpWindow, 
-                Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
-        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
-                Click="TagCloudPopUp" FontWeight="ExtraBold" Height="17" VerticalAlignment="Bottom">TagCloud
-        </Button>
+     
 
         <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="True" 
                Grid.Row="3" Grid.Column="2">
-            <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="True" Background="Azure" HorizontalAlignment="Stretch" 
-                       TextWrapping="Wrap">
-            </TextBlock>
+            <StackPanel Background="Azure">
+                <DockPanel Background="Azure" Margin="0, 0, 0,0" HorizontalAlignment="Center">
+                    <Button Name="previousTagButton"  Margin="0,0,0,0" Width="20" HorizontalAlignment="Right"
+                        FontFamily="ExtraBold" IsEnabled="True"
+        		        KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                        Click="ChangeSelectedTag" FontWeight="ExtraBold" Height="40" VerticalAlignment="Top" 
+                        ToolTip="Previous Word" Content="&lt;" FontSize="30">
+                    </Button>
+                    <TextBlock Name="tagCloudTitleTextBlock" Margin="0,0,0,0" Visibility="Visible" IsEnabled="True" 
+                                HorizontalAlignment="Stretch" Background ="Azure" FontSize="28">
+                    </TextBlock>
+
+                    <Button Name="nextTagButton"  Margin="0,0,0,0" Width="20" HorizontalAlignment="Left"
+                        FontFamily="ExtraBold" IsEnabled="True" FontSize="30" 
+        		        KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
+                        Click="ChangeSelectedTag" FontWeight="ExtraBold" Height="40" VerticalAlignment="Top" 
+                        ToolTip="Next word" Content="&gt;">
+                    </Button>
+                </DockPanel>
+                <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="True" Background="Azure" HorizontalAlignment="Stretch" 
+                    TextWrapping="Wrap">
+                </TextBlock>
+            </StackPanel>
         </Popup>
            
             <!-- details -->
@@ -232,8 +274,10 @@
             </StackPanel>
         </Expander>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
-            
-            <Button Name="HelpButton"  ToolTip="Help" Margin="32,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
+
+   
+
+            <Button Name="HelpButton"  ToolTip="Help" Margin="30,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
         		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
             </Button>
             

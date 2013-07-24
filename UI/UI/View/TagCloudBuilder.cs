@@ -23,7 +23,7 @@ namespace Sando.UI.View
         private readonly Brush[] colorPool = { Brushes.LightSkyBlue, Brushes.LightSkyBlue, 
             Brushes.Blue, Brushes.Navy, Brushes.MidnightBlue};
 
-        private readonly string rootWord;
+        private readonly string[] rootWords;
 
         private class WordWithShape : IShapedWord
         {
@@ -41,16 +41,18 @@ namespace Sando.UI.View
             }
         }
 
-        public TagCloudBuilder(IWordCoOccurrenceMatrix matrix, String rootWord = null)
+        public TagCloudBuilder(IWordCoOccurrenceMatrix matrix, String[] rootWords = null)
         {
             this.matrix = matrix;
-            this.rootWord = rootWord;
+            this.rootWords = rootWords;
         }
         
         public IShapedWord[] Build()
         {
-            var wordsAndCount = rootWord == null ? CollectWordsFromPool() : CollectNeighborWords(rootWord);
+            var wordsAndCount = !rootWords.Any() ? CollectWordsFromPool() : rootWords.Count() == 1 ?
+                CollectNeighborWords(rootWords.First()) : CollectCommonNeighbors(rootWords);
             var list = wordsAndCount.Select(p => new WordWithShape(p.Key, p.Value)).ToArray();
+            list = rootWords != null ? list.Where(w => !rootWords.Contains(w.Word)).ToArray() : list;
             SetWordShape(list);
             return list.Cast<IShapedWord>().OrderBy(w => w.Word).ToArray();
         }
@@ -90,6 +92,14 @@ namespace Sando.UI.View
             return SelectWordsAndCount(wordsAndCounts, trivialWords);
         }
 
+        private Dictionary<string, int> CollectCommonNeighbors(IEnumerable<string> words)
+        {
+            return words.Select(CollectNeighborWords).
+                Aggregate((d1, d2) => {
+                    var keys = d1.Keys.Intersect(d2.Keys);
+                    return keys.ToDictionary(k => k, k => Math.Min(d1[k], d2[k]));
+            });
+        }
 
         private string TryGetExpandedWord(string word)
         {

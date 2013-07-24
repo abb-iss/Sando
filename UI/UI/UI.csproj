@@ -277,6 +277,7 @@
     <Compile Include="View\Search\Converters\NullableBoolToBool.cs" />
     <Compile Include="View\Search\Converters\NullOrEmptyIsHidden.cs" />
     <Compile Include="View\Search\Converters\NullOrEmptyToVisibility.cs" />
+    <Compile Include="View\Search\Converters\SwumTypeToColorConverter.cs" />
     <Compile Include="View\Search\ProgramElementWrapper.cs" />
     <Compile Include="View\TagCloudBuilder.cs" />
     <Compile Include="View\TextBoxFocusHelper.cs" />

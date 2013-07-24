@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
@@ -22,12 +23,18 @@ namespace Sando.Indexer.Searching.Criteria
             var queries = GetReformedQuery(terms.Distinct()).ToList();
             if (queries.Count > 0)
             {
+                LogEvents.AddSearchTermsToOriginal(queries.First());
                 var query = queries.First();
                 terms.AddRange(query.WordsAfterReform.ToList());
                 criteria.Explanation = GetExplanation(query, originalTerms);
                 criteria.Reformed = true;
                 criteria.RecommendedQueries = queries.GetRange(1, queries.Count - 1).
                     Select(n => n.QueryString).AsQueryable();
+                if (queries.Count > 1)
+                {
+                    LogEvents.IssueRecommendedQueries(queries.GetRange(1, queries.Count - 1).
+                        ToArray());
+                }
             }
             else
             {

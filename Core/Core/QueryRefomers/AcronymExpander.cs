@@ -6,13 +6,13 @@ using Sando.Core.Tools;
 
 namespace Sando.Core.QueryRefomers
 {
-    internal class AcronymExpander
+    public class AcronymExpander
     {
-        private readonly DictionaryBasedSplitter localDictionary;
+        private readonly IWordCoOccurrenceMatrix localCoOccurMatrix;
 
-        public AcronymExpander(DictionaryBasedSplitter localDictionary)
+        public AcronymExpander(IWordCoOccurrenceMatrix localCoOccurMatrix)
         {
-            this.localDictionary = localDictionary;
+            this.localCoOccurMatrix = localCoOccurMatrix;
         }
 
         private class ExtendedAcronym
@@ -25,12 +25,22 @@ namespace Sando.Core.QueryRefomers
             }
 
             public IEnumerable<ExtendedAcronym> GetCommonCoOccurWords(IWordCoOccurrenceMatrix 
-                matrix, char letter) 
+                matrix, char letter)
             {
-                return Words.Select(matrix.GetCoOccurredWordsAndCount).Aggregate
-                    ((d1, d2) => d1.Keys.Intersect(d2.Keys).ToDictionary(k => k, v => 0)).
-                        Keys.Where(k => k.StartsWith(letter.ToString())).Select(k => 
-                            new ExtendedAcronym(Words.AddImmutably(k)));
+                var entries = matrix.GetEntries(entry => IsEntryCorrect(matrix, entry, letter, 
+                    Words.ToArray())).ToArray();
+                var newWords = entries.Select(e => Words.Contains(e.Column) ? e.Row : e.Column).Distinct();
+                return newWords.Select(k => new ExtendedAcronym(Words.AddImmutably(k))).ToArray();
+            }
+
+
+            private bool IsEntryCorrect(IWordCoOccurrenceMatrix matrix, IMatrixEntry entry, 
+                char start, string[] words)
+            {
+                var otherWord = words.Contains(entry.Column) ? entry.Row : entry.Column;
+                if (words.Contains(otherWord) || !otherWord.StartsWith(start.ToString())) 
+                    return false;
+                return words.All(w => matrix.GetCoOccurrenceCount(w, otherWord) > 0);
             }
 
             public int ComputeCoOccurrenceCount(IWordCoOccurrenceMatrix matrix)
@@ -53,6 +63,14 @@ namespace Sando.Core.QueryRefomers
 
             private class ExpandedQuery : IReformedQuery
             {
+                public IEnumerable<ReformedWord> ReformedWords { get; private set; }
+                public IEnumerable<string> WordsAfterReform { get; private set; }
+                public string ReformExplanation { get; private set; }
+                public string QueryString { get; private set; }
+                public string OriginalQueryString { get; private set; }
+                public int CoOccurrenceCount { get; private set; }
+                public int EditDistance { get; private set; }
+
                 internal ExpandedQuery(IEnumerable<String> expandedWords, int CoOccurrenceCount)
                 {
                     this.CoOccurrenceCount = CoOccurrenceCount;
@@ -60,9 +78,10 @@ namespace Sando.Core.QueryRefomers
                         ACRONYM_EXPAND, ew.First().ToString(), ew, "")).ToArray();
                     this.WordsAfterReform = this.ReformedWords.Select(rw => rw.NewTerm).ToArray();
                     this.QueryString = this.WordsAfterReform.Aggregate((w1, w2) => w1 + " " + w2);
+                    this.OriginalQueryString = this.ReformedWords.Select(rw => rw.OriginalTerm).
+                        Aggregate((w1, w2) => w1 + " " + w2);
                     this.EditDistance = this.WordsAfterReform.Sum(s => s.Count() - 1);
                     this.ReformExplanation = "Expanding an acronym.";
-
                 }
 
                 public bool Equals(IReformedQuery other)
@@ -76,33 +95,27 @@ namespace Sando.Core.QueryRefomers
                     }
                     return false;
                 }
-
-                public IEnumerable<ReformedWord> ReformedWords { get; private set; }
-                public IEnumerable<string> WordsAfterReform { get; private set; }
-                public string ReformExplanation { get; private set; }
-                public string QueryString { get; private set; }
-                public int CoOccurrenceCount { get; private set; }
-                public int EditDistance { get; private set; }
             }
         }
 
-        public IEnumerable<IReformedQuery> GetExpandedQueries(string target)
+        public IReformedQuery[] GetExpandedQueries(string target)
         {
-            if (!IsPreconditionMet(target)) return Enumerable.Empty<IReformedQuery>();
-            var entries = localDictionary.GetEntries(en => IsEntryStartWith(en, target[0], target[1])
+            if (!IsPreconditionMet(target)) return new IReformedQuery[]{};
+            var entries = localCoOccurMatrix.GetEntries(en => IsEntryStartWith(en, target[0], target[1])
                 && !en.Column.Equals(en.Row)).ToList();
-            var acronyms = CreateInitialAcronym(entries, target[0], target[1]);
+            var acronyms = CreateInitialAcronym(entries, target[0], target[1]).OrderByDescending(a => a.
+                ComputeCoOccurrenceCount(localCoOccurMatrix)).TrimIfOverlyLong(3).ToArray();
 
             for (int i = 2; i < target.Count(); i++)
             {
-                acronyms = acronyms.SelectMany(a => a.GetCommonCoOccurWords(localDictionary, 
-                    target.ElementAt(i)));
+                acronyms = acronyms.SelectMany(a => a.GetCommonCoOccurWords(localCoOccurMatrix, 
+                    target.ElementAt(i))).OrderByDescending(a => a.ComputeCoOccurrenceCount
+                        (localCoOccurMatrix)).TrimIfOverlyLong(3).ToArray();
             }
-            return acronyms.Select(a => a.ToReformedQuery(localDictionary)).
+            return acronyms.Select(a => a.ToReformedQuery(localCoOccurMatrix)).
                 OrderByDescending(query => query.CoOccurrenceCount).
-                    TrimIfOverlyLong(GetMaximumCount());
+                    TrimIfOverlyLong(GetMaximumCount()).ToArray();
         }
-
 
         private IEnumerable<ExtendedAcronym> CreateInitialAcronym(IEnumerable<IMatrixEntry> entries, 
             char c1, char c2)
@@ -130,7 +143,7 @@ namespace Sando.Core.QueryRefomers
 
         private int GetMaximumCount()
         {
-            return 3;
+            return int.MaxValue;
         }
     }
 }

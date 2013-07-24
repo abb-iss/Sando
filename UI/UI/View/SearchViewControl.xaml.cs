@@ -502,7 +502,7 @@ namespace Sando.UI.View
             UpdateExpansionState(searchResultListbox);
         }
 
-        private void UpdateRecommendations(IEnumerable<string> recommendations, string query)
+        private void UpdateRecommendations(IEnumerable<ISwumRecommendedQuery> recommendations, string query)
         {
             if (query == searchBox.Text)
             {
