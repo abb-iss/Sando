@@ -71,11 +71,9 @@
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML">
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
-    </Reference>
-    <Reference Include="ABB.SrcML.Data">
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.Data.dll</HintPath>
+    <Reference Include="ABB.SrcML.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.Core.dll</HintPath>
     </Reference>
     <Reference Include="ABB.Swum, Version=0.1.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

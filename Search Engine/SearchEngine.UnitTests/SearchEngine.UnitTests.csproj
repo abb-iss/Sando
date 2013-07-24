@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.46.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
-    </Reference>
     <Reference Include="Lucene.Net">
       <HintPath>..\..\Indexer\Lucene.Net-2.9.4\bin\Lucene.Net.dll</HintPath>
     </Reference>

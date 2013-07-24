@@ -26,7 +26,6 @@ using System.Diagnostics;
 using System.Text;
 using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
-using ABB.SrcML.Utilities;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -106,7 +105,7 @@ namespace Sando.IntegrationTests.Search
 
         private void CreateSwum()
         {
-            SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()), false);
+            SwumManager.Instance.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<Sando.Core.Tools.SolutionKey>()), false);
             SwumManager.Instance.Archive = _srcMLArchive;
         }
 
@@ -144,7 +143,7 @@ namespace Sando.IntegrationTests.Search
         private void CreateKey(string filesInThisDirectory)
         {
             Directory.CreateDirectory(_indexPath);
-            var key = new SolutionKey(Guid.NewGuid(), filesInThisDirectory);
+            var key = new Sando.Core.Tools.SolutionKey(Guid.NewGuid(), filesInThisDirectory);
             ServiceLocator.RegisterInstance(key);
         }
 
@@ -245,7 +244,7 @@ namespace Sando.IntegrationTests.Search
             return _srcMLArchive.GetXElementForSourceFile(sourceFilePath);
         }
 
-        public SrcMLArchive GetSrcMLArchive()
+        public ISrcMLArchive GetSrcMLArchive()
         {
             throw new NotImplementedException();
         }
@@ -315,8 +314,7 @@ namespace Sando.IntegrationTests.Search
             throw new NotImplementedException();
         }
 
-        public ABB.SrcML.Data.DataRepository GetDataRepository()
-        {
+        public ABB.SrcML.Data.DataRepository GetDataRepository() {
             throw new NotImplementedException();
         }
 

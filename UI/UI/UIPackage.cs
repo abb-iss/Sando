@@ -5,11 +5,8 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-// JZ: SrcMLService Integration
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using ABB.SrcML.VisualStudio.SrcMLService;
-// End of code changes
 using Configuration.OptionsPages;
 using EnvDTE;
 using EnvDTE80;
@@ -39,7 +36,6 @@ using Sando.Core.Logging;
 using Sando.Core.Logging.Events;
 using Sando.Core.Logging.Persistence;
 using Sando.UI.Service;
-using ABB.SrcML.Utilities;
 using System.Diagnostics;
 using Sando.ExtensionContracts.ServiceContracts;
 
@@ -87,7 +83,7 @@ namespace Sando.UI
     {
         // JZ: SrcMLService Integration
         //private ABB.SrcML.VisualStudio.SolutionMonitor.SolutionMonitor _currentMonitor;
-        private SrcMLArchive _srcMLArchive;
+        private ISrcMLArchive _srcMLArchive;
         private ISrcMLGlobalService srcMLService;
         // End of code changes
 

@@ -15,8 +15,8 @@ namespace Sando.Parser
     public class SrcMLCppParser : IParser
     {
         public ISrcMLGlobalService SrcMLService;
-        public SrcMLArchive Archive { get; set; }           // should be deleted
-        public SrcMLGenerator Generator { get; set; }
+        public ISrcMLArchive Archive { get; set; }           // should be deleted
+        public ISrcMLGenerator Generator { get; set; }
 
         public SrcMLCppParser() {
         }
@@ -25,11 +25,11 @@ namespace Sando.Parser
             this.SrcMLService = srcmlService;
         }
 
-        public SrcMLCppParser(SrcMLArchive archive) {
+        public SrcMLCppParser(ISrcMLArchive archive) {
             this.Archive = archive;
         }
 
-        public SrcMLCppParser(SrcMLGenerator generator) {
+        public SrcMLCppParser(ISrcMLGenerator generator) {
             this.Generator = generator;
         }
 

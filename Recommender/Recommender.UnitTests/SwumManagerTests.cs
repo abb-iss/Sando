@@ -36,7 +36,7 @@ namespace Sando.Recommender.UnitTests {
 
         [Test]
         public void TestCacheRoundTrip() {
-            manager.AddSrcMLFile(new SrcMLFile(@"TestFiles\json_reader.cpp.xml"));
+            manager.AddSrcMLFile(SrcMLElement.Load(@"TestFiles\json_reader.cpp.xml"));
             int beforeCount = manager.GetSwumData().Count;
             //string tempFile = Path.GetTempFileName();
             string tempFile = "swum_cache.txt";
@@ -118,9 +118,9 @@ namespace Sando.Recommender.UnitTests {
 
         private void AddSourceFiles() {
             Console.WriteLine("Thread 2: adding file: " + @"TestFiles\small_json_reader.cpp.xml");
-            manager.AddSrcMLFile(new SrcMLFile(@"TestFiles\small_json_reader.cpp.xml"));
+            manager.AddSrcMLFile(SrcMLElement.Load(@"TestFiles\small_json_reader.cpp.xml"));
             Console.WriteLine("Thread 2: adding file: " + @"TestFiles\function_def.cpp.xml");
-            manager.AddSrcMLFile(new SrcMLFile(@"TestFiles\function_def.cpp.xml"));
+            manager.AddSrcMLFile(SrcMLElement.Load(@"TestFiles\function_def.cpp.xml"));
             Console.WriteLine("Thread 2: adding file: " + @"TestFiles\function_def2.cpp");
             manager.AddSourceFile(@"TestFiles\function_def2.cpp");
         }

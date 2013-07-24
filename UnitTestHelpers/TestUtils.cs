@@ -9,7 +9,6 @@ using Sando.Indexer.IndexFiltering;
 using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.SearchEngine;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Logging;
 using Sando.Core.Logging.Persistence;
 

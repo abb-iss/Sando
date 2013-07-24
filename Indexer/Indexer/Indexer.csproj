@@ -72,10 +72,6 @@
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.46.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
-    </Reference>
     <Reference Include="Contrib.Regex">
       <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Contrib.Regex.dll</HintPath>
     </Reference>

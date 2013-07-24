@@ -28,10 +28,13 @@
     <Reference Id="Microsoft.VisualStudio.MPF" MinVersion="10.0">
       <Name>Visual Studio MPF</Name>
     </Reference>
+    <Reference Id="8b448a37-2665-4b23-a2f9-cad4510f1337" MinVersion="1.0.0">
+      <Name>SrcML Service</Name>
+      <VsixPath>ABB.SrcML.VisualStudio.SrcMLService.vsix</VsixPath>
+    </Reference>
   </References>
   <Content>
     <VsPackage>|%CurrentProject%;PkgdefProjectOutputGroup|</VsPackage>
-    <VsPackage>ABB.SrcML.VisualStudio.SrcMLService.pkgdef</VsPackage>
     <MefComponent>UI.dll</MefComponent>
   </Content>
 </Vsix>

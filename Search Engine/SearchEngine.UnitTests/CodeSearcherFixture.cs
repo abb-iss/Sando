@@ -4,6 +4,7 @@ using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Core.Tools;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -12,7 +13,6 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 
 namespace Sando.SearchEngine.UnitTests
 {

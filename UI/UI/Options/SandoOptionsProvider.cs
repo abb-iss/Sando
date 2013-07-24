@@ -3,7 +3,6 @@ using System.IO;
 using Configuration.OptionsPages;
 using Sando.Core;
 using Sando.DependencyInjection;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching.Criteria;
 using Sando.UI.View;

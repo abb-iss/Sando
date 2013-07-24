@@ -103,17 +103,17 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML, Version=2.0.39.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML, Version=2.0.48.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
-    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.46.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.Core.dll</HintPath>
     </Reference>
-    <Reference Include="ABB.SrcML.VisualStudio.SrcMLService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML.VisualStudio.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SrcMLService.dll</HintPath>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Contrib.Regex">
       <HintPath>..\Lucene.Net-2.9.4\bin\Contrib\Contrib.Regex.dll</HintPath>

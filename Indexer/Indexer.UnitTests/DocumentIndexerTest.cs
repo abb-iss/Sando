@@ -11,7 +11,6 @@ using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.Indexer.Documents;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Indexer.Searching;

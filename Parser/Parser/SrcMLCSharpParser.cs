@@ -15,17 +15,17 @@ namespace Sando.Parser
     {
         private static readonly int snippetSize = 5;
 
-        public SrcMLArchive Archive { get; set; }           // should be deleted
-        public SrcMLGenerator Generator { get; set; }
+        public ISrcMLArchive Archive { get; set; }           // should be deleted
+        public ISrcMLGenerator Generator { get; set; }
 
         public SrcMLCSharpParser() {
         }
 
-        public SrcMLCSharpParser(SrcMLArchive archive) {
+        public SrcMLCSharpParser(ISrcMLArchive archive) {
             this.Archive = archive;
         }
 
-        public SrcMLCSharpParser(SrcMLGenerator generator) {
+        public SrcMLCSharpParser(ISrcMLGenerator generator) {
             this.Generator = generator;
         }
         
