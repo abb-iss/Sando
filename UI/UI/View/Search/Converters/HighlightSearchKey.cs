@@ -17,53 +17,74 @@ namespace Sando.UI.View.Search.Converters {
     class HighlightSearchKey : IValueConverter {
         public Object Convert(Object value, Type targetType,
                       object parameter, CultureInfo culture) {
+                          var span = new Span();
+                          try
+                          {
+                              // return null;
+                              if (value == null)
+                              {
+                                  return null;
+                              }
 
-            // return null;
-             if(value == null) {
-                 return null;
-             }
+                              string input = value as string;
+                              string[] lines = input.Split('\n');
+                              
+                              List<string> key_temp = new List<string>();
 
-             string input = value as string;
-             string[] lines = input.Split('\n');
+                              foreach (string line in lines)
+                              {
 
-             var span = new Span();
-            List<string> key_temp = new List<string>();
+                                  if (line.Contains("|~S~|"))
+                                  {
 
-            foreach(string line in lines){
+                                      string findKey = string.Copy(line);
 
-                 if(line.Contains("|~S~|")) {
+                                      while (findKey.IndexOf("|~S~|") >= 0)
+                                      {
+                                          int first = findKey.IndexOf("|~S~|") + "|~S~|".Length;
+                                          int last = findKey.IndexOf("|~E~|");
 
-                     string findKey = string.Copy(line);
+                                          string key_candidate = findKey.Substring(first, last - first);
 
-                     while(findKey.IndexOf("|~S~|") >= 0) {
-                         int first = findKey.IndexOf("|~S~|") + "|~S~|".Length;
-                         int last = findKey.IndexOf("|~E~|");
-                         
-                         string key_candidate = findKey.Substring(first, last - first);
+                                          bool removed = false;
+                                          if (key_candidate.StartsWith("|~S~|"))
+                                          {
+                                              removed = true;
+                                              key_candidate = key_candidate.Remove("|~S~|".Length);
+                                          }
 
-                         if(!key_temp.Contains(key_candidate))
-                            key_temp.Add(key_candidate);
 
-                         //Remove the searched string
-                         int lengthRemove = last - first + 2 * "|~S~|".Length;
-                         findKey = findKey.Remove(first - "|~S~|".Length, lengthRemove);
-                     }
+                                          if (!key_temp.Contains(key_candidate))
+                                              key_temp.Add(key_candidate);
 
-                     string[] key = key_temp.ToArray();
-                     string[] temp = line.Split(new[] { "|~S~|", "|~E~|" }, StringSplitOptions.RemoveEmptyEntries);
+                                          //Remove the searched string
+                                          int lengthRemove = last - first + 2 * "|~S~|".Length;
+                                          findKey = findKey.Remove(first - "|~S~|".Length, lengthRemove);
+                                          if (removed)
+                                              findKey = findKey.Insert(first - "|~S~|".Length, "|~S~|");
+                                      }
 
-                         foreach(string item in temp) {
-                         if(IsSearchKey(item, key))
-                            span.Inlines.Add(new Run(item) { FontWeight = FontWeights.Bold });
-                         else
-                             span.Inlines.Add(new Run(item));
-                     }
-                 } else
-                     span.Inlines.Add(new Run(line));
-                 span.Inlines.Add(new Run("\n"));
-             }
+                                      string[] key = key_temp.ToArray();
+                                      string[] temp = line.Split(new[] { "|~S~|", "|~E~|" }, StringSplitOptions.RemoveEmptyEntries);
 
-             return span;
+                                      foreach (string item in temp)
+                                      {
+                                          if (IsSearchKey(item, key))
+                                              span.Inlines.Add(new Run(item) { FontWeight = FontWeights.Bold });
+                                          else
+                                              span.Inlines.Add(new Run(item));
+                                      }
+                                  }
+                                  else
+                                      span.Inlines.Add(new Run(line));
+                                  span.Inlines.Add(new Run("\n"));
+                              }
+                              return span;
+                          }
+                          catch (Exception e)
+                          {
+                              return span;
+                          }
 
         }
 
