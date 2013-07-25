@@ -31,14 +31,7 @@ namespace Sando.SearchEngine.UnitTests
             Assert.DoesNotThrow(() => new CodeSearcher( null ));            
         }
 
-        [Test]     
-        public void PerformBasicSearch()
-        {
-			var indexerSearcher = new IndexerSearcher();
-        	CodeSearcher cs = new CodeSearcher(indexerSearcher);            
-            List<CodeSearchResult> result = cs.Search("SimpleName");
-            Assert.True(result.Count > 0);                                 
-        }
+
 
 		[TestFixtureSetUp]
     	public void CreateIndexer()
