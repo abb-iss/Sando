@@ -231,12 +231,15 @@ namespace Sando.IntegrationTests.Search
             return methodSearchResult;
         }
 
-        private string PrintFailInformation()
+        public string PrintFailInformation(bool includeFiles = true)
         {
             StringBuilder info = new StringBuilder();
-            info.AppendLine("Indexed Documents: "+ ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments());
-            foreach(var file in GetFileList(GetFilesDirectory()))
-                info.AppendLine("file: "+file);
+            if (includeFiles)
+            {
+                info.AppendLine("Indexed Documents: " + ServiceLocator.Resolve<DocumentIndexer>().GetNumberOfIndexedDocuments());
+                foreach (var file in GetFileList(GetFilesDirectory()))
+                    info.AppendLine("file: " + file);
+            }
             if (_results != null)
                 foreach (var result in _results)
                     info.AppendLine(result.Name+" in "+ result.FileName);
