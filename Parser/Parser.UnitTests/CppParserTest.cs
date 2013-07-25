@@ -15,7 +15,7 @@ namespace Sando.Parser.UnitTests
 
 		[TestFixtureSetUp]
 		public void FixtureSetUp() {
-		    generator = new ABB.SrcML.SrcMLGenerator(@"SrcML");
+		    generator = new ABB.SrcML.SrcMLGenerator(TestUtils.SrcMLDirectory);
 		}
 
         

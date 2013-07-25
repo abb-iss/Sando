@@ -72,6 +72,10 @@
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
       <Name>SandoExtensionContracts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
+      <Project>{a4567112-2aae-4c67-9ec6-4625924ea118}</Project>
+      <Name>UnitTestHelpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Recommender\Recommender.csproj">
       <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>
       <Name>Recommender</Name>

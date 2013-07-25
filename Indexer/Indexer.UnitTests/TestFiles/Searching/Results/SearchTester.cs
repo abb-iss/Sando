@@ -34,7 +34,7 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
         {
             TestUtils.InitializeDefaultExtensionPoints();
             //set up generator
-            _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"SrcML"));
+            _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(TestUtils.SrcMLDirectory));
             _luceneTempIndexesDirectory = PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>());
             Directory.CreateDirectory(_luceneTempIndexesDirectory);
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory);

@@ -11,6 +11,7 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.Parser;
 using Sando.Indexer.Documents.Converters;
+using UnitTestHelpers;
 
 namespace Sando.Indexer.UnitTests.Documents
 {
@@ -70,7 +71,7 @@ namespace Sando.Indexer.UnitTests.Documents
         public static void InitializeExtensionPoints()
         {
             ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
-            var generator = new ABB.SrcML.SrcMLGenerator(@"SrcML");
+            var generator = new ABB.SrcML.SrcMLGenerator(TestUtils.SrcMLDirectory);
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(generator));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser(generator));
             extensionPointsRepository.RegisterWordSplitterImplementation(new WordSplitter());           

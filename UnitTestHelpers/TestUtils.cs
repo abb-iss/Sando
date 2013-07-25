@@ -16,6 +16,14 @@ namespace UnitTestHelpers
 {
     public class TestUtils
     {
+        static TestUtils() {
+            SolutionDirectory = GetSolutionDirectory();
+            SrcMLDirectory = Path.Combine(SolutionDirectory, "LIBS", "SrcML");
+        }
+
+        public static string SolutionDirectory { get; private set; }
+
+        public static string SrcMLDirectory { get; private set; }
         public static void ClearDirectory(string dir)
         {
             if (Directory.Exists(dir))
@@ -33,7 +41,8 @@ namespace UnitTestHelpers
             FileLogger.SetupDefaultFileLogger(Path.GetTempPath());
 			ExtensionPointsRepository extensionPointsRepository = ExtensionPointsRepository.Instance;
             PathManager.Create(Path.GetTempPath());            
-            var generator = new ABB.SrcML.SrcMLGenerator(@"SrcML");
+            var generator = new ABB.SrcML.SrcMLGenerator(SrcMLDirectory);
+
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".cs" }, new SrcMLCSharpParser(generator));
             extensionPointsRepository.RegisterParserImplementation(new List<string>() { ".h", ".cpp", ".cxx" }, new SrcMLCppParser(generator));
 
@@ -50,5 +59,13 @@ namespace UnitTestHelpers
 
             extensionPointsRepository.RegisterIndexFilterManagerImplementation(new IndexFilterManager());
 		}
+
+        internal static string GetSolutionDirectory() {
+            var currentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
+            while(currentDirectory != null && !File.Exists(Path.Combine(currentDirectory.FullName, "Sando", "Sando.sln"))) {
+                currentDirectory = currentDirectory.Parent;
+            }
+            return currentDirectory.FullName;
+        }
     }
 }

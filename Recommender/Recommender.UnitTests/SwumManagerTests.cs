@@ -7,6 +7,7 @@ using System.Threading;
 using NUnit.Framework;
 using Sando.Recommender;
 using ABB.SrcML;
+using UnitTestHelpers;
 
 namespace Sando.Recommender.UnitTests {
     [TestFixture]
@@ -15,7 +16,7 @@ namespace Sando.Recommender.UnitTests {
 
         [TestFixtureSetUp]
         public void FixtureSetup() {
-            manager.Generator = new SrcMLGenerator(@"SrcML");
+            manager.Generator = new SrcMLGenerator(TestUtils.SrcMLDirectory);
         }
 
         [TearDown]

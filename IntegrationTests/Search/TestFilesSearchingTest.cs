@@ -38,7 +38,8 @@ namespace Sando.IntegrationTests.Search
 
         public override string GetFilesDirectory()
         {
-            return "..\\..\\IntegrationTests\\TestFiles";
+            //return "..\\..\\IntegrationTests\\TestFiles";
+            return Path.Combine(TestUtils.SolutionDirectory, "IntegrationTests", "TestFiles");
         }
 
         public override TimeSpan? GetTimeToCommit()
