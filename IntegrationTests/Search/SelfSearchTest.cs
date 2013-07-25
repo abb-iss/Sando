@@ -103,8 +103,8 @@ namespace Sando.IntegrationTests.Search
             }catch(Exception e){
                 //expected
                 return;
-            }
-            Assert.IsTrue(false, "Should fail to find this method: "+PrintFailInformation(false));
+            } 
+            Assert.IsTrue(false, "Should fail to find this method "+PrintFailInformation(false));
         }        
 
 		[Test]
