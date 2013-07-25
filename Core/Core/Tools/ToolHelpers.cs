@@ -89,7 +89,7 @@ namespace Sando.Core.Tools
         public static IEnumerable<T> CustomBinarySearch<T>(this List<T> list, T target, IComparer<T> comparer)
         {
             var endIndex = list.BinarySearch(target, comparer);
-            if (endIndex > -1 && endIndex < list.Count)
+            if (endIndex > -1 && endIndex < list.Count) 
             {
                 int startIndex = endIndex;
                 for (; startIndex >=0 && comparer.Compare(list.ElementAt(startIndex - 1), target) == 0; startIndex--);

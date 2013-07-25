@@ -13,7 +13,7 @@ namespace Sando.Core.QueryRefomers
     /// <param name="improvedTerms"></param>
     public delegate void ImprovedQueryReady(IEnumerable<IReformedQuery> improvedTerms);
 
-    public class QueryReformerManager
+    public class QueryReformerManager : IInitializable
     {
        
         private readonly DictionaryBasedSplitter dictionary;
@@ -23,10 +23,10 @@ namespace Sando.Core.QueryRefomers
             this.dictionary = dictionary;
         }
 
-        public void Initialize()
+        public void Initialize(string nonUsedDirectory)
         {
-            SeSpecificThesaurus.GetInstance().Initialize();
-            GeneralEnglishThesaurus.GetInstance().Initialize();
+            SeSpecificThesaurus.GetInstance().Initialize(nonUsedDirectory);
+            GeneralEnglishThesaurus.GetInstance().Initialize(nonUsedDirectory);
         }
 
         public void ReformTermsAsynchronously(IEnumerable<String> terms, ImprovedQueryReady callback)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Sando.Core.QueryRefomers;
 
 namespace Sando.Core.Tools
 {
@@ -12,7 +13,7 @@ namespace Sando.Core.Tools
         long TimeStamp { get; }
     }
 
-    public sealed class SearchHistory : IDisposable
+    public sealed class SearchHistory : IDisposable, IInitializable
     {
         private readonly object locker;
         private readonly List<InternalSearchHistoryItem> allItems;
@@ -27,7 +28,7 @@ namespace Sando.Core.Tools
             allItems = new List<InternalSearchHistoryItem>();
         }
 
-        public void Initiatalize(string directory)
+        public void Initialize(string directory)
         {
             lock (locker)
             {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Sando.Core.QueryRefomers;
 
 namespace Sando.Core.Tools
 {
-    public interface IThesaurus
+    public interface IThesaurus : IInitializable
     {
-        void Initialize();
         IEnumerable<SynonymInfo> GetSynonyms(String word);
     }
 
@@ -100,7 +100,7 @@ namespace Sando.Core.Tools
             }
         }
 
-        public void Initialize()
+        public void Initialize(string notUsedDirectory)
         {
             lock (locker)
             {

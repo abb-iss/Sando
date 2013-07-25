@@ -16,10 +16,9 @@ namespace Sando.Core.Tools
         int Count { get; }
     }
 
-    public interface IWordCoOccurrenceMatrix : IDisposable
+    public interface IWordCoOccurrenceMatrix : IDisposable, IInitializable
     {
         int GetCoOccurrenceCount(String word1, String word2);
-        void Initialize(String directory);
         Dictionary<String, int> GetCoOccurredWordsAndCount(String word);
         Dictionary<string, int> GetAllWordsAndCount();
         IEnumerable<IMatrixEntry> GetEntries(Predicate<IMatrixEntry> predicate);
