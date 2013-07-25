@@ -26,6 +26,7 @@ using System.Diagnostics;
 using System.Text;
 using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
+using Sando.Core.QueryRefomers;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -136,6 +137,19 @@ namespace Sando.IntegrationTests.Search
             ServiceLocator.RegisterInstance(new IndexUpdateManager());
             currentIndexer.ClearIndex();            
             ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingStarted();
+
+            var dictionary = new DictionaryBasedSplitter();
+            dictionary.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
+
+            var reformer = new QueryReformerManager(dictionary);
+            reformer.Initialize();
+            ServiceLocator.RegisterInstance(reformer);
+
+            var history = new SearchHistory();
+            history.Initiatalize(PathManager.Instance.GetIndexPath
+                (ServiceLocator.Resolve<SolutionKey>()));
+            ServiceLocator.RegisterInstance(history);
+
         }
 
 
@@ -234,8 +248,14 @@ namespace Sando.IntegrationTests.Search
             SearchManager manager = new SearchManager(this);
             _results = null;
             manager.Search(keywords);
+            int i = 0;
             while (_results == null)
+            {
                 Thread.Sleep(50);
+                i++;
+                if (i < 100)
+                    break;
+            }
             return _results;
         }
 

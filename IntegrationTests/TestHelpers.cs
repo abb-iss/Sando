@@ -11,6 +11,7 @@ using ABB.SrcML.VisualStudio.SrcMLService;
 using ABB.SrcML.Utilities;
 using Sando.ExtensionContracts.ServiceContracts;
 using Sando.UI;
+using ABB.SrcML;
 
 namespace Sando.IntegrationTests
 {
