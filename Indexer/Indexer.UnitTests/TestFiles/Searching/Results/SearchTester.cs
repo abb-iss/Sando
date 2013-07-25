@@ -6,6 +6,7 @@ using Lucene.Net.Analysis;
 using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Core.Tools;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -14,8 +15,6 @@ using Sando.Indexer.Searching;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Parser;
 using UnitTestHelpers;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
-using Sando.Core.Tools;
 
 namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
 {
@@ -35,7 +34,7 @@ namespace Sando.Indexer.UnitTests.TestFiles.Searching.Results
         {
             TestUtils.InitializeDefaultExtensionPoints();
             //set up generator
-            _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(@"SrcML"));
+            _parser = new SrcMLCSharpParser(new ABB.SrcML.SrcMLGenerator(TestUtils.SrcMLDirectory));
             _luceneTempIndexesDirectory = PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>());
             Directory.CreateDirectory(_luceneTempIndexesDirectory);
             TestUtils.ClearDirectory(_luceneTempIndexesDirectory);

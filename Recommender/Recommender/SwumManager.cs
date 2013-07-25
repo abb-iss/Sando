@@ -57,13 +57,13 @@ namespace Sando.Recommender {
         /// <summary>
         /// The SrcMLArchive to retrieve SrcML files from
         /// </summary>
-        public SrcMLArchive Archive { get; set; }
+        public ISrcMLArchive Archive { get; set; }
 
         /// <summary>
         /// The SrcMLGenerator to use to convert source files to SrcML.
         /// This is only used if Archive is null.
         /// </summary>
-        public SrcMLGenerator Generator { get; set; }
+        public ISrcMLGenerator Generator { get; set; }
     
         /// <summary>
         /// The path to the cache file on disk.
@@ -166,11 +166,10 @@ namespace Sando.Recommender {
         /// <summary>
         /// Generates SWUMs for the method definitions within the given SrcML file
         /// </summary>
-        /// <param name="srcmlFile">A SrcML file.</param>
-        public void AddSrcMLFile(SrcMLFile srcmlFile) {
-            foreach(var unit in srcmlFile.FileUnits) {
-                AddSwumForMethodDefinitions(unit, srcmlFile.FileName);
-            }
+        /// <param name="fileUnit">A SrcML file unit.</param>
+        public void AddSrcMLFile(XElement fileUnit) {
+            var fileName = SrcMLElement.GetFileNameForUnit(fileUnit);
+            AddSwumForMethodDefinitions(fileUnit, fileName);
         }
 
         /// <summary>
@@ -412,7 +411,7 @@ namespace Sando.Recommender {
                 throw new ArgumentException("Element not a valid method type.", "methodElement");
             }
 
-            string funcName = SrcMLHelper.GetNameForMethod(methodElement).Value;
+            string funcName = SrcMLElement.GetNameForMethod(methodElement).Value;
             MethodContext mc = ContextBuilder.BuildMethodContext(methodElement);
             //set the declaring class name, if it's been passed in
             //this is necessary because the xml from the database for inline methods won't have the surrounding class xml

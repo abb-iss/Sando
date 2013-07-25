@@ -72,10 +72,6 @@
     <AssemblyOriginatorKeyFile>sandoKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor, Version=2.0.46.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
-    </Reference>
     <Reference Include="AWSSDK, Version=1.4.15.1, Culture=neutral, PublicKeyToken=cd2d24cd2bace800, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\AWSSDK.dll</HintPath>
@@ -176,6 +172,7 @@
     <Compile Include="Tools\SparseCoOccurrenceMatrix.cs" />
     <Compile Include="Tools\SpecialWords.cs" />
     <Compile Include="Tools\TimedProcessor.cs" />
+    <Compile Include="Tools\SolutionKey.cs" />
     <Compile Include="Tools\ToolHelpers.cs">
       <SubType>Code</SubType>
     </Compile>

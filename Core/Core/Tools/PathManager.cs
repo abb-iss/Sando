@@ -50,12 +50,12 @@ namespace Sando.Core.Tools
             return _pathToExtensionRoot;
         }
 
-        public string GetIndexPath(ABB.SrcML.VisualStudio.SolutionMonitor.SolutionKey solutionKey)
+        public string GetIndexPath(SolutionKey solutionKey)
         {            
             return LuceneDirectoryHelper.GetOrCreateLuceneDirectoryForSolution(solutionKey.GetSolutionPath(), PathManager.Instance.GetExtensionRoot());                
         }
 
-        public bool IndexPathExists(ABB.SrcML.VisualStudio.SolutionMonitor.SolutionKey key)
+        public bool IndexPathExists(SolutionKey key)
         {
             return LuceneDirectoryHelper.
                 DoesLuceneDirectoryForSolutionExist(key.GetSolutionPath(), PathManager.Instance.GetExtensionRoot());                

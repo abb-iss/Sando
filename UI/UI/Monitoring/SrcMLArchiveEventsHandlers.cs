@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
 using Sando.Core.Logging.Events;
-using ABB.SrcML.Utilities;
 
 
 namespace Sando.UI.Monitoring

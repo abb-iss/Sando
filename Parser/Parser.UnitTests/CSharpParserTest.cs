@@ -17,7 +17,7 @@ namespace Sando.Parser.UnitTests
         [TestFixtureSetUp]
         public void FixtureSetUp() {
             TestUtils.InitializeDefaultExtensionPoints();
-            generator = new SrcMLGenerator(@"SrcML");
+            generator = new SrcMLGenerator(TestUtils.SrcMLDirectory);
         }
 
 		[Test]

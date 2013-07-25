@@ -35,9 +35,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
     </Reference>
-    <Reference Include="ABB.SrcML.VisualStudio.SrcMLService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ABB.SrcML.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SrcMLService.dll</HintPath>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.SrcML.VisualStudio.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.0.12017, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

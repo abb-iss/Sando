@@ -487,17 +487,6 @@
             <exception cref="T:System.ArgumentException">The passed XElement does not represent a function, constructor, or destructor element.</exception>
             <exception cref="T:System.ArgumentNullException">methodTag is null.</exception>
         </member>
-        <member name="M:ABB.Swum.ContextBuilder.BuildMethodContextFromCall(System.Xml.Linq.XElement,ABB.SrcML.Data.SrcMLDataContext)">
-            <summary>
-            Creates a MethodContext object based on the given srcML call element.
-            </summary>
-            <param name="callElement">The srcML Call element to create the context from.</param>
-            <param name="srcDb">A SrcMLDataContext database built on the srcML file that <paramref name="callElement"/> is part of.</param>
-            <returns>A MethodContext object based on <paramref name="callElement"/>.</returns>
-            <exception cref="T:System.ArgumentNullException"><paramref name="callElement"/> is null.</exception>
-            <exception cref="T:System.ArgumentException"><paramref name="callElement"/> is not a Call element.</exception>
-            <exception cref="T:System.ArgumentNullException"><paramref name="srcDb"/> is null.</exception>
-        </member>
         <member name="M:ABB.Swum.ContextBuilder.ConstructTypeName(System.Xml.Linq.XElement)">
             <summary>
             Extracts the type name from a type srcML element. A type element may contain several name and type modifier elements.
@@ -2729,12 +2718,12 @@
             <param name="printSplitTrace">Whether or not to print a trace of the splitting process.</param>
             <returns>An array of the words resulting from the split.</returns>
         </member>
-        <member name="M:ABB.Swum.SamuraiIdSplitter.CountProgramWords(System.String)">
+        <member name="M:ABB.Swum.SamuraiIdSplitter.CountProgramWords(ABB.SrcML.ISrcMLArchive)">
             <summary>
-            Counts the number of occurrences of words within the identifiers in the supplied srcML file
+            Counts the number of occurrences of words within the identifiers in the given srcml files.
             </summary>
-            <param name="path">The srcML file to analyze. This can be either a compound or singular srcML file.</param>
-            <returns>A dictionary mapping words to the number of occurrences with the file's identifiers.</returns>
+            <param name="archive">An archive containing the srcml files to analyze.</param>
+            <returns>A dictionary mapping words to the number of occurrences within identifiers.</returns>
         </member>
         <member name="T:ABB.Swum.ExternalProcessTagger">
             <summary>

@@ -31,9 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML, Version=2.0.37.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
+    <Reference Include="ABB.SrcML, Version=2.0.255.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.dll</HintPath>
+    </Reference>
+    <Reference Include="ABB.SrcML.Core, Version=2.0.255.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\LIBS\srcML.NET\ABB.SrcML.Core.dll</HintPath>
     </Reference>
     <Reference Include="ABB.Swum, Version=0.1.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\LIBS\Swum.NET\ABB.Swum.dll</HintPath>
@@ -67,6 +71,10 @@
     <ProjectReference Include="..\..\SandoExtensionContracts\SandoExtensionContracts.csproj">
       <Project>{17AA2B71-C4F9-4397-9D05-6119763D07A5}</Project>
       <Name>SandoExtensionContracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UnitTestHelpers\UnitTestHelpers.csproj">
+      <Project>{a4567112-2aae-4c67-9ec6-4625924ea118}</Project>
+      <Name>UnitTestHelpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Recommender\Recommender.csproj">
       <Project>{6B68CA9F-E9B3-433E-880C-D94CACD08A0E}</Project>

@@ -10,7 +10,6 @@ using Sando.DependencyInjection;
 using Sando.ExtensionContracts.IndexerContracts;
 using System.Linq;
 using log4net;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 using Sando.Core.Logging.Persistence;
 
