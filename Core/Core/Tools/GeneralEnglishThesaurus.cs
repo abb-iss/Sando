@@ -21,7 +21,7 @@ namespace Sando.Core.Tools
         private readonly object locker = new object();
         private bool isInitialized = false;
 
-        public void Initialize()
+        public void Initialize(string notUsedDirectory)
         {
             lock (locker)
             {

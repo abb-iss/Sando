@@ -6,6 +6,12 @@ using Sando.Core.Tools;
 
 namespace Sando.Core.QueryRefomers
 {
+    public interface IInitializable
+    {
+        void Initialize(string directory);
+    }
+
+
     public interface IQueryReformer
     {
         void SetOriginalQuery(IEnumerable<String> words);

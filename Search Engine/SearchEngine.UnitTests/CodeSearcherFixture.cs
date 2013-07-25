@@ -4,6 +4,8 @@ using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
 using Sando.Core;
+using Sando.Core.QueryRefomers;
+using Sando.Core.Tools;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
@@ -52,7 +54,7 @@ namespace Sando.SearchEngine.UnitTests
             ServiceLocator.RegisterInstance<Analyzer>(new SimpleAnalyzer());
             _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
             ServiceLocator.RegisterInstance(_indexer);
-
+   
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
 				accessLevel: AccessLevel.Public,
 				definitionLineNumber: 11,

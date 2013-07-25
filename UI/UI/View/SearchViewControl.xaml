@@ -166,7 +166,7 @@
 
      
 
-        <Popup Name="TagCloudPopUpWindow" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="True" 
+        <Popup Name="TagCloudPopUpWindow" Placement="Center" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="True" 
                Grid.Row="3" Grid.Column="2">
             <StackPanel Background="Azure">
                 <DockPanel Background="Azure" Margin="0, 0, 0,0" HorizontalAlignment="Center">

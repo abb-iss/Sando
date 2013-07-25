@@ -16,7 +16,7 @@ namespace Sando.Core.UnitTests.Tools
         [SetUp]
         public void setUp()
         {
-            thesaurus.Initialize();
+            thesaurus.Initialize(null);
         }
 
         [Test]

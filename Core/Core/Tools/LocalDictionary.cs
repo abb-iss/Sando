@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Sando.Core.QueryRefomers;
 
 namespace Sando.Core.Tools
 {
     public partial class DictionaryBasedSplitter
     {
-        private sealed class FileDictionary : IDisposable
+        private sealed class FileDictionary : IDisposable, IInitializable
         {
             private const int TERM_MINIMUM_LENGTH = 2;
             private const int SAVE_EVERY_MINUTES = 7;

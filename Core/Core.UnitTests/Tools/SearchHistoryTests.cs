@@ -60,7 +60,7 @@ namespace Sando.Core.UnitTests.Tools
             var path = Path.Combine(directory, SearchHistory.FILE_NAME);
             File.Delete(path);
             queries.Clear();
-            history.Initiatalize(directory);
+            history.Initialize(directory);
             for (var i = 0; i < 900; i++)
             {
                 var query = GenerateRandomString(20);
@@ -68,7 +68,7 @@ namespace Sando.Core.UnitTests.Tools
                 queries.Add(query);
             }
             history.Dispose();
-            history.Initiatalize(directory);
+            history.Initialize(directory);
         }
 
         [Test]

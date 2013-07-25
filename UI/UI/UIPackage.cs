@@ -485,11 +485,11 @@ namespace Sando.UI
                 ServiceLocator.RegisterInstance(dictionary);
 
                 var reformer = new QueryReformerManager(dictionary);
-                reformer.Initialize();
+                reformer.Initialize(null);
                 ServiceLocator.RegisterInstance(reformer);
 
                 var history = new SearchHistory();
-                history.Initiatalize(PathManager.Instance.GetIndexPath
+                history.Initialize(PathManager.Instance.GetIndexPath
                     (ServiceLocator.Resolve<SolutionKey>()));
                 ServiceLocator.RegisterInstance(history);
                 
