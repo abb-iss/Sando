@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using Sando.Core.Tools;
+using Sando.DependencyInjection;
 
 namespace Sando.UI.View
 {
@@ -49,7 +50,9 @@ namespace Sando.UI.View
 
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
 
-            _recommender = new QueryRecommender();
+            _recommender = new QueryRecommender();            
+            ServiceLocator.RegisterInstance<QueryRecommender>(_recommender);
+            ServiceLocator.RegisterInstance<SearchViewControl>(this);
         }
 
      
@@ -340,7 +343,7 @@ namespace Sando.UI.View
             //    throw new AggregateException(exceptions);
         }
 
-        private void GenerateHighlight(string raw, string searchKey, out string highlight_out, out string highlightRaw_out) {
+        public void GenerateHighlight(string raw, string searchKey, out string highlight_out, out string highlightRaw_out) {
 
             StringBuilder highlight = new StringBuilder();
             StringBuilder highlight_Raw = new StringBuilder();

@@ -12,6 +12,8 @@ namespace Sando.Core.Logging.Events
         public static void TestLogging(Object sender)
         {
             DefaultLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Message from the logger");
+            if(sender as string !=null)
+                DefaultLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), sender as string);
         }
 
         #region ParserEvents

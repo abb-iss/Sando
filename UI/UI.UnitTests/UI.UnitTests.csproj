@@ -90,7 +90,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SandoServiceTest.cs" />
     <None Include="TestFiles\FourCSFiles\FileNameTemplate.cs" />
     <None Include="TestFiles\FourCSFiles\HotKeySelection.cs" />
     <None Include="TestFiles\FourCSFiles\ImageCapture.cs" />
@@ -139,9 +138,7 @@
   <ItemGroup>
     <Content Include="TestFiles\FourCSFiles\TestDetails.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TestFiles\tictactoeproject\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir TestFiles\FourCSFiles\

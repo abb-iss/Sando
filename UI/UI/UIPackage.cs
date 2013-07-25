@@ -183,8 +183,7 @@ namespace Sando.UI
             try
             {
                 base.Initialize();
-                LogEvents.UISandoBeginInitialization(this);
-                base.Initialize();
+                LogEvents.UISandoBeginInitialization(this);                
 
                 SetupDependencyInjectionObjects();
 
@@ -195,7 +194,7 @@ namespace Sando.UI
             catch(Exception e)
             {
                 LogEvents.UISandoInitializationError(this, e);
-            }
+            }            
         }
 
 
@@ -248,14 +247,22 @@ namespace Sando.UI
             }
         }
         
-        private void StartupCompleted()
+        public void StartupCompleted()
         {
             try
             {
                 if (_viewManager.ShouldShow())
                 {
                     _viewManager.ShowSando();
-                    _viewManager.ShowToolbar();
+                    try
+                    {
+                        //will fail during testing in VS IDE host
+                        _viewManager.ShowToolbar();
+                    }
+                    catch (Exception e)
+                    {
+                        //ignore
+                    }
                 }
 
                 if (ServiceLocator.Resolve<DTE2>().Version.StartsWith("10"))
@@ -280,7 +287,7 @@ namespace Sando.UI
             }
         }  
 
-        private void RegisterSolutionEvents()
+        public void RegisterSolutionEvents()
         {
             var dte = ServiceLocator.Resolve<DTE2>();
             if (dte != null)
@@ -358,7 +365,7 @@ namespace Sando.UI
 			try
             {
                 // JZ: SrcMLService Integration
-                srcMLService.StopMonitoring();
+                //srcMLService.StopMonitoring();
                 // TODO: DocumentIndexer.CommitChanges(); DocumentIndexer.Dispose(false);
                 // End of code changes
 
