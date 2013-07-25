@@ -19,13 +19,13 @@ namespace Sando.Indexer.Searching.Criteria
             var dictionarySplittedTerms = terms.SelectMany
                     (ServiceLocator.Resolve<DictionaryBasedSplitter>().
                         ExtractWords).Where(t => t.Length >= TERM_MINIMUM_LENGTH).ToList();
-            terms.AddRange(dictionarySplittedTerms);
+            terms.AddRange(dictionarySplittedTerms.Except(terms));
             var queries = GetReformedQuery(terms.Distinct()).ToList();
             if (queries.Count > 0)
             {
                 LogEvents.AddSearchTermsToOriginal(queries.First());
                 var query = queries.First();
-                terms.AddRange(query.WordsAfterReform.ToList());
+                terms.AddRange(query.WordsAfterReform.Except(terms));
                 criteria.Explanation = GetExplanation(query, originalTerms);
                 criteria.Reformed = true;
                 criteria.RecommendedQueries = queries.GetRange(1, queries.Count - 1).

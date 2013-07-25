@@ -11,7 +11,7 @@ namespace Sando.Core.Tools
         private sealed class FileDictionary : IDisposable
         {
             private const int TERM_MINIMUM_LENGTH = 2;
-            private const int SAVE_EVERY_MINUTES = 10;
+            private const int SAVE_EVERY_MINUTES = 7;
             private const string dictionaryName = "dictionary.txt";
             private const string stemDictionary = "stemDictionary.txt";
             private string directory;

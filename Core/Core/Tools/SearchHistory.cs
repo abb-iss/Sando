@@ -19,7 +19,7 @@ namespace Sando.Core.Tools
         private string directory;
         public const string FILE_NAME = "SandoSearchHistory.txt";
         public const int MAXIMUM_COUNT = 1000;
-        private const int SAVE_EVERY_MINUTES = 10;
+        private const int SAVE_EVERY_MINUTES = 17;
 
         public SearchHistory()
         {

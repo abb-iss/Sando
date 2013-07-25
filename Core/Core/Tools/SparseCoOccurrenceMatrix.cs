@@ -17,7 +17,7 @@ namespace Sando.Core.Tools
 
         public SparseCoOccurrenceMatrix()
         {
-            TimedProcessor.GetInstance().AddTimedTask(SaveToFile, 10 * 60 * 1000);
+            TimedProcessor.GetInstance().AddTimedTask(SaveToFile, 13 * 60 * 1000);
         }
 
         private class BoxedInt : IComparable<BoxedInt>
