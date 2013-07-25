@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Lucene.Net.Analysis;
 using NUnit.Framework;
+using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -51,7 +52,22 @@ namespace Sando.SearchEngine.UnitTests
             ServiceLocator.RegisterInstance<Analyzer>(new SimpleAnalyzer());
             _indexer = new DocumentIndexer(TimeSpan.FromSeconds(1));
             ServiceLocator.RegisterInstance(_indexer);
-   
+
+            // xige
+            var dictionary = new DictionaryBasedSplitter();
+            dictionary.Initialize(PathManager.Instance.GetIndexPath(ServiceLocator.Resolve<SolutionKey>()));
+            ServiceLocator.RegisterInstance(dictionary);
+
+            var reformer = new QueryReformerManager(dictionary);
+            reformer.Initialize(null);
+            ServiceLocator.RegisterInstance(reformer);
+
+            var history = new SearchHistory();
+            history.Initialize(PathManager.Instance.GetIndexPath
+                (ServiceLocator.Resolve<SolutionKey>()));
+            ServiceLocator.RegisterInstance(history);
+
+
     		ClassElement classElement = SampleProgramElementFactory.GetSampleClassElement(
 				accessLevel: AccessLevel.Public,
 				definitionLineNumber: 11,
