@@ -360,7 +360,18 @@
                                             </Paragraph>
                                         </TableCell>
                                     </TableRow>
-                                    <TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Escape '\' and '"' in quotes:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">"OpenFile(\"file.txt\");"
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+
+                                <TableRow>
                                         <TableCell>
                                             <Paragraph FontFamily="Arial">Put '-' before unwanted words:
                                             </Paragraph>
