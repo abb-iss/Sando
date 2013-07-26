@@ -159,16 +159,13 @@ namespace Sando.Core.QueryRefomers
 
             public InternalReformedQuery RemoveShortTerms()
             {
-                var list = allTerms.ToList();
-                for (int i = 0; i < allTerms.Count; i++)
+                for (int i = allTerms.Count - 1; i >= 0; i--)
                 {
                     if (allTerms.ElementAt(i).NewTerm.Length < 2)
                     {
-                        list.RemoveAt(i);
+                        allTerms.RemoveAt(i);
                     }
                 }
-                allTerms.Clear();
-                allTerms.AddRange(list);
                 return this;
             }
         }
