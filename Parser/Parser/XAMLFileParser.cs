@@ -26,10 +26,10 @@ namespace Sando.Parser
         /// <summary>
         /// Breaking down xml element, each element should not exceed this lenght.
         /// </summary>
-        private const int LengthLimit = 30;
+        public const int LengthLimit = 30;
 
         
-        public List<ProgramElement> Parse(string fileName, XElement documentRoot)
+        public List<ProgramElement> OldParse(string fileName, XElement documentRoot)
         {
             var allText = File.ReadAllText(fileName);
             var allXElements = ParseXmlRoot(allText).DescendantNodesAndSelf().
@@ -53,6 +53,59 @@ namespace Sando.Parser
             }
             return allProgramElements;
         }
+
+
+
+       public List<ProgramElement> Parse(string fileName, XElement root)
+       {
+           var allXElement = root.DescendantNodesAndSelf().Where(n => n as XElement != null);
+           var list = new List<ProgramElement>();
+           foreach (XElement original in allXElement)
+           {
+               var copy = XElement.Parse(original.ToString());
+               ControlElement(copy, copy);
+
+               // All information for creating program element.
+               String name = original.Name.LocalName;
+               String body = copy.ToString();
+               int line = GetLineNumber(original);
+               int columnn = GetColumnNumber(original);
+               String snippet = GetSnippet(copy);
+
+               list.Add(new XmlXElement(name, body, line, columnn, fileName, snippet));
+           }
+           return list;
+       }
+ 
+
+
+
+        private void ControlElement(XElement root, XElement currentElement)
+        {
+            if (GetLineLength(root) > LengthLimit)
+            {
+                if (!HasGrandChildren(currentElement))
+                {
+                    currentElement.ReplaceWith(CreateEntirelyFoldedElement(currentElement));
+                    return;
+                }
+                var children = currentElement.Elements().ToArray();
+                for (int i = children.Count() - 1; i >= 0; i--)
+                {
+                    var child = children.ElementAt(i);
+                    ControlElement(root, child);
+                    if (GetLineLength(root) <= LengthLimit) return;
+                }
+                currentElement.ReplaceWith(CreateEntirelyFoldedElement(currentElement));
+            }
+        }
+
+
+        private bool HasGrandChildren(XElement element)
+        {
+            return element.Elements().SelectMany(e => e.Elements()).Any();
+        }
+
 
         /// <summary>
         /// Map an element to its exact counterpart in another copy of the root.

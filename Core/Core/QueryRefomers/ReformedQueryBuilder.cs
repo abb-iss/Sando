@@ -95,8 +95,14 @@ namespace Sando.Core.QueryRefomers
             }
 
             public string OriginalQueryString {
-                get { return ReformedWords.Select(rw => rw.OriginalTerm).
-                    Aggregate((t1, t2) => t1 + " " + t2); }
+                get { 
+                    var sb = new StringBuilder();
+                    foreach (var term in ReformedWords)
+                    {
+                        sb.Append(term.OriginalTerm + " ");
+                    }
+                    return sb.ToString().Trim();
+                }
             }
 
             public int CoOccurrenceCount { 
