@@ -53,6 +53,19 @@ namespace Sando.IntegrationTests.Search
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);            
         }
 
+
+        //"Debug.WriteLine(string.Format("{0}:\t{1}\t{2}\t{3}\t{4}","
+        [Test]
+        public void QueryShouldGetSomeResults()
+        {
+            string keywords = "\"Debug.WriteLine(string.Format(\"{0}:\t{1}\t{2}\t{3}\t{4}\",\"";
+            var expectedLowestRank = 20;
+            Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method;
+            EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);
+        }
+
+
+
         [Test]
         public void QuotedSearchWithNot()
         {
@@ -104,7 +117,7 @@ namespace Sando.IntegrationTests.Search
                 //expected
                 return;
             } 
-            Assert.IsTrue(false, "XXXShould fail to find this method "+PrintFailInformation(false));
+            Assert.IsTrue(false, "Should fail to find this method "+PrintFailInformation(false));
         }        
 
 		[Test]

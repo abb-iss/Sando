@@ -93,6 +93,16 @@
                         </TableRow>
                         <TableRow>
                             <TableCell>
+                                <Paragraph FontFamily="Arial">Escape '\' and '"' in quotes:
+                                </Paragraph>
+                            </TableCell>
+                            <TableCell >
+                                <Paragraph FontFamily="Courier New">"OpenFile(\"file.txt\");"
+                                </Paragraph>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>
                                 <Paragraph FontFamily="Arial">Limit by file extension:
                                 </Paragraph>
                             </TableCell>
