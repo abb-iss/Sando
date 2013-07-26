@@ -146,8 +146,9 @@ namespace Sando.Core.QueryRefomers
             {
                 public bool Equals(ReformedWord x, ReformedWord y)
                 {
-                    return x.NewTerm.Equals(y.NewTerm) || x.NewTerm.GetStemmedQuery().
-                        Equals(y.NewTerm.GetStemmedQuery());
+                    return x.NewTerm.Equals(y.NewTerm, StringComparison.InvariantCultureIgnoreCase) || 
+                        x.NewTerm.GetStemmedQuery().Equals(y.NewTerm.GetStemmedQuery(), 
+                            StringComparison.InvariantCultureIgnoreCase);
                 }
 
                 public int GetHashCode(ReformedWord obj)
