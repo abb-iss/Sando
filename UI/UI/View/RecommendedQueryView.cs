@@ -262,5 +262,17 @@ namespace Sando.UI.View
             link.Click += (sender, args) => TagCloudPopUpWindow.IsOpen = false;
             return link;
         }
+
+        internal Brush GetNormalTextColor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.TitleBarActiveTextKey;
+            return (Brush)Application.Current.Resources[key];
+        }
+
+        internal Brush GetHistoryTextColor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.TitleBarInactiveKey;
+            return (Brush)Application.Current.Resources[key];
+        }
     }
 }

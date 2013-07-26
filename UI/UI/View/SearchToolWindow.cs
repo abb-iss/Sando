@@ -41,10 +41,11 @@ namespace Sando.UI.View
         }
 
         public SearchViewControl GetSearchViewControl()
-        {
+        {            
             return base.Content as SearchViewControl;
         }
 
+        
         
     }
 }
