@@ -124,11 +124,12 @@
 
         <!-- Top Part: Query -->
         <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" 
-                                  Name="searchBox" Margin="5,8,20,0" FilterMode="None" 
+                                  Name="searchBox" Margin="5,5,20,0" FilterMode="None" 
                                   Height="25" BorderBrush="DimGray" 
+                                  Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
                                   MinimumPrefixLength="0" MaxDropDownHeight="290" 
-                                  ValueMemberPath="Query" VerticalAlignment="Top">
+                                  ValueMemberPath="Query" VerticalAlignment="Top" Background="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBackgroundKey}}">
           
             <controls:AutoCompleteBox.ToolTip>
                 <StackPanel>                                        
@@ -151,11 +152,11 @@
                  VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="15" IsIndeterminate="True" Visibility="Collapsed"/>
 
         <!-- info string -->
-        <TextBox Margin="4,0,0,0" Foreground="#1F1F1F" BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
+        <TextBox Margin="4,0,0,0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
                                   KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
 
         <!-- info string -->
-        <TextBlock Margin="4,0,0,0" Foreground="#1F1F1F" FontSize="11" 
+        <TextBlock Margin="4,0,0,0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" FontSize="11" 
                 Name="RecommendedQueryTextBlock"
                 FontStyle="Italic" Background="{Binding Path=Background, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
@@ -199,7 +200,7 @@
             <Expander.HeaderTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Advanced Options" />
+                        <TextBlock Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"  Text="Advanced Options" />
 
 
                     </StackPanel>
@@ -217,7 +218,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Margin="5,0,5,5" Text="Access level:" Grid.Row="0" Grid.ColumnSpan="2"/>
+                    <TextBlock Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Margin="5,0,5,5" Text="Access level:" Grid.Row="0" Grid.ColumnSpan="2"/>
                     <ComboBox Name="searchAccessLevel" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
                               KeyboardNavigation.IsTabStop="{Binding ElementName=searchByAccessLevel,Path=IsChecked}" ItemsSource="{Binding AccessLevels}" Grid.ColumnSpan="2">
                         <ComboBox.ItemTemplate>
@@ -239,7 +240,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Margin="5,0,5,5" Text="Element type:" Grid.Row="0"/>
+                    <TextBlock Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Margin="5,0,5,5" Text="Element type:" Grid.Row="0"/>
                     <ComboBox Name="searchElementType" Margin="5,0,5,5" SelectedIndex="0" Grid.Row="1"
                               KeyboardNavigation.IsTabStop="{Binding ElementName=searchByProgramElementType,Path=IsChecked}"  ItemsSource="{Binding ProgramElements}">
                         <ComboBox.ItemTemplate>
@@ -406,7 +407,9 @@
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
                         VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
                        SelectionChanged="searchResultListbox_SelectionChanged" MouseLeave="MouseLeaveEvent"                    
-                       >
+                       Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"                       
+                       >  
+    
                 <ListView.ContextMenu>
                     <ContextMenu Name="SearchResultMenu" StaysOpen="true">
                         <ContextMenu.BitmapEffect>
@@ -434,6 +437,8 @@
                             <GridViewColumn.HeaderContainerStyle>
                                 <Style  TargetType="{x:Type GridViewColumnHeader}">
                                     <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"/>
                                 </Style>
                             </GridViewColumn.HeaderContainerStyle>
                             <GridViewColumn.CellTemplate>
@@ -459,15 +464,7 @@
                                                 <RowDefinition Height="20"/>
                                                 <RowDefinition Height="1"/>
                                             </Grid.RowDefinitions>
-                                            <Border Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="3" Loaded="RespondToLoad">
-                                                <Border.Background>
-                                                    <LinearGradientBrush StartPoint="0,0"  EndPoint="1,0">
-                                                        <GradientStop Color="#E9FFDE" Offset="0" />
-                                                        <GradientStop Color="#E9FFDE" Offset="{Binding Mode=OneWay, Path=Score, Converter={StaticResource ScoreToEndpoint}}" />
-                                                        <GradientStop Color="White" Offset="{Binding Mode=OneWay, Path=Score, Converter={StaticResource ScoreToEndpoint}}" />
-                                                        <GradientStop Color="White" Offset="1" />
-                                                    </LinearGradientBrush>
-                                                </Border.Background>
+                                            <Border Grid.Row="0" Grid.ColumnSpan="4" Grid.RowSpan="3" >
                                             </Border>
                                             <Canvas Width="Auto" Height="0" Margin="-7,-2,0,0" Grid.Row="0" Grid.Column="0">
                                                 <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
@@ -476,12 +473,12 @@
                                             <Popup Name="Details" Placement="Left" StaysOpen="False" Width="Auto" AllowsTransparency="true"                                            
                                                 PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}"
                                                 IsOpen="{Binding (ListViewItem.IsSelected), RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}">
-                                                <Border BorderBrush="White" BorderThickness="3,3,0,0">
-                                                    <Border BorderBrush="Black" BorderThickness="1,1,3,3">
-                                                        <Grid Background="LightGray">
+                                                <Border BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.DockTargetBorderKey}}" BorderThickness="3,3,0,0">
+                                                    <Border BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}" BorderThickness="1,1,3,3">
+                                                        <Grid Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
                                                             <Grid.Resources>
                                                                 <Style TargetType="{x:Type Border}">
-                                                                    <Setter Property="BorderBrush" Value="Black" />
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static vsfx:VsBrushes.EditorExpansionBorderKey}}" />
                                                                     <Setter Property="BorderThickness" Value="0.5" />
                                                                     <Setter Property="CornerRadius" Value="0" />
                                                                 </Style>
@@ -499,19 +496,19 @@
                                                             <Border Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2">
                                                             </Border>
 
-                                                            <TextBlock Grid.Row="0" Grid.Column="1"  Margin="2" Text="{Binding Mode=OneWay, Path=Name}" />
-                                                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding Mode=OneWay, Path=ParentOrFile}"/>
+                                                            <TextBlock Grid.Row="0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Grid.Column="1"  Margin="2" Text="{Binding Mode=OneWay, Path=Name}" />
+                                                            <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Margin="2" Text="{Binding Mode=OneWay, Path=ParentOrFile}"/>
                                                             <Image Source="{Binding Mode=OneWay, Path=ProgramElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="2" Grid.Row="0" Grid.Column="0" >
                                                             </Image>
-                                                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" TextElement.FontStyle="Italic" Text="in" />
+                                                            <TextBlock Grid.Row="1" Grid.Column="0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Margin="2" TextElement.FontStyle="Italic" Text="in" />
 
                                                             <Border Grid.Row="2" Grid.ColumnSpan="2"></Border>
                                                             <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                                                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Margin="2" local:TextBlockEx.FormattedText="{Binding Mode=OneWay, Path=Highlight, Converter={StaticResource HighlightSearchKey}}"/>
+                                                                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Margin="2" local:TextBlockEx.FormattedText="{Binding Mode=OneWay, Path=Highlight, Converter={StaticResource HighlightSearchKey}}"/>
                                                             </ScrollViewer>
                                                             <Border Grid.Row="3" Grid.ColumnSpan="2"></Border>
                                                             <ScrollViewer Grid.Row="3" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                                                <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Margin="4" local:TextBlockEx.FormattedText="{Binding Mode=OneWay, Path=HighlightRaw, Converter={StaticResource HighlightSearchKey}}"/>
+                                                                <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"  Margin="4" local:TextBlockEx.FormattedText="{Binding Mode=OneWay, Path=HighlightRaw, Converter={StaticResource HighlightSearchKey}}"/>
                                                             </ScrollViewer>
                                                         </Grid>
                                                     </Border>
@@ -519,14 +516,14 @@
                                             </Popup>
                                             <Image Source="{Binding Mode=OneWay, Path=ProgramElement, Converter={StaticResource ElementToIcon}}" Width="16" Height="16" Margin="0,0,2,2" Grid.Row="1" Grid.Column="0" >
                                             </Image>
-                                            <TextBlock Name="Name" MaxWidth="210" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
-                                            <TextBlock Grid.Row="1" Grid.Column="2" FontStyle="Italic" FontWeight="Light" Margin="5,0,5,0">in</TextBlock>
-                                            <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="3" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
+                                            <TextBlock Name="Name" MaxWidth="210" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" Text="{Binding Mode=OneWay, Path=Name}" Margin="1,0,0,0" TextTrimming="CharacterEllipsis" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
+                                            <TextBlock Grid.Row="1" Grid.Column="2" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" FontStyle="Italic" FontWeight="Light" Margin="5,0,5,0">in</TextBlock>
+                                            <TextBlock Name="Parent" Text="{Binding Mode=OneWay, Path=ParentOrFile}" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" TextTrimming="WordEllipsis" Grid.Row="1" Grid.Column="3" FontWeight="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource FontConverter}, Mode=OneWay}" />
                                             <Canvas Width="Auto" Height="0" Margin="-7,0,0,0" Grid.Row="2" Grid.Column="0">
                                                 <Line X1="0" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsSelected, Converter={StaticResource StrokeConverter}, Mode=OneWay}"></Line>
                                             </Canvas>
                                         </Grid>
-                                        <TextBlock Name="Snippet" Margin="5,2,0,0" FontFamily="Consolas" MinWidth="200" FontSize="10" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
+                                        <TextBlock Name="Snippet" Margin="5,2,0,0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" FontFamily="Consolas" MinWidth="200" FontSize="10" TextAlignment="Left" VerticalAlignment="Top" Width="Auto" Height="60" 
                                                Text="{Binding Mode=OneWay, Path=Snippet}" Grid.Row="1" Grid.Column="0" TextTrimming="CharacterEllipsis"/>
                                         <Canvas Width="Auto" Height="0" Margin="-7,0,0,0" Grid.Row="2" Grid.Column="0">
                                             <Line X1="1" X2="5000" Y1="0" Y2="0" Stroke="LightSlateGray" StrokeThickness="2"></Line>
