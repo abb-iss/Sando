@@ -394,7 +394,7 @@ namespace Sando.UI.View
             highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
         }
 
-        private string[] GetKeys(string searchKey) {
+        public static string[] GetKeys(string searchKey) {
             SandoQueryParser parser = new SandoQueryParser();
             var description = parser.Parse(searchKey);
             var terms = description.SearchTerms;
@@ -403,8 +403,16 @@ namespace Sando.UI.View
                 keys.Add(DictionaryHelper.GetStemmedQuery(term));
                 keys.Add(term);
             }
-            foreach(var quote in description.LiteralSearchTerms)
-                keys.Add(quote.Trim('"'));
+            foreach (var quote in description.LiteralSearchTerms)
+            {
+
+                var toAdd = quote.Substring(1);
+                toAdd = toAdd.Substring(0, toAdd.Length - 1);
+                //unescape '\' and '"'s
+                toAdd = toAdd.Replace("\\\"","\"");
+                toAdd = toAdd.Replace("\\\\", "\\");
+                keys.Add(toAdd);
+            }
             return keys.ToArray();
         }
 

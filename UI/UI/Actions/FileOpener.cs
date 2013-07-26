@@ -30,9 +30,7 @@ namespace Sando.UI.Actions
             try
             {
                 var selection = (TextSelection)_dte.ActiveDocument.Selection;
-                selection.GotoLine(lineNumber);
-              
-                // FocusBySelection(lineNumber, text);
+                selection.GotoLine(lineNumber);                              
             }
             catch (Exception e)
             {
@@ -41,66 +39,6 @@ namespace Sando.UI.Actions
             }
         }
 
-        private static void FocusBySelection(int lineNumber, string text)
-        {
-            var literal = WordSplitter.IsLiteralSearchString(text);
-            if (literal != null)
-                FocusOnLiteralString(literal);
-            else
-                HighlightLine(lineNumber);
-        }
-
-        private static void HighlightLine(int lineNumber)
-        {
-            var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
-            objSel.MoveToLineAndOffset(System.Convert.ToInt32
-                (lineNumber), System.Convert.ToInt32(1), true);
-            objSel.SelectLine();
-        }
-
-        private static void HighlightTerms(string text)
-        {
-            var terms = text.Split(' ');
-            foreach (var term in terms)
-            {
-                var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
-                TextRanges textRanges = null;
-                objSel.FindPattern(term, 0, ref textRanges);
-                {
-                    long lStartLine = objSel.TopPoint.Line;
-                    long lStartColumn = objSel.TopPoint.LineCharOffset;
-                    objSel.SwapAnchor();
-                    objSel.MoveToLineAndOffset(Convert.ToInt32(lStartLine), Convert.ToInt32(lStartColumn + term.Length), true);
-                }
-
-            }
-        }
-
-
-
-        private static void FocusOnLiteralString(string text)
-        {
-            const char chars = '"';
-            bool isQuoted = text.StartsWith("\"") && text.EndsWith("\"");
-            text = text.TrimStart(chars);
-            text = text.TrimEnd(chars);
-            var objSel = (TextSelection)(_dte.ActiveDocument.Selection);
-            TextRanges textRanges = null;
-            if (text.Contains("*") && !isQuoted)
-            {
-                text = LuceneQueryStringBuilder.EscapeChars(text);
-                if (Is2012())
-                {
-                    text = text.Replace("*", ".*");
-                    objSel.FindPattern(text, 8, ref textRanges);
-                }
-                else
-                    objSel.FindPattern(text, 1024, ref textRanges);
-            }
-            else
-                objSel.FindPattern(text, 0, ref textRanges);
-            objSel.SelectLine();
-        }
 
         private static bool Is2012()
         {

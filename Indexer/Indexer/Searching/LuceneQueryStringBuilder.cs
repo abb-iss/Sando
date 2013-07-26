@@ -202,7 +202,9 @@ namespace Sando.Indexer.Searching
         {
             if (searchTermEscaped.StartsWith("\"") && searchTermEscaped.EndsWith("\""))
             {
-                searchTermEscaped = "*" + searchTermEscaped.Trim('"') + "*";
+                var toAdd = searchTermEscaped.Substring(1);
+                toAdd = toAdd.Substring(0, toAdd.Length - 1);
+                searchTermEscaped = "*" + toAdd + "*";
                 searchTermEscaped = EscapeChars(searchTermEscaped);                
             }
             return searchTermEscaped;
