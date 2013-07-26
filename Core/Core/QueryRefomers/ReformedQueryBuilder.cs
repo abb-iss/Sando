@@ -159,7 +159,7 @@ namespace Sando.Core.QueryRefomers
 
             public InternalReformedQuery RemoveShortTerms()
             {
-                var terms = allTerms.Where(t => t.NewTerm.Length >= 2);
+                var terms = allTerms.Where(t => t.NewTerm.Length >= 2).ToArray();
                 allTerms.Clear();
                 allTerms.AddRange(terms);
                 return this;
