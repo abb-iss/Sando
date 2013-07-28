@@ -9,16 +9,18 @@ using Sando.DependencyInjection;
 
 namespace Sando.Indexer.Searching.Criteria
 {
-    internal class SearchCriteriaReformer
+    public class SearchCriteriaReformer
     {
         private const int TERM_MINIMUM_LENGTH = 2;
 
-        public static void ReformSearchCriteria(SimpleSearchCriteria criteria, List<String> terms)
+        public static void ReformSearchCriteria(SimpleSearchCriteria criteria)
         {
+            var terms = criteria.SearchTerms.ToList();
             var originalTerms = terms.ToList();
             var dictionarySplittedTerms = terms.SelectMany
                     (ServiceLocator.Resolve<DictionaryBasedSplitter>().
                         ExtractWords).Where(t => t.Length >= TERM_MINIMUM_LENGTH).ToList();
+
             terms.AddRange(dictionarySplittedTerms.Except(terms));
             var queries = GetReformedQuery(terms.Distinct()).ToList();
             if (queries.Count > 0)
@@ -42,7 +44,19 @@ namespace Sando.Indexer.Searching.Criteria
                 criteria.Reformed = false;
                 criteria.RecommendedQueries = Enumerable.Empty<String>().AsQueryable();
             }
+            criteria.SearchTerms = ConvertToSortedSet(terms);
         }
+
+        private static SortedSet<String> ConvertToSortedSet(IEnumerable<string> list)
+        {
+            var set = new SortedSet<string>();
+            foreach (var s in list)
+            {
+                set.Add(s);
+            }
+            return set;
+        }
+
 
         private static String GetExplanation(IReformedQuery query, List<String> originalTerms)
         {
