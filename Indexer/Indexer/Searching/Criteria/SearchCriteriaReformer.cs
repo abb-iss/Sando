@@ -75,8 +75,8 @@ namespace Sando.Indexer.Searching.Criteria
         {
             words = words.ToList();
             var reformer = ServiceLocator.Resolve<QueryReformerManager>();
-            return reformer.ReformTermsSynchronously(words).ToList();
+            return reformer.ReformTermsSynchronously(words).Where(r => r.ReformedWords.Any(w => 
+                w.Category != TermChangeCategory.NOT_CHANGED)).ToList();
         }
-
     }
 }
