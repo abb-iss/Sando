@@ -162,6 +162,7 @@
     <Compile Include="Tools\PathManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tools\SandoLogAnalyzer.cs" />
     <Compile Include="Tools\SandoQueryParser.cs">
       <SubType>Code</SubType>
     </Compile>

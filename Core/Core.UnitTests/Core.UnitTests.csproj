@@ -65,6 +65,7 @@
     <Compile Include="Tools\LuceneDirectoryHelperTest.cs" />
     <Compile Include="Tools\QueryParserTests.cs" />
     <Compile Include="Tools\RandomStringBasedTests.cs" />
+    <Compile Include="Tools\SandoLogFileAnalyzerTests.cs" />
     <Compile Include="Tools\SearchHistoryTests.cs" />
     <Compile Include="Tools\SESpecificThesaurusTests.cs" />
     <Compile Include="Tools\SparseCoOccurrenceMatrixTests.cs" />
