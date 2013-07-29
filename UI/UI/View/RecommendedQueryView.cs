@@ -265,14 +265,29 @@ namespace Sando.UI.View
 
         internal Brush GetNormalTextColor()
         {
-            var key = Microsoft.VisualStudio.Shell.VsBrushes.TitleBarActiveTextKey;
-            return (Brush)Application.Current.Resources[key];
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTextKey;
+            var brush = (Brush)Application.Current.Resources[key];
+            return brush;
         }
 
         internal Brush GetHistoryTextColor()
         {
-            var key = Microsoft.VisualStudio.Shell.VsBrushes.TitleBarInactiveKey;
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
             return (Brush)Application.Current.Resources[key];
+        }
+
+        internal Color GetHighlightColor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.HighlightKey;
+            var brush = (SolidColorBrush)Application.Current.Resources[key];
+            return brush.Color;
+        }
+
+        internal Color GetHighlightBorderColor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.HighlightTextKey;
+            var brush = (SolidColorBrush)Application.Current.Resources[key];
+            return brush.Color;
         }
     }
 }

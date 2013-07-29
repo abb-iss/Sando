@@ -420,8 +420,20 @@
                 </ListView.ContextMenu>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <!--<Style.Triggers>-->
-                        <!--</Style.Triggers>-->
+                        <Style.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected" Value="true" />                                
+                                </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Control.IsMouseOver" Value="true" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
+                            </MultiTrigger>
+                        </Style.Triggers>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                         <Setter Property="Margin" Value="0,0,0,0"/>
                         <Setter Property="Padding" Value="0,0,0,0"/>
