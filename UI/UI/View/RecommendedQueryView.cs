@@ -45,12 +45,38 @@ namespace Sando.UI.View
             quries = quries.ToList();
             RecommendedQueryTextBlock.Inlines.Clear();
             RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Search instead for: " : "");
+            var toRemoveList = new List<string>();
+            toRemoveList.AddRange(searchBox.Text.Split());
             foreach (string query in quries)
             {
-                var hyperlink = new SandoQueryHyperLink(new Run(query), query);
+                var hyperlink = new SandoQueryHyperLink(new Run(RemoveDuplicateTerms(query, 
+                    toRemoveList)), query);
                 hyperlink.Click += RecommendedQueryOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
+            }
+        }
+
+        private string RemoveDuplicateTerms(string query, List<string> toRemoveList)
+        {
+            var addedTerms = query.Split().Except(toRemoveList, 
+                new StringEqualityComparer()).ToArray();
+            toRemoveList.AddRange(addedTerms);
+            return addedTerms.Any() ? addedTerms.Aggregate((t1, t2) => t1 + " " + t2).
+                Trim() : string.Empty;
+        }
+
+
+        private class StringEqualityComparer : IEqualityComparer<string>
+        {
+            public bool Equals(string x, string y)
+            {
+                return x.Equals(y, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            public int GetHashCode(string obj)
+            {
+                return 0;
             }
         }
 

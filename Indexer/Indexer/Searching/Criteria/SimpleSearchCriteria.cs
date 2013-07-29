@@ -42,7 +42,7 @@ namespace Sando.Indexer.Searching.Criteria
         public override string GetQueryReformExplanation()
         {
             return Explanation;
-        }
+        }   
 
         public override IQueryable<string> GetRecommendedQueries()
         {

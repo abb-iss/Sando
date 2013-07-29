@@ -123,7 +123,9 @@ namespace Sando.UI.View
             var builder = CriteriaBuilder.GetBuilder().
                 AddCriteria(searchCriteria).                
                 NumResults(sandoOptions.NumberOfSearchResultsReturned).AddFromDescription(description);
-            return builder.GetCriteria();
+            var simple = builder.GetCriteria() as SimpleSearchCriteria;
+            SearchCriteriaReformer.ReformSearchCriteria(simple);
+            return simple;
         }
     }
 }

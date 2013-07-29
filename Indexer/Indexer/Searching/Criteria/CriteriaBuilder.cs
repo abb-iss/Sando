@@ -20,7 +20,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             Initialze(searchCriteria);
             var terms = WordSplitter.ExtractSearchTerms(searchString).ToList();
-            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria, terms);
+            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria);
             _searchCriteria.SearchTerms = new SortedSet<string>(terms);
             return this;
         }
@@ -72,8 +72,7 @@ namespace Sando.Indexer.Searching.Criteria
             _searchCriteria.SearchTerms.UnionWith(description.LiteralSearchTerms);
             _searchCriteria.Locations.UnionWith(description.Locations);
             _searchCriteria.AddProgramElementTypes(description.ProgramElementTypes);
-            _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);
-            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria, description.SearchTerms);            
+            _searchCriteria.SearchTerms.UnionWith(description.SearchTerms);         
             return this;
         }
     }
