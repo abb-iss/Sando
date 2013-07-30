@@ -27,9 +27,9 @@
     <BitmapImage x:Key="VSObject_Object_Friend" UriSource="../Resources/VS2010Icons/VSObject_Object_friend.png" />
     <BitmapImage x:Key="VSObject_Object_Protected" UriSource="../Resources/VS2010Icons/VSObject_Object_protected.png" />
     <BitmapImage x:Key="VSObject_XElement" UriSource="../Resources/VS2010Icons/VSObject_XElement.png" />
-    <BitmapImage x:Key="VSObject_Properties" UriSource="../Resources/VS2010Icons/VSObject_Properties.png" />
-    <BitmapImage x:Key="VSObject_Properties_Private" UriSource="../Resources/VS2010Icons/VSObject_Properties_private.png" />
-    <BitmapImage x:Key="VSObject_Properties_Friend" UriSource="../Resources/VS2010Icons/VSObject_Properties_friend.png" />
-    <BitmapImage x:Key="VSObject_Properties_Protected" UriSource="../Resources/VS2010Icons/VSObject_Properties_protected.png" />
+    <BitmapImage x:Key="VSObject_Properties" UriSource="../Resources/VS2010Icons/VSObject_Property.png" />
+    <BitmapImage x:Key="VSObject_Properties_Private" UriSource="../Resources/VS2010Icons/VSObject_Property_private.png" />
+    <BitmapImage x:Key="VSObject_Properties_Friend" UriSource="../Resources/VS2010Icons/VSObject_Property_friend.png" />
+    <BitmapImage x:Key="VSObject_Properties_Protected" UriSource="../Resources/VS2010Icons/VSObject_Property_protected.png" />
     
 </ResourceDictionary>

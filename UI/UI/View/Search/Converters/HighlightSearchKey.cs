@@ -69,21 +69,20 @@ namespace Sando.UI.View.Search.Converters {
 
                                       foreach (string item in temp)
                                       {
-                                          if (IsSearchKey(item, key))
-                                              span.Inlines.Add(new Run(item) { FontWeight = FontWeights.Bold });
-                                          else
-                                              span.Inlines.Add(new Run(item));
+                                          span.Inlines.Add(IsSearchKey(item, key)
+                                            ? new Run(item) {FontWeight = FontWeights.Bold}
+                                                : new Run(item));
                                       }
                                   }
                                   else
                                       span.Inlines.Add(new Run(line));
                                   span.Inlines.Add(new Run("\n"));
                               }
-                              return span;
+                              return ClearSpan(span);
                           }
                           catch (Exception e)
                           {
-                              return span;
+                              return ClearSpan(span);
                           }
 
         }
@@ -96,8 +95,136 @@ namespace Sando.UI.View.Search.Converters {
             return false;
         }
 
+         private Span ClearSpan(Span span)
+         {
+             var runs = RemoveEmptyLines(span.Inlines.Cast<Run>()).ToArray();
+             span.Inlines.Clear();
+             span.Inlines.AddRange(runs);
+             return span;
+         }
+
+
+        private IEnumerable<Run> RemoveEmptyLines(IEnumerable<Run> terms)
+        {
+            var runs = new List<Run>();
+            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).
+                Where(l => !l.IsEmpty()).ToArray();
+            lines = AlignIndention(lines);
+
+
+            foreach (var line in lines)
+            {
+                runs.AddRange(line.GetRuns());
+                runs.Add(new Run(Environment.NewLine));
+            }
+            return runs.Any() && runs.Last().Text.Equals(Environment.NewLine)
+                       ? runs.GetRange(0, runs.Count() - 1)
+                       : runs;
+        }
+
+         private RunsLine[] AlignIndention(RunsLine[] lines)
+         {
+            if (lines.Any())
+            {
+                var lastHead = lines.Last().GetHeadingWhiteSpace();
+                var firstHead = lines.First().GetHeadingWhiteSpace();
+                if (firstHead.Equals(string.Empty) && !lastHead.Equals(string.Empty))
+                {
+                    lines.First().AddRunFromBeginning(new Run(lastHead));
+                }
+            }
+            return lines;
+         }
+
+
+        private class RunsLine
+        {
+            private List<Run> runs;
+             
+            public RunsLine()
+            {
+                this.runs = new List<Run>();
+            }
+            
+            public void AddRun(Run run)
+            {
+                this.runs.Add(run);
+            }
+
+            public RunsLine RemoveEmptyRun()
+            {
+                runs = runs.Where(r => !String.IsNullOrWhiteSpace(r.Text)).ToList();
+                return this;
+            }
+
+            public IEnumerable<Run> GetRuns()
+            {
+                return runs;
+            }
+
+            public bool IsEmpty()
+            {
+                return !runs.Any();
+            }
+
+            public string GetLine()
+            {
+                var sb = new StringBuilder();
+                foreach (var run in runs)
+                {
+                    sb.Append(run.Text);
+                }
+                return sb.ToString();
+            }
+
+            public string GetHeadingWhiteSpace()
+            {
+                var line = GetLine();
+                var headSpaceLength = line.IndexOf(line.TrimStart(), StringComparison.InvariantCulture);
+                return line.Substring(0, headSpaceLength);
+            }
+
+            public void AddRunFromBeginning(Run run)
+            {
+                runs.Insert(0, run);
+            }
+        }
+
+
+        private IEnumerable<RunsLine> BreakToRunLines(IEnumerable<Run> runs)
+        {
+            var lines = new List<RunsLine>();
+            var currentLine = new RunsLine();
+            foreach (var run in runs)
+            {
+                if (run.Text.Contains('\n'))
+                {
+                    var parts = run.Text.Split('\n');
+                    foreach (var part in parts)
+                    {
+                        currentLine.AddRun(CloneFormat(run, part));
+                        lines.Add(currentLine);
+                        currentLine = new RunsLine();
+                    }
+                }
+                else
+                {
+                    currentLine.AddRun(run);
+                }
+            }
+            lines.Add(currentLine);
+            return lines.ToArray();
+        }
+
+        private Run CloneFormat(Run original, string text)
+        {
+            return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
+                Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
+                    Foreground = original.Foreground};
+        }
+
         public object ConvertBack(object value, Type targetType,
-                                  object parameter, CultureInfo culture) {
+                                    object parameter, CultureInfo culture) {
             throw new NotImplementedException();
         }
     }
