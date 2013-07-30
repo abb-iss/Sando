@@ -21,6 +21,10 @@ namespace Sando.UI.View.Search.Converters
             if(element as CommentElement != null)
                 return GetBitmapImage("../Resources/VS2010Icons/comment.png");
 
+            if (element as XmlXElement != null)
+                return GetBitmapImage("../Resources/VS2010Icons/VSObject_XElement.png");
+
+
             string accessLevel;
             var info = element.GetType().GetProperty("AccessLevel");
             if (info != null)
