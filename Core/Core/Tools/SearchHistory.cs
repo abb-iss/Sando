@@ -40,9 +40,9 @@ namespace Sando.Core.Tools
                     allItems.Clear();
                     allItems.AddRange(items);
                 }
+                TimedProcessor.GetInstance().AddTimedTask(WriteToFile,
+                    SAVE_EVERY_MINUTES * 60 * 1000);
             }
-            TimedProcessor.GetInstance().AddTimedTask(WriteToFile,
-                SAVE_EVERY_MINUTES * 60 * 1000);
         }
 
         private string GetFilePath()
@@ -116,10 +116,10 @@ namespace Sando.Core.Tools
 
         public void Dispose()
         {
-            WriteToFile();
-            TimedProcessor.GetInstance().RemoveTimedTask(WriteToFile);
             lock (locker)
             {
+                TimedProcessor.GetInstance().RemoveTimedTask(WriteToFile);
+                WriteToFile();
                 allItems.Clear();
                 this.directory = null;
             }

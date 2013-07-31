@@ -118,7 +118,7 @@ namespace Sando.UI.View.Search.Converters {
                 runs.Add(new Run(Environment.NewLine));
             }
             return runs.Any() && runs.Last().Text.Equals(Environment.NewLine)
-                       ? runs.GetRange(0, runs.Count() - 1)
+                    ? runs.GetRange(0, runs.Count() - 1)
                        : runs;
         }
 
