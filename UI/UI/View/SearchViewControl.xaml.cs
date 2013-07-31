@@ -171,14 +171,23 @@ namespace Sando.UI.View
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
-            BeginSearch(searchBox.Text);
+			if(QueryMetrics.SavedQuery != String.Empty)
+			{
+				ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
+			}
+			BeginSearch(searchBox.Text);
         }
 
         private void OnKeyUpHandler(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
             {
-                var text = sender as AutoCompleteBox;
+				if(QueryMetrics.SavedQuery != String.Empty)
+				{
+					ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
+				}
+
+				var text = sender as AutoCompleteBox;
                 if (text != null)
                 {
                     BeginSearch(text.Text);
@@ -261,6 +270,8 @@ namespace Sando.UI.View
 
                     var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
                     LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
+
+					ShowResultExplicitFeedbackPopup(searchResult);
                 }
             }
             catch (ArgumentException aex)
@@ -507,6 +518,18 @@ namespace Sando.UI.View
             {
                 //ignore for now, as this is not a crucial feature
             }
-        }        
+        }
+
+		private void ShowResultExplicitFeedbackPopup(CodeSearchResult result)
+		{
+			ResultExplicitFeedback resultFeedback = new ResultExplicitFeedback(result);
+			resultFeedback.ShowDialog();
+		}
+
+		private void ShowSearchExplicitFeedbackPopup(string previousQuery)
+		{
+			SearchExplicitFeedback searchFeedback = new SearchExplicitFeedback(previousQuery);
+			searchFeedback.ShowDialog();
+		}
     }
 }

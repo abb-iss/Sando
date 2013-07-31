@@ -1,0 +1,28 @@
+﻿<Window x:Class="Sando.UI.View.ResultExplicitFeedback"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sando Search Feedback" Height="250" Width="400"
+        ResizeMode="NoResize">
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="35"/>
+      <RowDefinition Height="25"/>
+      <RowDefinition Height="80"/>
+      <RowDefinition Height="100"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0" Content="Evaluate the Sando result you just opened:"/>
+    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Courier" Text="{Binding Path=ResultNameDisp}" />
+    <TextBlock Grid.Row="2" Grid.Column="0" FontSize="10.0" FontFamily="Courier" Text="{Binding Path=ResultCodeDisp}" />
+    <StackPanel Grid.Row="3" Grid.Column="0">
+      <Button Content="It was useful"/>
+      <Button Content="It was NOT useful" />
+      <Button Margin="0,10,0,0" Content="I didn't get a chance to evaluate it" />
+    </StackPanel>
+  </Grid>
+
+</Window>

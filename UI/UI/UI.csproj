@@ -216,11 +216,17 @@
     <Compile Include="Options\SandoOptionsProvider.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />
+    <Compile Include="View\ResultExplicitFeedback.xaml.cs">
+      <DependentUpon>ResultExplicitFeedback.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\FirstTimeIntroduction.cs" />
     <Compile Include="View\IntroToSando.xaml.cs">
       <DependentUpon>IntroToSando.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ISearchResultListener.cs" />
+    <Compile Include="View\SearchExplicitFeedback.xaml.cs">
+      <DependentUpon>SearchExplicitFeedback.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SearchManager.cs" />
     <Compile Include="View\SearchViewControl.xaml.cs">
       <DependentUpon>SearchViewControl.xaml</DependentUpon>
@@ -664,8 +670,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\ResultExplicitFeedback.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\IntroToSando.xaml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SearchExplicitFeedback.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SearchViewControl.xaml">
