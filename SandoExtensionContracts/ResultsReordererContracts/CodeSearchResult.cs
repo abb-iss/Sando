@@ -8,6 +8,13 @@ using System.Text;
 
 namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
+    public interface IHighlightRawInfo
+    {
+        string HighlightRaw { get; }
+        int StartLineNumber { get; }
+    }
+
+
     /// <summary>
     /// Class defined to create return result from Lucene indexer
     /// </summary>
@@ -104,14 +111,37 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         }
         //Zhao Li, return all the seach results
         private string highlight;
-        public string Highlight {
+        public String Highlight
+        {
             get {
-                return this.highlight;
+                return highlight;
             }
             set {
                 this.highlight = value;
             }
         }
+
+
+        public IHighlightRawInfo HighlightInfo
+        {
+            get
+            {
+                return new InternalHighlightRawInfo(highlight, ProgramElement.DefinitionLineNumber);
+            }
+        }
+
+        private class InternalHighlightRawInfo : IHighlightRawInfo
+        {
+            public string HighlightRaw { get; private set; }
+            public int StartLineNumber { get; private set; }
+          
+            internal InternalHighlightRawInfo(String HighlightRaw, int StartLineNumber)
+            {
+                this.HighlightRaw = HighlightRaw;
+                this.StartLineNumber = StartLineNumber;
+            }
+        }
+
 
         private static int TAB = 4;
         private static int MAX_SNIPPET_LENGTH = 85;        
@@ -126,6 +156,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             var lines = GetLines(source);
             int leadingSpaces = 0;
             var shortenedLineList = ShortenSnippet(numLines, lines);
+
             
             if (!IsXml())
             {
@@ -170,14 +201,39 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             return snippet;
         }
 
+        private int[] CalculateStartAndEndLine()
+        {
+            var resultLines = highlightRaw.Split('\n').Where(n => !string.IsNullOrWhiteSpace(n)).ToList();
+            var allLines = File.ReadAllLines(ProgramElement.FullFilePath).ToList();
+            var lineCount = resultLines.Count();
+            int start;
+            for (start = 0; !AreAllLinesSame(resultLines, allLines.GetRange(start, lineCount)); start ++);
+            return new []{start, start + lineCount - 1};
+        }
+
+        private bool AreAllLinesSame(IEnumerable<string> lines1, IEnumerable<string> lines2)
+        {
+            lines1 = lines1.ToArray();
+            lines2 = lines2.ToArray();
+            if (lines1.Count() == lines2.Count())
+            {
+                for (int i = 0; i < lines1.Count(); i++)
+                {
+                    if (!lines1.ElementAt(i).Trim().Equals(lines2.ElementAt(i).Trim()))
+                        return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
         private static List<string> StandardizeLeadingWhitespace(List<string> lines, int numLines)
         {
             var newLines = new List<string>();
             int count = 0;
-            var line = "";
             foreach (var aLine in lines)
             {
-                line = aLine;
+                var line = aLine;
                 if (!line.Trim().Equals(""))
                 {
                     while (line.StartsWith(" ") || line.StartsWith("\t"))

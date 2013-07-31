@@ -526,7 +526,8 @@
                                                             <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                                                                 <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
                                                                            Margin="2" 
-                                                                           local:TextBlockEx.FormattedText="{Binding Mode=OneWay, Path=Highlight, 
+                                                                           local:TextBlockEx.FormattedText="{Binding Mode=OneWay, 
+                                                                            Path=Highlight, 
                                                                             Converter={StaticResource HighlightSearchKey}}"/>
                                                             </ScrollViewer>
                                                             <Border Grid.Row="3" Grid.ColumnSpan="2"></Border>
@@ -534,7 +535,7 @@
                                                                 <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
                                                                     Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"  
                                                                         Margin="4" local:TextBlockEx.FormattedText="{Binding Mode=OneWay, 
-                                                                            Path=HighlightRaw, Converter={StaticResource HighlightSearchKey}}"/>
+                                                                            Path=HighlightInfo, Converter={StaticResource HighlightSearchKey}}"/>
                                                             </ScrollViewer>
                                                         </Grid>
                                                     </Border>
