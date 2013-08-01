@@ -26,8 +26,8 @@ namespace Sando.UI.View
 			ResultCodeDisp = result.Snippet;
 			this.DataContext = this;
 			InitializeComponent();
-			this.Left = (Screen.PrimaryScreen.WorkingArea.Width - this.Width) + 25;
-			this.Top = 25;
+			this.Left = Screen.PrimaryScreen.WorkingArea.Width - this.Width;
+			this.Top = 0;
 		}
 
 		public string ResultNameDisp { get; private set; }

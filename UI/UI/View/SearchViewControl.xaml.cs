@@ -21,6 +21,7 @@ using Sando.UI.Actions;
 using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Indexer.Searching.Metrics;
+using System.Windows.Threading;
 
 namespace Sando.UI.View
 {
@@ -43,6 +44,11 @@ namespace Sando.UI.View
             SearchStatus = "Enter search terms - only complete words or partial words followed by a '*' are accepted as input.";
 
             _recommender = new QueryRecommender();
+
+			_gatheredSearchFeedback = true;
+			_gatheredResultFeedback = true;
+			_savedClickedResult = null;
+			_inactivityStopwatch = new Stopwatch();
         }
 
         public ObservableCollection<AccessWrapper> AccessLevels
@@ -171,10 +177,6 @@ namespace Sando.UI.View
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
-			if(QueryMetrics.SavedQuery != String.Empty)
-			{
-				ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
-			}
 			BeginSearch(searchBox.Text);
         }
 
@@ -182,11 +184,6 @@ namespace Sando.UI.View
         {
             if (e.Key == Key.Return)
             {
-				if(QueryMetrics.SavedQuery != String.Empty)
-				{
-					ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
-				}
-
 				var text = sender as AutoCompleteBox;
                 if (text != null)
                 {
@@ -224,6 +221,28 @@ namespace Sando.UI.View
 
             SearchAsync(searchString, SearchCriteria);
         }
+
+		void inactivityMonitorWorker_DoWork(object sender, DoWorkEventArgs e)
+		{
+			ResetInactivityStopwatch();
+			while(!_gatheredSearchFeedback)
+			{
+				if(_inactivityStopwatch.ElapsedMilliseconds > (1000 * 5 * 1))
+				{
+					var uiDispatcher = (Dispatcher)e.Argument;
+
+					if(!_gatheredResultFeedback && _savedClickedResult != null)
+					{
+						uiDispatcher.BeginInvoke(new Action(() => ShowResultExplicitFeedbackPopup(_savedClickedResult)));
+						_gatheredResultFeedback = true;
+					}
+
+					uiDispatcher.BeginInvoke(new Action(() => ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery)));
+					_gatheredSearchFeedback = true;
+				}
+				//Thread.Sleep(1000);
+			}
+		}
 
         private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)
         {
@@ -271,7 +290,15 @@ namespace Sando.UI.View
                     var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
                     LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
 
-					ShowResultExplicitFeedbackPopup(searchResult);
+					//FSM role = open in editor
+					if(!_gatheredResultFeedback && _savedClickedResult != null)
+					{
+						ShowResultExplicitFeedbackPopup(_savedClickedResult);
+						_gatheredResultFeedback = true;
+					}
+					ResetInactivityStopwatch();
+					_gatheredResultFeedback = false;
+					_savedClickedResult = searchResult;
                 }
             }
             catch (ArgumentException aex)
@@ -291,6 +318,15 @@ namespace Sando.UI.View
             {
                 Dispatcher.Invoke((Action) (() => UpdateResults(results)));
             }
+
+			//FSM role = show results
+			if(_gatheredSearchFeedback)
+			{
+				_gatheredSearchFeedback = false;
+				var inactivityMonitorWorker = new BackgroundWorker();
+				inactivityMonitorWorker.DoWork += inactivityMonitorWorker_DoWork;
+				inactivityMonitorWorker.RunWorkerAsync(Dispatcher);
+			}
         }
 
         private void UpdateResults(IEnumerable<CodeSearchResult> results)
@@ -349,8 +385,20 @@ namespace Sando.UI.View
             return check.HasValue && check == true;
         }
 
+		//FSM role = recommend state
         private void searchBox_Populating(object sender, PopulatingEventArgs e)
         {
+			if(!_gatheredResultFeedback && _savedClickedResult != null)
+			{
+				ShowResultExplicitFeedbackPopup(_savedClickedResult);
+				_gatheredResultFeedback = true;
+			}
+			if(!_gatheredSearchFeedback && QueryMetrics.SavedQuery != String.Empty)
+			{
+				ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
+				_gatheredSearchFeedback = true;
+			}
+
             var recommendationWorker = new BackgroundWorker();
             recommendationWorker.DoWork += recommendationWorker_DoWork;
             e.Cancel = true;
@@ -377,6 +425,14 @@ namespace Sando.UI.View
             var listview = sender as ListView;
             LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
             UpdateExpansionState(searchResultListbox);
+
+			//FSM role = expand snippet
+			if(!_gatheredResultFeedback && _savedClickedResult != null)
+			{
+				ShowResultExplicitFeedbackPopup(_savedClickedResult);
+				_gatheredResultFeedback = true;
+			}
+			ResetInactivityStopwatch();
         }
 
         private void Toggled(object sender, RoutedEventArgs e)
@@ -522,8 +578,14 @@ namespace Sando.UI.View
 
 		private void ShowResultExplicitFeedbackPopup(CodeSearchResult result)
 		{
-			ResultExplicitFeedback resultFeedback = new ResultExplicitFeedback(result);
-			resultFeedback.ShowDialog();
+			//do this with probability of 0.33
+			Random random = new Random();
+            int rand = random.Next(0, 3);
+			if(rand == 0)
+			{
+				ResultExplicitFeedback resultFeedback = new ResultExplicitFeedback(result);
+				resultFeedback.ShowDialog();
+			}
 		}
 
 		private void ShowSearchExplicitFeedbackPopup(string previousQuery)
@@ -531,5 +593,19 @@ namespace Sando.UI.View
 			SearchExplicitFeedback searchFeedback = new SearchExplicitFeedback(previousQuery);
 			searchFeedback.ShowDialog();
 		}
+
+		private void ResetInactivityStopwatch()
+		{
+			if(_inactivityStopwatch.IsRunning)
+			{
+				_inactivityStopwatch.Reset();
+			}
+			_inactivityStopwatch.Start();
+		}
+
+		private bool _gatheredSearchFeedback;
+		private bool _gatheredResultFeedback;
+		private CodeSearchResult _savedClickedResult;
+		private Stopwatch _inactivityStopwatch;
     }
 }
