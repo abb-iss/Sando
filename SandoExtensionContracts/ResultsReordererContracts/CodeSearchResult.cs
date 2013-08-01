@@ -12,6 +12,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
     {
         string Text { get; }
         int StartLineNumber { get; }
+        int[] Offsets { get; }
     }
 
 
@@ -126,7 +127,8 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         {
             get
             {
-                return new InternalHighlightRawInfo(highlight, ProgramElement.DefinitionLineNumber);
+                return new InternalHighlightRawInfo(highlight, ProgramElement.DefinitionLineNumber, 
+                    HighlightOffsets);
             }
         }
 
@@ -142,11 +144,13 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         {
             public string Text { get; private set; }
             public int StartLineNumber { get; private set; }
+            public int[] Offsets { get; private set; }
 
-            internal InternalHighlightRawInfo(String Text, int StartLineNumber)
+            internal InternalHighlightRawInfo(String Text, int StartLineNumber, int[] Offsets = null)
             {
                 this.Text = Text;
                 this.StartLineNumber = StartLineNumber;
+                this.Offsets = Offsets;
             }
         }
 
@@ -327,6 +331,8 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         {
             get { return ProgramElement.Name; }
         }
+
+        public int[] HighlightOffsets { private get; set; }
 
 
         private static string PrettyPrintXElement(String source, int numLines)

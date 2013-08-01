@@ -4,43 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Windows.Data;
-using System.IO;
-using System.Xml;
-using System.Security;
-using System.Windows.Markup;
 using System.Windows;
 using System.Windows.Documents;
-using System.Text.RegularExpressions;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View.Search.Converters {
      [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
     class HighlightSearchKey : IValueConverter {
 
-         private String GetHighlightRaw(object inforvalue)
-         {
-             if (inforvalue as IHighlightRawInfo == null)
-                 return (String) inforvalue;
-             return (inforvalue as IHighlightRawInfo).Text;
-         }
+        private RunsLine[] AddLineNumber(IHighlightRawInfo infor, RunsLine[] lines)
+        {
+        var startLine = infor.StartLineNumber;
+        int i = 0;
+        var offsets = infor.Offsets ?? lines.Select(n => i ++).ToArray();
+        var offsetIndex = 0;
 
-         private RunsLine[] AddLineNumber(object inforvalue, RunsLine[] lines)
-         {
-             if (inforvalue as IHighlightRawInfo != null)
-             {
-                 var startNum = (inforvalue as IHighlightRawInfo).StartLineNumber;
-                 foreach (var line in lines)
-                 {
-                     line.AddRunFromBeginning(CreateRun(startNum.ToString() + ":\t", FontWeights.Medium));
-                     startNum++;
-                 }
-             }
-             return lines;
-         }
+        foreach (var line in lines)
+        {
+            var num = startLine + offsets.ElementAt(offsetIndex ++);
+            line.AddRunFromBeginning(CreateRun(num.ToString() + ":\t", FontWeights.Medium));
+        }
+        return lines;
+        }
 
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
-            var value = GetHighlightRaw(inforValue);
+            var value = ((IHighlightRawInfo)inforValue).Text;
             var span = new Span();
             try
             {
@@ -102,11 +91,11 @@ namespace Sando.UI.View.Search.Converters {
                         span.Inlines.Add(CreateRun(line, FontWeights.Medium));
                     span.Inlines.Add(CreateRun("\n", FontWeights.Medium));
                 }
-                return ClearSpan(inforValue, span);
+                return ClearSpan((IHighlightRawInfo)inforValue, span);
             }
             catch (Exception e)
             {
-                return ClearSpan(inforValue, span);
+                return ClearSpan((IHighlightRawInfo)inforValue, span);
             }
         }
 
@@ -124,7 +113,7 @@ namespace Sando.UI.View.Search.Converters {
             return false;
         }
 
-         private Span ClearSpan(object inforValue, Span span)
+        private Span ClearSpan(IHighlightRawInfo inforValue, Span span)
          {
              var runs = RemoveEmptyLines(inforValue, 
                  span.Inlines.Cast<Run>()).ToArray();
@@ -134,11 +123,11 @@ namespace Sando.UI.View.Search.Converters {
          }
 
 
-        private IEnumerable<Run> RemoveEmptyLines(object inforValue, IEnumerable<Run> terms)
+         private IEnumerable<Run> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms)
         {
             var runs = new List<Run>();
             var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
-            lines = AddLineNumber(inforValue, RemoveHeadingAndTrailingEmptyLines(AlignIndention(lines)));
+            lines = AddLineNumber(inforValue, RemoveHeadingAndTrailingEmptyLines(AlignIndention(lines, inforValue)));
             foreach (var line in lines)
             {
                 runs.AddRange(line.GetRuns());
@@ -164,7 +153,7 @@ namespace Sando.UI.View.Search.Converters {
         }
 
 
-        private IEnumerable<RunsLine> AlignIndention(RunsLine[] lines)
+        private IEnumerable<RunsLine> AlignIndention(RunsLine[] lines, IHighlightRawInfo info)
         {
             if (lines.Any())
             {

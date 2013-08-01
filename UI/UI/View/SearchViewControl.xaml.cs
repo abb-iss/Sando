@@ -332,7 +332,8 @@ namespace Sando.UI.View
                 try {
                     string highlight;
                     string highlightRaw;
-                    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+                    item.HighlightOffsets = GenerateHighlight(item.Raw, this.searchKey, 
+                        out highlight, out highlightRaw);
                     item.Highlight = highlight;
                     item.HighlightRaw = highlightRaw;
                 } catch(Exception exc) { exceptions.Enqueue(exc); }
@@ -344,7 +345,8 @@ namespace Sando.UI.View
             //    throw new AggregateException(exceptions);
         }
 
-        public void GenerateHighlight(string raw, string searchKey, out string highlight_out, out string highlightRaw_out) {
+        public int[] GenerateHighlight(string raw, string searchKey, out string highlight_out, 
+            out string highlightRaw_out) {
 
             StringBuilder highlight = new StringBuilder();
             StringBuilder highlight_Raw = new StringBuilder();
@@ -355,6 +357,9 @@ namespace Sando.UI.View
             string[] searchKeys = GetKeys(searchKey);
             string[] containedKeys;
 
+
+            var highlightOffsets = new List<int>();
+            int offest = 0;
             foreach(string line in lines) {
                 
                 containedKeys = IsContainSearchKey(searchKeys, line);
@@ -379,6 +384,7 @@ namespace Sando.UI.View
 
                     }
 
+                    highlightOffsets.Add(offest);
                     highlight.Append(newLine.ToString());
                     highlight.Append('\n');
 
@@ -389,10 +395,12 @@ namespace Sando.UI.View
                     highlight_Raw.Append(line);
                     highlight_Raw.Append('\n');
                 }
+                offest++;
             }
 
             highlight_out = highlight.ToString().Replace('\t', ' ');
             highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
+            return highlightOffsets.ToArray();
         }
 
         public static string[] GetKeys(string searchKey) {
