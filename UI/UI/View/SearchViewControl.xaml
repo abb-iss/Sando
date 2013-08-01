@@ -527,7 +527,7 @@
                                                                 <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
                                                                            Margin="2" 
                                                                            local:TextBlockEx.FormattedText="{Binding Mode=OneWay, 
-                                                                            Path=Highlight, 
+                                                                            Path=HighlightInfo, 
                                                                             Converter={StaticResource HighlightSearchKey}}"/>
                                                             </ScrollViewer>
                                                             <Border Grid.Row="3" Grid.ColumnSpan="2"></Border>
@@ -535,7 +535,7 @@
                                                                 <TextBlock Grid.Row="3" Grid.ColumnSpan="2" 
                                                                     Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"  
                                                                         Margin="4" local:TextBlockEx.FormattedText="{Binding Mode=OneWay, 
-                                                                            Path=HighlightInfo, Converter={StaticResource HighlightSearchKey}}"/>
+                                                                            Path=RawHighlightInfo, Converter={StaticResource HighlightSearchKey}}"/>
                                                             </ScrollViewer>
                                                         </Grid>
                                                     </Border>

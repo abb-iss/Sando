@@ -21,7 +21,7 @@ namespace Sando.UI.View.Search.Converters {
          {
              if (inforvalue as IHighlightRawInfo == null)
                  return (String) inforvalue;
-             return (inforvalue as IHighlightRawInfo).HighlightRaw;
+             return (inforvalue as IHighlightRawInfo).Text;
          }
 
          private RunsLine[] AddLineNumber(object inforvalue, RunsLine[] lines)
@@ -31,7 +31,7 @@ namespace Sando.UI.View.Search.Converters {
                  var startNum = (inforvalue as IHighlightRawInfo).StartLineNumber;
                  foreach (var line in lines)
                  {
-                     line.AddRunFromBeginning(new Run(startNum.ToString() + ":\t"));
+                     line.AddRunFromBeginning(CreateRun(startNum.ToString() + ":\t", FontWeights.Medium));
                      startNum++;
                  }
              }
@@ -94,13 +94,13 @@ namespace Sando.UI.View.Search.Converters {
                         foreach (string item in temp)
                         {
                             span.Inlines.Add(IsSearchKey(item, key)
-                            ? new Run(item) {FontWeight = FontWeights.Bold}
-                                : new Run(item));
+                                ? CreateRun(item, FontWeights.Bold)
+                                    : CreateRun(item, FontWeights.Medium));
                         }
                     }
                     else
-                        span.Inlines.Add(new Run(line));
-                    span.Inlines.Add(new Run("\n"));
+                        span.Inlines.Add(CreateRun(line, FontWeights.Medium));
+                    span.Inlines.Add(CreateRun("\n", FontWeights.Medium));
                 }
                 return ClearSpan(inforValue, span);
             }
@@ -108,6 +108,12 @@ namespace Sando.UI.View.Search.Converters {
             {
                 return ClearSpan(inforValue, span);
             }
+        }
+
+
+        private Run CreateRun(String text, FontWeight fontWeight)
+        {
+            return new Run(text) {FontWeight = fontWeight};
         }
 
         private bool IsSearchKey(string input, string[] keyset) {
@@ -128,49 +134,49 @@ namespace Sando.UI.View.Search.Converters {
          }
 
 
-         private IEnumerable<Run> RemoveEmptyLines(object inforValue, IEnumerable<Run> terms)
+        private IEnumerable<Run> RemoveEmptyLines(object inforValue, IEnumerable<Run> terms)
         {
             var runs = new List<Run>();
-            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).ToArray();
+            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
             lines = AddLineNumber(inforValue, RemoveHeadingAndTrailingEmptyLines(AlignIndention(lines)));
             foreach (var line in lines)
             {
                 runs.AddRange(line.GetRuns());
-                runs.Add(new Run(Environment.NewLine));
+                runs.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
             }
             return runs.Any() && runs.Last().Text.Equals(Environment.NewLine)
                 ? runs.GetRange(0, runs.Count() - 1)
                     : runs;
         }
 
-         private RunsLine[] RemoveHeadingAndTrailingEmptyLines(IEnumerable<RunsLine> lines)
-         {
-             var list = lines.ToList();
-             while (list.Any() && String.IsNullOrWhiteSpace(list.First().GetLine()))
-             {
-                 list.RemoveAt(0);
-             }
-             while (list.Any() && String.IsNullOrWhiteSpace(list.Last().GetLine()))
-             {
-                 list.RemoveAt(list.Count - 1);
-             }
-             return list.ToArray();
-         }
+        private RunsLine[] RemoveHeadingAndTrailingEmptyLines(IEnumerable<RunsLine> lines)
+        {
+            var list = lines.ToList();
+            while (list.Any() && String.IsNullOrWhiteSpace(list.First().GetLine()))
+            {
+                list.RemoveAt(0);
+            }
+            while (list.Any() && String.IsNullOrWhiteSpace(list.Last().GetLine()))
+            {
+                list.RemoveAt(list.Count - 1);
+            }
+            return list.ToArray();
+        }
 
 
-         private RunsLine[] AlignIndention(RunsLine[] lines)
-         {
+        private IEnumerable<RunsLine> AlignIndention(RunsLine[] lines)
+        {
             if (lines.Any())
             {
                 var lastHead = lines.Last().GetHeadingWhiteSpace();
                 var firstHead = lines.First().GetHeadingWhiteSpace();
                 if (firstHead.Equals(string.Empty) && !lastHead.Equals(string.Empty))
                 {
-                    lines.First().AddRunFromBeginning(new Run(lastHead));
+                    lines.First().AddRunFromBeginning(CreateRun(lastHead, FontWeights.Medium));
                 }
             }
             return lines;
-         }
+        }
 
 
         private class RunsLine
@@ -251,6 +257,9 @@ namespace Sando.UI.View.Search.Converters {
             lines.Add(currentLine);
             return lines.ToArray();
         }
+
+        
+
 
         private Run CloneFormat(Run original, string text)
         {

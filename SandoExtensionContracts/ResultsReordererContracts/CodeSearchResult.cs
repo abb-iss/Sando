@@ -10,7 +10,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
     public interface IHighlightRawInfo
     {
-        string HighlightRaw { get; }
+        string Text { get; }
         int StartLineNumber { get; }
     }
 
@@ -130,14 +130,22 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             }
         }
 
+        public IHighlightRawInfo RawHighlightInfo
+        {
+            get
+            {
+                return new InternalHighlightRawInfo(highlightRaw, ProgramElement.DefinitionLineNumber);
+            }
+        }
+
         private class InternalHighlightRawInfo : IHighlightRawInfo
         {
-            public string HighlightRaw { get; private set; }
+            public string Text { get; private set; }
             public int StartLineNumber { get; private set; }
-          
-            internal InternalHighlightRawInfo(String HighlightRaw, int StartLineNumber)
+
+            internal InternalHighlightRawInfo(String Text, int StartLineNumber)
             {
-                this.HighlightRaw = HighlightRaw;
+                this.Text = Text;
                 this.StartLineNumber = StartLineNumber;
             }
         }
