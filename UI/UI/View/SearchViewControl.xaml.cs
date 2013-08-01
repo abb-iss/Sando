@@ -320,7 +320,7 @@ namespace Sando.UI.View
             }
 
 			//FSM role = show results
-			if(_gatheredSearchFeedback)
+			if(_gatheredSearchFeedback && results.Count() > 0)
 			{
 				_gatheredSearchFeedback = false;
 				var inactivityMonitorWorker = new BackgroundWorker();
