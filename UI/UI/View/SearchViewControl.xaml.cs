@@ -49,6 +49,10 @@ namespace Sando.UI.View
 			_gatheredResultFeedback = true;
 			_savedClickedResult = null;
 			_inactivityStopwatch = new Stopwatch();
+
+			var inactivityMonitorWorker = new BackgroundWorker();
+			inactivityMonitorWorker.DoWork += inactivityMonitorWorker_DoWork;
+			inactivityMonitorWorker.RunWorkerAsync(Dispatcher);
         }
 
         public ObservableCollection<AccessWrapper> AccessLevels
@@ -222,12 +226,12 @@ namespace Sando.UI.View
             SearchAsync(searchString, SearchCriteria);
         }
 
+		//FSM: activity monitor
 		void inactivityMonitorWorker_DoWork(object sender, DoWorkEventArgs e)
 		{
-			ResetInactivityStopwatch();
-			while(!_gatheredSearchFeedback)
+			while(true)
 			{
-				if(_inactivityStopwatch.ElapsedMilliseconds > (1000 * 60 * 5))
+				if(!_gatheredSearchFeedback && _inactivityStopwatch.ElapsedMilliseconds > (1000 * 60 * 5))
 				{
 					var uiDispatcher = (Dispatcher)e.Argument;
 
@@ -240,7 +244,7 @@ namespace Sando.UI.View
 					uiDispatcher.BeginInvoke(new Action(() => ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery)));
 					_gatheredSearchFeedback = true;
 				}
-				//Thread.Sleep(1000);
+				Thread.Sleep(100);
 			}
 		}
 
@@ -323,9 +327,14 @@ namespace Sando.UI.View
 			if(_gatheredSearchFeedback && results.Count() > 0)
 			{
 				_gatheredSearchFeedback = false;
-				var inactivityMonitorWorker = new BackgroundWorker();
-				inactivityMonitorWorker.DoWork += inactivityMonitorWorker_DoWork;
-				inactivityMonitorWorker.RunWorkerAsync(Dispatcher);
+				if(!_inactivityStopwatch.IsRunning)
+				{
+					_inactivityStopwatch.Start();
+				}
+				else
+				{
+					ResetInactivityStopwatch();
+				}
 			}
 			else
 			{
@@ -604,8 +613,8 @@ namespace Sando.UI.View
 			if(_inactivityStopwatch.IsRunning)
 			{
 				_inactivityStopwatch.Reset();
+				_inactivityStopwatch.Start();
 			}
-			_inactivityStopwatch.Start();
 		}
 
 		private bool _gatheredSearchFeedback;
