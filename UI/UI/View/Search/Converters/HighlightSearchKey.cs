@@ -6,13 +6,15 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Media;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+
 
 namespace Sando.UI.View.Search.Converters {
     [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
     public class HighlightSearchKey : IValueConverter {
 
-         private RunsLine[] AddLineNumber(IHighlightRawInfo infor, RunsLine[] lines)
+         private InlineItemLine[] AddLineNumber(IHighlightRawInfo infor, InlineItemLine[] lines)
          {
              var startLine = infor.StartLineNumber;
              int i = 0;
@@ -22,10 +24,26 @@ namespace Sando.UI.View.Search.Converters {
              foreach (var line in lines)
              {
                 var num = startLine + offsets.ElementAt(offsetIndex ++);
-                line.AddRunFromBeginning(CreateRun(num.ToString() + ":\t", FontWeights.Medium));
+                line.AddBeginning(CreateRun("\t", FontWeights.Medium));
+                line.AddBeginning(CreateLineNumberHyperLink(num));
              }
              return lines;
          }
+
+        private Inline CreateLineNumberHyperLink(int number)
+        {
+        /*    var link = new Hyperlink(CreateRun(number.ToString(), 
+                FontWeights.Medium)) {Foreground = Brushes.CadetBlue};
+            link.Click += ClickLineNumber;*/
+            var run = CreateRun(number.ToString(), FontWeights.Medium);
+            run.Foreground = Brushes.CadetBlue;
+            return run;
+        }
+
+        private void ClickLineNumber(object sender, RoutedEventArgs routedEventArgs)
+        {
+            
+        }
 
         private string[] RemoveHeadTailEmptyStrings(IEnumerable<string> lines)
         {
@@ -143,37 +161,34 @@ namespace Sando.UI.View.Search.Converters {
             return span;
         }
 
-        private IEnumerable<Run> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms, 
+        private IEnumerable<Inline> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms, 
             IEnumerable<int> emptyLineOffsets)
         {
-            var runs = new List<Run>();
+            var items = new List<Inline>();
             var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
             lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
-
             lines = AddLineNumber(inforValue, RemoveHeadingAndTrailingEmptyLines(AlignIndention(lines, inforValue)));
             foreach (var line in lines)
             {
-                runs.AddRange(line.GetRuns());
-                runs.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
+                items.AddRange(line.GetItems());
+                items.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
             }
-            return runs.Any() && runs.Last().Text.Equals(Environment.NewLine)
-                ? runs.GetRange(0, runs.Count() - 1)
-                    : runs;
+            return items;
         }
 
-        private IEnumerable<RunsLine> AddEmptyLines(List<RunsLine> lines, IEnumerable<int> emptyLineOffsets)
+        private IEnumerable<InlineItemLine> AddEmptyLines(List<InlineItemLine> lines, IEnumerable<int> emptyLineOffsets)
         {
             var indexes = emptyLineOffsets.OrderBy(o => o);
             foreach (var index in indexes)
             {
-                var line = new RunsLine();
-                line.AddRun(new Run(String.Empty));
+                var line = new InlineItemLine();
+                line.AddItem(new Run(String.Empty));
                 lines.Insert(index, line);
             }
             return lines;
         }
 
-        private RunsLine[] RemoveHeadingAndTrailingEmptyLines(IEnumerable<RunsLine> lines)
+        private InlineItemLine[] RemoveHeadingAndTrailingEmptyLines(IEnumerable<InlineItemLine> lines)
         {
             var list = lines.ToList();
             while (list.Any() && String.IsNullOrWhiteSpace(list.First().GetLine()))
@@ -188,7 +203,7 @@ namespace Sando.UI.View.Search.Converters {
         }
 
 
-        private IEnumerable<RunsLine> AlignIndention(RunsLine[] lines, IHighlightRawInfo info)
+        private IEnumerable<InlineItemLine> AlignIndention(InlineItemLine[] lines, IHighlightRawInfo info)
         {
             if (lines.Any())
             {
@@ -196,49 +211,54 @@ namespace Sando.UI.View.Search.Converters {
                 var firstHead = lines.First().GetHeadingWhiteSpace();
                 if (firstHead.Equals(string.Empty) && !lastHead.Equals(string.Empty))
                 {
-                    lines.First().AddRunFromBeginning(CreateRun(lastHead, FontWeights.Medium));
+                    lines.First().AddBeginning(CreateRun(lastHead, FontWeights.Medium));
                 }
             }
             return lines;
         }
 
 
-        private class RunsLine
+        private class InlineItemLine
         {
-            private List<Run> runs;
+            private List<Inline> items;
              
-            public RunsLine()
+            public InlineItemLine()
             {
-                this.runs = new List<Run>();
-            }
-            
-            public void AddRun(Run run)
-            {
-                this.runs.Add(run);
+                this.items = new List<Inline>();
             }
 
-            public RunsLine RemoveEmptyRun()
+            public void AddItem(Inline run)
             {
-                runs = runs.Where(r => !String.IsNullOrWhiteSpace(r.Text)).ToList();
+                this.items.Add(run);
+            }
+
+            public InlineItemLine RemoveEmptyRun()
+            {
+                items = items.Where(r => !String.IsNullOrWhiteSpace(GetItemText(r))).ToList();
                 return this;
             }
 
-            public IEnumerable<Run> GetRuns()
+            public IEnumerable<Inline> GetItems()
             {
-                return runs;
+                return items;
             }
 
             public bool IsEmpty()
             {
-                return !runs.Any();
+                return !items.Any();
+            }
+
+            private string GetItemText(Inline item)
+            {
+                return item is Run ? (item as Run).Text : string.Empty;
             }
 
             public string GetLine()
             {
                 var sb = new StringBuilder();
-                foreach (var run in runs)
+                foreach (var item in items)
                 {
-                    sb.Append(run.Text);
+                    sb.Append(GetItemText(item));
                 }
                 return sb.ToString();
             }
@@ -250,17 +270,16 @@ namespace Sando.UI.View.Search.Converters {
                 return line.Substring(0, headSpaceLength);
             }
 
-            public void AddRunFromBeginning(Run run)
+            public void AddBeginning(Inline item)
             {
-                runs.Insert(0, run);
+                items.Insert(0, item);
             }
         }
 
-
-        private IEnumerable<RunsLine> BreakToRunLines(IEnumerable<Run> runs)
+        private IEnumerable<InlineItemLine> BreakToRunLines(IEnumerable<Run> runs)
         {
-            var lines = new List<RunsLine>();
-            var currentLine = new RunsLine();
+            var lines = new List<InlineItemLine>();
+            var currentLine = new InlineItemLine();
             foreach (var run in runs)
             {
                 if (Environment.NewLine.ToCharArray().Any(c => run.Text.Contains(c)))
@@ -270,22 +289,19 @@ namespace Sando.UI.View.Search.Converters {
                     foreach (var part in parts)
                     {
                         if(!string.IsNullOrEmpty(part))
-                            currentLine.AddRun(CloneFormat(run, part));
+                            currentLine.AddItem(CloneFormat(run, part));
                         lines.Add(currentLine);
-                        currentLine = new RunsLine();
+                        currentLine = new InlineItemLine();
                     }
                 }
                 else
                 {
-                    currentLine.AddRun(run);
+                    currentLine.AddItem(run);
                 }
             }
             lines.Add(currentLine);
             return lines.ToArray();
         }
-
-        
-
 
         private Run CloneFormat(Run original, string text)
         {
