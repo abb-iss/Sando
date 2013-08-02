@@ -17,10 +17,10 @@
     <Label Grid.Row="0" Grid.Column="0" Content="Evaluate your previous Sando search for:"/>
     <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontSize="16.0" FontFamily="Courier" Text="{Binding Path=PreviousQueryDisp}" />
     <StackPanel Grid.Row="2" Grid.Column="0">
-      <Button Content="I was satisfied"/>
-      <Button Content="I was partially satisfied" />
-      <Button Content="I was NOT satisfied" />
-      <Button Margin="0,10,0,0" Content="I didn't get a chance to evaluate it" />
+      <Button Click="SATButton_Click" Content="I was satisfied"/>
+      <Button Click="PSATButton_Click" Content="I was partially satisfied" />
+      <Button Click="NotSATButton_Click" Content="I was NOT satisfied" />
+      <Button Click="NoFeedbackButton_Click" Margin="0,10,0,0" Content="I didn't get a chance to evaluate it" />
     </StackPanel>
   </Grid>
 

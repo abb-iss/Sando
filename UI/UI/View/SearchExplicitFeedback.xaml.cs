@@ -28,6 +28,30 @@ namespace Sando.UI.View
 			this.Top = 0;
 		}
 
+		private void SATButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Search_SAT(sender, PreviousQueryDisp);
+			this.Close();
+		}
+
+		private void PSATButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Search_PSAT(sender, PreviousQueryDisp);
+			this.Close();
+		}
+
+		private void NotSATButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Search_NotSAT(sender, PreviousQueryDisp);
+			this.Close();
+		}
+
+		private void NoFeedbackButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Search_NoFeedback(sender, PreviousQueryDisp);
+			this.Close();
+		}
+
 		public string PreviousQueryDisp { get; private set; }
 	}
 }

@@ -52,18 +52,7 @@ namespace Sando.Core.Logging.Events
 		{
             if (SandoLogManager.DataCollectionOn && _initialized)
             {
-                //randomly with p=0.33
-                Random random = new Random();
-                int rand = random.Next(0, 3);
-                if (rand == 0)
-                {
-                    DoS3Upload();
-                }
-                else
-                {
-                    Type t = System.Reflection.MethodBase.GetCurrentMethod().DeclaringType;
-                    LogEvents.NoS3UploadDueToChance(t, rand);
-                }
+				DoS3Upload();
             }
 		}
 

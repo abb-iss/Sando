@@ -16,12 +16,15 @@
     </Grid.ColumnDefinitions>
 
     <Label Grid.Row="0" Grid.Column="0" Content="Evaluate the Sando result you just opened:"/>
-    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontWeight="Bold" FontFamily="Courier" Text="{Binding Path=ResultNameDisp}" />
+    <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+      <TextBlock TextDecorations="Underline" FontStyle="Italic" Text="{Binding Path=ResultTypeDisp}" />
+      <TextBlock TextDecorations="Underline" FontWeight="Bold"  Text="{Binding Path=ResultNameDisp}" />
+    </StackPanel>
     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="10.0" FontFamily="Courier" Text="{Binding Path=ResultCodeDisp}" />
     <StackPanel Grid.Row="3" Grid.Column="0">
-      <Button Content="It was useful"/>
-      <Button Content="It was NOT useful" />
-      <Button Margin="0,10,0,0" Content="I didn't get a chance to evaluate it" />
+      <Button Click="SATButton_Click" Content="It was useful"/>
+      <Button Click="NotSATButton_Click" Content="It was NOT useful" />
+      <Button Click="NoFeedbackButton_Click" Margin="0,10,0,0" Content="I didn't get a chance to evaluate it" />
     </StackPanel>
   </Grid>
 

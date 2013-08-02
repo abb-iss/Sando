@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Sando.Core.Logging.Events;
+using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View
@@ -22,15 +24,56 @@ namespace Sando.UI.View
 	{
 		public ResultExplicitFeedback(CodeSearchResult result)
 		{
+			if(result.ProgramElementType == ProgramElementType.Class)
+			{
+				ResultTypeDisp = "class     ";
+			}
+			else if(result.ProgramElementType == ProgramElementType.Method)
+			{
+				ResultTypeDisp = "method     ";
+			}
+			else if(result.ProgramElementType == ProgramElementType.Field)
+			{
+				ResultTypeDisp = "field     ";
+			}
+			else if(result.ProgramElementType == ProgramElementType.Property)
+			{
+				ResultTypeDisp = "property     ";
+			}
+			else
+			{
+				ResultTypeDisp = "";
+			}
+
+
 			ResultNameDisp = result.Name + " in " + result.FileName;
 			ResultCodeDisp = result.Snippet;
 			this.DataContext = this;
 			InitializeComponent();
-			this.Left = Screen.PrimaryScreen.WorkingArea.Width - this.Width;
+			this.Left = Screen.PrimaryScreen.WorkingArea.Width - (this.Width * 2);
 			this.Top = 0;
 		}
 
+		private void SATButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Result_SAT(sender, ResultNameDisp);
+			this.Close();
+		}
+
+		private void NotSATButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Result_NotSAT(sender, ResultNameDisp);
+			this.Close();
+		}
+
+		private void NoFeedbackButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Result_NoFeedback(sender, ResultNameDisp);
+			this.Close();
+		}
+
 		public string ResultNameDisp { get; private set; }
+		public string ResultTypeDisp { get; private set; }
 		public string ResultCodeDisp { get; private set; }
 
 	}

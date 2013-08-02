@@ -227,7 +227,7 @@ namespace Sando.UI.View
 			ResetInactivityStopwatch();
 			while(!_gatheredSearchFeedback)
 			{
-				if(_inactivityStopwatch.ElapsedMilliseconds > (1000 * 5 * 1))
+				if(_inactivityStopwatch.ElapsedMilliseconds > (1000 * 60 * 5))
 				{
 					var uiDispatcher = (Dispatcher)e.Argument;
 
