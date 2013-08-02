@@ -1,14 +1,15 @@
 ﻿<Window x:Class="Sando.UI.View.SearchExplicitFeedback"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sando Search Feedback" Height="200" Width="300"
-        ResizeMode="NoResize">
+        Title="Sando Search Feedback" Height="220" Width="300"
+        ResizeMode="NoResize"
+        Closed="FeedbackWindow_Closed">
 
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="35"/>
       <RowDefinition Height="40"/>
-      <RowDefinition Height="125"/>
+      <RowDefinition Height="145"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="*" />

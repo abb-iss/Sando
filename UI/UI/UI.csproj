@@ -672,6 +672,7 @@
     </Page>
     <Page Include="View\ResultExplicitFeedback.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\IntroToSando.xaml">
       <SubType>Designer</SubType>
@@ -679,6 +680,7 @@
     </Page>
     <Page Include="View\SearchExplicitFeedback.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="View\SearchViewControl.xaml">
       <SubType>Designer</SubType>

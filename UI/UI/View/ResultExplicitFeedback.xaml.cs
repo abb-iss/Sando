@@ -45,36 +45,48 @@ namespace Sando.UI.View
 				ResultTypeDisp = "";
 			}
 
-
 			ResultNameDisp = result.Name + " in " + result.FileName;
 			ResultCodeDisp = result.Snippet;
 			this.DataContext = this;
 			InitializeComponent();
 			this.Left = Screen.PrimaryScreen.WorkingArea.Width - (this.Width * 2);
 			this.Top = 0;
+			RecodedFeedback = false;
 		}
 
 		private void SATButton_Click(object sender, RoutedEventArgs e)
 		{
 			LogEvents.Result_SAT(sender, ResultNameDisp);
+			RecodedFeedback = true;
 			this.Close();
 		}
 
 		private void NotSATButton_Click(object sender, RoutedEventArgs e)
 		{
 			LogEvents.Result_NotSAT(sender, ResultNameDisp);
+			RecodedFeedback = true;
 			this.Close();
 		}
 
 		private void NoFeedbackButton_Click(object sender, RoutedEventArgs e)
 		{
 			LogEvents.Result_NoFeedback(sender, ResultNameDisp);
+			RecodedFeedback = true;
 			this.Close();
+		}
+
+		private void FeedbackWindow_Closed(object sender, EventArgs e)
+		{
+			if(!RecodedFeedback)
+			{
+				LogEvents.Result_NoFeedback(sender, ResultNameDisp);
+			}
 		}
 
 		public string ResultNameDisp { get; private set; }
 		public string ResultTypeDisp { get; private set; }
 		public string ResultCodeDisp { get; private set; }
+		private bool RecodedFeedback;
 
 	}
 }

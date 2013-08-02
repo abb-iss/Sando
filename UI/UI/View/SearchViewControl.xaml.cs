@@ -327,6 +327,10 @@ namespace Sando.UI.View
 				inactivityMonitorWorker.DoWork += inactivityMonitorWorker_DoWork;
 				inactivityMonitorWorker.RunWorkerAsync(Dispatcher);
 			}
+			else
+			{
+				ResetInactivityStopwatch();
+			}
         }
 
         private void UpdateResults(IEnumerable<CodeSearchResult> results)
@@ -398,6 +402,7 @@ namespace Sando.UI.View
 				ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
 				_gatheredSearchFeedback = true;
 			}
+			ResetInactivityStopwatch();
 
             var recommendationWorker = new BackgroundWorker();
             recommendationWorker.DoWork += recommendationWorker_DoWork;
