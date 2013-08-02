@@ -9,26 +9,42 @@ using System.Windows.Documents;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View.Search.Converters {
-     [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
-    class HighlightSearchKey : IValueConverter {
+    [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
+    public class HighlightSearchKey : IValueConverter {
 
-        private RunsLine[] AddLineNumber(IHighlightRawInfo infor, RunsLine[] lines)
-        {
-        var startLine = infor.StartLineNumber;
-        int i = 0;
-        var offsets = infor.Offsets ?? lines.Select(n => i ++).ToArray();
-        var offsetIndex = 0;
+         private RunsLine[] AddLineNumber(IHighlightRawInfo infor, RunsLine[] lines)
+         {
+             var startLine = infor.StartLineNumber;
+             int i = 0;
+             var offsets = infor.Offsets ?? lines.Select(n => i ++).ToArray();
+             var offsetIndex = 0;
 
-        foreach (var line in lines)
+             foreach (var line in lines)
+             {
+                var num = startLine + offsets.ElementAt(offsetIndex ++);
+                line.AddRunFromBeginning(CreateRun(num.ToString() + ":\t", FontWeights.Medium));
+             }
+             return lines;
+         }
+
+        private string[] RemoveHeadTailEmptyStrings(IEnumerable<string> lines)
         {
-            var num = startLine + offsets.ElementAt(offsetIndex ++);
-            line.AddRunFromBeginning(CreateRun(num.ToString() + ":\t", FontWeights.Medium));
-        }
-        return lines;
+            var list = lines.ToList();
+            while (list.Any() && string.IsNullOrWhiteSpace(list.First()))
+            {
+                list.RemoveAt(0);
+            }
+
+            while (list.Any() && string.IsNullOrWhiteSpace(list.Last()))
+            {
+                list.RemoveAt(list.Count - 1);
+            }
+            return list.ToArray();
         }
 
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
+            var emptyLineOffsets = new List<int>();
             var value = ((IHighlightRawInfo)inforValue).Text;
             var span = new Span();
             try
@@ -40,12 +56,18 @@ namespace Sando.UI.View.Search.Converters {
                 }
 
                 string input = value as string;
-                string[] lines = input.Split('\n');
-                              
+                string[] lines = input.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.None);
+                lines = RemoveHeadTailEmptyStrings(lines);
                 List<string> key_temp = new List<string>();
+                var offset = 0;
 
                 foreach (string line in lines)
                 {
+                    if (String.IsNullOrWhiteSpace(line))
+                    {
+                        emptyLineOffsets.Add(offset);
+                    }
+                    offset++;
 
                     if (line.Contains("|~S~|"))
                     {
@@ -89,13 +111,13 @@ namespace Sando.UI.View.Search.Converters {
                     }
                     else
                         span.Inlines.Add(CreateRun(line, FontWeights.Medium));
-                    span.Inlines.Add(CreateRun("\n", FontWeights.Medium));
+                    span.Inlines.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
                 }
-                return ClearSpan((IHighlightRawInfo)inforValue, span);
+                return ClearSpan((IHighlightRawInfo)inforValue, span, emptyLineOffsets);
             }
             catch (Exception e)
             {
-                return ClearSpan((IHighlightRawInfo)inforValue, span);
+                return ClearSpan((IHighlightRawInfo)inforValue, span, emptyLineOffsets);
             }
         }
 
@@ -113,20 +135,21 @@ namespace Sando.UI.View.Search.Converters {
             return false;
         }
 
-        private Span ClearSpan(IHighlightRawInfo inforValue, Span span)
-         {
-             var runs = RemoveEmptyLines(inforValue, 
-                 span.Inlines.Cast<Run>()).ToArray();
-             span.Inlines.Clear();
-             span.Inlines.AddRange(runs);
-             return span;
-         }
+        private Span ClearSpan(IHighlightRawInfo inforValue, Span span, IEnumerable<int> emptyLineOffsets)
+        {
+            var runs = RemoveEmptyLines(inforValue, span.Inlines.Cast<Run>(), emptyLineOffsets).ToArray();
+            span.Inlines.Clear();
+            span.Inlines.AddRange(runs);
+            return span;
+        }
 
-
-         private IEnumerable<Run> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms)
+        private IEnumerable<Run> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms, 
+            IEnumerable<int> emptyLineOffsets)
         {
             var runs = new List<Run>();
             var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
+            lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
+
             lines = AddLineNumber(inforValue, RemoveHeadingAndTrailingEmptyLines(AlignIndention(lines, inforValue)));
             foreach (var line in lines)
             {
@@ -136,6 +159,18 @@ namespace Sando.UI.View.Search.Converters {
             return runs.Any() && runs.Last().Text.Equals(Environment.NewLine)
                 ? runs.GetRange(0, runs.Count() - 1)
                     : runs;
+        }
+
+        private IEnumerable<RunsLine> AddEmptyLines(List<RunsLine> lines, IEnumerable<int> emptyLineOffsets)
+        {
+            var indexes = emptyLineOffsets.OrderBy(o => o);
+            foreach (var index in indexes)
+            {
+                var line = new RunsLine();
+                line.AddRun(new Run(String.Empty));
+                lines.Insert(index, line);
+            }
+            return lines;
         }
 
         private RunsLine[] RemoveHeadingAndTrailingEmptyLines(IEnumerable<RunsLine> lines)
@@ -228,12 +263,14 @@ namespace Sando.UI.View.Search.Converters {
             var currentLine = new RunsLine();
             foreach (var run in runs)
             {
-                if (run.Text.Contains('\n'))
+                if (Environment.NewLine.ToCharArray().Any(c => run.Text.Contains(c)))
                 {
-                    var parts = run.Text.Split('\n');
+                    var parts = run.Text.Split(Environment.NewLine.ToCharArray(), 
+                        StringSplitOptions.None);
                     foreach (var part in parts)
                     {
-                        currentLine.AddRun(CloneFormat(run, part));
+                        if(!string.IsNullOrEmpty(part))
+                            currentLine.AddRun(CloneFormat(run, part));
                         lines.Add(currentLine);
                         currentLine = new RunsLine();
                     }
@@ -257,9 +294,10 @@ namespace Sando.UI.View.Search.Converters {
                     Foreground = original.Foreground};
         }
 
-        public object ConvertBack(object value, Type targetType,
-                                    object parameter, CultureInfo culture) {
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
             throw new NotImplementedException();
         }
     }
+
+   
 }
