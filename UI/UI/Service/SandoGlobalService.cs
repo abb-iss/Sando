@@ -15,6 +15,7 @@ using System.Linq;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using EnvDTE;
+using Sando.ExtensionContracts.SearchContracts;
 using log4net;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.SearchEngine;
@@ -90,7 +91,7 @@ namespace Sando.UI.Service {
             return localService.LocalServiceFunction();
         }
 
-        public void Update(System.Linq.IQueryable<CodeSearchResult> results)
+        public void Update(string searchString, IQueryable<CodeSearchResult> results)
         {
             var newResults = new List<CodeSearchResult>();
             foreach (var result in results)
@@ -109,7 +110,8 @@ namespace Sando.UI.Service {
 
         public List<CodeSearchResult> GetSearchResults(string searchkeywords)
         {
-            SearchManager manager = new SearchManager(this);
+            var manager = SearchManagerFactory.GetNewBackgroundSearchManager();
+            manager.AddListener(this);
             _results = null;
             manager.Search(searchkeywords);
             while (_results == null)
@@ -117,6 +119,11 @@ namespace Sando.UI.Service {
                 System.Threading.Thread.Sleep(50);                
             }
             return _results;
+        }
+
+        public void AddUISearchResultsListener(ISearchResultListener listener)
+        {
+            SearchManagerFactory.GetUserInterfaceSearchManager().AddListener(listener);
         }
 
         #endregion        

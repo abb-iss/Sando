@@ -7,6 +7,7 @@ using Lucene.Net.Analysis.Snowball;
 using NUnit.Framework;
 using Sando.DependencyInjection;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SearchContracts;
 using Sando.Indexer;
 using Sando.Indexer.Searching;
 using Sando.SearchEngine;
@@ -248,7 +249,8 @@ namespace Sando.IntegrationTests.Search
 
         private List<CodeSearchResult> GetResults(string keywords)
         {
-            SearchManager manager = new SearchManager(this);
+            var manager = SearchManagerFactory.GetNewBackgroundSearchManager();
+            manager.AddListener(this);
             _results = null;
             manager.Search(keywords);
             int i = 0;
@@ -288,7 +290,7 @@ namespace Sando.IntegrationTests.Search
             throw new NotImplementedException();
         }
 
-        public void Update(System.Linq.IQueryable<CodeSearchResult> results)
+        public void Update(string searchString, IQueryable<CodeSearchResult> results)
         {
             var newResults = new List<CodeSearchResult>();
             foreach(var result in results)

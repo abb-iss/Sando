@@ -9,27 +9,22 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SearchContracts;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
 using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
-using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Indexer.Searching.Metrics;
-
-using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
-using Microsoft.VisualStudio.Shell;
 
 namespace Sando.UI.View
 {
@@ -40,7 +35,8 @@ namespace Sando.UI.View
             DataContext = this; //so we can show results
             InitializeComponent();
 
-            _searchManager = new SearchManager(this);
+            _searchManager = SearchManagerFactory.GetUserInterfaceSearchManager();
+            _searchManager.AddListener(this);
             SearchResults = new ObservableCollection<CodeSearchResult>();
             //SearchCriteria = new SimpleSearchCriteria();
             InitAccessLevels();
@@ -294,7 +290,7 @@ namespace Sando.UI.View
             }
         }
 
-        public void Update(IQueryable<CodeSearchResult> results)
+        public void Update(string searchString, IQueryable<CodeSearchResult> results)
         {
             if (Thread.CurrentThread == Dispatcher.Thread)
             {

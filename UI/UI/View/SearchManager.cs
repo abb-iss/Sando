@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -6,6 +8,8 @@ using Configuration.OptionsPages;
 using Sando.Core;
 using Sando.Core.Extensions;
 using Sando.DependencyInjection;
+using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SearchContracts;
 using Sando.ExtensionContracts.SplitterContracts;
 using Sando.Indexer.Searching;
 using Sando.Recommender;
@@ -22,14 +26,66 @@ using Sando.Indexer.Metrics;
 
 namespace Sando.UI.View
 {
+    
+    public class SearchManagerFactory
+    {
+        private static SearchManager _uiSearchManager;
+
+        public static SearchManager GetUserInterfaceSearchManager()
+        {
+            return _uiSearchManager ?? (_uiSearchManager = new SearchManager());
+        }
+
+        public static SearchManager GetNewBackgroundSearchManager()
+        {
+            return new SearchManager();
+        }
+    }
+
+
     public class SearchManager
     {
-        private readonly ISearchResultListener _searchResultListener;
+        private readonly MultipleListeners _searchResultListener;
 
-        public SearchManager(ISearchResultListener searchResultListener)
+        internal SearchManager()
         {
-            _searchResultListener = searchResultListener;
+            _searchResultListener = new MultipleListeners();
         }
+
+
+        private class MultipleListeners : ISearchResultListener
+        {
+            private readonly List<ISearchResultListener> listeners = new List<ISearchResultListener>();
+ 
+            internal void AddListener(ISearchResultListener listener)
+            {
+                this.listeners.Add(listener);
+            }
+           public void Update(String searchString, IQueryable<CodeSearchResult> results)
+           {
+               foreach (var listener in listeners)
+               {
+                   listener.Update(searchString, results);
+               }
+           }
+
+           public void UpdateMessage(string message)
+           {
+               foreach (var listener in listeners)
+               {
+                   listener.UpdateMessage(message);
+               }
+           }
+
+           public void UpdateRecommendedQueries(IQueryable<string> queries)
+           {
+               foreach (var listener in listeners)
+               {
+                   listener.UpdateRecommendedQueries(queries);
+               }
+           }
+        }
+
 
         public void Search(String searchString, SimpleSearchCriteria searchCriteria = null, bool interactive = true)
         {            
@@ -80,7 +136,7 @@ namespace Sando.UI.View
                 {
                     returnString.Append("Sando is still performing its initial index of this project, results may be incomplete.");
                 }
-                _searchResultListener.Update(results);
+                _searchResultListener.Update(searchString, results);
                 _searchResultListener.UpdateMessage(returnString.ToString());
                 _searchResultListener.UpdateRecommendedQueries(criteria.GetRecommendedQueries());
 				
@@ -126,6 +182,11 @@ namespace Sando.UI.View
             var simple = builder.GetCriteria() as SimpleSearchCriteria;
             SearchCriteriaReformer.ReformSearchCriteria(simple);
             return simple;
+        }
+
+        public void AddListener(ISearchResultListener listener)
+        {
+            this._searchResultListener.AddListener(listener);
         }
     }
 }
