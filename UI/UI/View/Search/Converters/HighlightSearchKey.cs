@@ -135,14 +135,15 @@ namespace Sando.UI.View.Search.Converters {
             }
             catch (Exception e)
             {
-                return ClearSpan((IHighlightRawInfo)inforValue, span, emptyLineOffsets);
+                var run = CreateRun(((IHighlightRawInfo) inforValue).Text, FontWeights.Medium);
+                return new Span(run);
             }
         }
 
 
         private Run CreateRun(String text, FontWeight fontWeight)
         {
-            return new Run(text) {FontWeight = fontWeight};
+            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier")};
         }
 
         private bool IsSearchKey(string input, string[] keyset) {

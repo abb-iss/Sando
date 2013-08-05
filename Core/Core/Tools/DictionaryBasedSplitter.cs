@@ -84,6 +84,7 @@ namespace Sando.Core.Tools
             {
                 return new string[]{text};    
             }
+            text = DictionaryHelper.NormalizeText(text);
 
             var allSplits = new List<String>();
             var starts = DictionaryHelper.GetQuoteStarts(text).ToList();
