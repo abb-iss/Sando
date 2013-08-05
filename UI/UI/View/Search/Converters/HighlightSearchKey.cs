@@ -9,7 +9,6 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
-
 namespace Sando.UI.View.Search.Converters {
     [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
     public class HighlightSearchKey : IValueConverter {
@@ -55,6 +54,14 @@ namespace Sando.UI.View.Search.Converters {
             return list.ToArray();
         }
 
+        private String[] SplitToLines(String text)
+        {
+            return text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
+        }
+
+
+
+
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
             var emptyLineOffsets = new List<int>();
@@ -69,7 +76,7 @@ namespace Sando.UI.View.Search.Converters {
                 }
 
                 string input = value as string;
-                string[] lines = input.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.None);
+                string[] lines = SplitToLines(input);
                 lines = RemoveHeadTailEmptyStrings(lines);
                 List<string> key_temp = new List<string>();
                 var offset = 0;
@@ -130,8 +137,7 @@ namespace Sando.UI.View.Search.Converters {
             }
             catch (Exception e)
             {
-                var run = CreateRun(((IHighlightRawInfo) inforValue).Text, FontWeights.Medium);
-                return new Span(run);
+                return span;
             }
         }
 
@@ -331,6 +337,4 @@ namespace Sando.UI.View.Search.Converters {
             throw new NotImplementedException();
         }
     }
-
-   
 }
