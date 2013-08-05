@@ -17,6 +17,7 @@ namespace Sando.UI.UnitTests
             public string Text { get; private set; }
             public int StartLineNumber { get; private set; }
             public int[] Offsets { get; private set; }
+            public IndentionOption IndOption { get; private set; }
 
             internal InternalHighlightRawInfo(String Text, int StartLineNumber, int[] Offsets = null)
             {
@@ -57,7 +58,5 @@ namespace Sando.UI.UnitTests
             var info = new InternalHighlightRawInfo(sb.ToString(), 1);
             converter.Convert(info, null, null, null);
         }
-
-       
     }
 }

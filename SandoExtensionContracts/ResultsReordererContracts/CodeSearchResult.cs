@@ -8,11 +8,18 @@ using System.Text;
 
 namespace Sando.ExtensionContracts.ResultsReordererContracts
 {
+    public enum IndentionOption
+    {
+        KeepIndention,
+        NoIndention
+    }
+
     public interface IHighlightRawInfo
     {
         string Text { get; }
         int StartLineNumber { get; }
         int[] Offsets { get; }
+        IndentionOption IndOption { get; }
     }
 
 
@@ -127,8 +134,8 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         {
             get
             {
-                return new InternalHighlightRawInfo(highlight, ProgramElement.DefinitionLineNumber, 
-                    HighlightOffsets);
+                return new InternalHighlightRawInfo(highlight, ProgramElement.
+                    DefinitionLineNumber, IndentionOption.NoIndention, HighlightOffsets);
             }
         }
 
@@ -136,7 +143,8 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         {
             get
             {
-                return new InternalHighlightRawInfo(highlightRaw, ProgramElement.DefinitionLineNumber);
+                return new InternalHighlightRawInfo(highlightRaw, ProgramElement.
+                    DefinitionLineNumber, IndentionOption.KeepIndention);
             }
         }
 
@@ -145,12 +153,15 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
             public string Text { get; private set; }
             public int StartLineNumber { get; private set; }
             public int[] Offsets { get; private set; }
+            public IndentionOption IndOption { get; private set; }
 
-            internal InternalHighlightRawInfo(String Text, int StartLineNumber, int[] Offsets = null)
+            internal InternalHighlightRawInfo(String Text, int StartLineNumber, 
+                IndentionOption IndOption, int[] Offsets = null)
             {
                 this.Text = Text;
                 this.StartLineNumber = StartLineNumber;
                 this.Offsets = Offsets;
+                this.IndOption = IndOption;
             }
         }
 

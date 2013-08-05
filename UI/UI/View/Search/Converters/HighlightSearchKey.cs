@@ -40,11 +40,6 @@ namespace Sando.UI.View.Search.Converters {
             return run;
         }
 
-        private void ClickLineNumber(object sender, RoutedEventArgs routedEventArgs)
-        {
-            
-        }
-
         private string[] RemoveHeadTailEmptyStrings(IEnumerable<string> lines)
         {
             var list = lines.ToList();
@@ -168,6 +163,12 @@ namespace Sando.UI.View.Search.Converters {
             var items = new List<Inline>();
             var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
             lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
+
+            if (inforValue.IndOption == IndentionOption.NoIndention)
+            {
+                lines = lines.Select(l => l.RemoveHeadingWhiteSpace()).ToArray();
+            }
+
             lines = AddLineNumber(inforValue, RemoveHeadingAndTrailingEmptyLines(AlignIndention(lines, inforValue)));
             foreach (var line in lines)
             {
@@ -233,6 +234,7 @@ namespace Sando.UI.View.Search.Converters {
                 this.items.Add(run);
             }
 
+            
             public InlineItemLine RemoveEmptyRun()
             {
                 items = items.Where(r => !String.IsNullOrWhiteSpace(GetItemText(r))).ToList();
@@ -275,6 +277,20 @@ namespace Sando.UI.View.Search.Converters {
             {
                 items.Insert(0, item);
             }
+
+            public InlineItemLine RemoveHeadingWhiteSpace()
+            {
+                var newLine = new InlineItemLine();
+                var startIndex = items.FindIndex(i => !String.IsNullOrWhiteSpace(GetItemText(i)));
+                if (startIndex < items.Count)
+                {
+                    newLine.items.AddRange(items.GetRange(startIndex, items.Count - startIndex));
+                    var first = newLine.items.First();
+                    newLine.items.RemoveAt(0);
+                    newLine.items.Insert(0, CloneFormat((Run)first, GetItemText(first).TrimStart()));
+                }
+                return newLine;
+            }
         }
 
         private IEnumerable<InlineItemLine> BreakToRunLines(IEnumerable<Run> runs)
@@ -304,7 +320,7 @@ namespace Sando.UI.View.Search.Converters {
             return lines.ToArray();
         }
 
-        private Run CloneFormat(Run original, string text)
+        private static Run CloneFormat(Run original, string text)
         {
             return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
                 Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
