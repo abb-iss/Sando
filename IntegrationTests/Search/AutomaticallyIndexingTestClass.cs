@@ -256,7 +256,7 @@ namespace Sando.IntegrationTests.Search
             {
                 Thread.Sleep(50);
                 i++;
-                if (i < 100)
+                if (i > 100)
                     break;
             }
             return _results;
