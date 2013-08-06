@@ -698,6 +698,5 @@ namespace Sando.UI.View
             e.Handled = true;
 
         }
-
     }
 }

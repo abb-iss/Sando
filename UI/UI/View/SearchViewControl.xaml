@@ -38,6 +38,32 @@
             </Setter>
             
         </Style>
+
+        <Style x:Key="NoChromeButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid x:Name="Chrome" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#ADADAD"/>
+                                <Setter Property="Opacity" TargetName="Chrome" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        
         <converters:ElementToIcon x:Key="ElementToIcon"/>
         <converters:ScoreToEndpoint x:Key="ScoreToEndpoint"/>
         <converters:FileTypeToIcon x:Key="FileTypeToIcon"/>
@@ -113,9 +139,16 @@
      
         </StackPanel>
 
-        <!-- Top Part: Query -->
-        <controls:AutoCompleteBox Loaded="searchBox_Loaded"  Grid.Row="0" 
-                                  Name="searchBox" Margin="5,5,5,0" FilterMode="None" 
+        <Grid Margin="5,5,5,0" Grid.Column="0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="25" />
+            </Grid.ColumnDefinitions>
+            
+            <!-- Top Part: Query -->
+            <controls:AutoCompleteBox Loaded="searchBox_Loaded" HorizontalAlignment="Stretch" Grid.Column="0"
+                                  Name="searchBox" Margin="0,0,3,0" FilterMode="None"
                                   Height="25" BorderBrush="DimGray" 
                                   Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
                                   KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
@@ -135,8 +168,13 @@
                 </DataTemplate>
             </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>
-
-        <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
+            
+            <Button Style="{DynamicResource NoChromeButton}" Click="TagCloudPopUp" Grid.Column="1" Height="25" Margin="0,0,0,0">
+                <Image Source="..\Resources\cloud.png"/>
+            </Button>
+       </Grid>
+        
+            <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick" 
                         />
 
         <ProgressBar Margin="5,5,5,0" Name="ProgBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
@@ -266,16 +304,8 @@
             </StackPanel>
         </Expander>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
-
-            <Button Name="TagCloudButton"  Margin="5,0,0,0"
-                FontFamily="ExtraBold" IsEnabled="{Binding ElementName=TagCloudPopUpWindow, 
-                Mode=TwoWay, Path=IsOpen, Converter={StaticResource oppositeConverter}}" 
-        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
-                Click="TagCloudPopUp" FontWeight="ExtraBold" Height="25" VerticalAlignment="Top" ToolTip="Tag cloud">[T]
-            </Button>
-
-
-            <Button Name="ClearHistoryButton"  Margin="0,0,0,0"
+            
+            <Button Name="ClearHistoryButton"  Margin="20,0,0,0"
                 FontFamily="ExtraBold" IsEnabled="True"
         		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
                 Click="ClearSearchHistory" FontWeight="ExtraBold" Height="25" VerticalAlignment="Top" 
