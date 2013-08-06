@@ -281,6 +281,7 @@ namespace Sando.UI.View
                 FontSize = shapedWord.FontSize,
                 Foreground = shapedWord.Color,
                 IsEnabled = true,
+                TextDecorations = null,
             };
             link.Click += (sender, args) => LogEvents.AddWordFromTagCloud(searchBox.Text,
                 "TOFIXTHE", shapedWord.Word);

@@ -242,6 +242,7 @@
     <Compile Include="Service\SandoLocalService.cs" />
     <Compile Include="TextBlockEx.cs" />
     <Compile Include="View\RecommendedQueryView.cs" />
+    <Compile Include="View\SearchViewDragAndDrop.cs" />
     <Compile Include="View\Search\Converters\HighlightSearchKey.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />
     <Compile Include="View\Converters\MyStrokeConverter.cs" />

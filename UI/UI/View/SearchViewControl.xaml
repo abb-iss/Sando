@@ -17,7 +17,7 @@
 
     <UserControl.Resources>
         <converters:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
-      
+        
         <Style x:Key="ToggleButtonStyleBorderless" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -179,7 +179,7 @@
                         ToolTip="Previous Word" Content="&lt;" FontSize="30">
                     </Button>
                     <TextBlock Name="tagCloudTitleTextBlock" Margin="0,0,0,0" Visibility="Visible" IsEnabled="True" 
-                                HorizontalAlignment="Stretch" Background ="Azure" FontSize="28">
+                                HorizontalAlignment="Stretch" Background ="Azure" FontSize="28" FontFamily="Times">
                     </TextBlock>
 
                     <Button Name="nextTagButton"  Margin="0,0,0,0" Width="20" HorizontalAlignment="Left"
@@ -190,7 +190,7 @@
                     </Button>
                 </DockPanel>
                 <TextBlock Margin="0,0,0,0" Name="TagCloudTextBlock" IsEnabled="True" Background="Azure" HorizontalAlignment="Stretch" 
-                    TextWrapping="Wrap">
+                    TextWrapping="Wrap" FontFamily="Times">
                 </TextBlock>
             </StackPanel>
         </Popup>
@@ -408,8 +408,7 @@
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
                         VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
                        SelectionChanged="searchResultListbox_SelectionChanged" MouseLeave="MouseLeaveEvent"                    
-                       Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"                       
-                       >  
+                       Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">  
     
                 <ListView.ContextMenu>
                     <ContextMenu Name="SearchResultMenu" StaysOpen="true">
@@ -442,6 +441,7 @@
                         <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
                         <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>
                         <EventSetter Event="LostFocus" Handler="ListViewItem_LostFocus"/>
+                        <EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
