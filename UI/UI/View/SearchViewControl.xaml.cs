@@ -9,27 +9,22 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Sando.Core.Logging;
 using Sando.ExtensionContracts.ProgramElementContracts;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SearchContracts;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
 using Sando.Recommender;
 using FocusTestVC;
 using Sando.UI.View.Search;
 using Sando.UI.Actions;
-using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Indexer.Searching.Metrics;
-
-using System.Collections;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
-using Microsoft.VisualStudio.Shell;
 
 namespace Sando.UI.View
 {
@@ -40,7 +35,8 @@ namespace Sando.UI.View
             DataContext = this; //so we can show results
             InitializeComponent();
 
-            _searchManager = new SearchManager(this);
+            _searchManager = SearchManagerFactory.GetUserInterfaceSearchManager();
+            _searchManager.AddListener(this);
             SearchResults = new ObservableCollection<CodeSearchResult>();
             //SearchCriteria = new SimpleSearchCriteria();
             InitAccessLevels();
@@ -278,7 +274,7 @@ namespace Sando.UI.View
                 {
                     string[] searchKeys = GetKeys(this.searchKey);
                     var searchResult = result.Content as CodeSearchResult;
-                    FileOpener.OpenItem(searchResult, searchBox.Text);
+                    FileOpener.OpenItem(searchResult);
                     HighlightedEntitySet.GetInstance().Clear();
                     HighlightedEntitySet.GetInstance().AddEntity(searchResult.ProgramElement.FullFilePath, searchResult.
                         ProgramElement.DefinitionLineNumber, searchResult.ProgramElement.RawSource, searchKeys);
@@ -294,7 +290,7 @@ namespace Sando.UI.View
             }
         }
 
-        public void Update(IQueryable<CodeSearchResult> results)
+        public void Update(string searchString, IQueryable<CodeSearchResult> results)
         {
             if (Thread.CurrentThread == Dispatcher.Thread)
             {
@@ -332,7 +328,8 @@ namespace Sando.UI.View
                 try {
                     string highlight;
                     string highlightRaw;
-                    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
+                    item.HighlightOffsets = GenerateHighlight(item.Raw, this.searchKey, 
+                        out highlight, out highlightRaw);
                     item.Highlight = highlight;
                     item.HighlightRaw = highlightRaw;
                 } catch(Exception exc) { exceptions.Enqueue(exc); }
@@ -344,7 +341,8 @@ namespace Sando.UI.View
             //    throw new AggregateException(exceptions);
         }
 
-        public void GenerateHighlight(string raw, string searchKey, out string highlight_out, out string highlightRaw_out) {
+        public int[] GenerateHighlight(string raw, string searchKey, out string highlight_out, 
+            out string highlightRaw_out) {
 
             StringBuilder highlight = new StringBuilder();
             StringBuilder highlight_Raw = new StringBuilder();
@@ -355,6 +353,9 @@ namespace Sando.UI.View
             string[] searchKeys = GetKeys(searchKey);
             string[] containedKeys;
 
+
+            var highlightOffsets = new List<int>();
+            int offest = 0;
             foreach(string line in lines) {
                 
                 containedKeys = IsContainSearchKey(searchKeys, line);
@@ -379,6 +380,7 @@ namespace Sando.UI.View
 
                     }
 
+                    highlightOffsets.Add(offest);
                     highlight.Append(newLine.ToString());
                     highlight.Append('\n');
 
@@ -389,10 +391,12 @@ namespace Sando.UI.View
                     highlight_Raw.Append(line);
                     highlight_Raw.Append('\n');
                 }
+                offest++;
             }
 
             highlight_out = highlight.ToString().Replace('\t', ' ');
             highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
+            return highlightOffsets.ToArray();
         }
 
         public static string[] GetKeys(string searchKey) {

@@ -15,9 +15,6 @@ namespace Sando.UI.View.Search.Converters
     [ValueConversion(typeof(SwumRecommnedationType), typeof(Brush))] 
     public class SwumTypeToColorConverter : IValueConverter
     {
-
-       
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Brush c;

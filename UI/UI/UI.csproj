@@ -249,7 +249,6 @@
     <Compile Include="View\IntroToSando.xaml.cs">
       <DependentUpon>IntroToSando.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\ISearchResultListener.cs" />
     <Compile Include="View\SearchManager.cs" />
     <Compile Include="View\SearchViewControl.xaml.cs">
       <DependentUpon>SearchViewControl.xaml</DependentUpon>

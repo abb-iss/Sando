@@ -38,7 +38,7 @@ namespace Sando.Parser.UnitTests
                 parser.Parse(filePath);
             }
             sw.Stop();
-            Assert.IsTrue(sw.Elapsed.TotalSeconds < 10);
+            Assert.IsTrue(sw.Elapsed.TotalSeconds < 50);
         }
     }
 }

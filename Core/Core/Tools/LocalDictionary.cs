@@ -44,7 +44,7 @@ namespace Sando.Core.Tools
                     ReadWordsFromFile(GetStemDicPath(), stemmedWords);
 
                     // Save to the local dictionarty every 10 minutes.
-                    this.autoSaveAction = new Action(WriteToFiles);
+                    this.autoSaveAction = WriteToFiles;
                     TimedProcessor.GetInstance().AddTimedTask(autoSaveAction, 
                         SAVE_EVERY_MINUTES * 60 * 1000);
                 }

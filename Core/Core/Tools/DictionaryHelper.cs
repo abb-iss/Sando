@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using SF.Snowball.Ext;
 using Sando.ExtensionContracts.ProgramElementContracts;
@@ -12,57 +13,83 @@ namespace Sando.Core.Tools
         private static readonly Regex _quotesPattern = new Regex("-{0,1}\"[^\"]+\"", RegexOptions.Compiled);
         private static readonly Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
         private static readonly Regex _patternCharsLowerCase = new Regex(@"([^a-zA-Z][a-z]+)", RegexOptions.Compiled);
+        private const int Minimum_Name_Length_To_Add = 30;
 
         public static IEnumerable<String> ExtractElementWords(ProgramElement element)
         {
+            var list = new List<string>();
+            
             if (element as ClassElement != null)
             {
-                return ExtractClassWords(element as ClassElement);
+                AddElementName(element, list);
+                list.AddRange(ExtractClassWords(element as ClassElement));
+                return list;
             }
             if (element as CommentElement != null)
             {
-                return ExtractCommentWords(element as CommentElement);
-            }
-            if (element as EnumElement != null)
-            {
-                return ExtractEnumWords(element as EnumElement);
+                list.AddRange(ExtractCommentWords(element as CommentElement));
+                return list;
             }
             if (element as FieldElement != null)
             {
-                return ExtractFieldWords(element as FieldElement);
+                AddElementName(element, list);
+                list.AddRange(ExtractFieldWords(element as FieldElement));
+                return list;
             }
             if (element as MethodElement != null)
             {
-                return ExtractMethodWords(element as MethodElement);
+                AddElementName(element, list);
+                list.AddRange(ExtractMethodWords(element as MethodElement));
+                return list;
             }
             if (element as MethodPrototypeElement != null)
             {
-                return ExtractMethodPrototypeWords(element as MethodPrototypeElement);
+                list.AddRange(ExtractMethodPrototypeWords(element as MethodPrototypeElement));
+                return list;
             }
             if (element as PropertyElement != null)
             {
-                return ExtractPropertyWords(element as PropertyElement);
+                AddElementName(element, list);
+                list.AddRange(ExtractPropertyWords(element as PropertyElement));
+                return list;
             }
             if (element as StructElement != null)
             {
-                return ExtractStructWords(element as StructElement);
+                AddElementName(element, list);
+                list.AddRange(ExtractStructWords(element as StructElement));
+                return list;
             }
             if (element as TextLineElement != null)
             {
-                return ExtractTextLineElement(element as TextLineElement);
+                list.AddRange(ExtractTextLineElement(element as TextLineElement));
+                return list;
             }
             if (element as XmlXElement != null)
             {
-                return ExtractXmlWords(element as XmlXElement);
+                list.AddRange(ExtractXmlWords(element as XmlXElement));
+                return list;
             }
 
             if (element.GetCustomProperties().Count > 0)
             {
-                return ExtractUnknownElementWords(element);
+                list.AddRange(ExtractUnknownElementWords(element));
+                return list;
             }
+            list.Clear();
+            return list;
+        }
 
-            //if this code is reached, contract will fail
-            return null;
+        private static void AddElementName(ProgramElement element, List<string> list)
+        {
+            var name = NormalizeText(element.Name);
+            if (name.Length < Minimum_Name_Length_To_Add)
+                list.Add(name);
+        }
+
+
+        public static String NormalizeText(String text)
+        {
+            return Regex.Replace(text, @"[^A-Za-z]+", "").ToLower();
         }
 
         public static IEnumerable<String> GetQuotedStrings(String text)

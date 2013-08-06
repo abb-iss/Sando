@@ -15,15 +15,15 @@ namespace Sando.UI.Actions
     {
         private static DTE2 _dte;
 
-        public static void OpenItem(CodeSearchResult result, string text)
+        public static void OpenItem(CodeSearchResult result)
         {
             if (result != null)
             {
-                OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber, text);
+                OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber);
             }
         }
 
-        public static void OpenFile(string filePath, int lineNumber, string text)
+        public static void OpenFile(string filePath, int lineNumber)
         {
             InitDte2();
             _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);

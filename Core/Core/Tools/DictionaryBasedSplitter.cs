@@ -77,6 +77,12 @@ namespace Sando.Core.Tools
             return word.Equals(String.Empty) || dictionary.DoesWordExist(word, option);
         }
 
+        private string RemoveUnderScore(string text)
+        {
+            return text.Replace("_", "");
+        }
+
+
         public string[] ExtractWords (string text)
         {
             if (text.IsWordQuoted() || text.IsWordFlag() || 
@@ -84,6 +90,7 @@ namespace Sando.Core.Tools
             {
                 return new string[]{text};    
             }
+            text = RemoveUnderScore(text).ToLower();
 
             var allSplits = new List<String>();
             var starts = DictionaryHelper.GetQuoteStarts(text).ToList();

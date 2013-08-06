@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.ExtensionContracts.SearchContracts;
 
 namespace Sando.ExtensionContracts.ServiceContracts
 {
@@ -28,7 +29,8 @@ namespace Sando.ExtensionContracts.ServiceContracts
         int CallLocalService();
 
         List<CodeSearchResult> GetSearchResults(string searchkeywords);
-        
+        void AddUISearchResultsListener(ISearchResultListener listener);
+
     }
 
     /// <summary>

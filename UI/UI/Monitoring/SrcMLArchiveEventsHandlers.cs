@@ -159,7 +159,5 @@ namespace Sando.UI.Monitoring
                 SwumManager.Instance.PrintSwumCache();
             }
         }
-
-        
     }
 }
