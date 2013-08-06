@@ -156,7 +156,7 @@ namespace Sando.Core.Tools
             lock (locker)
             {
                 TimedProcessor.GetInstance().RemoveTimedTask(SaveToFile);
-                SaveToFile();
+                // SaveToFile();
                 ClearMemory();
             }
         }
