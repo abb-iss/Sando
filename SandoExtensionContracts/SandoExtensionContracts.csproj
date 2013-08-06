@@ -86,7 +86,6 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataFormats\SandoDataFormats.cs" />
     <Compile Include="IndexerContracts\IndexFilterSettings.cs" />
     <Compile Include="IndexerContracts\IIndexFilterManager.cs" />
     <Compile Include="ProgramElementContracts\AccessLevel.cs" />

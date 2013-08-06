@@ -441,7 +441,6 @@
                         <EventSetter Event="MouseDoubleClick" Handler="UIElement_OnMouseDown"/>
                         <EventSetter Event="KeyDown" Handler="UIElement_OnKeyDown"/>
                         <EventSetter Event="LostFocus" Handler="ListViewItem_LostFocus"/>
-                        <EventSetter Event="PreviewMouseLeftButtonDown" Handler="listView_PreviewMouseLeftButtonDown"/>
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.View>
