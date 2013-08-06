@@ -20,9 +20,19 @@ namespace Sando.UI.View.Search.Converters {
              var offsets = infor.Offsets ?? lines.Select(n => i ++).ToArray();
              var offsetIndex = 0;
 
+             int num = 0, preNum = 0;
              foreach (var line in lines)
              {
-                var num = startLine + offsets.ElementAt(offsetIndex ++);
+                 if (offsets.Count() > offsetIndex)
+                 {
+                     preNum = num;
+                     num = startLine + offsets.ElementAt(offsetIndex++);
+                 }
+                 else
+                 {
+                     num = preNum + 1;
+                     preNum = num;
+                 }
                 line.AddBeginning(CreateRun("\t", FontWeights.Medium));
                 line.AddBeginning(CreateLineNumberHyperLink(num));
              }
