@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Media;
 using Sando.Core.Tools;
+using Application = System.Windows.Application;
 
 namespace Sando.UI.View
 {
@@ -20,8 +22,14 @@ namespace Sando.UI.View
 
         // The count of font and color should be same.
         private readonly int[] FONT_POOL = {15, 20, 25, 30, 35};
-        private readonly Brush[] colorPool = { Brushes.LightSkyBlue, Brushes.LightSkyBlue, 
+
+        private readonly Brush[] whiteBackgroundColorPool = { Brushes.LightSkyBlue, Brushes.LightSkyBlue, 
             Brushes.Blue, Brushes.Navy, Brushes.MidnightBlue};
+
+        private readonly Brush[] darkBackgroundColorPool = {
+                Brushes.Blue, Brushes.CadetBlue, Brushes.DarkSeaGreen,
+                Brushes.LightSkyBlue, Brushes.White};
+
 
         private readonly string[] rootWords;
 
@@ -128,6 +136,7 @@ namespace Sando.UI.View
             var starts = DivideToRanges(list.Count(), FONT_POOL.Count());
             var fontMap = new Dictionary<Predicate<int>, int>();
             var colorMap = new Dictionary<Predicate<int>, Brush>();
+            var colorPool = GetColorPool();
 
             for (int i = 0; i < starts.Count(); i++)
             {
@@ -148,5 +157,64 @@ namespace Sando.UI.View
                 list.ElementAt(i).Color = color;
             }
         }
+
+        private Brush[] GetColorPool()
+        {
+            var white = Brushes.White.Color;
+            var black = Brushes.Black.Color;
+            var back = GetBackGroundColor();
+            return GetColorDifference(white, back) > GetColorDifference(black, back)
+                       ? darkBackgroundColorPool
+                       : whiteBackgroundColorPool;
+        }
+
+
+
+        private Brush[] GenerateColorPool(int count)
+        {
+            var currentColor = Brushes.LightSkyBlue.Color;
+            var colors = new List<Color>();
+            for (int i = 0; i < count; i++)
+            {
+                currentColor = GetDarkerColor(currentColor);
+                colors.Add(currentColor);
+            }
+            return colors.Select
+                (c => new SolidColorBrush(c)).Cast<Brush>().ToArray();
+        }
+
+        private Color GetLighterColor(Color c)
+        {
+            var drawingcolor = System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B);
+            System.Drawing.Color lightC = ControlPaint.Light(drawingcolor);
+            return Color.FromArgb(lightC.A, lightC.R, lightC.G, lightC.B);
+        }
+
+        private Color GetDarkerColor(Color c)
+        {
+            var drawingcolor = System.Drawing.Color.FromArgb(c.A, c.R, c.G, c.B);
+            System.Drawing.Color lightC = ControlPaint.Dark(drawingcolor);
+            return Color.FromArgb(lightC.A, lightC.R, lightC.G, lightC.B);
+        }
+
+        internal Color GetBackGroundColor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.BackgroundKey;
+            var brush = (SolidColorBrush)Application.Current.Resources[key];
+            return brush.Color;
+        }
+
+
+        private double GetColorDifference(Color a, Color b)
+        {
+            return Math.Abs((GetGreyColor(a) - GetGreyColor(b))*100.0/256.0);
+        }
+
+        private double GetGreyColor(Color a)
+        {
+            return .11*a.B + .59*a.G + .30*a.R;
+        }
+
+
     }
 }
