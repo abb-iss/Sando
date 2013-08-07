@@ -44,7 +44,7 @@ In return, we simply require that you agree:
    pursuant to a solicitation issued on or after December 1, 1995, is
    provided with the commercial license rights set forth in this license,
    and (ii) Software provided pursuant to a solicitation issued prior to
-   December 1, 1995, is provided with “Restricted Rights” as set forth in
+   December 1, 1995, is provided with “Restricted Rights?as set forth in
    FAR, 48 C.F.R. 52.227-14 (June 1987) or DFAR, 48 C.F.R. 252.227-7013
    (Oct 1988), as applicable.
 9. That your rights under this License end automatically if you breach it in
