@@ -170,7 +170,7 @@
         </controls:AutoCompleteBox>
 
             <Button Style="{DynamicResource NoChromeButton}" Background="#A9A9A9" Click="TagCloudPopUp" Grid.Column="1" 
-                    Height="25" Margin="0,0,0,0">
+                    Height="25" Margin="0,0,0,0" ToolTip="Show tag cloud">
                 <Image Source="..\Resources\cloud.png"/>
             </Button>
        </Grid>

@@ -7,6 +7,7 @@ using System.Windows.Data;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Sando.Core.Tools;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View.Search.Converters {
@@ -25,8 +26,8 @@ namespace Sando.UI.View.Search.Converters {
              {
                  if (offsets.Count() > offsetIndex)
                  {
-                     preNum = num;
                      num = startLine + offsets.ElementAt(offsetIndex++);
+                     preNum = num;
                  }
                  else
                  {
@@ -64,11 +65,7 @@ namespace Sando.UI.View.Search.Converters {
             return list.ToArray();
         }
 
-        private String[] SplitToLines(String text)
-        {
-            return text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
-        }
-
+  
 
 
 
@@ -86,7 +83,7 @@ namespace Sando.UI.View.Search.Converters {
                 }
 
                 string input = value as string;
-                string[] lines = SplitToLines(input);
+                string[] lines = input.SplitToLines();
                 lines = RemoveHeadTailEmptyStrings(lines);
                 List<string> key_temp = new List<string>();
                 var offset = 0;
@@ -177,7 +174,9 @@ namespace Sando.UI.View.Search.Converters {
             IEnumerable<int> emptyLineOffsets)
         {
             var items = new List<Inline>();
-            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
+
+            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).ToArray();
+            lines = lines.Where(l => !l.IsEmpty()).ToArray();
             lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
 
             if (inforValue.IndOption == IndentionOption.NoIndention)
@@ -315,10 +314,9 @@ namespace Sando.UI.View.Search.Converters {
             var currentLine = new InlineItemLine();
             foreach (var run in runs)
             {
-                if (Environment.NewLine.ToCharArray().Any(c => run.Text.Contains(c)))
+                if (run.Text.Contains(Environment.NewLine))
                 {
-                    var parts = run.Text.Split(Environment.NewLine.ToCharArray(), 
-                        StringSplitOptions.None);
+                    var parts = run.Text.SplitToLines();
                     foreach (var part in parts)
                     {
                         if(!string.IsNullOrEmpty(part))

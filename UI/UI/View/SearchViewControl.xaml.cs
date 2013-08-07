@@ -379,23 +379,17 @@ namespace Sando.UI.View
                         temp_line = newLine.ToString();
 
                     }
-
                     highlightOffsets.Add(offest);
-                    highlight.Append(newLine.ToString());
-                    highlight.Append('\n');
-
-                    highlight_Raw.Append(newLine.ToString());
-                    highlight_Raw.Append('\n');
-
+                    highlight.Append(newLine + Environment.NewLine);
+                    highlight_Raw.Append(newLine + Environment.NewLine);
                 } else {
-                    highlight_Raw.Append(line);
-                    highlight_Raw.Append('\n');
+                    highlight_Raw.Append(line + Environment.NewLine);
                 }
                 offest++;
             }
 
-            highlight_out = highlight.ToString().Replace('\t', ' ');
-            highlightRaw_out = highlight_Raw.ToString().Replace('\t', ' ');
+            highlight_out = highlight.ToString().Replace('\t', '\t');
+            highlightRaw_out = highlight_Raw.ToString().Replace('\t', '\t');
             return highlightOffsets.ToArray();
         }
 

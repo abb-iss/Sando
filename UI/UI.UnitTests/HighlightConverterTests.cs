@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.UI.View.Search.Converters;
@@ -38,7 +39,8 @@ namespace Sando.UI.UnitTests
                 sb.AppendLine();
             }
             var info = new InternalHighlightRawInfo(sb.ToString(), 1);
-            converter.Convert(info, null, null, null);
+            var lines = ((Span) converter.Convert(info, null, null, null)).Inlines.ToArray();
+            var n = Environment.NewLine;
         }
 
         [Test]
