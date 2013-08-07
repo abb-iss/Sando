@@ -388,8 +388,8 @@ namespace Sando.UI.View
                 offest++;
             }
 
-            highlight_out = highlight.ToString().Replace('\t', '\t');
-            highlightRaw_out = highlight_Raw.ToString().Replace('\t', '\t');
+            highlight_out = highlight.ToString().Replace("\t", "    ");
+            highlightRaw_out = highlight_Raw.ToString().Replace("\t", "    ");
             return highlightOffsets.ToArray();
         }
 
