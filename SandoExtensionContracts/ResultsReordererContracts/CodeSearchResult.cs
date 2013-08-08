@@ -198,10 +198,7 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
 
         private bool IsXml()
         {
-            if(this.FileName!=null && (FileName.EndsWith(".xaml")||FileName.EndsWith(".xml")))
-                return true;
-            else
-                return false;
+            return this.FileName!=null && (FileName.EndsWith(".xaml")||FileName.EndsWith(".xml"));
         }
 
         private static StringBuilder AddTruncatedLinesToSnippet(List<string> lines, int leadingSpaces)
