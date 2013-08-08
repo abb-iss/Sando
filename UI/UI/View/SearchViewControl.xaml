@@ -17,7 +17,7 @@
 
     <UserControl.Resources>
         <converters:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
-        <converters:IsSelectedAndFocusedConverter x:Key="FocusConverter" />
+        <converters:IsSelectedAndFocusedConverter x:Key="FocusConverter" />                
         
         <Style x:Key="ToggleButtonStyleBorderless" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -165,10 +165,25 @@
                     <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
                 </StackPanel>
             </controls:AutoCompleteBox.ToolTip>
-            <controls:AutoCompleteBox.ItemTemplate>
+     
+                <controls:AutoCompleteBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Query}" 
-                        Foreground="{Binding Type, Converter={StaticResource SwumTypeToColorConverter}}"/>
+                        <TextBlock Text="{Binding Query}" >
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground">
+                                    <Setter.Value>
+                                            <MultiBinding  Mode="OneWay" Converter="{StaticResource SwumTypeToColorConverter}">
+                                            <Binding Path="." Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
+                                            <Binding Path="IsSelected" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        
+                        
                 </DataTemplate>
             </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>
