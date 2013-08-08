@@ -169,7 +169,8 @@
             </controls:AutoCompleteBox.ItemTemplate>
         </controls:AutoCompleteBox>
 
-            <Button Style="{DynamicResource NoChromeButton}" Background="#A9A9A9" Click="TagCloudPopUp" Grid.Column="1" 
+            <Button Style="{DynamicResource NoChromeButton}" Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"
+                    Click="TagCloudPopUp" Grid.Column="1" 
                     Height="25" Margin="0,0,0,0" ToolTip="Show tag cloud">
                 <Image Source="..\Resources\cloud.png"/>
             </Button>
@@ -310,7 +311,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
             
             <Button Name="ClearHistoryButton"  Margin="30,0,0,0"
-                FontFamily="ExtraBold" IsEnabled="True"
+                FontFamily="ExtraBold" IsEnabled="True" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
         		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
                 Click="ClearSearchHistory" FontWeight="ExtraBold" Height="25" VerticalAlignment="Top" 
                 ToolTip="Clear search history">[C]
@@ -318,7 +319,7 @@
 
             <Button Name="HelpButton"  ToolTip="Help" Margin="0,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" 
                     Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, 
-                    Converter={StaticResource oppositeConverter}}" 
+                    Converter={StaticResource oppositeConverter}}" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
         		    KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
                     Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
             </Button>
@@ -466,13 +467,15 @@
                                 <MultiTrigger.Conditions>
                                     <Condition Property="IsSelected" Value="true" />                                
                                 </MultiTrigger.Conditions>
-                                    <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
+                                    <Setter Property="Background" 
+                                            Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
                             </MultiTrigger>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
                                     <Condition Property="Control.IsMouseOver" Value="true" />
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
+                                <Setter Property="Background" 
+                                        Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
                             </MultiTrigger>
                         </Style.Triggers>
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

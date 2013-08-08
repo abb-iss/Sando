@@ -26,11 +26,11 @@ namespace Sando.UI.Actions
         public static void OpenFile(string filePath, int lineNumber)
         {
             InitDte2();
-            var window = _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
+            Window window = _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
             try
             {
                 var selection = (TextSelection)_dte.ActiveDocument.Selection;
-                selection.GotoLine(lineNumber);                              
+                selection.GotoLine(lineNumber);
             }
             catch (Exception e)
             {

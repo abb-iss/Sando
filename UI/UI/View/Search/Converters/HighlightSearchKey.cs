@@ -65,10 +65,6 @@ namespace Sando.UI.View.Search.Converters {
             return list.ToArray();
         }
 
-  
-
-
-
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
             var emptyLineOffsets = new List<int>();
@@ -151,7 +147,15 @@ namespace Sando.UI.View.Search.Converters {
 
         private Run CreateRun(String text, FontWeight fontWeight)
         {
-            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier")};
+            var brush = GetForeground();
+            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier"), Foreground = brush};
+        }
+
+        private static Brush GetForeground()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTextKey;
+            var brush = (Brush) Application.Current.Resources[key];
+            return brush;
         }
 
         private bool IsSearchKey(string input, string[] keyset) {
@@ -199,7 +203,7 @@ namespace Sando.UI.View.Search.Converters {
             foreach (var index in indexes)
             {
                 var line = new InlineItemLine();
-                line.AddItem(new Run(String.Empty));
+                line.AddItem(CreateRun(String.Empty, FontWeights.Medium));
                 lines.Insert(index, line);
             }
             return lines;
@@ -338,7 +342,7 @@ namespace Sando.UI.View.Search.Converters {
         {
             return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
                 Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
-                    Foreground = original.Foreground};
+                    Foreground = GetForeground()};
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
