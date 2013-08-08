@@ -34,7 +34,7 @@ namespace Sando.UI.View.Search.Converters {
                      num = preNum + 1;
                      preNum = num;
                  }
-                line.AddBeginning(CreateRun("\t", FontWeights.Medium));
+                line.AddBeginning(CreateRun("\t", regularWeight));
                 line.AddBeginning(CreateLineNumberHyperLink(num));
              }
              return lines;
@@ -45,7 +45,7 @@ namespace Sando.UI.View.Search.Converters {
         /*    var link = new Hyperlink(CreateRun(number.ToString(), 
                 FontWeights.Medium)) {Foreground = Brushes.CadetBlue};
             link.Click += ClickLineNumber;*/
-            var run = CreateRun(number.ToString(), FontWeights.Medium);
+            var run = CreateRun(number.ToString(), regularWeight);
             run.Foreground = Brushes.CadetBlue;
             return run;
         }
@@ -128,13 +128,13 @@ namespace Sando.UI.View.Search.Converters {
                         foreach (string item in temp)
                         {
                             span.Inlines.Add(IsSearchKey(item, key)
-                                ? CreateRun(item, FontWeights.Bold)
-                                    : CreateRun(item, FontWeights.Medium));
+                                ? CreateRun(item, highlightedWeight, SearchViewControl.GetHistoryTextColor())
+                                    : CreateRun(item, regularWeight));
                         }
                     }
                     else
-                        span.Inlines.Add(CreateRun(line, FontWeights.Medium));
-                    span.Inlines.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
+                        span.Inlines.Add(CreateRun(line, regularWeight));
+                    span.Inlines.Add(CreateRun(Environment.NewLine, regularWeight));
                 }
                 return ClearSpan((IHighlightRawInfo)inforValue, span, emptyLineOffsets);
             }
@@ -144,10 +144,14 @@ namespace Sando.UI.View.Search.Converters {
             }
         }
 
+        FontWeight highlightedWeight = FontWeights.UltraBold;
+        FontWeight regularWeight = FontWeights.Medium;
 
-        private Run CreateRun(String text, FontWeight fontWeight)
+        private Run CreateRun(String text, FontWeight fontWeight, Brush color = null)
         {
             var brush = GetForeground();
+            if (color != null)
+                brush = color;            
             return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier"), Foreground = brush};
         }
 
@@ -192,7 +196,7 @@ namespace Sando.UI.View.Search.Converters {
             foreach (var line in lines)
             {
                 items.AddRange(line.GetItems());
-                items.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
+                items.Add(CreateRun(Environment.NewLine, regularWeight));
             }
             return items;
         }
@@ -203,7 +207,7 @@ namespace Sando.UI.View.Search.Converters {
             foreach (var index in indexes)
             {
                 var line = new InlineItemLine();
-                line.AddItem(CreateRun(String.Empty, FontWeights.Medium));
+                line.AddItem(CreateRun(String.Empty, regularWeight));
                 lines.Insert(index, line);
             }
             return lines;
@@ -232,7 +236,7 @@ namespace Sando.UI.View.Search.Converters {
                 var firstHead = lines.First().GetHeadingWhiteSpace();
                 if (firstHead.Equals(string.Empty) && !lastHead.Equals(string.Empty))
                 {
-                    lines.First().AddBeginning(CreateRun(lastHead, FontWeights.Medium));
+                    lines.First().AddBeginning(CreateRun(lastHead, regularWeight));
                 }
             }
             return lines;

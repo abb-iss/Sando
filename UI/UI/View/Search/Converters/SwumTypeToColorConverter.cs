@@ -43,7 +43,7 @@ namespace Sando.UI.View.Search.Converters
         private Brush GetColorHistory()
         {
             if (historyColor == null)
-                historyColor = ServiceLocator.Resolve<SearchViewControl>().GetHistoryTextColor();
+                historyColor = SearchViewControl.GetHistoryTextColor();
             return historyColor;
         }
 

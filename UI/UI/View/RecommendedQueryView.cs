@@ -50,7 +50,7 @@ namespace Sando.UI.View
             foreach (string query in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(RemoveDuplicateTerms(query, 
-                    toRemoveList)), query);
+                    toRemoveList)), query);                
                 hyperlink.Click += RecommendedQueryOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
@@ -88,6 +88,7 @@ namespace Sando.UI.View
                 : base(run)
             {
                 this.Query = query;
+                this.Foreground = GetHistoryTextColor();
             }
         }
 
@@ -202,19 +203,22 @@ namespace Sando.UI.View
 
         private void CreateTagCloud(String[] words)
         {
-            var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-            var builder = new TagCloudBuilder(dictionary, words);
-            var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
+            System.Threading.Tasks.Task.Factory.StartNew(() =>
+            {
+                    var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+                    var builder = new TagCloudBuilder(dictionary, words);
+                    var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
 
-            if (Thread.CurrentThread == Dispatcher.Thread)
-            {
-                UpdateTagCloudWindow(words, hyperlinks);
-            }
-            else
-            {
-                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(words
-                    , hyperlinks)));
-            }
+                    if (Thread.CurrentThread == Dispatcher.Thread)
+                    {
+                        UpdateTagCloudWindow(words, hyperlinks);
+                    }
+                    else
+                    {
+                        Dispatcher.Invoke((Action)(() => UpdateTagCloudWindow(words
+                            , hyperlinks)));
+                    }
+            });
         }
 
 
@@ -297,7 +301,7 @@ namespace Sando.UI.View
             return brush;
         }
 
-        internal Brush GetHistoryTextColor()
+        internal static Brush GetHistoryTextColor()
         {
             var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
             return (Brush)Application.Current.Resources[key];
