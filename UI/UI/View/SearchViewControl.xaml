@@ -17,6 +17,7 @@
 
     <UserControl.Resources>
         <converters:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
+        <converters:IsSelectedAndFocusedConverter x:Key="FocusConverter" />
         
         <Style x:Key="ToggleButtonStyleBorderless" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -527,8 +528,13 @@
                                             </Canvas>
 
                                             <Popup Name="Details" Placement="Left" StaysOpen="False" Width="Auto" AllowsTransparency="true"                                            
-                                                PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}"
-                                                IsOpen="{Binding (ListViewItem.IsSelected), RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}">
+                                                PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}" >                                                
+                                                <Popup.IsOpen>
+                                                    <MultiBinding  Mode="OneWay" Converter="{StaticResource FocusConverter}">                                                        
+                                                        <Binding Path="IsSelected" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListViewItem}"/>
+                                                        <Binding Path="IsFocused" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListViewItem}"/>
+                                                    </MultiBinding>
+                                                </Popup.IsOpen>
                                                 <Border BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.DockTargetBorderKey}}" BorderThickness="3,3,0,0">
                                                     <Border BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}" BorderThickness="1,1,3,3">
                                                         <Grid Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
