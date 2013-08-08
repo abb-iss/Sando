@@ -230,7 +230,7 @@ namespace Sando.UI.View
             tagCloudTitleTextBlock.Inlines.Clear();
             if (!terms.Any())
             {
-                tagCloudTitleTextBlock.Inlines.Add(new Run("Overall")
+                tagCloudTitleTextBlock.Inlines.Add(new Run("Tag cloud for this project")
                     {
                       //  FontSize = 24, 
                         Foreground = Brushes.CadetBlue

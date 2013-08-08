@@ -42,9 +42,6 @@ namespace Sando.UI.View.Search.Converters {
 
         private Inline CreateLineNumberHyperLink(int number)
         {
-        /*    var link = new Hyperlink(CreateRun(number.ToString(), 
-                FontWeights.Medium)) {Foreground = Brushes.CadetBlue};
-            link.Click += ClickLineNumber;*/
             var run = CreateRun(number.ToString(), regularWeight);
             run.Foreground = Brushes.CadetBlue;
             return run;
@@ -65,6 +62,21 @@ namespace Sando.UI.View.Search.Converters {
             return list.ToArray();
         }
 
+
+        private string RemoveHeadAndTailNewLine(string text)
+        {
+            while (text.Any() && (text.First().Equals('\r') || text.First().Equals('\n')))
+            {
+                text = text.Substring(1);
+            }
+            while (text.Any() && (text.Last().Equals('\r') || text.Last().Equals('\n')))
+            {
+                text = text.Substring(0, text.Length - 1);
+            }
+            return text;
+        }
+
+
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
             var emptyLineOffsets = new List<int>();
@@ -78,10 +90,10 @@ namespace Sando.UI.View.Search.Converters {
                     return null;
                 }
 
-                string input = value as string;
-                string[] lines = input.SplitToLines();
+                var input = value as string;
+                string[] lines = input.SplitToLines().Select(RemoveHeadAndTailNewLine).ToArray();
                 lines = RemoveHeadTailEmptyStrings(lines);
-                List<string> key_temp = new List<string>();
+                var keyTemp = new List<string>();
                 var offset = 0;
 
                 foreach (string line in lines)
@@ -112,8 +124,8 @@ namespace Sando.UI.View.Search.Converters {
                             }
 
 
-                            if (!key_temp.Contains(key_candidate))
-                                key_temp.Add(key_candidate);
+                            if (!keyTemp.Contains(key_candidate))
+                                keyTemp.Add(key_candidate);
 
                             //Remove the searched string
                             int lengthRemove = last - first + 2 * "|~S~|".Length;
@@ -122,7 +134,7 @@ namespace Sando.UI.View.Search.Converters {
                                 findKey = findKey.Insert(first - "|~S~|".Length, "|~S~|");
                         }
 
-                        string[] key = key_temp.ToArray();
+                        string[] key = keyTemp.ToArray();
                         string[] temp = line.Split(new[] { "|~S~|", "|~E~|" }, StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (string item in temp)
