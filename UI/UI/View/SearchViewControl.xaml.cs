@@ -416,16 +416,18 @@ namespace Sando.UI.View
         }
 
         //Return the contained search key
-        private string[] IsContainSearchKey(string[] searchKeys, string line) {
-
-            List<string> containedSearchKey = new List<string>();
-
-            foreach(string key in searchKeys) 
-                if(line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase) > 0){
-                    containedSearchKey.Add(key);
+        private string[] IsContainSearchKey(string[] searchKeys, string line)
+        {
+            var containedKeys = new Dictionary<String, int>();
+            foreach (string key in searchKeys){
+                var index = line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase);
+                if (index > 0)
+                {
+                    containedKeys.Add(key, index);
                 }
-            
-            return containedSearchKey.ToArray();
+            }
+            return containedKeys.GroupBy(p => p.Value).Select(g => g.OrderBy(s => s.Key.Length).
+                Last()).Select(p => p.Key).ToArray();
         }
 
         public void UpdateMessage(string message)
