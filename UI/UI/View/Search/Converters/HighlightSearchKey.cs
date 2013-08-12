@@ -179,7 +179,7 @@ namespace Sando.UI.View.Search.Converters {
 
         private bool IsSearchKey(string input, string[] keyset) {
             foreach(string item in keyset) {
-                if(input.Equals(item, StringComparison.InvariantCultureIgnoreCase))
+                if(input.Contains(item))
                     return true;
             }
             return false;
