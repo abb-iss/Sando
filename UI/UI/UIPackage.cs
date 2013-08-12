@@ -395,6 +395,8 @@ namespace Sando.UI
         public void HandleIndexingStateChange(object sender, IsReadyChangedEventArgs args)
         {            
             CallShowProgressBar(!args.ReadyState);
+            if (args.ReadyState)
+                ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
         }
 
         private void CallShowProgressBar(bool show)
@@ -499,7 +501,8 @@ namespace Sando.UI
 
                 if (srcMLService.GetSrcMLArchive()!=null && srcMLService.IsReady)
                 {
-                    srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));                                        
+                     progressAction = () => ProgressBarAction(srcMLArchiveEventsHandlers);
+                     TimedProcessor.GetInstance().AddTimedTask(progressAction, 3 * 1000);                    
                 }
 
                 // End of code changes
@@ -541,6 +544,20 @@ namespace Sando.UI
             }    
         }
 
+        Action progressAction;
+
+        private void ProgressBarAction(SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers)
+        {
+            if (srcMLService.IsReady)
+            {
+                srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));
+                ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+                if(progressAction!=null)
+                    TimedProcessor.GetInstance().RemoveTimedTask(progressAction);
+            }
+        }
+
+ 
         private Analyzer GetAnalyzer()
         {
             PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new SnowballAnalyzer("English"));

@@ -9,6 +9,7 @@ using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
+using Sando.UI.Actions;
 
 namespace Sando.UI.View
 {
@@ -303,8 +304,16 @@ namespace Sando.UI.View
 
         internal static Brush GetHistoryTextColor()
         {
-            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
-            return (Brush)Application.Current.Resources[key];
+            if (FileOpener.Is2012())
+            {
+                var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
+                return (Brush)Application.Current.Resources[key];
+            }
+            else
+            {
+                var key = Microsoft.VisualStudio.Shell.VsBrushes.HelpSearchResultLinkSelectedKey;
+                return (Brush)Application.Current.Resources[key];
+            }
         }
 
         internal Color GetHighlightColor()

@@ -40,7 +40,7 @@ namespace Sando.UI.Actions
         }
 
 
-        private static bool Is2012()
+        public static bool Is2012()
         {
             EnvDTE.DTE dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
             if (dte.Version.Contains("11.0"))
