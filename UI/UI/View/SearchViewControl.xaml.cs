@@ -445,6 +445,8 @@ namespace Sando.UI.View
         //Return the contained search key
         private string[] GetContainedSearchKeys(string[] searchKeys, string line)
         {
+            searchKeys = RemovePartialWords(searchKeys.Where(k => line.IndexOf(k, 
+                StringComparison.InvariantCultureIgnoreCase) >= 0).ToArray());       
             var containedKeys = new Dictionary<String, int>();
             foreach (string key in searchKeys){
                 var index = line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase);
@@ -453,28 +455,26 @@ namespace Sando.UI.View
                     containedKeys.Add(key, index);
                 }
             }
-            return RemovePartialWords(containedKeys.GroupBy(p => p.Value).
-                Select(g => g.OrderBy(s => s.Key.Length).
-                    Last()).OrderBy(p => p.Value).
-                        Select(p => p.Key).ToArray());
+            return containedKeys.OrderBy(p => p.Value).Select(p => p.Key).ToArray();
         }
 
         private string[] RemovePartialWords(string[] words)
         {
             var removedIndex = new List<int>();
             var sortedWords = words.OrderByDescending(w => w.Length).ToList();
-            for (int i = sortedWords.Count() - 1; i > 0; i --)
+            for (int i = sortedWords.Count() - 1; i > 0; i--)
             {
-                for (int j = i - 1; j >= 0; j -- )
+                for (int j = i - 1; j >= 0; j--)
                 {
-                    if (words[j].IndexOf(words[i], StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    if (sortedWords[j].IndexOf(sortedWords[i], StringComparison.
+                        InvariantCultureIgnoreCase) >= 0)
                     {
                         removedIndex.Add(i);
                         break;
                     }
                 }
             }
-            foreach (var index in removedIndex)
+            foreach (var index in removedIndex.Distinct().OrderByDescending(i => i))
             {
                 sortedWords.RemoveAt(index);
             }
