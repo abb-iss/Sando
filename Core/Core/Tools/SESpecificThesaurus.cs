@@ -54,7 +54,7 @@ namespace Sando.Core.Tools
 
     public class SeSpecificThesaurus : IThesaurus
     {
-        const string filePath = @"Dictionaries\mined_related_unique.csv";
+        private static readonly string filePath = GetFilePath();
         private List<ThesaurusEntry> orderedWordPairs;
         private List<ThesaurusEntry> switchedWordPairs;
         private readonly object locker = new object();
@@ -72,6 +72,14 @@ namespace Sando.Core.Tools
         {
             return instance ?? (instance = new SeSpecificThesaurus());
         }
+
+        private static string GetFilePath()
+        {
+            var directory = PathManager.Instance.GetExtensionRoot();
+            var file = @"Dictionaries\mined_related_unique.csv";
+            return Path.Combine(directory, file);
+        }
+
 
         private class ThesaurusEntry
         {
