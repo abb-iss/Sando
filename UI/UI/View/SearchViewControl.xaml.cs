@@ -343,54 +343,81 @@ namespace Sando.UI.View
 
         public int[] GenerateHighlight(string raw, string searchKey, out string highlight_out, 
             out string highlightRaw_out) {
+            try
+            {
+                StringBuilder highlight = new StringBuilder();
+                StringBuilder highlight_Raw = new StringBuilder();
 
-            StringBuilder highlight = new StringBuilder();
-            StringBuilder highlight_Raw = new StringBuilder();
+                string[] lines = raw.Split('\n');
+                StringBuilder newLine = new StringBuilder();
 
-            string[] lines = raw.Split('\n');
-            StringBuilder newLine = new StringBuilder();
-
-            string[] searchKeys = GetKeys(searchKey);
-            string[] containedKeys;
+                string[] searchKeys = GetKeys(searchKey);
+                string[] containedKeys;
 
 
-            var highlightOffsets = new List<int>();
-            int offest = 0;
-            foreach(string line in lines) {
-                
-                containedKeys = IsContainSearchKey(searchKeys, line);
-                
-                if(containedKeys.Length != 0) {
+                var highlightOffsets = new List<int>();
+                int offest = 0;
+                foreach (string line in lines)
+                {
 
-                    string temp_line = string.Copy(line);
-                    int loc;
-                    //One line contain multiple words
-                    foreach(string key in containedKeys) {
-                        newLine.Clear();
-                        while((loc = temp_line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase)) >= 0) {
+                    containedKeys = IsContainSearchKey(searchKeys, line);
 
-                            string replaceKey = "|~S~|" + temp_line.Substring(loc, key.Length) + "|~E~|";
-                            newLine.Append(temp_line.Substring(0, loc) + replaceKey);
-                            temp_line = temp_line.Remove(0, loc + key.Length);
+                    if (containedKeys.Length != 0)
+                    {
+
+                        string temp_line = string.Copy(line);
+                        int loc;
+                        //One line contain multiple words
+                        foreach (string key in containedKeys)
+                        {
+                            newLine.Clear();
+                            while ((loc = temp_line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase)) >= 0)
+                            {
+
+                                string replaceKey = "|~S~|" + temp_line.Substring(loc, key.Length) + "|~E~|";
+                                newLine.Append(temp_line.Substring(0, loc) + replaceKey);
+                                temp_line = temp_line.Remove(0, loc + key.Length);
+
+                            }
+
+                            newLine.Append(temp_line);
+                            temp_line = newLine.ToString();
 
                         }
-
-                        newLine.Append(temp_line);
-                        temp_line = newLine.ToString();
-
+                        highlightOffsets.Add(offest);
+                        highlight.Append(newLine + Environment.NewLine);
+                        highlight_Raw.Append(newLine + Environment.NewLine);
                     }
-                    highlightOffsets.Add(offest);
-                    highlight.Append(newLine + Environment.NewLine);
-                    highlight_Raw.Append(newLine + Environment.NewLine);
-                } else {
-                    highlight_Raw.Append(line + Environment.NewLine);
+                    else
+                    {
+                        highlight_Raw.Append(line + Environment.NewLine);
+                    }
+                    offest++;
                 }
-                offest++;
-            }
 
-            highlight_out = highlight.ToString().Replace("\t", "    ");
-            highlightRaw_out = highlight_Raw.ToString().Replace("\t", "    ");
-            return highlightOffsets.ToArray();
+                highlight_out = highlight.ToString().Replace("\t", "    ");
+                highlightRaw_out = highlight_Raw.ToString().Replace("\t", "    ");
+                return highlightOffsets.ToArray();
+            }
+            catch (Exception e)
+            {
+                highlightRaw_out = raw;
+                var lines = raw.Split('\n');
+                var keys = GetKeys(searchKey);
+                var sb = new StringBuilder();
+                var offesets = new List<int>();
+                for (int i = 0; i < lines.Count(); i ++)
+                {
+                    var containedKeys = IsContainSearchKey(keys, lines.ElementAt(i));
+                    if (containedKeys.Any())
+                    {
+                        sb.AppendLine(lines.ElementAt(i));
+                        offesets.Add(i);
+                    }
+                }
+                highlight_out = sb.ToString();
+               return offesets.ToArray();
+            }
         }
 
         public static string[] GetKeys(string searchKey) {
@@ -421,7 +448,7 @@ namespace Sando.UI.View
             var containedKeys = new Dictionary<String, int>();
             foreach (string key in searchKeys){
                 var index = line.IndexOf(key, StringComparison.InvariantCultureIgnoreCase);
-                if (index > 0)
+                if (index >= 0)
                 {
                     containedKeys.Add(key, index);
                 }
