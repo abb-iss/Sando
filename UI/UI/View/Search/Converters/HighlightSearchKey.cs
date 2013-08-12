@@ -361,7 +361,7 @@ namespace Sando.UI.View.Search.Converters {
         {
             return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
                 Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
-                    Foreground = original.Foreground};
+                    Foreground = original.Foreground, FontWeight = original.FontWeight, FontStyle = original.FontStyle};
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
