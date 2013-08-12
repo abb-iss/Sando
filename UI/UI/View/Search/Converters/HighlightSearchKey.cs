@@ -79,9 +79,12 @@ namespace Sando.UI.View.Search.Converters {
 
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
+
             var emptyLineOffsets = new List<int>();
             var value = ((IHighlightRawInfo)inforValue).Text;
             var span = new Span();
+
+            var originalSpan = new Span(new Run(value.Replace("|~E~|", String.Empty).Replace("|~S~|", String.Empty)));
             try
             {
                 // return null;
@@ -152,7 +155,7 @@ namespace Sando.UI.View.Search.Converters {
             }
             catch (Exception e)
             {
-                return span;
+                return originalSpan;
             }
         }
 
@@ -176,7 +179,7 @@ namespace Sando.UI.View.Search.Converters {
 
         private bool IsSearchKey(string input, string[] keyset) {
             foreach(string item in keyset) {
-                if(input.Contains(item))
+                if(input.Equals(item, StringComparison.InvariantCultureIgnoreCase))
                     return true;
             }
             return false;
@@ -358,7 +361,7 @@ namespace Sando.UI.View.Search.Converters {
         {
             return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
                 Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
-                    Foreground = GetForeground()};
+                    Foreground = original.Foreground};
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
