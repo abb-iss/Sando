@@ -360,7 +360,7 @@ namespace Sando.UI.View
                 foreach (string line in lines)
                 {
 
-                    containedKeys = IsContainSearchKey(searchKeys, line);
+                    containedKeys = GetContainedSearchKeys(searchKeys, line);
 
                     if (containedKeys.Length != 0)
                     {
@@ -408,7 +408,7 @@ namespace Sando.UI.View
                 var offesets = new List<int>();
                 for (int i = 0; i < lines.Count(); i ++)
                 {
-                    var containedKeys = IsContainSearchKey(keys, lines.ElementAt(i));
+                    var containedKeys = GetContainedSearchKeys(keys, lines.ElementAt(i));
                     if (containedKeys.Any())
                     {
                         sb.AppendLine(lines.ElementAt(i));
@@ -443,7 +443,7 @@ namespace Sando.UI.View
         }
 
         //Return the contained search key
-        private string[] IsContainSearchKey(string[] searchKeys, string line)
+        private string[] GetContainedSearchKeys(string[] searchKeys, string line)
         {
             var containedKeys = new Dictionary<String, int>();
             foreach (string key in searchKeys){
