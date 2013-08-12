@@ -231,7 +231,7 @@ namespace Sando.UI.View
 		{
 			while(true)
 			{
-				if(!_gatheredSearchFeedback && _inactivityStopwatch.ElapsedMilliseconds > (1000 * 60 * 5))
+				if(!_gatheredSearchFeedback && _inactivityStopwatch.ElapsedMilliseconds > (1000 * 30))
 				{
 					var uiDispatcher = (Dispatcher)e.Argument;
 

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Sando.UI.View.SearchExplicitFeedback"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sando Search Feedback" Height="220" Width="300"
+        Title="Sando Search Feedback" Height="220" Width="400"
         ResizeMode="NoResize"
         Closed="FeedbackWindow_Closed">
 
@@ -18,10 +18,11 @@
     <Label Grid.Row="0" Grid.Column="0" Content="Evaluate your previous Sando search for:"/>
     <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontSize="16.0" FontFamily="Courier" Text="{Binding Path=PreviousQueryDisp}" />
     <StackPanel Grid.Row="2" Grid.Column="0">
-      <Button Click="SATButton_Click" Content="I was satisfied"/>
-      <Button Click="PSATButton_Click" Content="I was partially satisfied" />
-      <Button Click="NotSATButton_Click" Content="I was NOT satisfied" />
-      <Button Click="NoFeedbackButton_Click" Margin="0,10,0,0" Content="I didn't get a chance to evaluate it" />
+      <Button Click="SATButton_Click" Content="Many (or most) of the results were relevant"/>
+      <Button Click="SomeSATButton_Click" Content="Some (or half) of the results were relevant" />
+      <Button Click="FewSATButton_Click" Content="Few (or less than half) of the results were relevant" />
+      <Button Click="NotSATButton_Click" Content="There were no relevant results" />
+      <Button Click="NoFeedbackButton_Click" Margin="0,10,0,0" Content="No opinion on the result set" />
     </StackPanel>
   </Grid>
 

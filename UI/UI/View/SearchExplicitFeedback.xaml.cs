@@ -37,9 +37,16 @@ namespace Sando.UI.View
 			this.Close();
 		}
 
-		private void PSATButton_Click(object sender, RoutedEventArgs e)
+		private void SomeSATButton_Click(object sender, RoutedEventArgs e)
 		{
-			LogEvents.Search_PSAT(sender, PreviousQueryDisp);
+			LogEvents.Search_SomeSAT(sender, PreviousQueryDisp);
+			RecodedFeedback = true;
+			this.Close();
+		}
+
+		private void FewSATButton_Click(object sender, RoutedEventArgs e)
+		{
+			LogEvents.Search_FewSAT(sender, PreviousQueryDisp);
 			RecodedFeedback = true;
 			this.Close();
 		}

@@ -26,26 +26,27 @@ namespace Sando.UI.View
 		{
 			if(result.ProgramElementType == ProgramElementType.Class)
 			{
-				ResultTypeDisp = "class     ";
+				ResultTypeDisp = "class ";
 			}
 			else if(result.ProgramElementType == ProgramElementType.Method)
 			{
-				ResultTypeDisp = "method     ";
+				ResultTypeDisp = "method ";
 			}
 			else if(result.ProgramElementType == ProgramElementType.Field)
 			{
-				ResultTypeDisp = "field     ";
+				ResultTypeDisp = "field ";
 			}
 			else if(result.ProgramElementType == ProgramElementType.Property)
 			{
-				ResultTypeDisp = "property     ";
+				ResultTypeDisp = "property ";
 			}
 			else
 			{
 				ResultTypeDisp = "";
 			}
 
-			ResultNameDisp = result.Name + " in " + result.FileName;
+			ResultNameDisp = result.Name;
+			ResultFileNameDisp = result.FileName;
 			ResultCodeDisp = result.Snippet;
 			this.DataContext = this;
 			InitializeComponent();
@@ -84,6 +85,7 @@ namespace Sando.UI.View
 		}
 
 		public string ResultNameDisp { get; private set; }
+		public string ResultFileNameDisp { get; private set; }
 		public string ResultTypeDisp { get; private set; }
 		public string ResultCodeDisp { get; private set; }
 		private bool RecodedFeedback;

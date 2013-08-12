@@ -21,9 +21,14 @@ namespace Sando.Core.Logging.Events
 			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=SAT, Query=" + query);
 		}
 
-		public static void Search_PSAT(Object sender, string query)
+		public static void Search_SomeSAT(Object sender, string query)
 		{
-			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=PSAT, Query=" + query);
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=SomeSAT, Query=" + query);
+		}
+
+		public static void Search_FewSAT(Object sender, string query)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=FewSAT, Query=" + query);
 		}
 
 		public static void Search_NotSAT(Object sender, string query)
