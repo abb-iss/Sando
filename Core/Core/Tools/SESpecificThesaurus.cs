@@ -77,7 +77,7 @@ namespace Sando.Core.Tools
         {
             var directory = PathManager.Instance.GetExtensionRoot();
             var file = @"Dictionaries\mined_related_unique.csv";
-            return Path.Combine(directory, file);
+            return File.Exists(file) ? file : Path.Combine(directory, file);
         }
 
 
