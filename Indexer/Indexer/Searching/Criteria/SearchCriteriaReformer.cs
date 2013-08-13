@@ -16,7 +16,7 @@ namespace Sando.Indexer.Searching.Criteria
         public static void ReformSearchCriteria(SimpleSearchCriteria criteria)
         {
             var specialTerms = GetSpecialTerms(criteria.SearchTerms);
-            var terms = criteria.SearchTerms.Select(t => t.NormalizeText()).Distinct().ToList();
+            var terms = criteria.SearchTerms.Where(t => !t.StartsWith("\"")||!t.EndsWith("\"")).Select(t => t.NormalizeText()).Distinct().ToList();
             var originalTerms = terms.ToList();
             var dictionarySplittedTerms = terms.SelectMany
                     (ServiceLocator.Resolve<DictionaryBasedSplitter>().
