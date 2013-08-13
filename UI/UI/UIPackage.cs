@@ -459,8 +459,7 @@ namespace Sando.UI
                 srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
                 if(null == srcMLService) {
                     throw new Exception("Can not get the SrcML global service.");
-                }                               
-
+                }                                               
                 // Register all types of events from the SrcML Service.
                 SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
                 if (!SetupHandlers)
@@ -497,13 +496,13 @@ namespace Sando.UI
                 history.Initialize(PathManager.Instance.GetIndexPath
                     (ServiceLocator.Resolve<SolutionKey>()));
                 ServiceLocator.RegisterInstance(history);
-                
-
+                                
                 if (srcMLService.GetSrcMLArchive()!=null && srcMLService.IsReady)
                 {
                      progressAction = () => ProgressBarAction(srcMLArchiveEventsHandlers);
                      TimedProcessor.GetInstance().AddTimedTask(progressAction, 3 * 1000);                    
                 }
+
 
                 // End of code changes
 
@@ -525,9 +524,10 @@ namespace Sando.UI
                     var indexingTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
                         {
                             var files = srcMLService.GetSrcMLArchive().GetFiles();
-                            foreach (var file in files)
-                            {
-                                srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileAdded, file));
+                            foreach (var file in srcMLService.GetSrcMLArchive().FileUnits)
+                            {                                
+                                var fileName = ABB.SrcML.SrcMLElement.GetFileNameForUnit(file);
+                                srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileAdded, fileName));
                             }
                             srcMLArchiveEventsHandlers.WaitForIndexing();
                         });
