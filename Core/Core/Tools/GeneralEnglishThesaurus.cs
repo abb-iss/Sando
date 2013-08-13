@@ -20,7 +20,7 @@ namespace Sando.Core.Tools
         {
             var directory = PathManager.Instance.GetExtensionRoot();
             var file = @"Dictionaries\GeneralDictionary.csv";
-            return Path.Combine(directory, file);
+            return File.Exists(file) ? file : Path.Combine(directory, file);
         }
         
         private readonly List<KeyValuePair<String,IEnumerable<String>>> synonymLists = 
