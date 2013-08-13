@@ -13,7 +13,6 @@ namespace Sando.Core.Tools
         private static readonly Regex _quotesPattern = new Regex("-{0,1}\"[^\"]+\"", RegexOptions.Compiled);
         private static readonly Regex _patternChars = new Regex(@"([A-Z][a-z]+)", RegexOptions.Compiled);
         private static readonly Regex _patternCharsLowerCase = new Regex(@"([^a-zA-Z][a-z]+)", RegexOptions.Compiled);
-        private const int Minimum_Name_Length_To_Add = 30;
 
         public static IEnumerable<String> ExtractElementWords(ProgramElement element)
         {
@@ -82,12 +81,11 @@ namespace Sando.Core.Tools
         private static void AddElementName(ProgramElement element, List<string> list)
         {
             var name = NormalizeText(element.Name);
-            if (name.Length < Minimum_Name_Length_To_Add)
-                list.Add(name);
+            list.Add(name);
         }
 
 
-        public static String NormalizeText(String text)
+        public static String NormalizeText(this String text)
         {
             return Regex.Replace(text, @"[^A-Za-z]+", "").ToLower();
         }
