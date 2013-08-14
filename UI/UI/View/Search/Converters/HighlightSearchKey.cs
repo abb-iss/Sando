@@ -77,12 +77,28 @@ namespace Sando.UI.View.Search.Converters {
         }
 
 
+
+        public static List<int> AllIndexesOf(string str, string value)
+        {
+            List<int> indexes = new List<int>();
+            for (int index = 0; ; index += value.Length)
+            {
+                index = str.IndexOf(value, index);
+                if (index == -1)
+                    return indexes;
+                indexes.Add(index);
+            }
+        }
+
+
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
 
             var emptyLineOffsets = new List<int>();
             var value = ((IHighlightRawInfo)inforValue).Text;
             var span = new Span();
+            var startIndicator = "|~S~|";
+            var endIndicator = "|~E~|";
 
             var originalSpan = new Span(new Run(value.Replace("|~E~|", String.Empty).Replace("|~S~|", String.Empty)));
             try
@@ -107,44 +123,46 @@ namespace Sando.UI.View.Search.Converters {
                     }
                     offset++;
 
-                    if (line.Contains("|~S~|"))
+                    if (line.Contains(startIndicator))
                     {
+                        var starts = AllIndexesOf(line, startIndicator);
+                        var ends = AllIndexesOf(line, endIndicator).Select(i => i + endIndicator.Length - 1).ToList();
+                        ends.Insert(0, -1);
+                        starts.Add(line.Count());
+                        var changePoints = new List<int>();
 
-                        string findKey = string.Copy(line);
-
-                        while (findKey.IndexOf("|~S~|") >= 0)
+                        for (int i = 0; i < starts.Count; i ++)
                         {
-                            int first = findKey.IndexOf("|~S~|") + "|~S~|".Length;
-                            int last = findKey.IndexOf("|~E~|");
-
-                            string key_candidate = findKey.Substring(first, last - first);
-
-                            bool removed = false;
-                            if (key_candidate.StartsWith("|~S~|"))
-                            {
-                                removed = true;
-                                key_candidate = key_candidate.Remove("|~S~|".Length);
-                            }
-
-
-                            if (!keyTemp.Contains(key_candidate))
-                                keyTemp.Add(key_candidate);
-
-                            //Remove the searched string
-                            int lengthRemove = last - first + 2 * "|~S~|".Length;
-                            findKey = findKey.Remove(first - "|~S~|".Length, lengthRemove);
-                            if (removed)
-                                findKey = findKey.Insert(first - "|~S~|".Length, "|~S~|");
+                            changePoints.Add(ends.ElementAt(i));
+                            changePoints.Add(starts.ElementAt(i));
                         }
-
-                        string[] key = keyTemp.ToArray();
-                        string[] temp = line.Split(new[] { "|~S~|", "|~E~|" }, StringSplitOptions.RemoveEmptyEntries);
-
-                        foreach (string item in temp)
+                        bool isHighlightedPart = false;
+                        for (int i = 0; i < changePoints.Count - 1; i++)
                         {
-                            span.Inlines.Add(IsSearchKey(item, key)
-                                ? CreateRun(item, highlightedWeight, SearchViewControl.GetHistoryTextColor())
-                                    : CreateRun(item, regularWeight));
+                            int start = changePoints.ElementAt(i);
+                            int end = changePoints.ElementAt(i + 1);
+
+                            if (isHighlightedPart)
+                            {
+                                isHighlightedPart = false;
+                                var text = line.Substring(start, end - start + 1).Replace(startIndicator,
+                                    string.Empty).Replace(endIndicator, string.Empty);
+                                if (!String.IsNullOrEmpty(text))
+                                {
+                                    var run = CreateRun(text, highlightedWeight, highlightedColor);
+                                    span.Inlines.Add(run);
+                                }
+                            }
+                            else
+                            {
+                                isHighlightedPart = true;
+                                var text = line.Substring(start + 1, end - start - 1);
+                                if (!string.IsNullOrEmpty(text))
+                                {
+                                    var run = CreateRun(text, regularWeight);
+                                    span.Inlines.Add(run);
+                                }
+                            }
                         }
                     }
                     else
@@ -159,6 +177,7 @@ namespace Sando.UI.View.Search.Converters {
             }
         }
 
+        Brush highlightedColor = SearchViewControl.GetHistoryTextColor();
         FontWeight highlightedWeight = FontWeights.UltraBold;
         FontWeight regularWeight = FontWeights.Medium;
 
