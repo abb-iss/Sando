@@ -148,6 +148,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QueryParsingAndConvertingTests.cs" />
     <Compile Include="DocumentIndexerTest.cs" />
     <Compile Include="Documents\CustomElementTest.cs" />
     <Compile Include="Documents\CustomFieldTest.cs" />
