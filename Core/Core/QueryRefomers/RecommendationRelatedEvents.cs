@@ -37,7 +37,7 @@ namespace Sando.Core.Logging.Events
         {
             var sb = new StringBuilder();
             sb.Append(query.OriginalQueryString + "=>" + query.QueryString + "=>" + 
-                query.ReformExplanation);
+                query.ReformExplanation + ";");
             return sb.ToString();
         }
 
