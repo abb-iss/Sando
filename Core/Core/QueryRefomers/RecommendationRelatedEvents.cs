@@ -13,7 +13,7 @@ namespace Sando.Core.Logging.Events
             if (allQueries.Any())
             {
                 var sb = new StringBuilder();
-                sb.Append("Issue reformed queries.");
+                sb.Append("Created links.");
                 sb.Append(allQueries.Select(CreateReformedQueryMessage).Aggregate
                     ((n1, n2) => n1 + n2));
                 DataCollectionLogEventHandlers.WriteInfoLogMessage("Post-search recommendation",
@@ -43,7 +43,7 @@ namespace Sando.Core.Logging.Events
         public static void SelectRecommendedQuery(String query, int index)
         {
             DataCollectionLogEventHandlers.WriteInfoLogMessage("Post-search recommendation", 
-                "Selected recommendation: " + index);
+                "Clicked link: " + index);
         }
 
         public static void TagCloudShowing(string query)
