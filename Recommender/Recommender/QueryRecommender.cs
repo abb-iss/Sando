@@ -32,6 +32,7 @@ namespace Sando.Recommender {
             }
             try
             {
+                return new ISwumRecommendedQuery[0];
                 var recommendations = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
 
 

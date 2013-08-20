@@ -79,9 +79,12 @@ namespace Sando.UI.View
 
            public void UpdateRecommendedQueries(IQueryable<string> queries)
            {
-               foreach (var listener in listeners)
+               if (queries != null)
                {
-                   listener.UpdateRecommendedQueries(queries);
+                   foreach (var listener in listeners)
+                   {
+                       listener.UpdateRecommendedQueries(queries);
+                   }
                }
            }
         }
@@ -180,7 +183,7 @@ namespace Sando.UI.View
                 AddCriteria(searchCriteria).                
                 NumResults(sandoOptions.NumberOfSearchResultsReturned).AddFromDescription(description);
             var simple = builder.GetCriteria() as SimpleSearchCriteria;
-            SearchCriteriaReformer.ReformSearchCriteria(simple);
+            // SearchCriteriaReformer.ReformSearchCriteria(simple);
             return simple;
         }
 

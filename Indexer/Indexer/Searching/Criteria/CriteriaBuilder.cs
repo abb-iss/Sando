@@ -20,7 +20,7 @@ namespace Sando.Indexer.Searching.Criteria
         {
             Initialze(searchCriteria);
             var terms = WordSplitter.ExtractSearchTerms(searchString).ToList();
-            SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria);
+            // SearchCriteriaReformer.ReformSearchCriteria(_searchCriteria);
             _searchCriteria.SearchTerms = new SortedSet<string>(terms);
             return this;
         }
