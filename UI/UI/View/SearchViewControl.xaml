@@ -155,7 +155,7 @@
                 Name="searchBox" Margin="0,0,0,0" FilterMode="None"
                 Height="25" BorderBrush="DimGray" 
                 Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
-                KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" 
+                KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" SelectionChanged="SearchBox_OnSelectionChanged"
                 MinimumPrefixLength="0" MaxDropDownHeight="290" 
                 ValueMemberPath="Query" VerticalAlignment="Top" 
                 Background="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBackgroundKey}}">
@@ -165,8 +165,8 @@
                     <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
                 </StackPanel>
             </controls:AutoCompleteBox.ToolTip>
-     
-                <controls:AutoCompleteBox.ItemTemplate>
+
+                    <controls:AutoCompleteBox.ItemTemplate>                   
                 <DataTemplate>
                         <TextBlock Text="{Binding Query}" >
                             <TextBlock.Style>
@@ -176,10 +176,10 @@
                                             <MultiBinding  Mode="OneWay" Converter="{StaticResource SwumTypeToColorConverter}">
                                             <Binding Path="." Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
                                             <Binding Path="IsSelected" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
-                                        </MultiBinding>
+                                            </MultiBinding>
                                     </Setter.Value>
                                 </Setter>
-                                </Style>
+                              </Style>
                             </TextBlock.Style>
                         </TextBlock>
                         

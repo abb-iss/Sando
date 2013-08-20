@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
+using Sando.Recommender;
 using Sando.UI.Actions;
 
 namespace Sando.UI.View
@@ -48,10 +50,11 @@ namespace Sando.UI.View
             RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Search instead for: " : "");
             var toRemoveList = new List<string>();
             toRemoveList.AddRange(searchBox.Text.Split());
+            int index = 0;
             foreach (string query in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(RemoveDuplicateTerms(query, 
-                    toRemoveList)), query);                
+                    toRemoveList)), query, index ++);                
                 hyperlink.Click += RecommendedQueryOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
@@ -84,12 +87,14 @@ namespace Sando.UI.View
         private class SandoQueryHyperLink : Hyperlink
         {
             public String Query { private set; get; }
+            public int Index { private set; get; }
 
-            internal SandoQueryHyperLink(Run run, String query)
+            internal SandoQueryHyperLink(Run run, String query, int index)
                 : base(run)
             {
                 this.Query = query;
                 this.Foreground = GetHistoryTextColor();
+                this.Index = index;
             }
         }
 
@@ -98,7 +103,8 @@ namespace Sando.UI.View
             if (sender as SandoQueryHyperLink != null)
             {
                 StartSearchAfterClick(sender, routedEventArgs);
-                LogEvents.SelectRecommendedQuery((sender as SandoQueryHyperLink).Query);
+                LogEvents.SelectRecommendedQuery((sender as SandoQueryHyperLink).Query, 
+                    (sender as SandoQueryHyperLink).Index);
             }
         }
 
@@ -281,7 +287,7 @@ namespace Sando.UI.View
         private Hyperlink CreateHyperLinkByShapedWord(IShapedWord shapedWord)
         {
             var link = new SandoQueryHyperLink(new Run(shapedWord.Word), 
-                searchBox.Text + " " + shapedWord.Word)
+                searchBox.Text + " " + shapedWord.Word, 0)
             {
                 FontSize = shapedWord.FontSize,
                 Foreground = shapedWord.Color,
@@ -328,6 +334,17 @@ namespace Sando.UI.View
             var key = Microsoft.VisualStudio.Shell.VsBrushes.HighlightTextKey;
             var brush = (SolidColorBrush)Application.Current.Resources[key];
             return brush.Color;
+        }
+
+        private void SearchBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0)
+                return;
+            var item = (ISwumRecommendedQuery)e.AddedItems[0];
+            if (item.Type == SwumRecommnedationType.History)
+                LogEvents.SelectHistoryItem();
+            else
+                LogEvents.SelectSwumRecommendation(item.Query);
         }
     }
 }

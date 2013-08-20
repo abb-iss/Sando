@@ -14,12 +14,9 @@ namespace Sando.Core.Logging.Events
             {
                 var sb = new StringBuilder();
                 sb.Append("Issue reformed queries.");
-                sb.Append("Original query:");
-                sb.AppendLine(allQueries.First().OriginalQueryString);
-                sb.AppendLine("Recommended queries:");
-                sb.AppendLine(allQueries.Select(CreateReformedQueryMessage).Aggregate
+                sb.Append(allQueries.Select(CreateReformedQueryMessage).Aggregate
                     ((n1, n2) => n1 + n2));
-                DataCollectionLogEventHandlers.WriteInfoLogMessage("IReformedQuery",
+                DataCollectionLogEventHandlers.WriteInfoLogMessage("Post-search recommendation",
                     sb.ToString());
             }
         }
@@ -29,10 +26,9 @@ namespace Sando.Core.Logging.Events
             if (!query.OriginalQueryString.Equals(query.QueryString))
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("Add search terms automatically.");
-                sb.AppendLine("Original query: " + query.OriginalQueryString);
-                sb.AppendLine(CreateReformedQueryMessage(query));
-                DataCollectionLogEventHandlers.WriteInfoLogMessage("IReformedQuery", sb.ToString());
+                sb.Append("Add search terms automatically.");
+                sb.Append(CreateReformedQueryMessage(query));
+                DataCollectionLogEventHandlers.WriteInfoLogMessage("Post-search recommendation", sb.ToString());
             }
         }
 
@@ -40,31 +36,45 @@ namespace Sando.Core.Logging.Events
         private static string CreateReformedQueryMessage(IReformedQuery query)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Reformed Query: " + query.QueryString); 
-            sb.AppendLine("Explanation: " + query.ReformExplanation);
+            sb.Append(query.ReformExplanation + " ");
             return sb.ToString();
         }
 
-        public static void SelectRecommendedQuery(String query)
+        public static void SelectRecommendedQuery(String query, int index)
         {
-            DataCollectionLogEventHandlers.WriteInfoLogMessage("IReformedQuery", 
-                "Selected recommendation: " + query);
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("Post-search recommendation", 
+                "Selected recommendation: " + index);
         }
 
         public static void TagCloudShowing(string query)
         {
             var sb = new StringBuilder();
             sb.Append("Render a tag cloud.");
-            sb.Append(" Query: " + query);
             DataCollectionLogEventHandlers.WriteInfoLogMessage("TagCloud", sb.ToString());
         }
 
         public static void AddWordFromTagCloud(string query, string header, string word)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Select a tag." + " Query: " + query);
-            sb.AppendLine("Tag is related to: " + header + ". Selected tag: " + word);
+            sb.AppendLine("Select a tag.");
             DataCollectionLogEventHandlers.WriteInfoLogMessage("TagCloud", sb.ToString());
+        }
+
+        public static void SelectHistoryItem()
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "History");
+        }
+
+        public static void SelectSwumRecommendation(string query)
+        {
+            if (query.Trim().Split().Count() == 1)
+            {
+                DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Identifier");
+            }
+            else
+            {
+                DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Verb-DO pair");
+            }
         }
     }
 }
