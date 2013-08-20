@@ -36,7 +36,8 @@ namespace Sando.Core.Logging.Events
         private static string CreateReformedQueryMessage(IReformedQuery query)
         {
             var sb = new StringBuilder();
-            sb.Append(query.ReformExplanation + " ");
+            sb.Append(query.OriginalQueryString + "=>" + query.QueryString + "=>" + 
+                query.ReformExplanation + ";");
             return sb.ToString();
         }
 
@@ -69,11 +70,11 @@ namespace Sando.Core.Logging.Events
         {
             if (query.Trim().Split().Count() == 1)
             {
-                DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Identifier");
+                DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Identifier: " + query);
             }
             else
             {
-                DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Verb-DO pair");
+                DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Verb-DO pair: " + query);
             }
         }
     }
