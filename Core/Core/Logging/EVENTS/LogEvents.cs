@@ -34,7 +34,6 @@ namespace Sando.Core.Logging.Events
 		public static void Search_NotSAT(Object sender, string query)
 		{
 			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=NotSAT, Query=" + query);
-
 		}
 
 		public static void Search_NoFeedback(Object sender, string query)
@@ -58,7 +57,6 @@ namespace Sando.Core.Logging.Events
 		}
 		
 		#endregion ExplicitFeedbackEvents
-
 
 		#region ParserEvents
 

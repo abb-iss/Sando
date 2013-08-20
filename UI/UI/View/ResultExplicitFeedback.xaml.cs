@@ -57,21 +57,24 @@ namespace Sando.UI.View
 
 		private void SATButton_Click(object sender, RoutedEventArgs e)
 		{
-			LogEvents.Result_SAT(sender, ResultNameDisp);
+			var wholeResult = ResultTypeDisp + ResultNameDisp + " in " + ResultFileNameDisp;
+			LogEvents.Result_SAT(sender, wholeResult);
 			RecodedFeedback = true;
 			this.Close();
 		}
 
 		private void NotSATButton_Click(object sender, RoutedEventArgs e)
 		{
-			LogEvents.Result_NotSAT(sender, ResultNameDisp);
+			var wholeResult = ResultTypeDisp + ResultNameDisp + " in " + ResultFileNameDisp;
+			LogEvents.Result_NotSAT(sender, wholeResult);
 			RecodedFeedback = true;
 			this.Close();
 		}
 
 		private void NoFeedbackButton_Click(object sender, RoutedEventArgs e)
 		{
-			LogEvents.Result_NoFeedback(sender, ResultNameDisp);
+			var wholeResult = ResultTypeDisp + ResultNameDisp + " in " + ResultFileNameDisp;
+			LogEvents.Result_NoFeedback(sender, wholeResult);
 			RecodedFeedback = true;
 			this.Close();
 		}
@@ -80,7 +83,8 @@ namespace Sando.UI.View
 		{
 			if(!RecodedFeedback)
 			{
-				LogEvents.Result_NoFeedback(sender, ResultNameDisp);
+				var wholeResult = ResultTypeDisp + ResultNameDisp + " in " + ResultFileNameDisp;
+				LogEvents.Result_NoFeedback(sender, wholeResult);
 			}
 		}
 
