@@ -105,7 +105,8 @@ namespace Sando.Core.Logging.Events
         private static string GetSandoVersion()
         {
             //TODO: Need to get the version dynamically somehow, instead of hardcoding it
-            return "1.1.2";
+            // HLNR for heavlily logging without recommendations.
+            return "1.1.2HLNR";
         }
 
 		private static string GetMachineDomain()
