@@ -125,10 +125,5 @@ namespace Sando.Core.Tools
             newList.Add(element);
             return newList;
         }
-
-        public static String[] SplitToLines(this String text)
-        {
-            return text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
-        }
     }
 }

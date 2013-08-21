@@ -9,18 +9,11 @@ namespace Sando.Core.Tools
     public class GeneralEnglishThesaurus : IThesaurus
     {
         private static IThesaurus instance;
-        private static readonly string dictionaryFile = GetFilePath();
+        private const String dictionaryFile = @"Dictionaries\GeneralDictionary.csv";
 
         public static IThesaurus GetInstance()
         {
             return instance ?? (instance = new GeneralEnglishThesaurus());
-        }
-
-        private static string GetFilePath()
-        {
-            var directory = PathManager.Instance.GetExtensionRoot();
-            var file = @"Dictionaries\GeneralDictionary.csv";
-            return File.Exists(file) ? file : Path.Combine(directory, file);
         }
         
         private readonly List<KeyValuePair<String,IEnumerable<String>>> synonymLists = 

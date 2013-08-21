@@ -20,7 +20,7 @@ namespace Sando.Recommender
         SwumRecommnedationType Type { get; }
     }
 
-    public class SwumQueriesSorter
+    internal class SwumQueriesSorter
     {
         private class ScoredQuery
         {
@@ -34,7 +34,7 @@ namespace Sando.Recommender
             }
         }
 
-        public class InternalSwumRecommendedQuey : ISwumRecommendedQuery
+        private class InternalSwumRecommendedQuey : ISwumRecommendedQuery
         {
             public string Query { get; set; }
             public SwumRecommnedationType Type { get; set; }

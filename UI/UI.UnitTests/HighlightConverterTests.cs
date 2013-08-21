@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using NUnit.Framework;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 using Sando.UI.View.Search.Converters;
@@ -39,8 +38,7 @@ namespace Sando.UI.UnitTests
                 sb.AppendLine();
             }
             var info = new InternalHighlightRawInfo(sb.ToString(), 1);
-            var lines = ((Span) converter.Convert(info, null, null, null)).Inlines.ToArray();
-            var n = Environment.NewLine;
+            converter.Convert(info, null, null, null);
         }
 
         [Test]
@@ -58,15 +56,6 @@ namespace Sando.UI.UnitTests
             sb.AppendLine();
             sb.AppendLine();
             var info = new InternalHighlightRawInfo(sb.ToString(), 1);
-            converter.Convert(info, null, null, null);
-        }
-
-        [Test]
-        public void HighlightedWordAtBeginningTest()
-        {
-            var text = "|~S~|add|~E~|{\r\n}";
-            var info = new InternalHighlightRawInfo(text, 1);
-            var converter = new HighlightSearchKey();
             converter.Convert(info, null, null, null);
         }
     }
