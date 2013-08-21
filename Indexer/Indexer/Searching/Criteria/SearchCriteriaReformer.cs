@@ -15,7 +15,10 @@ namespace Sando.Indexer.Searching.Criteria
 
         public static void ReformSearchCriteria(SimpleSearchCriteria criteria)
         {
-            var terms = criteria.SearchTerms.ToList();
+            var specialTerms = GetSpecialTerms(criteria.SearchTerms);
+            var terms = criteria.SearchTerms.Where(t => !t.StartsWith("\"")||!t.EndsWith("\"")).
+                Select(t => t.NormalizeText()).Where(t => !String.IsNullOrWhiteSpace(t)).
+                    Distinct().ToList();
             var originalTerms = terms.ToList();
             var dictionarySplittedTerms = terms.SelectMany
                     (ServiceLocator.Resolve<DictionaryBasedSplitter>().
@@ -44,7 +47,14 @@ namespace Sando.Indexer.Searching.Criteria
                 criteria.Reformed = false;
                 criteria.RecommendedQueries = Enumerable.Empty<String>().AsQueryable();
             }
+            terms.AddRange(specialTerms);
             criteria.SearchTerms = ConvertToSortedSet(terms);
+        }
+
+        private static String[] GetSpecialTerms(IEnumerable<string> searchTerms)
+        {
+            return searchTerms.Where(t => !t.NormalizeText().Equals(t, 
+                StringComparison.InvariantCultureIgnoreCase)).ToArray();
         }
 
         private static SortedSet<String> ConvertToSortedSet(IEnumerable<string> list)
