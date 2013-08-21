@@ -38,7 +38,7 @@ namespace Sando.Core.QueryRefomers
 
         protected override string GetReformMessage(string originalWord, string newWord)
         {
-            return "Software synonym";
+            return "Find synonym of \"" + originalWord + "\" with \"" + newWord + "\"";
         }
 
         protected override IThesaurus GetThesaurus()
@@ -66,7 +66,7 @@ namespace Sando.Core.QueryRefomers
 
         protected override string GetReformMessage(string originalWord, string newWord)
         {
-            return "General synonym";
+            return "Find synonym of \"" + originalWord + "\" with \"" + newWord + "\"";
         }
 
         protected override IThesaurus GetThesaurus()

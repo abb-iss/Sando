@@ -51,7 +51,7 @@ namespace Sando.Core.QueryRefomers
 
         private string GetMessage(string original, string reformed)
         {
-            return "Neighbor";
+            return "\"" + reformed + "\" is an often neighbor.";
         }
 
         public override void SetContextWords(IEnumerable<string> words)

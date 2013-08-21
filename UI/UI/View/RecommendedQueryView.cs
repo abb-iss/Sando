@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
-using Sando.Recommender;
-using Sando.UI.Actions;
 
 namespace Sando.UI.View
 {
@@ -50,11 +47,10 @@ namespace Sando.UI.View
             RecommendedQueryTextBlock.Inlines.Add(quries.Any() ? "Search instead for: " : "");
             var toRemoveList = new List<string>();
             toRemoveList.AddRange(searchBox.Text.Split());
-            int index = 0;
             foreach (string query in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(RemoveDuplicateTerms(query, 
-                    toRemoveList)), query, index ++);                
+                    toRemoveList)), query);
                 hyperlink.Click += RecommendedQueryOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
@@ -87,14 +83,11 @@ namespace Sando.UI.View
         private class SandoQueryHyperLink : Hyperlink
         {
             public String Query { private set; get; }
-            public int Index { private set; get; }
 
-            internal SandoQueryHyperLink(Run run, String query, int index)
+            internal SandoQueryHyperLink(Run run, String query)
                 : base(run)
             {
                 this.Query = query;
-                this.Foreground = GetHistoryTextColor();
-                this.Index = index;
             }
         }
 
@@ -103,8 +96,7 @@ namespace Sando.UI.View
             if (sender as SandoQueryHyperLink != null)
             {
                 StartSearchAfterClick(sender, routedEventArgs);
-                LogEvents.SelectRecommendedQuery((sender as SandoQueryHyperLink).Query, 
-                    (sender as SandoQueryHyperLink).Index);
+                LogEvents.SelectRecommendedQuery((sender as SandoQueryHyperLink).Query);
             }
         }
 
@@ -210,22 +202,19 @@ namespace Sando.UI.View
 
         private void CreateTagCloud(String[] words)
         {
-            System.Threading.Tasks.Task.Factory.StartNew(() =>
-            {
-                    var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-                    var builder = new TagCloudBuilder(dictionary, words);
-                    var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
+            var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+            var builder = new TagCloudBuilder(dictionary, words);
+            var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
 
-                    if (Thread.CurrentThread == Dispatcher.Thread)
-                    {
-                        UpdateTagCloudWindow(words, hyperlinks);
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke((Action)(() => UpdateTagCloudWindow(words
-                            , hyperlinks)));
-                    }
-            });
+            if (Thread.CurrentThread == Dispatcher.Thread)
+            {
+                UpdateTagCloudWindow(words, hyperlinks);
+            }
+            else
+            {
+                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(words
+                    , hyperlinks)));
+            }
         }
 
 
@@ -237,10 +226,10 @@ namespace Sando.UI.View
             tagCloudTitleTextBlock.Inlines.Clear();
             if (!terms.Any())
             {
-                tagCloudTitleTextBlock.Inlines.Add(new Run("Tag cloud for this project")
+                tagCloudTitleTextBlock.Inlines.Add(new Run("Overall")
                     {
                       //  FontSize = 24, 
-                        Foreground = Brushes.CadetBlue
+                        Foreground = Brushes.Navy
                     });
             }
             else
@@ -249,7 +238,7 @@ namespace Sando.UI.View
                     {
                         FontSize = highlightedTerms.Contains(t) ? 28 : 24,
                         Foreground = highlightedTerms.Contains(t)
-                                        ? Brushes.CadetBlue : Brushes.CadetBlue
+                                        ? Brushes.Navy : Brushes.LightBlue
                     }).ToArray();
                 runs.Last().Text = runs.Last().Text.Trim();
                 tagCloudTitleTextBlock.Inlines.AddRange(runs);
@@ -287,7 +276,7 @@ namespace Sando.UI.View
         private Hyperlink CreateHyperLinkByShapedWord(IShapedWord shapedWord)
         {
             var link = new SandoQueryHyperLink(new Run(shapedWord.Word), 
-                searchBox.Text + " " + shapedWord.Word, 0)
+                searchBox.Text + " " + shapedWord.Word)
             {
                 FontSize = shapedWord.FontSize,
                 Foreground = shapedWord.Color,
@@ -308,18 +297,10 @@ namespace Sando.UI.View
             return brush;
         }
 
-        internal static Brush GetHistoryTextColor()
+        internal Brush GetHistoryTextColor()
         {
-            if (FileOpener.Is2012())
-            {
-                var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
-                return (Brush)Application.Current.Resources[key];
-            }
-            else
-            {
-                var key = Microsoft.VisualStudio.Shell.VsBrushes.HelpSearchResultLinkSelectedKey;
-                return (Brush)Application.Current.Resources[key];
-            }
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
+            return (Brush)Application.Current.Resources[key];
         }
 
         internal Color GetHighlightColor()
@@ -334,17 +315,6 @@ namespace Sando.UI.View
             var key = Microsoft.VisualStudio.Shell.VsBrushes.HighlightTextKey;
             var brush = (SolidColorBrush)Application.Current.Resources[key];
             return brush.Color;
-        }
-
-        private void SearchBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count == 0)
-                return;
-            var item = (ISwumRecommendedQuery)e.AddedItems[0];
-            if (item.Type == SwumRecommnedationType.History)
-                LogEvents.SelectHistoryItem();
-            else
-                LogEvents.SelectSwumRecommendation(item.Query);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Sando.Core.QueryRefomers
 
         private string GetReformMessage(string originalWord, string newWord)
         {
-            return "Typo Correction";
+            return "Correct \"" + originalWord + "\" to \"" + newWord + "\"";
         }
 
         protected override IEnumerable<ReformedWord> GetReformedTargetInternal(string target)
