@@ -9,7 +9,6 @@ using Sando.Core.Logging.Events;
 using Sando.Core.QueryRefomers;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
-using Sando.UI.Actions;
 
 namespace Sando.UI.View
 {
@@ -51,7 +50,7 @@ namespace Sando.UI.View
             foreach (string query in quries)
             {
                 var hyperlink = new SandoQueryHyperLink(new Run(RemoveDuplicateTerms(query, 
-                    toRemoveList)), query);                
+                    toRemoveList)), query);
                 hyperlink.Click += RecommendedQueryOnClick;
                 RecommendedQueryTextBlock.Inlines.Add(hyperlink);
                 RecommendedQueryTextBlock.Inlines.Add("  ");
@@ -89,7 +88,6 @@ namespace Sando.UI.View
                 : base(run)
             {
                 this.Query = query;
-                this.Foreground = GetHistoryTextColor();
             }
         }
 
@@ -204,22 +202,19 @@ namespace Sando.UI.View
 
         private void CreateTagCloud(String[] words)
         {
-            System.Threading.Tasks.Task.Factory.StartNew(() =>
-            {
-                    var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
-                    var builder = new TagCloudBuilder(dictionary, words);
-                    var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
+            var dictionary = ServiceLocator.Resolve<DictionaryBasedSplitter>();
+            var builder = new TagCloudBuilder(dictionary, words);
+            var hyperlinks = builder.Build().Select(CreateHyperLinkByShapedWord);
 
-                    if (Thread.CurrentThread == Dispatcher.Thread)
-                    {
-                        UpdateTagCloudWindow(words, hyperlinks);
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke((Action)(() => UpdateTagCloudWindow(words
-                            , hyperlinks)));
-                    }
-            });
+            if (Thread.CurrentThread == Dispatcher.Thread)
+            {
+                UpdateTagCloudWindow(words, hyperlinks);
+            }
+            else
+            {
+                Dispatcher.Invoke((Action) (() => UpdateTagCloudWindow(words
+                    , hyperlinks)));
+            }
         }
 
 
@@ -231,10 +226,10 @@ namespace Sando.UI.View
             tagCloudTitleTextBlock.Inlines.Clear();
             if (!terms.Any())
             {
-                tagCloudTitleTextBlock.Inlines.Add(new Run("Tag cloud for this project")
+                tagCloudTitleTextBlock.Inlines.Add(new Run("Overall")
                     {
                       //  FontSize = 24, 
-                        Foreground = Brushes.CadetBlue
+                        Foreground = Brushes.Navy
                     });
             }
             else
@@ -243,7 +238,7 @@ namespace Sando.UI.View
                     {
                         FontSize = highlightedTerms.Contains(t) ? 28 : 24,
                         Foreground = highlightedTerms.Contains(t)
-                                        ? Brushes.CadetBlue : Brushes.CadetBlue
+                                        ? Brushes.Navy : Brushes.LightBlue
                     }).ToArray();
                 runs.Last().Text = runs.Last().Text.Trim();
                 tagCloudTitleTextBlock.Inlines.AddRange(runs);
@@ -302,18 +297,10 @@ namespace Sando.UI.View
             return brush;
         }
 
-        internal static Brush GetHistoryTextColor()
+        internal Brush GetHistoryTextColor()
         {
-            if (FileOpener.Is2012())
-            {
-                var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
-                return (Brush)Application.Current.Resources[key];
-            }
-            else
-            {
-                var key = Microsoft.VisualStudio.Shell.VsBrushes.HelpSearchResultLinkSelectedKey;
-                return (Brush)Application.Current.Resources[key];
-            }
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
+            return (Brush)Application.Current.Resources[key];
         }
 
         internal Color GetHighlightColor()

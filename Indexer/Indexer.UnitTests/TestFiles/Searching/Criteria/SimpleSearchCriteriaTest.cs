@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Globalization;
-using System.Threading;
 using Lucene.Net.Analysis;
 using Lucene.Net.QueryParsers;
 using Lucene.Net.Search;
@@ -37,20 +35,6 @@ namespace Sando.Indexer.UnitTests.Searching.Criteria
             Assert.IsTrue(queryString.Contains("Source:*ServiceLocator.Resolve<DTE2>\\(\\);*"), "Created query string is invalid!");
 		}
 
-
-        [Test]
-        public void SimpleSearchCriteria_BasicQueryWeightsInFinnish()
-        {
-            SimpleSearchCriteria simpleSearchCriteria = new SimpleSearchCriteria();
-            simpleSearchCriteria.SearchTerms.Add("hi");
-            string queryString = simpleSearchCriteria.ToQueryString();            
-            Assert.IsTrue(queryString.Contains("ImplementedInterfaces:hi^0.2 "), "Created query string is invalid!");
-            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("fi-FI");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("fi-FI");
-            queryString = simpleSearchCriteria.ToQueryString();
-            Assert.IsTrue((0.2).ToString().Equals("0,2"));
-            Assert.IsTrue(queryString.Contains("ImplementedInterfaces:hi^0.2 "), "Created query string is invalid!");
-        }
 
         [Test]
         public void SimpleSearchCriteria_QuotedToQueryString()

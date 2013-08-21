@@ -7,7 +7,6 @@ using System.Windows.Data;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-using Sando.Core.Tools;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
 namespace Sando.UI.View.Search.Converters {
@@ -21,20 +20,10 @@ namespace Sando.UI.View.Search.Converters {
              var offsets = infor.Offsets ?? lines.Select(n => i ++).ToArray();
              var offsetIndex = 0;
 
-             int num = 0, preNum = 0;
              foreach (var line in lines)
              {
-                 if (offsets.Count() > offsetIndex)
-                 {
-                     num = startLine + offsets.ElementAt(offsetIndex++);
-                     preNum = num;
-                 }
-                 else
-                 {
-                     num = preNum + 1;
-                     preNum = num;
-                 }
-                line.AddBeginning(CreateRun("\t", regularWeight));
+                var num = startLine + offsets.ElementAt(offsetIndex ++);
+                line.AddBeginning(CreateRun("\t", FontWeights.Medium));
                 line.AddBeginning(CreateLineNumberHyperLink(num));
              }
              return lines;
@@ -42,7 +31,10 @@ namespace Sando.UI.View.Search.Converters {
 
         private Inline CreateLineNumberHyperLink(int number)
         {
-            var run = CreateRun(number.ToString(), regularWeight);
+        /*    var link = new Hyperlink(CreateRun(number.ToString(), 
+                FontWeights.Medium)) {Foreground = Brushes.CadetBlue};
+            link.Click += ClickLineNumber;*/
+            var run = CreateRun(number.ToString(), FontWeights.Medium);
             run.Foreground = Brushes.CadetBlue;
             return run;
         }
@@ -62,29 +54,19 @@ namespace Sando.UI.View.Search.Converters {
             return list.ToArray();
         }
 
-
-        private string RemoveHeadAndTailNewLine(string text)
+        private String[] SplitToLines(String text)
         {
-            while (text.Any() && (text.First().Equals('\r') || text.First().Equals('\n')))
-            {
-                text = text.Substring(1);
-            }
-            while (text.Any() && (text.Last().Equals('\r') || text.Last().Equals('\n')))
-            {
-                text = text.Substring(0, text.Length - 1);
-            }
-            return text;
+            return text.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
         }
+
+
 
 
         public Object Convert(Object inforValue, Type targetType, object parameter, CultureInfo culture)
         {
-
             var emptyLineOffsets = new List<int>();
             var value = ((IHighlightRawInfo)inforValue).Text;
             var span = new Span();
-
-            var originalSpan = new Span(new Run(value.Replace("|~E~|", String.Empty).Replace("|~S~|", String.Empty)));
             try
             {
                 // return null;
@@ -93,10 +75,10 @@ namespace Sando.UI.View.Search.Converters {
                     return null;
                 }
 
-                var input = value as string;
-                string[] lines = input.SplitToLines().Select(RemoveHeadAndTailNewLine).ToArray();
+                string input = value as string;
+                string[] lines = SplitToLines(input);
                 lines = RemoveHeadTailEmptyStrings(lines);
-                var keyTemp = new List<string>();
+                List<string> key_temp = new List<string>();
                 var offset = 0;
 
                 foreach (string line in lines)
@@ -127,8 +109,8 @@ namespace Sando.UI.View.Search.Converters {
                             }
 
 
-                            if (!keyTemp.Contains(key_candidate))
-                                keyTemp.Add(key_candidate);
+                            if (!key_temp.Contains(key_candidate))
+                                key_temp.Add(key_candidate);
 
                             //Remove the searched string
                             int lengthRemove = last - first + 2 * "|~S~|".Length;
@@ -137,49 +119,37 @@ namespace Sando.UI.View.Search.Converters {
                                 findKey = findKey.Insert(first - "|~S~|".Length, "|~S~|");
                         }
 
-                        string[] key = keyTemp.ToArray();
+                        string[] key = key_temp.ToArray();
                         string[] temp = line.Split(new[] { "|~S~|", "|~E~|" }, StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (string item in temp)
                         {
                             span.Inlines.Add(IsSearchKey(item, key)
-                                ? CreateRun(item, highlightedWeight, SearchViewControl.GetHistoryTextColor())
-                                    : CreateRun(item, regularWeight));
+                                ? CreateRun(item, FontWeights.Bold)
+                                    : CreateRun(item, FontWeights.Medium));
                         }
                     }
                     else
-                        span.Inlines.Add(CreateRun(line, regularWeight));
-                    span.Inlines.Add(CreateRun(Environment.NewLine, regularWeight));
+                        span.Inlines.Add(CreateRun(line, FontWeights.Medium));
+                    span.Inlines.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
                 }
                 return ClearSpan((IHighlightRawInfo)inforValue, span, emptyLineOffsets);
             }
             catch (Exception e)
             {
-                return originalSpan;
+                return span;
             }
         }
 
-        FontWeight highlightedWeight = FontWeights.UltraBold;
-        FontWeight regularWeight = FontWeights.Medium;
 
-        private Run CreateRun(String text, FontWeight fontWeight, Brush color = null)
+        private Run CreateRun(String text, FontWeight fontWeight)
         {
-            var brush = GetForeground();
-            if (color != null)
-                brush = color;            
-            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier"), Foreground = brush};
-        }
-
-        private static Brush GetForeground()
-        {
-            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTextKey;
-            var brush = (Brush) Application.Current.Resources[key];
-            return brush;
+            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier")};
         }
 
         private bool IsSearchKey(string input, string[] keyset) {
             foreach(string item in keyset) {
-                if(input.Equals(item, StringComparison.InvariantCultureIgnoreCase))
+                if(input.Contains(item))
                     return true;
             }
             return false;
@@ -197,9 +167,7 @@ namespace Sando.UI.View.Search.Converters {
             IEnumerable<int> emptyLineOffsets)
         {
             var items = new List<Inline>();
-
-            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).ToArray();
-            lines = lines.Where(l => !l.IsEmpty()).ToArray();
+            var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).Where(l => !l.IsEmpty()).ToArray();
             lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
 
             if (inforValue.IndOption == IndentionOption.NoIndention)
@@ -211,7 +179,7 @@ namespace Sando.UI.View.Search.Converters {
             foreach (var line in lines)
             {
                 items.AddRange(line.GetItems());
-                items.Add(CreateRun(Environment.NewLine, regularWeight));
+                items.Add(CreateRun(Environment.NewLine, FontWeights.Medium));
             }
             return items;
         }
@@ -222,7 +190,7 @@ namespace Sando.UI.View.Search.Converters {
             foreach (var index in indexes)
             {
                 var line = new InlineItemLine();
-                line.AddItem(CreateRun(String.Empty, regularWeight));
+                line.AddItem(new Run(String.Empty));
                 lines.Insert(index, line);
             }
             return lines;
@@ -251,7 +219,7 @@ namespace Sando.UI.View.Search.Converters {
                 var firstHead = lines.First().GetHeadingWhiteSpace();
                 if (firstHead.Equals(string.Empty) && !lastHead.Equals(string.Empty))
                 {
-                    lines.First().AddBeginning(CreateRun(lastHead, regularWeight));
+                    lines.First().AddBeginning(CreateRun(lastHead, FontWeights.Medium));
                 }
             }
             return lines;
@@ -337,9 +305,10 @@ namespace Sando.UI.View.Search.Converters {
             var currentLine = new InlineItemLine();
             foreach (var run in runs)
             {
-                if (run.Text.Contains(Environment.NewLine))
+                if (Environment.NewLine.ToCharArray().Any(c => run.Text.Contains(c)))
                 {
-                    var parts = run.Text.SplitToLines();
+                    var parts = run.Text.Split(Environment.NewLine.ToCharArray(), 
+                        StringSplitOptions.None);
                     foreach (var part in parts)
                     {
                         if(!string.IsNullOrEmpty(part))
@@ -361,7 +330,7 @@ namespace Sando.UI.View.Search.Converters {
         {
             return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
                 Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
-                    Foreground = original.Foreground, FontWeight = original.FontWeight, FontStyle = original.FontStyle};
+                    Foreground = original.Foreground};
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

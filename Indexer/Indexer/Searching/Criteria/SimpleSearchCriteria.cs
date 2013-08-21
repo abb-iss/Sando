@@ -7,7 +7,6 @@ namespace Sando.Indexer.Searching.Criteria
 {
     public class SimpleSearchCriteria : SearchCriteria
     {
-
         public SimpleSearchCriteria()
         {
             AccessLevels = new SortedSet<AccessLevel>();
@@ -51,20 +50,7 @@ namespace Sando.Indexer.Searching.Criteria
         }
 
         public IQueryable<string> RecommendedQueries { set; get; }
-        public SortedSet<string> SearchTerms {
-            get
-            {
-                var toRemove = _searchTerms.Where(x => String.IsNullOrWhiteSpace(x)).ToList();
-                foreach (var badOne in toRemove)
-                    _searchTerms.Remove(badOne);
-                return _searchTerms;
-            }
-            set{ 
-                _searchTerms = value;
-            }
-        }
-        private SortedSet<string> _searchTerms;
-
+        public SortedSet<string> SearchTerms { get; set; }
         public bool MatchCase { get; set; }
         public bool ExactMode { get; set; }
         public bool SearchByAccessLevel { get; set; }

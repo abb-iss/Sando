@@ -8,7 +8,6 @@ using Sando.Indexer.Exceptions;
 using Sando.Indexer.Searching.Criteria;
 using Sando.Translation;
 using System.Text.RegularExpressions;
-using System.Globalization;
 
 namespace Sando.Indexer.Searching
 {
@@ -303,7 +302,7 @@ namespace Sando.Indexer.Searching
             if (_queryWeights.ContainsKey(fieldName) && _queryWeights[fieldName] != 1)
             {
                 stringBuilder.Append("^");
-                stringBuilder.Append(_queryWeights[fieldName].ToString(CultureInfo.InvariantCulture));
+                stringBuilder.Append(_queryWeights[fieldName]);
             }
         }
     }

@@ -26,11 +26,11 @@ namespace Sando.UI.Actions
         public static void OpenFile(string filePath, int lineNumber)
         {
             InitDte2();
-            Window window = _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
+            _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
             try
             {
                 var selection = (TextSelection)_dte.ActiveDocument.Selection;
-                selection.GotoLine(lineNumber);
+                selection.GotoLine(lineNumber);                              
             }
             catch (Exception e)
             {
@@ -40,7 +40,7 @@ namespace Sando.UI.Actions
         }
 
 
-        public static bool Is2012()
+        private static bool Is2012()
         {
             EnvDTE.DTE dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
             if (dte.Version.Contains("11.0"))

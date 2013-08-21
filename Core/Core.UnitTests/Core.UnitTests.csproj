@@ -58,7 +58,6 @@
     <Compile Include="Tools\AcronymExpanderTests.cs" />
     <Compile Include="Tools\CoOccurrenceBasedReformerTests.cs" />
     <Compile Include="Tools\CoOccurrenceMatrixTests.cs" />
-    <Compile Include="Tools\BigMatrixTest.cs" />
     <Compile Include="Tools\DictionaryBasedQueryReformerTests.cs" />
     <Compile Include="Tools\GeneralEnglishThesaurusTests.cs" />
     <Compile Include="Tools\InFileCoOccurrenceMatrixTests.cs" />
@@ -94,9 +93,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\dictionary.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\LargeMatrix\SparseMatrix.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\SparseMatrix.txt">

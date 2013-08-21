@@ -167,11 +167,11 @@ namespace Sando.Core.Tools
             {
                 if (Directory.Exists(directory) && allWords.Any())
                 {
-                    var lineOne = allWords.Aggregate(new StringBuilder(), (builder, word) => builder.Append(word).Append(" "));                    
-                    var lineTwo = A.Select(i => i.Value.ToString()).Aggregate(new StringBuilder(), (builder, number) => builder.Append(number).Append( " "));
-                    var lineThree = IA.Select(i => i.Value.ToString()).Aggregate(new StringBuilder(), (builder, number) => builder.Append(number).Append( " " ));
-                    var lineFour = JA.Select(i => i.Value.ToString()).Aggregate(new StringBuilder(), (builder, number) => builder.Append(number).Append(" "));
-                    var lines = new string[] {lineOne.ToString().TrimEnd(), lineTwo.ToString().TrimEnd(), lineThree.ToString().TrimEnd(), lineFour.ToString().TrimEnd()};
+                    var lineOne = allWords.Aggregate((w1, w2) => w1 + " " + w2);
+                    var lineTwo = A.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                    var lineThree = IA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                    var lineFour = JA.Select(i => i.Value.ToString()).Aggregate((i1, i2) => i1 + " " + i2);
+                    var lines = new string[] {lineOne, lineTwo, lineThree, lineFour};
                     File.WriteAllLines(GetMatrixFilePath(), lines);
                 }
             }

@@ -14,7 +14,7 @@ namespace Sando.Parser.UnitTests
         private const string filePath = @"TestFiles\SampleXAML.txt";
 
         [Test]
-        public void TestLengthOfEachXamlElement()
+        public void Method1()
         {
             var parser = new XAMLFileParser();
             var elements = parser.Parse(filePath);
@@ -23,8 +23,7 @@ namespace Sando.Parser.UnitTests
             {
                 sb.AppendLine(element.RawSource);
                 sb.AppendLine("====================================================");
-                Assert.IsTrue(element.RawSource.Split(new string[]{Environment.NewLine}, 
-                    StringSplitOptions.None).Count() <= XAMLFileParser.LengthLimit);
+                Assert.IsTrue(element.RawSource.Split('\n').Count() <= XAMLFileParser.LengthLimit);
             }
         }
 
