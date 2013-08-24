@@ -144,6 +144,7 @@ namespace Sando.UI.View
         {
             var history = ServiceLocator.Resolve<SearchHistory>();
             history.ClearHistory();
+            LogEvents.ClearHistory();
         }
 
         private void ChangeSelectedTag(object sender, RoutedEventArgs e)

@@ -66,6 +66,12 @@ namespace Sando.Core.Logging.Events
             DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "History");
         }
 
+        public static void ClearHistory()
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("Pre-search recommendation", "Clear history");
+        }
+
+
         public static void SelectSwumRecommendation(string query)
         {
             if (query.Trim().Split().Count() == 1)
