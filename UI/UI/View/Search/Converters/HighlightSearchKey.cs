@@ -10,35 +10,37 @@ using System.Windows.Media;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ResultsReordererContracts;
 
-namespace Sando.UI.View.Search.Converters {
+namespace Sando.UI.View.Search.Converters
+{
     [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
-    public class HighlightSearchKey : IValueConverter {
+    public class HighlightSearchKey : IValueConverter
+    {
 
-         private InlineItemLine[] AddLineNumber(IHighlightRawInfo infor, InlineItemLine[] lines)
-         {
-             var startLine = infor.StartLineNumber;
-             int i = 0;
-             var offsets = infor.Offsets ?? lines.Select(n => i ++).ToArray();
-             var offsetIndex = 0;
+        private InlineItemLine[] AddLineNumber(IHighlightRawInfo infor, InlineItemLine[] lines)
+        {
+            var startLine = infor.StartLineNumber;
+            int i = 0;
+            var offsets = infor.Offsets ?? lines.Select(n => i++).ToArray();
+            var offsetIndex = 0;
 
-             int num = 0, preNum = 0;
-             foreach (var line in lines)
-             {
-                 if (offsets.Count() > offsetIndex)
-                 {
-                     num = startLine + offsets.ElementAt(offsetIndex++);
-                     preNum = num;
-                 }
-                 else
-                 {
-                     num = preNum + 1;
-                     preNum = num;
-                 }
+            int num = 0, preNum = 0;
+            foreach (var line in lines)
+            {
+                if (offsets.Count() > offsetIndex)
+                {
+                    num = startLine + offsets.ElementAt(offsetIndex++);
+                    preNum = num;
+                }
+                else
+                {
+                    num = preNum + 1;
+                    preNum = num;
+                }
                 line.AddBeginning(CreateRun("\t", regularWeight));
                 line.AddBeginning(CreateLineNumberHyperLink(num));
-             }
-             return lines;
-         }
+            }
+            return lines;
+        }
 
         private Inline CreateLineNumberHyperLink(int number)
         {
@@ -159,27 +161,29 @@ namespace Sando.UI.View.Search.Converters {
             }
         }
 
-        FontWeight highlightedWeight = FontWeights.UltraBold;
-        FontWeight regularWeight = FontWeights.Medium;
+        static FontWeight highlightedWeight = FontWeights.UltraBold;
+        static FontWeight regularWeight = FontWeights.Medium;
 
         private Run CreateRun(String text, FontWeight fontWeight, Brush color = null)
         {
             var brush = GetForeground();
             if (color != null)
-                brush = color;            
-            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier"), Foreground = brush};
+                brush = color;
+            return new Run(text) { FontWeight = fontWeight, FontFamily = new FontFamily("Courier"), Foreground = brush };
         }
 
         private static Brush GetForeground()
         {
             var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTextKey;
-            var brush = (Brush) Application.Current.Resources[key];
+            var brush = (Brush)Application.Current.Resources[key];
             return brush;
         }
 
-        private bool IsSearchKey(string input, string[] keyset) {
-            foreach(string item in keyset) {
-                if(input.Equals(item, StringComparison.InvariantCultureIgnoreCase))
+        private bool IsSearchKey(string input, string[] keyset)
+        {
+            foreach (string item in keyset)
+            {
+                if (input.Equals(item, StringComparison.InvariantCultureIgnoreCase))
                     return true;
             }
             return false;
@@ -193,7 +197,7 @@ namespace Sando.UI.View.Search.Converters {
             return span;
         }
 
-        private IEnumerable<Inline> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms, 
+        private IEnumerable<Inline> RemoveEmptyLines(IHighlightRawInfo inforValue, IEnumerable<Run> terms,
             IEnumerable<int> emptyLineOffsets)
         {
             var items = new List<Inline>();
@@ -201,7 +205,7 @@ namespace Sando.UI.View.Search.Converters {
             var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).ToArray();
             lines = lines.Where(l => !l.IsEmpty()).ToArray();
             lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
-
+            lines = AlignLinesStartWithHighlight(lines.ToList());
             if (inforValue.IndOption == IndentionOption.NoIndention)
             {
                 lines = lines.Select(l => l.RemoveHeadingWhiteSpace()).ToArray();
@@ -214,6 +218,53 @@ namespace Sando.UI.View.Search.Converters {
                 items.Add(CreateRun(Environment.NewLine, regularWeight));
             }
             return items;
+        }
+
+        private InlineItemLine[] AlignLinesStartWithHighlight(List<InlineItemLine> list)
+        {
+            var replaces = new List<InlineItemLine>();
+            var targetLines = list.Where(l => l.IsStartedWithHighlight());
+            foreach (var line in targetLines)
+            {
+                var replace = line.RemoveHeadingWhiteSpace();
+                replace.AddBeginning(CreateRun(FindNearbyLineIndent(list, line),
+                    regularWeight));
+                replaces.Add(replace);
+            }
+            var enumerator = replaces.GetEnumerator();
+            return list.Select(l =>
+            {
+                if (targetLines.Contains(l))
+                {
+                    enumerator.MoveNext();
+                    return enumerator.Current;
+                }
+                return l;
+            }).ToArray();
+        }
+
+        private String FindNearbyLineIndent(List<InlineItemLine> lines, InlineItemLine line)
+        {
+            int index = lines.IndexOf(line);
+            for (int i = 0; ; i++)
+            {
+                if (index + i < lines.Count)
+                {
+                    var afterLine = lines.ElementAt(index + i);
+                    if (!afterLine.IsStartedWithHighlight())
+                        return afterLine.GetHeadingWhiteSpace();
+                }
+                else if (index - i >= 0)
+                {
+                    var beforeLine = lines.ElementAt(index - i);
+                    if (beforeLine.IsStartedWithHighlight())
+                        return beforeLine.GetHeadingWhiteSpace();
+                }
+                else
+                {
+                    return String.Empty;
+                }
+            }
         }
 
         private IEnumerable<InlineItemLine> AddEmptyLines(List<InlineItemLine> lines, IEnumerable<int> emptyLineOffsets)
@@ -261,7 +312,7 @@ namespace Sando.UI.View.Search.Converters {
         private class InlineItemLine
         {
             private List<Inline> items;
-             
+
             public InlineItemLine()
             {
                 this.items = new List<Inline>();
@@ -272,7 +323,7 @@ namespace Sando.UI.View.Search.Converters {
                 this.items.Add(run);
             }
 
-            
+
             public InlineItemLine RemoveEmptyRun()
             {
                 items = items.Where(r => !String.IsNullOrWhiteSpace(GetItemText(r))).ToList();
@@ -292,6 +343,11 @@ namespace Sando.UI.View.Search.Converters {
             private string GetItemText(Inline item)
             {
                 return item is Run ? (item as Run).Text : string.Empty;
+            }
+
+            public IEnumerable<String> GetAllItemText()
+            {
+                return items.Select(GetItemText);
             }
 
             public string GetLine()
@@ -316,6 +372,13 @@ namespace Sando.UI.View.Search.Converters {
                 items.Insert(0, item);
             }
 
+            public Boolean IsStartedWithHighlight()
+            {
+                return items.Any(i => !String.IsNullOrWhiteSpace(GetItemText(i))) &&
+                    items.First(i => !String.IsNullOrWhiteSpace(GetItemText(i))).FontWeight
+                        == highlightedWeight;
+            }
+
             public InlineItemLine RemoveHeadingWhiteSpace()
             {
                 var newLine = new InlineItemLine();
@@ -329,6 +392,7 @@ namespace Sando.UI.View.Search.Converters {
                 }
                 return newLine;
             }
+
         }
 
         private IEnumerable<InlineItemLine> BreakToRunLines(IEnumerable<Run> runs)
@@ -342,7 +406,7 @@ namespace Sando.UI.View.Search.Converters {
                     var parts = run.Text.SplitToLines();
                     foreach (var part in parts)
                     {
-                        if(!string.IsNullOrEmpty(part))
+                        if (!string.IsNullOrEmpty(part))
                             currentLine.AddItem(CloneFormat(run, part));
                         lines.Add(currentLine);
                         currentLine = new InlineItemLine();
@@ -359,12 +423,21 @@ namespace Sando.UI.View.Search.Converters {
 
         private static Run CloneFormat(Run original, string text)
         {
-            return new Run(text){AllowDrop = original.AllowDrop, BaselineAlignment = original.BaselineAlignment,
-                Background = original.Background, FontSize = original.FontSize, FontFamily = original.FontFamily,
-                    Foreground = original.Foreground, FontWeight = original.FontWeight, FontStyle = original.FontStyle};
+            return new Run(text)
+            {
+                AllowDrop = original.AllowDrop,
+                BaselineAlignment = original.BaselineAlignment,
+                Background = original.Background,
+                FontSize = original.FontSize,
+                FontFamily = original.FontFamily,
+                Foreground = original.Foreground,
+                FontWeight = original.FontWeight,
+                FontStyle = original.FontStyle
+            };
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
             throw new NotImplementedException();
         }
     }
