@@ -159,8 +159,8 @@ namespace Sando.UI.View.Search.Converters {
             }
         }
 
-        FontWeight highlightedWeight = FontWeights.UltraBold;
-        FontWeight regularWeight = FontWeights.Medium;
+        static FontWeight highlightedWeight = FontWeights.UltraBold;
+        static FontWeight regularWeight = FontWeights.Medium;
 
         private Run CreateRun(String text, FontWeight fontWeight, Brush color = null)
         {
@@ -201,7 +201,7 @@ namespace Sando.UI.View.Search.Converters {
             var lines = BreakToRunLines(terms).Select(l => l.RemoveEmptyRun()).ToArray();
             lines = lines.Where(l => !l.IsEmpty()).ToArray();
             lines = AddEmptyLines(lines.ToList(), emptyLineOffsets).ToArray();
-
+            lines = AlignLinesStartWithHighlight(lines.ToList());
             if (inforValue.IndOption == IndentionOption.NoIndention)
             {
                 lines = lines.Select(l => l.RemoveHeadingWhiteSpace()).ToArray();
@@ -214,6 +214,52 @@ namespace Sando.UI.View.Search.Converters {
                 items.Add(CreateRun(Environment.NewLine, regularWeight));
             }
             return items;
+        }
+
+        private InlineItemLine[] AlignLinesStartWithHighlight(List<InlineItemLine> list)
+        {
+            var replaces = new List<InlineItemLine>();
+            var targetLines = list.Where(l => l.IsStartedWithHighlight());
+            foreach (var line in targetLines)
+            {
+                var replace = line.RemoveHeadingWhiteSpace();
+                replace.AddBeginning(CreateRun(FindNearbyLineIndent(list, line), 
+                    regularWeight));
+                replaces.Add(replace);
+            }
+            var enumerator = replaces.GetEnumerator();
+            return list.Select(l =>
+            {
+               if (targetLines.Contains(l))
+               {
+                   enumerator.MoveNext();
+                   return enumerator.Current;
+               }
+               return l;
+            }).ToArray();
+        }
+
+        private String FindNearbyLineIndent(List<InlineItemLine> lines, InlineItemLine line)
+        {
+            int index = lines.IndexOf(line);
+            for (int i = 0;; i++)
+            {
+                if (index + i < lines.Count)
+                {
+                    var afterLine = lines.ElementAt(index + i);
+                    if (!afterLine.IsStartedWithHighlight())
+                        return afterLine.GetHeadingWhiteSpace();
+                }else if (index - i >= 0)
+                {
+                    var beforeLine = lines.ElementAt(index - i);
+                    if (beforeLine.IsStartedWithHighlight())
+                        return beforeLine.GetHeadingWhiteSpace();
+                }
+                else
+                {
+                    return String.Empty;
+                }
+            }
         }
 
         private IEnumerable<InlineItemLine> AddEmptyLines(List<InlineItemLine> lines, IEnumerable<int> emptyLineOffsets)
@@ -294,6 +340,11 @@ namespace Sando.UI.View.Search.Converters {
                 return item is Run ? (item as Run).Text : string.Empty;
             }
 
+            public IEnumerable<String> GetAllItemText()
+            {
+                return items.Select(GetItemText);
+            }
+
             public string GetLine()
             {
                 var sb = new StringBuilder();
@@ -316,6 +367,13 @@ namespace Sando.UI.View.Search.Converters {
                 items.Insert(0, item);
             }
 
+            public Boolean IsStartedWithHighlight()
+            {
+                return items.Any(i => !String.IsNullOrWhiteSpace(GetItemText(i))) && 
+                    items.First(i => !String.IsNullOrWhiteSpace(GetItemText(i))).FontWeight 
+                        == highlightedWeight;
+            }
+
             public InlineItemLine RemoveHeadingWhiteSpace()
             {
                 var newLine = new InlineItemLine();
@@ -329,6 +387,7 @@ namespace Sando.UI.View.Search.Converters {
                 }
                 return newLine;
             }
+
         }
 
         private IEnumerable<InlineItemLine> BreakToRunLines(IEnumerable<Run> runs)
