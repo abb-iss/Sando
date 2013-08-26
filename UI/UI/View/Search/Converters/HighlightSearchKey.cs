@@ -247,13 +247,15 @@ namespace Sando.UI.View.Search.Converters {
                 if (index + i < lines.Count)
                 {
                     var afterLine = lines.ElementAt(index + i);
-                    if (!afterLine.IsStartedWithHighlight())
-                        return afterLine.GetHeadingWhiteSpace();
+                    if (!afterLine.IsStartedWithHighlight() && 
+                        !String.IsNullOrWhiteSpace(afterLine.GetLine()))
+                            return afterLine.GetHeadingWhiteSpace();
                 }else if (index - i >= 0)
                 {
                     var beforeLine = lines.ElementAt(index - i);
-                    if (beforeLine.IsStartedWithHighlight())
-                        return beforeLine.GetHeadingWhiteSpace();
+                    if (beforeLine.IsStartedWithHighlight() && 
+                        !String.IsNullOrWhiteSpace(beforeLine.GetLine()))
+                            return beforeLine.GetHeadingWhiteSpace();
                 }
                 else
                 {
