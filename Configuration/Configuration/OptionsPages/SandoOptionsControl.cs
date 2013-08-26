@@ -12,7 +12,7 @@ namespace Configuration.OptionsPages
 		private FolderBrowserDialog ExtensionPointsPluginDirectoryPathFolderBrowserDialog;
 		private GroupBox ExtensionPointsConfigurationGroupBox;
 		private TextBox ExtensionPointsPluginDirectoryPathValueTextBox;
-		private Button ExtensionPointsPluginDirectoryPathButton;
+		//private Button ExtensionPointsPluginDirectoryPathButton;
 		private Label ExtensionPointsPluginDirectoryPathLabel;
 		private GroupBox SearchResultsConfigurationGroupBox;
 		private TextBox SearchResultsConfigurationNumberOfResultsReturnedTextBox;
@@ -73,7 +73,7 @@ namespace Configuration.OptionsPages
 			this.ExtensionPointsPluginDirectoryPathFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this.ExtensionPointsConfigurationGroupBox = new System.Windows.Forms.GroupBox();
 			this.ExtensionPointsPluginDirectoryPathValueTextBox = new System.Windows.Forms.TextBox();
-			this.ExtensionPointsPluginDirectoryPathButton = new System.Windows.Forms.Button();
+			//this.ExtensionPointsPluginDirectoryPathButton = new System.Windows.Forms.Button();
 			this.ExtensionPointsPluginDirectoryPathLabel = new System.Windows.Forms.Label();
 			this.SearchResultsConfigurationGroupBox = new System.Windows.Forms.GroupBox();
 			this.SearchResultsConfigurationNumberOfResultsReturnedTextBox = new System.Windows.Forms.TextBox();
@@ -93,7 +93,7 @@ namespace Configuration.OptionsPages
 			// ExtensionPointsConfigurationGroupBox
 			// 
 			this.ExtensionPointsConfigurationGroupBox.Controls.Add(this.ExtensionPointsPluginDirectoryPathValueTextBox);
-			this.ExtensionPointsConfigurationGroupBox.Controls.Add(this.ExtensionPointsPluginDirectoryPathButton);
+			//this.ExtensionPointsConfigurationGroupBox.Controls.Add(this.ExtensionPointsPluginDirectoryPathButton);
 			this.ExtensionPointsConfigurationGroupBox.Controls.Add(this.ExtensionPointsPluginDirectoryPathLabel);
 			this.ExtensionPointsConfigurationGroupBox.Location = new System.Drawing.Point(5, 10);
 			this.ExtensionPointsConfigurationGroupBox.Name = "ExtensionPointsConfigurationGroupBox";
@@ -113,15 +113,15 @@ namespace Configuration.OptionsPages
 			// 
 			// ExtensionPointsPluginDirectoryPathButton
 			// 
-			this.ExtensionPointsPluginDirectoryPathButton.AutoSize = true;
-			this.ExtensionPointsPluginDirectoryPathButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.ExtensionPointsPluginDirectoryPathButton.Location = new System.Drawing.Point(405, 27);
-			this.ExtensionPointsPluginDirectoryPathButton.Name = "ExtensionPointsPluginDirectoryPathButton";
-			this.ExtensionPointsPluginDirectoryPathButton.Size = new System.Drawing.Size(26, 23);
-			this.ExtensionPointsPluginDirectoryPathButton.TabIndex = 5;
-			this.ExtensionPointsPluginDirectoryPathButton.Text = "...";
-			this.ExtensionPointsPluginDirectoryPathButton.UseVisualStyleBackColor = true;
-			this.ExtensionPointsPluginDirectoryPathButton.Click += new System.EventHandler(this.ExtensionPointsPluginDirectoryPathButton_Click);
+            //this.ExtensionPointsPluginDirectoryPathButton.AutoSize = true;
+            //this.ExtensionPointsPluginDirectoryPathButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            //this.ExtensionPointsPluginDirectoryPathButton.Location = new System.Drawing.Point(405, 27);
+            //this.ExtensionPointsPluginDirectoryPathButton.Name = "ExtensionPointsPluginDirectoryPathButton";
+            //this.ExtensionPointsPluginDirectoryPathButton.Size = new System.Drawing.Size(26, 23);
+            //this.ExtensionPointsPluginDirectoryPathButton.TabIndex = 5;
+            //this.ExtensionPointsPluginDirectoryPathButton.Text = "...";
+            //this.ExtensionPointsPluginDirectoryPathButton.UseVisualStyleBackColor = true;
+            //this.ExtensionPointsPluginDirectoryPathButton.Click += new System.EventHandler(this.ExtensionPointsPluginDirectoryPathButton_Click);
 			// 
 			// ExtensionPointsPluginDirectoryPathLabel
 			// 
@@ -267,19 +267,19 @@ namespace Configuration.OptionsPages
 
 		#endregion
 
-		private void ExtensionPointsPluginDirectoryPathButton_Click(object sender, EventArgs e)
-		{
-			ExtensionPointsPluginDirectoryPathFolderBrowserDialog = new FolderBrowserDialog();
-			if(ExtensionPointsPluginDirectoryPathFolderBrowserDialog != null &&
-				DialogResult.OK == ExtensionPointsPluginDirectoryPathFolderBrowserDialog.ShowDialog())
-			{
-				if(customOptionsPage != null)
-				{
-					customOptionsPage.ExtensionPointsPluginDirectoryPath = ExtensionPointsPluginDirectoryPathFolderBrowserDialog.SelectedPath;
-				}
-				ExtensionPointsPluginDirectoryPathValueTextBox.Text = ExtensionPointsPluginDirectoryPathFolderBrowserDialog.SelectedPath;
-			}
-		}
+		//private void ExtensionPointsPluginDirectoryPathButton_Click(object sender, EventArgs e)
+		//{
+            //ExtensionPointsPluginDirectoryPathFolderBrowserDialog = new FolderBrowserDialog();
+            //if(ExtensionPointsPluginDirectoryPathFolderBrowserDialog != null &&
+            //    DialogResult.OK == ExtensionPointsPluginDirectoryPathFolderBrowserDialog.ShowDialog())
+            //{
+            //    if(customOptionsPage != null)
+            //    {
+            //        customOptionsPage.ExtensionPointsPluginDirectoryPath = ExtensionPointsPluginDirectoryPathFolderBrowserDialog.SelectedPath;
+            //    }
+            //    ExtensionPointsPluginDirectoryPathValueTextBox.Text = ExtensionPointsPluginDirectoryPathFolderBrowserDialog.SelectedPath;
+            //}
+		//}
 
 		private void SearchResultsConfigurationNumberOfResultsReturnedTextBox_TextChanged(object sender, EventArgs e)
 		{

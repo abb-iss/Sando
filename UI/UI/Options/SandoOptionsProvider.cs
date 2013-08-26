@@ -21,8 +21,7 @@ namespace Sando.UI.Options
             var sandoDialogPage = uiPackage.GetSandoDialogPage();
 
             var extensionPointsPluginDirectoryPath = PathManager.Instance.GetExtensionRoot();
-            if(!String.IsNullOrWhiteSpace(sandoDialogPage.ExtensionPointsPluginDirectoryPath) && Directory.Exists(sandoDialogPage.ExtensionPointsPluginDirectoryPath))
-                extensionPointsPluginDirectoryPath = sandoDialogPage.ExtensionPointsPluginDirectoryPath;
+            sandoDialogPage.ExtensionPointsPluginDirectoryPath = extensionPointsPluginDirectoryPath;
 
             var numberOfSearchResultsReturned = SearchCriteria.DefaultNumberOfSearchResultsReturned;
             if (!String.IsNullOrWhiteSpace(sandoDialogPage.NumberOfSearchResultsReturned))
