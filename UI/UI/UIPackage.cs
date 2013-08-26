@@ -497,12 +497,8 @@ namespace Sando.UI
                     (ServiceLocator.Resolve<SolutionKey>()));
                 ServiceLocator.RegisterInstance(history);
                                 
-                if (srcMLService.GetSrcMLArchive()!=null && srcMLService.IsReady)
-                {
-                     progressAction = () => ProgressBarAction(srcMLArchiveEventsHandlers);
-                     TimedProcessor.GetInstance().AddTimedTask(progressAction, 3 * 1000);                    
-                }
-
+                progressAction = () => ProgressBarAction(srcMLArchiveEventsHandlers);
+                TimedProcessor.GetInstance().AddTimedTask(progressAction, 3 * 1000);                    
 
                 // End of code changes
 
