@@ -13,8 +13,8 @@ namespace Sando.Core.UnitTests.Tools
         [Test]
         public void Analyzer()
         {
-            var manager = new SandoAnalysisManager(@"C:\downloads\sando");
-            // manager.Analyze();
+            var manager = new SandoAnalysisManager(@"C:\study data\Sando");
+            manager.Analyze();
         }
     }
 }
