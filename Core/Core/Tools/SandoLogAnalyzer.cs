@@ -94,17 +94,34 @@ namespace Sando.Core.Tools
         {
             private const String start = "Select a tag.";
             private int count = 0;
+            private int doubleClick = 0;
+            private int singleClick = 0;
 
             public void StartAnalyze(ILogFile file)
             {
-                var lines = file.Content.Split('\n');
-                lines = lines.Where(l => l.Contains(start)).ToArray();
+                var allLines = file.Content.Split('\n').ToList();
+                var lines = allLines.Where(l => l.Contains(start)).ToArray();
                 count += lines.Count();
+                foreach (var line in lines)
+                {
+                    int index = allLines.IndexOf(line);
+                    var clicks = NearbyLinesThat(allLines.ToArray(), index, 20, SearchDirection.Forward,
+                        l => l.Contains(singleClickSign) || l.Contains(doubleClickSign)).ToArray();
+                    if (clicks.Any())
+                    {
+                        int s, d;
+                        countResultClick(allLines.ToArray(), allLines.IndexOf(clicks.First()), out s, out d);
+                        this.singleClick += s;
+                        this.doubleClick += d;
+                    }
+                }
             }
 
             public void FinishAnalysis()
             {
                 WriteToResult("Selecting a tag:" + count);
+                WriteToResult("Single click after selecting a tag:" + this.singleClick);
+                WriteToResult("Double click after selecting a tag:" + this.doubleClick);
             }
         }
 
