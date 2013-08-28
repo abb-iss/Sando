@@ -288,6 +288,11 @@ namespace Sando.UI.View
                 LogEvents.UIGenericError(this, aex);
                 MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
             }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
+                MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
+            }
         }
 
         public void Update(string searchString, IQueryable<CodeSearchResult> results)
@@ -305,11 +310,18 @@ namespace Sando.UI.View
         //Update for the Popup window Zhao
         private void UpdateResults(IEnumerable<CodeSearchResult> results)
         {
-            SearchResults.Clear();
-            //Concurrent opportunity (No, SearchResults is not thread safe)
-            foreach (var codeSearchResult in results)
+            try
             {
-                SearchResults.Add(codeSearchResult);
+                SearchResults.Clear();
+                //Concurrent opportunity (No, SearchResults is not thread safe)
+                foreach (var codeSearchResult in results)
+                {
+                    SearchResults.Add(codeSearchResult);
+                }
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
             }
 
 
@@ -521,7 +533,7 @@ namespace Sando.UI.View
                     }
                 }
             }
-        }
+        } 
 
         private bool IsExpandAllChecked()
         {
@@ -556,14 +568,15 @@ namespace Sando.UI.View
 
         private void searchResultListbox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listview = sender as ListView;
-            LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
-            UpdateExpansionState(searchResultListbox);
-        }
-
-        private void Toggled(object sender, RoutedEventArgs e)
-        {
-            UpdateExpansionState(searchResultListbox);
+            try
+            {
+                var listview = sender as ListView;
+                LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
+            }
         }
 
         private void UpdateRecommendations(IEnumerable<ISwumRecommendedQuery> recommendations, string query)
@@ -600,17 +613,24 @@ namespace Sando.UI.View
 
         private void searchBoxListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var listBox = sender as ListBox;
-            if (listBox != null)
+            try
             {
-                listBox.ScrollIntoView(listBox.SelectedItem);
-                LogEvents.SelectingRecommendationItem(this, listBox.SelectedIndex + 1);
+                var listBox = sender as ListBox;
+                if (listBox != null)
+                {
+                    listBox.ScrollIntoView(listBox.SelectedItem);
+                    LogEvents.SelectingRecommendationItem(this, listBox.SelectedIndex + 1);
+                }
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
             }
         }
 
         private void Toggled_Popup(object sender, RoutedEventArgs e)
         {
-            if(!SelectionPopup.IsOpen)
+            if(SelectionPopup!=null && !SelectionPopup.IsOpen)
                 SelectionPopup.IsOpen = true;
         }
 
@@ -741,10 +761,16 @@ namespace Sando.UI.View
         }
 
         private void MouseLeaveEvent(object sender, MouseEventArgs e) {
-            searchResultListbox.SelectedItem = null;
-            // Mark as handled to prevent this event from bubbling up the element tree.
-            e.Handled = true;
-
+            try
+            {
+                searchResultListbox.SelectedItem = null;
+                // Mark as handled to prevent this event from bubbling up the element tree.
+                e.Handled = true;
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
+            }
         }
     }
 }

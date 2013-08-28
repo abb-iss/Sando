@@ -17,7 +17,7 @@ namespace Sando.UI.Actions
 
         public static void OpenItem(CodeSearchResult result)
         {
-            if (result != null)
+            if (result != null && result.ProgramElement!=null)
             {
                 OpenFile(result.ProgramElement.FullFilePath, result.ProgramElement.DefinitionLineNumber);
             }
@@ -25,10 +25,10 @@ namespace Sando.UI.Actions
 
         public static void OpenFile(string filePath, int lineNumber)
         {
-            InitDte2();
-            Window window = _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
             try
             {
+                InitDte2();
+                Window window = _dte.ItemOperations.OpenFile(filePath, Constants.vsViewKindTextView);
                 var selection = (TextSelection)_dte.ActiveDocument.Selection;
                 selection.GotoLine(lineNumber);
             }

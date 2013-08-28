@@ -46,7 +46,8 @@ namespace Sando.Core.Logging.Events
         {
 			if (rank > 0)
 			{
-				DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Recommendation item selected: SelectedRecommendationRank=" + rank );
+                if(sender!=null)
+				    DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Recommendation item selected: SelectedRecommendationRank=" + rank );
 			}
         }
 

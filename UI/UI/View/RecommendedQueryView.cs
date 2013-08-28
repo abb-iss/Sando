@@ -338,13 +338,20 @@ namespace Sando.UI.View
 
         private void SearchBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.Count == 0)
-                return;
-            var item = (ISwumRecommendedQuery)e.AddedItems[0];
-            if (item.Type == SwumRecommnedationType.History)
-                LogEvents.SelectHistoryItem();
-            else
-                LogEvents.SelectSwumRecommendation(item.Query);
+            try
+            {
+                if (e.AddedItems.Count == 0)
+                    return;
+                var item = (ISwumRecommendedQuery)e.AddedItems[0];
+                if (item.Type == SwumRecommnedationType.History)
+                    LogEvents.SelectHistoryItem();
+                else
+                    LogEvents.SelectSwumRecommendation(item.Query);
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
+            }
         }
     }
 }

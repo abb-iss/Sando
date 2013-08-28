@@ -344,8 +344,8 @@
             </Button>
             
             <ToggleButton  ToolTip="Expand/Collapse"   Margin="0,0,0,0" VerticalAlignment="Top" Height="25"   x:Name="expandButton"
-        		KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" Checked="Toggled" 
-                    Unchecked="Toggled" Visibility="Hidden"/>
+        		KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" 
+                     Visibility="Hidden"/>
 
             <Popup Name="SelectionPopup" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="430.189">
                 <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">                    
