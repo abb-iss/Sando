@@ -197,6 +197,7 @@ namespace Sando.UI.View
             AddSearchHistory(searchString);
 
             SimpleSearchCriteria Criteria = new SimpleSearchCriteria();
+            LogEvents.IssueQueryString(searchString);
 
             //Store the search key
             this.searchKey = searchBox.Text;

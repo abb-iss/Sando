@@ -21,6 +21,12 @@ namespace Sando.Core.Logging.Events
             }
         }
 
+        public static void IssueQueryString(String s)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage("Search string",
+                  s);
+        }
+
         public static void AddSearchTermsToOriginal(IReformedQuery query)
         {
             if (!query.OriginalQueryString.Equals(query.QueryString))
