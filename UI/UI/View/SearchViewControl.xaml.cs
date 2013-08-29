@@ -312,7 +312,8 @@ namespace Sando.UI.View
         {
             try
             {
-                SearchResults.Clear();
+                while (SearchResults.Count > 0)
+                    SearchResults.RemoveAt(0);
                 //Concurrent opportunity (No, SearchResults is not thread safe)
                 foreach (var codeSearchResult in results)
                 {
