@@ -1,0 +1,29 @@
+﻿<Window x:Class="Sando.UI.View.SearchExplicitFeedback"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sando Search Feedback" Height="240" Width="400"
+        ResizeMode="NoResize"
+        Closed="FeedbackWindow_Closed">
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="35"/>
+      <RowDefinition Height="40"/>
+      <RowDefinition Height="165"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    
+    <Label Grid.Row="0" Grid.Column="0" Content="Evaluate your previous Sando search for:"/>
+    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" FontSize="16.0" FontFamily="Courier" Text="{Binding Path=PreviousQueryDisp}" />
+    <StackPanel Grid.Row="2" Grid.Column="0">
+      <Button Click="SATButton_Click" Content="Many (or most) of the results were relevant"/>
+      <Button Click="SomeSATButton_Click" Content="Some (or around half) of the results were relevant" />
+      <Button Click="FewSATButton_Click" Content="Few (or less than half) of the results were relevant" />
+      <Button Click="NotSATButton_Click" Content="There were no relevant results" />
+      <Button Click="NoFeedbackButton_Click" Margin="0,10,0,0" Content="No opinion on the result set" />
+    </StackPanel>
+  </Grid>
+
+</Window>
