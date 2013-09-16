@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
+using System.Windows.Threading;
 
 namespace Sando.UI.View
 {
