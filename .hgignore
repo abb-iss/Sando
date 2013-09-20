@@ -1,5 +1,6 @@
 syntax: regexp
 Sando/_ReSharper*
+Sando/.HistoryData/*
 syntax: glob
 */bin/*
 Indexer/Indexer.suo
@@ -30,3 +31,4 @@ Sando/UpgradeLog.*
 Sando/TestResults/*
 *.csproj.user
 SandoTests.nunit
+Sando/.HistoryData/LocalHistory/.git/hooks/README.sample
