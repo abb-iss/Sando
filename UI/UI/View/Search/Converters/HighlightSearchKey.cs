@@ -9,6 +9,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Sando.Core.Tools;
 using Sando.ExtensionContracts.ResultsReordererContracts;
+using Sando.Core.Logging.Events;
 
 namespace Sando.UI.View.Search.Converters {
     [ValueConversion(typeof(IHighlightRawInfo), typeof(object))]
@@ -83,10 +84,21 @@ namespace Sando.UI.View.Search.Converters {
             var emptyLineOffsets = new List<int>();
             var value = ((IHighlightRawInfo)inforValue).Text;
             var span = new Span();
-
-            var originalSpan = new Span(new Run(value.Replace("|~E~|", String.Empty).Replace("|~S~|", String.Empty)));
+            var originalSpan = new Span();
             try
             {
+                originalSpan = new Span(new Run(value.Replace("|~E~|", String.Empty).Replace("|~S~|", String.Empty)));
+            }
+            catch (NullReferenceException npe)
+            {
+                //ignore for now, return empty summary
+                //if we see too many of these in the log we'll start fixing it
+                LogEvents.HighlightingNpe(this);
+            }
+
+            try
+            {
+                
                 // return null;
                 if (value == null)
                 {

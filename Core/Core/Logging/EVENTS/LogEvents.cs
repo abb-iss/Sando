@@ -42,6 +42,11 @@ namespace Sando.Core.Logging.Events
             DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Query Error: Invalid characters found in query, search aborted.");
         }
 
+        public static void HighlightingNpe(Object sender)
+        {
+            DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Problem during query highlighting: A result was generated that has no summary.");
+        }
+
         public static void SelectingRecommendationItem(Object sender, int rank)
         {
 			if (rank > 0)
