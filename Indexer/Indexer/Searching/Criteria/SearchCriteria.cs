@@ -4,7 +4,7 @@ namespace Sando.Indexer.Searching.Criteria
 {
 	public abstract class SearchCriteria
 	{
-        public static int DefaultNumberOfSearchResultsReturned = 40;
+        public static int DefaultNumberOfSearchResultsReturned = 20;
 
 		public SearchCriteria()
 		{

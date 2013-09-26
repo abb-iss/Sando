@@ -290,7 +290,7 @@ namespace Configuration.OptionsPages
 			}
 			else
 			{
-				SearchResultsConfigurationNumberOfResultsReturnedTextBox.Text = "40";
+				SearchResultsConfigurationNumberOfResultsReturnedTextBox.Text = "20";
 				MessageBox.Show("You have to enter a positive number!");
 			}
 		}
