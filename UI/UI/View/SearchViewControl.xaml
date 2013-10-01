@@ -328,19 +328,30 @@
             </StackPanel>
         </Expander>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
-            
-            <Button Name="ClearHistoryButton"  Margin="30,0,0,0"
-                FontFamily="ExtraBold" IsEnabled="True" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
-        		KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
-                Click="ClearSearchHistory" FontWeight="ExtraBold" Height="25" VerticalAlignment="Top" 
-                ToolTip="Clear search history">[C]
+
+
+            <Button Name="Options"  Margin="0,3,0,0"
+                FontFamily="ExtraBold" IsEnabled="True" 
+                    Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
+        		KeyboardNavigation.IsTabStop="False" 
+                Click="Options_Click" FontWeight="ExtraBold" Height="19" Width="19" VerticalAlignment="Top" 
+                ToolTip="Open Sando Options">⚙
             </Button>
 
-            <Button Name="HelpButton"  ToolTip="Help" Margin="0,0,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" 
-                    Height="25" IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, 
-                    Converter={StaticResource oppositeConverter}}" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
-        		    KeyboardNavigation.IsTabStop="False" Style="{DynamicResource ToggleButtonStyleBorderless}" 
-                    Click="Toggled_Popup" FontWeight="ExtraBold" >[?]
+            <Button Name="ClearHistoryButton"  Margin="1,3,0,0"
+                FontFamily="ExtraBold" IsEnabled="True" 
+                    Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
+        		KeyboardNavigation.IsTabStop="False" 
+                Click="ClearSearchHistory" FontWeight="ExtraBold" Height="19" Width="19" VerticalAlignment="Top" 
+                ToolTip="Clear search history">✘
+            </Button>
+
+            <Button Name="HelpButton"  ToolTip="Help" Margin="1,3,0,0" FontFamily="ExtraBold" VerticalAlignment="Top" 
+                    IsEnabled="{Binding ElementName=SelectionPopup, Mode=TwoWay, Path=IsOpen, 
+                    Converter={StaticResource oppositeConverter}}" 
+                    Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
+        		    KeyboardNavigation.IsTabStop="False" Height="19" Width="19"
+                    Click="Toggled_Popup" FontWeight="ExtraBold" >⁈
             </Button>
             
             <ToggleButton  ToolTip="Expand/Collapse"   Margin="0,0,0,0" VerticalAlignment="Top" Height="25"   x:Name="expandButton"

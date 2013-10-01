@@ -38,6 +38,7 @@ using Sando.Core.Logging.Persistence;
 using Sando.UI.Service;
 using System.Diagnostics;
 using Sando.ExtensionContracts.ServiceContracts;
+using Microsoft.VisualStudio;
 
 
 
@@ -123,7 +124,25 @@ namespace Sando.UI
 
         public SandoDialogPage GetSandoDialogPage()
         {
-            return GetDialogPage(typeof (SandoDialogPage)) as SandoDialogPage;
+            return (GetDialogPage(typeof(SandoDialogPage)) as SandoDialogPage);
+        }
+
+        public void OpenSandoOptions()
+        {
+            try
+            {
+                string sandoDialogPageGuid = "B0002DC2-56EE-4931-93F7-70D6E9863940";
+                var command = new CommandID(
+                    VSConstants.GUID_VSStandardCommandSet97,
+                    VSConstants.cmdidToolsOptions);
+                var mcs = GetService(typeof(IMenuCommandService))
+                    as MenuCommandService;
+                mcs.GlobalInvoke(command, sandoDialogPageGuid);
+            }
+            catch (Exception e)
+            {
+                LogEvents.UIGenericError(this, e);
+            }
         }
 
         /// <summary>

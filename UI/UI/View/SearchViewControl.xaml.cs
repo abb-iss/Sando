@@ -773,5 +773,12 @@ namespace Sando.UI.View
                 LogEvents.UIGenericError(this, ee);
             }
         }
+
+        private void Options_Click(object sender, RoutedEventArgs e)
+        {
+            var uiPackage = ServiceLocator.Resolve<UIPackage>();
+            if (uiPackage != null)
+                uiPackage.OpenSandoOptions();
+        }
     }
 }
