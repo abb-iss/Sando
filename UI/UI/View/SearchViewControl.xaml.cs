@@ -927,5 +927,15 @@ namespace Sando.UI.View
             e.Handled = true;
         }
 
+        private void IndexingList_MouseLeave(object sender, MouseEventArgs e)
+        {
+            IndexingList.Background = GetToolBackgroundcolor();
+        }
+
+        private void IndexingList_MouseEnter(object sender, MouseEventArgs e)
+        {
+            IndexingList.Background = GetToolBackgroundHighlightColor();
+        }
+
     }
 }

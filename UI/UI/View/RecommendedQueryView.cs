@@ -308,6 +308,20 @@ namespace Sando.UI.View
             return brush;
         }
 
+        internal Brush GetToolBackgroundcolor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowBackgroundKey;
+            var brush = (Brush)Application.Current.Resources[key];
+            return brush;
+        }
+
+        internal Brush GetToolBackgroundHighlightColor()
+        {
+            var key = Microsoft.VisualStudio.Shell.VsBrushes.DropDownBackgroundKey;
+            var brush = (Brush)Application.Current.Resources[key];
+            return brush;
+        }
+
         internal static Brush GetHistoryTextColor()
         {
             if (FileOpener.Is2012())
