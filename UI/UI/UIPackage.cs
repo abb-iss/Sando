@@ -422,21 +422,27 @@ namespace Sando.UI
             {
                 if (srcMLService.MonitoredDirectories.Count > 0)
                 {
-                    var fullpath = srcMLService.MonitoredDirectories.First();
-                    var path = Path.GetFileName(Path.GetDirectoryName(fullpath));
-                    try
-                    {
-                        var parent = Path.GetFileName(Path.GetDirectoryName(fullpath + Path.DirectorySeparatorChar + ".."));
-                        path += " in folder " + parent;
-                    }
-                    catch (Exception e)
-                    {
-                        LogEvents.UIIndexUpdateError(this, e);
-                    }
+                    var path = GetDisplayPathMonitoredFiles(srcMLService, this);
                     var control = ServiceLocator.Resolve<SearchViewControl>();
                     control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));                                                                    
                 }
             }
+        }
+
+        public static string GetDisplayPathMonitoredFiles(ISrcMLGlobalService service, object callingObject )
+        {
+            var fullpath = service.MonitoredDirectories.First();
+            var path = Path.GetFileName(Path.GetDirectoryName(fullpath));
+            try
+            {
+                var parent = Path.GetFileName(Path.GetDirectoryName(fullpath + Path.DirectorySeparatorChar + ".."));
+                path += " in folder " + parent;
+            }
+            catch (Exception e)
+            {
+                LogEvents.UIIndexUpdateError(callingObject, e);
+            }
+            return path;
         }
 
         private void UpdateDirectory(string path, SearchViewControl control)
@@ -597,12 +603,15 @@ namespace Sando.UI
 
         private void ProgressBarAction(SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers)
         {
-            if (srcMLService.IsReady)
+            if (srcMLService != null)
             {
-                srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));
-                ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
-                if(progressAction!=null)
-                    TimedProcessor.GetInstance().RemoveTimedTask(progressAction);
+                if (srcMLService.IsReady)
+                {
+                    srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));
+                    ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+                    if (progressAction != null)
+                        TimedProcessor.GetInstance().RemoveTimedTask(progressAction);
+                }
             }
         }
 

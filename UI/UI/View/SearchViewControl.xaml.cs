@@ -912,7 +912,7 @@ namespace Sando.UI.View
                 if (srcMlService != null)
                 {
                     if (srcMlService.MonitoredDirectories != null && srcMlService.MonitoredDirectories.Count > 0)
-                        OpenSolutionPaths = srcMlService.MonitoredDirectories.First();
+                        OpenSolutionPaths = UIPackage.GetDisplayPathMonitoredFiles(srcMlService,this);
                 }
             }
             catch (ResolutionFailedException resFailed)

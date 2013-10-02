@@ -125,12 +125,12 @@
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="16" />
-            <RowDefinition Height="Auto" MinHeight="30"/>
+            <RowDefinition Height="17" />
+            <RowDefinition Height="25"/>
             <RowDefinition Height="Auto" MinHeight="0"/>
+            <RowDefinition Height="15" MinHeight="15"/>
+            <RowDefinition Height="15" MinHeight="15"/>
             <RowDefinition Height="Auto" MinHeight="15"/>            
-            <RowDefinition Height="Auto" MinHeight="15"/>
-            <RowDefinition Height="Auto" MinHeight="20"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -145,10 +145,14 @@
                 <ColumnDefinition Width="*">
                 </ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" FontSize="10" FontStyle="Italic" Margin="0,2,0,0"
-                        Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
-                       >Currently indexing:</TextBlock>
-            <TextBox  BorderThickness="0" IsReadOnly="True" Grid.Column="1" Name="IndexingList" Margin="2,2,0,1" FontSize="10" FontStyle="Italic" HorizontalAlignment="Stretch" Text="{Binding Path=OpenSolutionPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="IndexingList_KeyDown" PreviewMouseDown="TextBox_MouseLeftButtonDown"
+
+            <TextBox Margin="-3,0,0,0"  Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="0"  HorizontalAlignment="Left" 
+                     Width="127"  Grid.Column="0" Height="Auto"  
+                     KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" Text="Currently Indexing:"/>
+
+
+            
+            <TextBox  BorderThickness="0" IsReadOnly="True" Grid.Column="1" Name="IndexingList" Margin="2,0,5,1" FontSize="11" FontStyle="Italic" HorizontalAlignment="Stretch" Text="{Binding Path=OpenSolutionPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="IndexingList_KeyDown" PreviewMouseDown="TextBox_MouseLeftButtonDown"
                 Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
                 Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" 
                      MouseLeave="IndexingList_MouseLeave" MouseEnter="IndexingList_MouseEnter"
@@ -170,7 +174,7 @@
         </Grid>
 
 
-        <Grid Grid.Row="1" Margin="5,5,5,0" Grid.Column="0">
+        <Grid Grid.Row="1" Margin="5,0,5,0" Grid.Column="0">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -217,29 +221,33 @@
 
             <Button Style="{DynamicResource NoChromeButton}" Background="Gainsboro"
                     Click="TagCloudPopUp" Grid.Column="1" 
-                    Height="25" Margin="0,0,0,0" ToolTip="Show tag cloud">
+                    Height="25" Margin="0,0,0,4" ToolTip="Show tag cloud">
                 <Image Source="..\Resources\cloud.png"/>
             </Button>
         </Grid>
 
-        <Button Grid.Row="1" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" 
+        <Button Grid.Row="1" Grid.Column="1" Margin="0,0,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" 
                     HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick"/>
 
         <ProgressBar Margin="5,5,5,0" Name="ProgBar" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
                  VerticalAlignment="Top" HorizontalAlignment="Stretch" Height="15" IsIndeterminate="True" Visibility="Collapsed"/>
 
         <!-- info string -->
-        <TextBox Margin="4,0,0,0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="2" Width="Auto" HorizontalAlignment="Stretch"  Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
-                                  KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" ></TextBox>
+        <TextBox Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
+                 Margin="4,0,0,0"
+                 BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
+                 IsReadOnly="True"   Grid.Row="3" Width="296" HorizontalAlignment="Left"  
+                 Grid.Column="0" Height="Auto" Grid.ColumnSpan="2" Text="{Binding Path=SearchStatus}"
+                 KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" />
 
         <!-- info string -->
-        <TextBlock Margin="4,0,0,0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" FontSize="11" 
+        <TextBlock Margin="6,0,0,0" Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" FontSize="11" 
                 Name="RecommendedQueryTextBlock"
                 FontStyle="Italic" Background="{Binding Path=Background, 
                 RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" 
-                Grid.Row="3" Width="Auto" HorizontalAlignment="Stretch"  
+                Grid.Row="4" Width="Auto" HorizontalAlignment="Stretch"  
                 Grid.Column="0" Height="15" Grid.ColumnSpan="2"
-                KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Bottom"></TextBlock>
+                KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap"></TextBlock>
 
 
 
@@ -353,7 +361,7 @@
 
             </StackPanel>
         </Expander>
-        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" VerticalAlignment="Top" Margin="0,22,0,0" Grid.RowSpan="2">
+        <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1"  Margin="0,0,0,0" Grid.RowSpan="2">
 
 
             <Button Name="Options"  Margin="0,3,0,0"
