@@ -32,7 +32,7 @@ using Sando.Core.QueryRefomers;
 namespace Sando.IntegrationTests.Search
 {
     public class AutomaticallyIndexingTestClass : ISrcMLGlobalService, ISearchResultListener
-    {
+    { 
         public event EventHandler<IsReadyChangedEventArgs> IsReadyChanged;
 
         [TestFixtureSetUp]
@@ -89,6 +89,7 @@ namespace Sando.IntegrationTests.Search
                     )
                         _handler.SourceFileChanged(this, new FileEventRaisedArgs(FileEventType.FileAdded, file));  
             }
+            done = true;
         }
 
         private List<string> GetFileList(string filesInThisDirectory, List<string> incoming = null)
@@ -283,6 +284,7 @@ namespace Sando.IntegrationTests.Search
         public event EventHandler<EventArgs> StartupCompleted;
         private List<CodeSearchResult> _results;
         protected string _myMessage;
+        private bool done = false;
 
 
         public void StopMonitoring()
@@ -328,11 +330,7 @@ namespace Sando.IntegrationTests.Search
         }
 
 
-        public void StartMonitoring(bool useExistingSrcML, string srcMLBinaryDirectory)
-        {
-            throw new NotImplementedException();
-        }
-
+       
 
         public void StartMonitoring()
         {
@@ -345,7 +343,34 @@ namespace Sando.IntegrationTests.Search
 
         public bool IsReady
         {
+            get { return done; }
+        }
+
+        public void AddDirectoryToMonitor(string pathToDirectory)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Collections.ObjectModel.ReadOnlyCollection<string> MonitoredDirectories
+        {
             get { throw new NotImplementedException(); }
+        }
+
+        public void RemoveDirectoryFromMonitor(string pathToDirectory)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double ScanInterval
+        {
+            get
+            {
+                return 60;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

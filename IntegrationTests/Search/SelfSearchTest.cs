@@ -58,7 +58,7 @@ namespace Sando.IntegrationTests.Search
         [Test]
         public void QueryShouldGetSomeResults()
         {
-            string keywords = "\"Debug.WriteLine(string.Format(\"{0}:\t{1}\t{2}\t{3}\t{4}\",\"";
+            string keywords = "\"Debug.WriteLine(string.Format(\"{0}:\\t{1}\\t{2}\\t{3}\\t{4}\",\"";
             var expectedLowestRank = 20;
             Predicate<CodeSearchResult> predicate = el => el.ProgramElement.ProgramElementType == ProgramElementType.Method;
             EnsureRankingPrettyGood(keywords, predicate, expectedLowestRank);

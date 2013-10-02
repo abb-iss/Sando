@@ -25,6 +25,9 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Sando.Core.Tools;
 using Sando.DependencyInjection;
+using ABB.SrcML.VisualStudio.SrcMLService;
+using System.IO;
+using Microsoft.Practices.Unity;
 
 namespace Sando.UI.View
 {
@@ -38,6 +41,7 @@ namespace Sando.UI.View
             _searchManager = SearchManagerFactory.GetUserInterfaceSearchManager();
             _searchManager.AddListener(this);
             SearchResults = new ObservableCollection<CodeSearchResult>();
+            MonitoredFiles = new ObservableCollection<CheckedListItem>();
             //SearchCriteria = new SimpleSearchCriteria();
             InitAccessLevels();
             InitProgramElements();
@@ -74,10 +78,22 @@ namespace Sando.UI.View
             set { SetValue(SearchResultsProperty, value); }
         }
 
+        public ObservableCollection<CheckedListItem> MonitoredFiles
+        {
+            get { return (ObservableCollection<CheckedListItem>)GetValue(MonitoredFilesProperty); }
+            set { SetValue(MonitoredFilesProperty, value); }
+        }
+
         public string SearchStatus
         {
             get { return (string) GetValue(SearchStatusProperty); }
             private set { SetValue(SearchStatusProperty, value); }
+        }
+
+        public string OpenSolutionPaths
+        {
+            get { return (string)GetValue(OpenSolutionPathsProperty); }
+            set { SetValue(OpenSolutionPathsProperty, value); }
         }
 
  
@@ -642,6 +658,9 @@ namespace Sando.UI.View
         public static readonly DependencyProperty ProgramElementsProperty =
             DependencyProperty.Register("ProgramElements", typeof(ObservableCollection<ProgramElementWrapper>), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
+        public static readonly DependencyProperty MonitoredFilesProperty =
+           DependencyProperty.Register("MonitoredFiles", typeof(ObservableCollection<CheckedListItem>), typeof(SearchViewControl), new UIPropertyMetadata(null));
+
 
         public static readonly DependencyProperty SearchResultsProperty =
             DependencyProperty.Register("SearchResults", typeof(ObservableCollection<CodeSearchResult>), typeof(SearchViewControl), new UIPropertyMetadata(null));
@@ -652,6 +671,8 @@ namespace Sando.UI.View
         public static readonly DependencyProperty SearchStatusProperty =
             DependencyProperty.Register("SearchStatus", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));
 
+        public static readonly DependencyProperty OpenSolutionPathsProperty =
+            DependencyProperty.Register("OpenSolutionPaths", typeof(string), typeof(SearchViewControl), new UIPropertyMetadata(null));        
 
         public static readonly DependencyProperty SearchCriteriaProperty =
             DependencyProperty.Register("SearchCriteria", typeof(SimpleSearchCriteria), typeof(SearchViewControl), new UIPropertyMetadata(null));
@@ -780,5 +801,131 @@ namespace Sando.UI.View
             if (uiPackage != null)
                 uiPackage.OpenSandoOptions();
         }
+
+
+
+
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            OpenFolderSelection();
+        }
+
+        private void OpenFolderSelection()
+        {
+            try
+            {
+                var srcMlService = ServiceLocator.Resolve<ISrcMLGlobalService>();
+                if (srcMlService != null)
+                {
+                    if (srcMlService.MonitoredDirectories != null)
+                    {
+                        while (MonitoredFiles.Count > 0)
+                            MonitoredFiles.RemoveAt(0);
+                        foreach (var dir in srcMlService.MonitoredDirectories)
+                            MonitoredFiles.Add(new CheckedListItem(dir));
+                        CurrentlyIndexingFoldersPopup.IsOpen = true;
+                    }
+                }
+            }
+            catch (ResolutionFailedException resFailed)
+            {
+                //ignore
+            }
+        }
+
+        private void TextBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            OpenFolderSelection();
+        }
+
+        public class CheckedListItem
+        {
+
+            public CheckedListItem(string path)
+            {
+                Name = Path.GetFileName(Path.GetDirectoryName(path));
+                Id = path;
+                IsChecked = true;
+            }
+
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public bool IsChecked { get; set; }
+        }
+
+
+        private void AddFolder_Click(object sender, RoutedEventArgs e)
+        {            
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (MonitoredFiles.Count > 0)
+                dialog.SelectedPath = MonitoredFiles.First().Id;
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            if (System.Windows.Forms.DialogResult.OK.Equals(result))
+            {
+                MonitoredFiles.Add(new CheckedListItem(dialog.SelectedPath));
+            }
+        }
+
+        private void UpdateFolders_Click(object sender, RoutedEventArgs e)
+        {
+            try{
+                    var srcMlService = ServiceLocator.Resolve<ISrcMLGlobalService>();
+                    if (srcMlService != null)
+                    {
+                        foreach (var folder in MonitoredFiles)
+                        {
+                            if (!folder.IsChecked)
+                                srcMlService.RemoveDirectoryFromMonitor(folder.Id);
+                            else
+                            {
+                                try
+                                {
+                                    srcMlService.AddDirectoryToMonitor(folder.Id);
+                                }
+                                catch (Exception ee)
+                                {
+                                    LogEvents.UIGenericError(this, ee);
+                                }
+                            }
+                        }
+                    }
+                    CloseFolderPopup();
+            }
+            catch (ResolutionFailedException resFailed)
+            {
+                //ignore
+            }
+        }
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            CloseFolderPopup();            
+        }
+
+        private void CloseFolderPopup()
+        {
+            CurrentlyIndexingFoldersPopup.IsOpen = false;
+            try
+            {
+                var srcMlService = ServiceLocator.Resolve<ISrcMLGlobalService>();
+                if (srcMlService != null)
+                {
+                    if (srcMlService.MonitoredDirectories != null && srcMlService.MonitoredDirectories.Count > 0)
+                        OpenSolutionPaths = srcMlService.MonitoredDirectories.First();
+                }
+            }
+            catch (ResolutionFailedException resFailed)
+            {
+                //ignore
+            }
+        }
+
+        private void IndexingList_KeyDown(object sender, KeyEventArgs e)
+        {
+            OpenFolderSelection();
+            e.Handled = true;
+        }
+
     }
 }

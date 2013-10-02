@@ -39,6 +39,8 @@ using Sando.UI.Service;
 using System.Diagnostics;
 using Sando.ExtensionContracts.ServiceContracts;
 using Microsoft.VisualStudio;
+using System.Linq;
+using System.Windows.Threading;
 
 
 
@@ -416,7 +418,35 @@ namespace Sando.UI
             CallShowProgressBar(!args.ReadyState);
             if (args.ReadyState)
                 ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+            if (srcMLService != null)
+            {
+                if (srcMLService.MonitoredDirectories.Count > 0)
+                {
+                    var fullpath = srcMLService.MonitoredDirectories.First();
+                    var path = Path.GetFileName(Path.GetDirectoryName(fullpath));
+                    try
+                    {
+                        var parent = Path.GetFileName(Path.GetDirectoryName(fullpath + Path.DirectorySeparatorChar + ".."));
+                        path += " in folder " + parent;
+                    }
+                    catch (Exception e)
+                    {
+                        LogEvents.UIIndexUpdateError(this, e);
+                    }
+                    var control = ServiceLocator.Resolve<SearchViewControl>();
+                    control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));                                                                    
+                }
+            }
         }
+
+        private void UpdateDirectory(string path, SearchViewControl control)
+        {
+            if (control != null)
+            {
+                control.OpenSolutionPaths = path;
+            }
+        }
+
 
         private void CallShowProgressBar(bool show)
         {
@@ -478,6 +508,10 @@ namespace Sando.UI
                 srcMLService = GetService(typeof(SSrcMLGlobalService)) as ISrcMLGlobalService;
                 if(null == srcMLService) {
                     throw new Exception("Can not get the SrcML global service.");
+                }
+                else
+                {
+                    ServiceLocator.RegisterInstance(srcMLService);
                 }                                               
                 // Register all types of events from the SrcML Service.
                 SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();

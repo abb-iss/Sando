@@ -17,8 +17,8 @@
 
     <UserControl.Resources>
         <converters:BoolToOppositeBoolConverter x:Key="oppositeConverter" />
-        <converters:IsSelectedAndFocusedConverter x:Key="FocusConverter" />                
-        
+        <converters:IsSelectedAndFocusedConverter x:Key="FocusConverter" />
+
         <Style x:Key="ToggleButtonStyleBorderless" TargetType="{x:Type Button}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -37,7 +37,7 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            
+
         </Style>
 
         <Style x:Key="NoChromeButton" TargetType="{x:Type Button}">
@@ -66,8 +66,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
-        
+
+
         <converters:ElementToIcon x:Key="ElementToIcon"/>
         <converters:ScoreToEndpoint x:Key="ScoreToEndpoint"/>
         <converters:FileTypeToIcon x:Key="FileTypeToIcon"/>
@@ -129,6 +129,7 @@
             <RowDefinition Height="Auto" MinHeight="0"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
             <RowDefinition Height="Auto" MinHeight="15"/>
+            <RowDefinition Height="Auto" MinHeight="15"/>
             <RowDefinition Height="Auto" MinHeight="20"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
@@ -139,8 +140,8 @@
 
 
         <StackPanel Margin="0,5,5,0" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center">
-      
-     
+
+
         </StackPanel>
 
         <Grid Margin="5,5,5,0" Grid.Column="0">
@@ -149,53 +150,53 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="25" />
             </Grid.ColumnDefinitions>
-            
+
             <!-- Top Part: Query -->
             <controls:AutoCompleteBox Loaded="searchBox_Loaded" HorizontalAlignment="Stretch" Grid.Column="0"
                 Name="searchBox" Margin="0,0,0,0" FilterMode="None"
-                Height="25" BorderBrush="DimGray" 
-                Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
+                Height="25" BorderBrush="DimGray"                 
                 KeyUp="OnKeyUpHandler" Populating="searchBox_Populating" SelectionChanged="SearchBox_OnSelectionChanged"
                 MinimumPrefixLength="0" MaxDropDownHeight="290" 
                 ValueMemberPath="Query" VerticalAlignment="Top" 
+                Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
                 Background="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBackgroundKey}}">
-            <controls:AutoCompleteBox.ToolTip>
-                <StackPanel>                                        
-                    <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
-                    <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
-                </StackPanel>
-            </controls:AutoCompleteBox.ToolTip>
+                <controls:AutoCompleteBox.ToolTip>
+                    <StackPanel>
+                        <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
+                        <TextBlock>Keyboard shortcut: Alt+Shift+S</TextBlock>
+                    </StackPanel>
+                </controls:AutoCompleteBox.ToolTip>
 
-                    <controls:AutoCompleteBox.ItemTemplate>                   
-                <DataTemplate>
+                <controls:AutoCompleteBox.ItemTemplate>
+                    <DataTemplate>
                         <TextBlock Text="{Binding Query}" >
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="Foreground">
-                                    <Setter.Value>
+                                        <Setter.Value>
                                             <MultiBinding  Mode="OneWay" Converter="{StaticResource SwumTypeToColorConverter}">
-                                            <Binding Path="." Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
-                                            <Binding Path="IsSelected" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
+                                                <Binding Path="." Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
+                                                <Binding Path="IsSelected" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
                                             </MultiBinding>
-                                    </Setter.Value>
-                                </Setter>
-                              </Style>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
                             </TextBlock.Style>
                         </TextBlock>
-                        
-                        
-                </DataTemplate>
-            </controls:AutoCompleteBox.ItemTemplate>
-        </controls:AutoCompleteBox>
+
+
+                    </DataTemplate>
+                </controls:AutoCompleteBox.ItemTemplate>
+            </controls:AutoCompleteBox>
 
             <Button Style="{DynamicResource NoChromeButton}" Background="Gainsboro"
                     Click="TagCloudPopUp" Grid.Column="1" 
                     Height="25" Margin="0,0,0,0" ToolTip="Show tag cloud">
                 <Image Source="..\Resources\cloud.png"/>
             </Button>
-       </Grid>
-        
-            <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" 
+        </Grid>
+
+        <Button Grid.Row="0" Grid.Column="1" Margin="0,5,5,0" Content="{Binding Path=SearchLabel}"  VerticalAlignment="Top" 
                     HorizontalAlignment="Right" Width="60" Height="25" Name="searchButton" Click="SearchButtonClick"/>
 
         <ProgressBar Margin="5,5,5,0" Name="ProgBar" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
@@ -214,8 +215,36 @@
                 Grid.Column="0" Height="15" Grid.ColumnSpan="2"
                 KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" VerticalAlignment="Bottom"></TextBlock>
 
+        <Grid Grid.Row="4" Grid.ColumnSpan="2"  Margin="5,0,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="90">
+                </ColumnDefinition>
+                <ColumnDefinition Width="*">
+                </ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" FontSize="10" FontStyle="Italic" Margin="0,4,0,0"
+                        Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
+                       >Currently indexing:</TextBlock>
+            <TextBox Grid.Column="1" Name="IndexingList" Margin="2,2,0,1" FontSize="10" FontStyle="Italic" HorizontalAlignment="Stretch" Text="{Binding Path=OpenSolutionPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="IndexingList_KeyDown" PreviewMouseDown="TextBox_MouseLeftButtonDown"
+                Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
+                Background="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBackgroundKey}}"
+                     />
+            <Popup Name="CurrentlyIndexingFoldersPopup" Placement="Bottom" PlacementTarget="{Binding ElementName=IndexingList}" StaysOpen="True" IsOpen="False" Width="Auto">
+                <StackPanel>
+                <ListBox ItemsSource="{Binding Path=MonitoredFiles}" Height="100" Name="MonitoredFilesListBox" VerticalAlignment="Top" Width="236" >
+                    <ListBox.ItemTemplate>
+                        <HierarchicalDataTemplate>
+                            <CheckBox Content="{Binding Name}" IsChecked="{Binding IsChecked}" ToolTip="{Binding Id}"/>
+                        </HierarchicalDataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                    <Button Name="UpdateFolders" Click="UpdateFolders_Click">Apply Changes</Button>        
+                    <Button Name="AddFolder" Click="AddFolder_Click">Add Folder</Button>
+                    <Button Name="Cancel" Click="Cancel_Click">Cancel</Button>
+                </StackPanel>
+            </Popup>          
+        </Grid>
 
-     
 
         <Popup Name="TagCloudPopUpWindow" Placement="Center" StaysOpen="False" IsOpen="False" Width="900" IsEnabled="True" 
                Grid.Row="3" Grid.Column="2">
@@ -248,9 +277,9 @@
                 </TextBlock>
             </StackPanel>
         </Popup>
-           
-            <!-- details -->
-        <Expander Grid.Row="4" Grid.Column="0" Name="LayoutRoot"
+
+        <!-- details -->
+        <Expander Grid.Row="5" Grid.Column="0" Name="LayoutRoot"
             >
             <Expander.HeaderTemplate>
                 <DataTemplate>
@@ -327,7 +356,7 @@
 
             </StackPanel>
         </Expander>
-        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" Margin="0,14,0,0" Grid.RowSpan="2">
+        <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" VerticalAlignment="Top" Margin="0,22,0,0" Grid.RowSpan="2">
 
 
             <Button Name="Options"  Margin="0,3,0,0"
@@ -353,87 +382,87 @@
         		    KeyboardNavigation.IsTabStop="False" Height="19" Width="19"
                     Click="Toggled_Popup" FontWeight="ExtraBold" >⁈
             </Button>
-            
+
             <ToggleButton  ToolTip="Expand/Collapse"   Margin="0,0,0,0" VerticalAlignment="Top" Height="25"   x:Name="expandButton"
         		KeyboardNavigation.IsTabStop="False"  Style="{StaticResource toggleButtonStyle}" 
                      Visibility="Hidden"/>
 
             <Popup Name="SelectionPopup" Placement="Mouse" StaysOpen="False" IsOpen="False" Width="430.189">
-                <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">                    
-                        <FlowDocument >
-                            <Paragraph FontSize="5" Margin="0,0,0,0"></Paragraph>
-                            <Paragraph Margin="0,0,0,0" FontFamily="Arial">
-                                <Bold>Keyboard Usage</Bold>
-                            </Paragraph>
-                            <Table>
-                                <Table.Columns>
-                                    <TableColumn Width="0.37*" />
-                                    <TableColumn Width="1.3*" />
-                                </Table.Columns>
-                                <TableRowGroup Paragraph.TextAlignment="left" >
-                                    <TableRow>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Arial">
-                                                Alt + Shift + S
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Paragraph>Opens the Sando view and focuses on the query box.</Paragraph>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Arial">
-                                                ↑ + ↓
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Paragraph>Navigate through results following a query.</Paragraph>
-                                        </TableCell>
-                                    </TableRow>
+                <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">
+                    <FlowDocument >
+                        <Paragraph FontSize="5" Margin="0,0,0,0"></Paragraph>
+                        <Paragraph Margin="0,0,0,0" FontFamily="Arial">
+                            <Bold>Keyboard Usage</Bold>
+                        </Paragraph>
+                        <Table>
+                            <Table.Columns>
+                                <TableColumn Width="0.37*" />
+                                <TableColumn Width="1.3*" />
+                            </Table.Columns>
+                            <TableRowGroup Paragraph.TextAlignment="left" >
+                                <TableRow>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Arial">
+                                            Alt + Shift + S
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Paragraph>Opens the Sando view and focuses on the query box.</Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Arial">
+                                            ↑ + ↓
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Paragraph>Navigate through results following a query.</Paragraph>
+                                    </TableCell>
+                                </TableRow>
 
-                                    <TableRow>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Arial">
-                                                Enter
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Paragraph>Opens the currently selected result in editor.</Paragraph>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableRowGroup>
-                            </Table>
-                            <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>
-                            <Table>
-                                <Table.Columns>
-                                    <TableColumn Width="1.85*" />
-                                    <TableColumn Width="1.5*" />
-                                </Table.Columns>
-                                <TableRowGroup Paragraph.TextAlignment="left">
-                                    <TableRow>
-                                        <TableCell>
-                                            <Paragraph FontFamily="Arial">Add
-                                                <Italic>
-                                                    <Bold>all</Bold>
-                                                </Italic> relevant terms:
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Courier New">convert image
-                                            </Paragraph>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>
-                                            <Paragraph FontFamily="Arial">Put exact phrases in quotes:
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Courier New">"void StartMonitor("
-                                            </Paragraph>
-                                        </TableCell>
-                                    </TableRow>
+                                <TableRow>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Arial">
+                                            Enter
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Paragraph>Opens the currently selected result in editor.</Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                            </TableRowGroup>
+                        </Table>
+                        <Paragraph xml:space="preserve"><Bold>Creating an Effective Query</Bold></Paragraph>
+                        <Table>
+                            <Table.Columns>
+                                <TableColumn Width="1.85*" />
+                                <TableColumn Width="1.5*" />
+                            </Table.Columns>
+                            <TableRowGroup Paragraph.TextAlignment="left">
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Add
+                                            <Italic>
+                                                <Bold>all</Bold>
+                                            </Italic> relevant terms:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">convert image
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Put exact phrases in quotes:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">"void StartMonitor("
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
                                 <TableRow>
                                     <TableCell>
                                         <Paragraph FontFamily="Arial">Escape \ and " in quotes:
@@ -446,47 +475,47 @@
                                 </TableRow>
 
                                 <TableRow>
-                                        <TableCell>
-                                            <Paragraph FontFamily="Arial">Put '-' before unwanted words:
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Courier New">parse method -test
-                                            </Paragraph>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>
-                                            <Paragraph FontFamily="Arial">Filter results by file extensions:
-                                            </Paragraph>
-                                        </TableCell>
-                                        <TableCell >
-                                            <Paragraph FontFamily="Courier New">image file:cs
-                                            </Paragraph>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableRowGroup>
-                            </Table>
-                        </FlowDocument>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Put '-' before unwanted words:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">parse method -test
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>
+                                        <Paragraph FontFamily="Arial">Filter results by file extensions:
+                                        </Paragraph>
+                                    </TableCell>
+                                    <TableCell >
+                                        <Paragraph FontFamily="Courier New">image file:cs
+                                        </Paragraph>
+                                    </TableCell>
+                                </TableRow>
+                            </TableRowGroup>
+                        </Table>
+                    </FlowDocument>
                 </RichTextBox>
-            </Popup>            
+            </Popup>
         </StackPanel>
 
         <!--Bottom Part: Result-->
-        <DockPanel Grid.Row="5" Grid.ColumnSpan="2" 
+        <DockPanel Grid.Row="6" Grid.ColumnSpan="2" 
                        HorizontalAlignment="Stretch"  Height="Auto"
                        VerticalAlignment="Stretch" >
             <ListView  Name="searchResultListbox"  ItemsSource="{Binding Path=SearchResults}" ScrollViewer.VerticalScrollBarVisibility="Auto"
                        Margin="5,0,5,5" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch" Height="Auto"
                         VerticalAlignment="Stretch" MinWidth="270" MinHeight="100" HorizontalContentAlignment="Stretch"
                        SelectionChanged="searchResultListbox_SelectionChanged" MouseLeave="MouseLeaveEvent"                    
-                       Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">  
-    
+                       Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">
+
                 <ListView.ContextMenu>
                     <ContextMenu Name="SearchResultMenu" StaysOpen="true">
                         <ContextMenu.BitmapEffect>
                             <BitmapEffectGroup/>
-                        </ContextMenu.BitmapEffect>                        
+                        </ContextMenu.BitmapEffect>
                         <MenuItem Header="Remove Entire File from Index" Name="Remove" Click="Remove_Click_1" />
                     </ContextMenu>
                 </ListView.ContextMenu>
@@ -495,9 +524,9 @@
                         <Style.Triggers>
                             <MultiTrigger>
                                 <MultiTrigger.Conditions>
-                                    <Condition Property="IsSelected" Value="true" />                                
+                                    <Condition Property="IsSelected" Value="true" />
                                 </MultiTrigger.Conditions>
-                                    <Setter Property="Background" 
+                                <Setter Property="Background" 
                                             Value="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" />
                             </MultiTrigger>
                             <MultiTrigger>
@@ -532,7 +561,7 @@
 
                                     <Grid Margin="0,0,0,0" >
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="22"/>                                           
+                                            <RowDefinition Height="22"/>
                                             <RowDefinition Height="1"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
@@ -557,9 +586,9 @@
                                             </Canvas>
 
                                             <Popup Name="Details" Placement="Left" StaysOpen="False" Width="Auto" AllowsTransparency="true"                                            
-                                                PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}" >                                                
+                                                PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}" >
                                                 <Popup.IsOpen>
-                                                    <MultiBinding  Mode="OneWay" Converter="{StaticResource FocusConverter}">                                                        
+                                                    <MultiBinding  Mode="OneWay" Converter="{StaticResource FocusConverter}">
                                                         <Binding Path="IsSelected" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListViewItem}"/>
                                                         <Binding Path="IsFocused" Mode="OneWay" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListViewItem}"/>
                                                     </MultiBinding>

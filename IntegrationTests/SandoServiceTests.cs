@@ -96,7 +96,7 @@ namespace Sando.IntegrationTests
         [HostType("VS IDE")]
         public void SummarizationTest()
         {
-            Assert.IsTrue(TestHelpers.WaitForServiceToFinish(TestHelpers.SrcMLTestScaffold.Service, 5000));
+            Assert.IsTrue(TestHelpers.WaitForServiceToFinish(TestHelpers.SrcMLTestScaffold.Service, 10000));
             var firstResult = TestHelpers.TestScaffold.Service.GetSearchResults("pc player game").First();            
             var control = ServiceLocator.Resolve<SearchViewControl>();
             string highlight;
