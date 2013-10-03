@@ -398,6 +398,8 @@ namespace Sando.UI
                 // XiGe: dispose the dictionary.
                 ServiceLocator.Resolve<DictionaryBasedSplitter>().Dispose();
                 ServiceLocator.Resolve<SearchHistory>().Dispose();
+                var control = ServiceLocator.Resolve<SearchViewControl>();
+                control.Dispatcher.Invoke((Action)(() => UpdateDirectory("", control)));                                                                    
             }
             catch (Exception e)
             {
@@ -432,10 +434,10 @@ namespace Sando.UI
         public static string GetDisplayPathMonitoredFiles(ISrcMLGlobalService service, object callingObject )
         {
             var fullpath = service.MonitoredDirectories.First();
-            var path = Path.GetFileName(Path.GetDirectoryName(fullpath));
+            var path = Path.GetFileName(fullpath);
             try
             {
-                var parent = Path.GetFileName(Path.GetDirectoryName(fullpath + Path.DirectorySeparatorChar + ".."));
+                var parent = Path.GetFileName(Path.GetDirectoryName(fullpath));
                 path += " in folder " + parent;
             }
             catch (Exception e)

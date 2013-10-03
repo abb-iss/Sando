@@ -844,7 +844,7 @@ namespace Sando.UI.View
 
             public CheckedListItem(string path)
             {
-                Name = Path.GetFileName(Path.GetDirectoryName(path));
+                Name = Path.GetFileName(path);
                 Id = path;
                 IsChecked = true;
             }

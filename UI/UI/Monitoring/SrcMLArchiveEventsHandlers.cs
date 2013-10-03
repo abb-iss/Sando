@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Xml.Linq;
 using Sando.Core.Logging.Events;
+using System.Linq;
 
 
 namespace Sando.UI.Monitoring
@@ -22,6 +23,7 @@ namespace Sando.UI.Monitoring
     {
 
         private ConcurrentBag<Task> tasks = new ConcurrentBag<Task>();
+        private ConcurrentBag<CancellationTokenSource> cancellers = new ConcurrentBag<CancellationTokenSource>();
 
         public void SourceFileChanged(object sender, FileEventRaisedArgs args)
         {
@@ -49,7 +51,8 @@ namespace Sando.UI.Monitoring
 
         public void SourceFileChanged(object sender, FileEventRaisedArgs args, bool commitImmediately = false)
         {
-
+            var cancelTokenSource = new CancellationTokenSource();
+            var cancelToken = cancelTokenSource.Token;
             var task = System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
                 // Ignore files that can not be indexed by Sando.
@@ -66,6 +69,8 @@ namespace Sando.UI.Monitoring
                             // Get SrcMLService and use its API to get the XElement
                             var srcMLService = (sender as ISrcMLGlobalService);
                             
+                            cancelToken.ThrowIfCancellationRequested();
+
                             var xelement = GetXElementForFile(args, srcMLService);
 
 
@@ -101,13 +106,16 @@ namespace Sando.UI.Monitoring
                         documentIndexer.DeleteDocuments(sourceFilePath, commitImmediately);
                     }
                 }
-            });
+            }, cancelToken);
             lock (tasksTrackerLock)
             {
                 tasks.Add(task);
+                cancellers.Add(cancelTokenSource);
             }
-            task.ContinueWith(removeTask => RemoveTask(task));
+            task.ContinueWith(removeTask => RemoveTask(task,cancelTokenSource));
         }
+
+        
 
         private static XElement GetXElementForFile(FileEventRaisedArgs args, ISrcMLGlobalService srcMLService)
         {
@@ -126,10 +134,13 @@ namespace Sando.UI.Monitoring
             return xelement;
         }
 
-        private void RemoveTask(Task task)
+        private void RemoveTask(Task task, CancellationTokenSource cancelToken)
         {
             lock (tasksTrackerLock)
-                tasks.TryTake(out task);            
+            {
+                tasks.TryTake(out task);
+                cancellers.TryTake(out cancelToken);
+            }
         }
 
         private object tasksTrackerLock = new object();
@@ -148,6 +159,12 @@ namespace Sando.UI.Monitoring
 
         public void MonitoringStopped(object sender, EventArgs args)
         {
+            lock (tasksTrackerLock)
+            {
+                foreach (var cancelToken in cancellers)
+                    cancelToken.Cancel();
+            }
+                
 			LogEvents.UIMonitoringStopped(this);
             var currentIndexer = ServiceLocator.ResolveOptional<DocumentIndexer>();
             if (currentIndexer != null)
