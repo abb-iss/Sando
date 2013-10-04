@@ -210,6 +210,8 @@ namespace Sando.UI.View
 
         private void BeginSearch(string searchString)
         {
+            RemoveOldResults();
+
             AddSearchHistory(searchString);
 
             SimpleSearchCriteria Criteria = new SimpleSearchCriteria();
@@ -246,6 +248,19 @@ namespace Sando.UI.View
             }
 
             SearchAsync(searchString, Criteria);
+        }
+
+        private void RemoveOldResults()
+        {
+            try
+            {
+                while (SearchResults.Count > 0)
+                    SearchResults.RemoveAt(0);
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
+            }
         }
 
         private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)
@@ -310,27 +325,43 @@ namespace Sando.UI.View
                 MessageBox.Show(FileNotFoundPopupMessage, FileNotFoundPopupTitle, MessageBoxButton.OK);
             }
         }
-
+               
         public void Update(string searchString, IQueryable<CodeSearchResult> results)
-        {
-            if (Thread.CurrentThread == Dispatcher.Thread)
+        {         
+            //prepare results for highlighting in the background, in parallel of course :)
+            object[] parameter = { results };
+            var exceptions = new ConcurrentQueue<Exception>();
+            System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
-                UpdateResults(results);
-            }
-            else
-            {
-                Dispatcher.Invoke((Action) (() => UpdateResults(results)));
-            }
+                Parallel.ForEach(results, item =>
+                {
+                    try
+                    {
+                        string highlight;
+                        string highlightRaw;
+                        item.HighlightOffsets = GenerateHighlight(item.Raw, this.searchKey,
+                            out highlight, out highlightRaw);
+                        item.Highlight = highlight;
+                        item.HighlightRaw = highlightRaw;
+                    }
+                    catch (Exception exc)
+                    {
+                        exceptions.Enqueue(exc);
+                    }
+                }
+               );
+            }).
+            //then update the UI in the UI thread
+            ContinueWith(updateUi => this.Dispatcher.BeginInvoke(new UiUpdateDelagate(UpdateUiResults), parameter));
+
         }
 
-        //Update for the Popup window Zhao
-        private void UpdateResults(IEnumerable<CodeSearchResult> results)
+        public delegate void UiUpdateDelagate(IEnumerable<CodeSearchResult> results);
+
+        private void UpdateUiResults(IEnumerable<CodeSearchResult> results)
         {
             try
-            {
-                while (SearchResults.Count > 0)
-                    SearchResults.RemoveAt(0);
-                //Concurrent opportunity (No, SearchResults is not thread safe)
+            {                
                 foreach (var codeSearchResult in results)
                 {
                     SearchResults.Add(codeSearchResult);
@@ -340,34 +371,6 @@ namespace Sando.UI.View
             {
                 LogEvents.UIGenericError(this, ee);
             }
-
-
-            ////For each item in the SearchResults, generate the highlight results (Serial version)
-            //foreach(var item in SearchResults) {
-            //    string highlight;
-            //    string highlightRaw;
-            //    GenerateHighlight(item.Raw, this.searchKey, out highlight, out highlightRaw);
-            //    item.Highlight = highlight;
-            //    item.HighlightRaw = highlightRaw;
-            //}
-
-            //Concurrent version 
-            var exceptions = new ConcurrentQueue<Exception>();
-            Parallel.ForEach(SearchResults, item => {
-                try {
-                    string highlight;
-                    string highlightRaw;
-                    item.HighlightOffsets = GenerateHighlight(item.Raw, this.searchKey, 
-                        out highlight, out highlightRaw);
-                    item.Highlight = highlight;
-                    item.HighlightRaw = highlightRaw;
-                } catch(Exception exc) { exceptions.Enqueue(exc); }
-            }
-                );
-
-            //Donot consider capture the exception for the time being 
-            //if(!exceptions.IsEmpty) 
-            //    throw new AggregateException(exceptions);
         }
 
         public int[] GenerateHighlight(string raw, string searchKey, out string highlight_out, 
