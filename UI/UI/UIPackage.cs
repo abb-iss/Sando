@@ -607,7 +607,7 @@ namespace Sando.UI
         {
             if (srcMLService != null)
             {
-                if (srcMLService.IsReady && srcMLService.MonitoredDirectories!=null && srcMLService.MonitoredDirectories.Count > 0)
+                if (srcMLService.IsReady && srcMLService.MonitoredDirectories!=null && srcMLService.MonitoredDirectories.Count > 0 && !"".Equals(srcMLService.MonitoredDirectories.First().Trim()))
                 {
                     srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));
                     HandleIndexingStateChange(null, new IsReadyChangedEventArgs(true));
