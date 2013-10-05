@@ -607,10 +607,10 @@ namespace Sando.UI
         {
             if (srcMLService != null)
             {
-                if (srcMLService.IsReady)
+                if (srcMLService.IsReady && srcMLService.MonitoredDirectories!=null && srcMLService.MonitoredDirectories.Count > 0)
                 {
                     srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));
-                    ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+                    HandleIndexingStateChange(null, new IsReadyChangedEventArgs(true));
                     if (progressAction != null)
                         TimedProcessor.GetInstance().RemoveTimedTask(progressAction);
                 }
