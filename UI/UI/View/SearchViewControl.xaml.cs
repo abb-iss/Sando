@@ -296,6 +296,15 @@ namespace Sando.UI.View
             }
         }
 
+        private delegate void HighlightStuffDelegate(string path,int linenumber,string source,string[] searchkeys);
+        private static HighlightStuffDelegate HighlightStuffInvoker = new HighlightStuffDelegate(HighlightStuff);
+
+        private static void HighlightStuff(string path, int linenumber, string source, string[] searchkeys)
+        {
+            HighlightedEntitySet.GetInstance().Clear();
+            HighlightedEntitySet.GetInstance().AddEntity(path, linenumber, source, searchkeys);
+        }
+
         private void OpenFileWithSelectedResult(object sender)
         {
             try
@@ -306,9 +315,12 @@ namespace Sando.UI.View
                     string[] searchKeys = GetKeys(this.searchKey);
                     var searchResult = result.Content as CodeSearchResult;
                     FileOpener.OpenItem(searchResult);
-                    HighlightedEntitySet.GetInstance().Clear();
-                    HighlightedEntitySet.GetInstance().AddEntity(searchResult.ProgramElement.FullFilePath, searchResult.
-                        ProgramElement.DefinitionLineNumber, searchResult.ProgramElement.RawSource, searchKeys);
+                    Task.Factory.StartNew(() =>
+                    {
+                        Thread.Sleep(500);
+                        this.Dispatcher.BeginInvoke(HighlightStuffInvoker, searchResult.ProgramElement.FullFilePath, searchResult.
+                            ProgramElement.DefinitionLineNumber, searchResult.ProgramElement.RawSource, searchKeys);
+                    });
 
                     var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
                     LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
