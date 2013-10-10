@@ -64,17 +64,15 @@ namespace Sando.IntegrationTests.Search
             CreateKey(filesInThisDirectory);
             CreateIndexer();
             CreateArchive(filesInThisDirectory);            
-            CreateSwum();
-            AddFilesToIndex(filesInThisDirectory);
-            WaitForAllFilesToBeCommitted(filesInThisDirectory);
-            Thread.Sleep((int)GetTimeToCommit().Value.TotalMilliseconds);
+            CreateSwum();            
+            AddFilesToIndex(filesInThisDirectory);            
+            _handler.WaitForIndexing();
+            ServiceLocator.Resolve<DocumentIndexer>().ForceReaderRefresh();
+            Thread.Sleep((int)GetTimeToCommit().Value.TotalMilliseconds*4);
             ServiceLocator.Resolve<DocumentIndexer>().ForceReaderRefresh();
         }
 
-        private void WaitForAllFilesToBeCommitted(string filesInThisDirectory)
-        {
-            _handler.WaitForIndexing();
-        }
+ 
 
         private void AddFilesToIndex(string filesInThisDirectory)
         {

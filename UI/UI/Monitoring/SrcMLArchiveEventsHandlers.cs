@@ -51,7 +51,7 @@ namespace Sando.UI.Monitoring
 
         public void WaitForIndexing()
         {
-            while (LimitedConcurrencyLevelTaskScheduler._currentThreadIsProcessingItems)
+            while ((scheduler as LimitedConcurrencyLevelTaskScheduler).GetTasks()>0)
             {
                 Thread.Sleep(500);
             }
@@ -258,6 +258,13 @@ namespace Sando.UI.Monitoring
                 _maxDegreeOfParallelism = maxDegreeOfParallelism;
             }
 
+            public int GetTasks(){
+
+                lock (_tasks)
+                    return _tasks.Count();
+            }
+            
+
             // Queues a task to the scheduler.  
             protected sealed override void QueueTask(Task task)
             {
@@ -360,8 +367,11 @@ namespace Sando.UI.Monitoring
                     if (lockTaken) Monitor.Exit(_tasks);
                 }
             }
+
+       
         }
 
-  
+
+
     }
 }

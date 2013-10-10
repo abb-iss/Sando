@@ -63,7 +63,8 @@ namespace Sando.UI.Monitoring
                         }
                     }
                 }
-                indexUpdated(parsed.AsReadOnly());
+                if(indexUpdated!=null)
+                    indexUpdated(parsed.AsReadOnly());
             }
             catch (Exception e)
             {

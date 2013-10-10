@@ -93,6 +93,7 @@ namespace Sando.Indexer
         {
             
         }
+       
 
         class SimpleScheduler : ITaskScheduler
         {
