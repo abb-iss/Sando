@@ -202,7 +202,7 @@ namespace Sando.UI
         {
             lock (updateLock)
             {
-                this.highlightedEntities = entities.Where(e => e.Path.Equals(fileFullPath));
+                this.highlightedEntities = entities.Where(e => e.Path.Equals(fileFullPath, StringComparison.InvariantCultureIgnoreCase));
                 this.highlightedSpans = SearchHighlightedSpans(this.highlightedEntities,
                       SourceBuffer.CurrentSnapshot);
             }
