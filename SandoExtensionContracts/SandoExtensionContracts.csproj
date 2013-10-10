@@ -114,6 +114,7 @@
     <Compile Include="ServiceContracts\ISandoGlobalService.cs" />
     <Compile Include="ServiceContracts\ISandoLocalService.cs" />
     <Compile Include="SplitterContracts\IWordSplitter.cs" />
+    <Compile Include="TaskFactoryContracts\ITaskScheduler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sandoKey.snk" />

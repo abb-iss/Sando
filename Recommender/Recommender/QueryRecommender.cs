@@ -209,22 +209,30 @@ namespace Sando.Recommender {
 
         private void AddFullMethodName(string query, Dictionary<string, int> recommendations, int NormalWeight, string[] terms, SwumDataRecord swumRecord)
         {
-            if (swumRecord.SwumNode.Name.ToLower().Contains(query.ToLower()))
+            try
             {
-                AddRecommendation(swumRecord.SwumNode.Name, NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query)), recommendations);
-                //Debug.WriteLine(swumRecord.SwumNode.Name + " " + (NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query))));
-            }
-            else
-            {
-                bool shouldAdd = true;
-                foreach (var term in terms)
-                    if (!swumRecord.SwumNode.Name.ToLower().Contains(term))
-                        shouldAdd = false;
-                if (shouldAdd)
+                if (swumRecord.SwumNode.Name.ToLower().Contains(query.ToLower()))
                 {
                     AddRecommendation(swumRecord.SwumNode.Name, NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query)), recommendations);
-                    //Debug.WriteLine(swumRecord.SwumNode.Name+" "+(NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query))));
+                    //Debug.WriteLine(swumRecord.SwumNode.Name + " " + (NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query))));
                 }
+                else
+                {
+                    bool shouldAdd = true;
+                    foreach (var term in terms)
+                        if (!swumRecord.SwumNode.Name.ToLower().Contains(term))
+                            shouldAdd = false;
+                    if (shouldAdd)
+                    {
+                        AddRecommendation(swumRecord.SwumNode.Name, NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query)), recommendations);
+                        //Debug.WriteLine(swumRecord.SwumNode.Name+" "+(NormalWeight + (int)(NormalWeight * 10 / Distance(swumRecord.SwumNode.Name, query))));
+                    }
+                }
+            }
+            catch (NullReferenceException nre)
+            {
+                Debug.WriteLine("he");
+                //ignore
             }
         }
 

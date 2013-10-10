@@ -909,13 +909,18 @@ namespace Sando.UI.View
         private void CloseFolderPopup()
         {
             CurrentlyIndexingFoldersPopup.IsOpen = false;
+            UpdateMethodIndexingList();
+        }
+
+        private void UpdateMethodIndexingList()
+        {
             try
             {
                 var srcMlService = ServiceLocator.Resolve<ISrcMLGlobalService>();
                 if (srcMlService != null)
                 {
                     if (srcMlService.MonitoredDirectories != null && srcMlService.MonitoredDirectories.Count > 0)
-                        OpenSolutionPaths = UIPackage.GetDisplayPathMonitoredFiles(srcMlService,this);
+                        OpenSolutionPaths = UIPackage.GetDisplayPathMonitoredFiles(srcMlService, this);
                 }
             }
             catch (ResolutionFailedException resFailed)

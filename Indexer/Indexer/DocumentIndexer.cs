@@ -19,15 +19,18 @@ using System.Linq;
 using Sando.Indexer.Documents.Converters;
 using Sando.Core.Tools;
 using Sando.Core.Logging.Events;
+using Sando.ExtensionContracts.TaskFactoryContracts;
+using System.Threading.Tasks;
 
 namespace Sando.Indexer
 {
-	public class DocumentIndexer : IDisposable
+    public class DocumentIndexer : IDisposable
 	{
-        public DocumentIndexer(TimeSpan? refreshIndexSearcherThreadInterval = null, TimeSpan? commitChangesThreadInterval = null )
+        public DocumentIndexer(ITaskScheduler scheduler, TimeSpan? refreshIndexSearcherThreadInterval = null, TimeSpan? commitChangesThreadInterval = null)
 		{
 			try
 			{
+                _scheduler = scheduler;
                 var solutionKey = ServiceLocator.Resolve<SolutionKey>();			
                 var directoryInfo = new System.IO.DirectoryInfo(PathManager.Instance.GetIndexPath(solutionKey));
 				LuceneIndexesDirectory = FSDirectory.Open(directoryInfo);
@@ -74,6 +77,31 @@ namespace Sando.Indexer
 				throw new IndexerException(TranslationCode.Exception_General_IOException, ioEx, ioEx.Message);
 			}
 		}
+
+        public DocumentIndexer(TimeSpan timeSpan) : this (new SimpleScheduler(), timeSpan)
+        {            
+            
+        }
+
+        public DocumentIndexer(TimeSpan timeSpan, TimeSpan? nullable)
+            : this(new SimpleScheduler(), timeSpan, nullable)
+        {
+      
+        }
+
+        public DocumentIndexer() : this(new SimpleScheduler())
+        {
+            
+        }
+
+        class SimpleScheduler : ITaskScheduler
+        {
+
+            Task ITaskScheduler.StartNew(Action a, CancellationTokenSource c)
+            {
+                return Task.Factory.StartNew(() => a, c.Token);
+            }
+        }
 
         public virtual void AddDocument(SandoDocument sandoDocument)
 		{
@@ -185,13 +213,20 @@ namespace Sando.Indexer
 
         private void PeriodicallyCommitChangesIfNeeded(object sender, DoWorkEventArgs args)
         {
-            var backgroundThreadInterval = args.Argument;	        
+            var backgroundThreadInterval = args.Argument;
+            Task task = null;
             while (!_disposed)
             {
-                lock (_lock)
+                if (task == null || task.IsCompleted)
                 {
-                    if (_hasIndexChanged)
-                        CommitChanges();
+                    task = _scheduler.StartNew(() =>
+                    {
+                        lock (_lock)
+                        {
+                            if (_hasIndexChanged)
+                                CommitChanges();
+                        }
+                    }, new CancellationTokenSource());
                 }
                 Thread.Sleep(Convert.ToInt32(((TimeSpan)backgroundThreadInterval).TotalMilliseconds));
             }
@@ -199,16 +234,23 @@ namespace Sando.Indexer
 
 	    private void PeriodicallyRefreshIndexSearcherIfNeeded(object sender, DoWorkEventArgs args)
 	    {
-            var backgroundThreadInterval = args.Argument;	        
+            var backgroundThreadInterval = args.Argument;
+            Task task = null;
 	        while (!_disposed)
 	        {
-	            lock (_lock)
-	            {
-	                if (!IsUsable())
-	                {
-	                    UpdateSearcher();
-	                }
-	            }
+                if (task == null || task.IsCompleted)
+                {
+                    task = _scheduler.StartNew(() =>
+                    {
+                        lock (_lock)
+                        {
+                            if (!IsUsable())
+                            {
+                                UpdateSearcher();
+                            }
+                        }
+                    }, new CancellationTokenSource());
+                }
                 Thread.Sleep(Convert.ToInt32(((TimeSpan)backgroundThreadInterval).TotalMilliseconds));
 	        }
 	    }
@@ -295,6 +337,9 @@ namespace Sando.Indexer
         private readonly bool _synchronousCommits;
 	    private readonly object _lock = new object();
         private bool _disposingInProcess = false;
+        private ITaskScheduler _scheduler;
+        private TimeSpan timeSpan;
+        private TimeSpan? nullable;
 
         public bool IsDisposingOrDisposed()
         {

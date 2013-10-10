@@ -41,6 +41,7 @@ using Sando.ExtensionContracts.ServiceContracts;
 using Microsoft.VisualStudio;
 using System.Linq;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
 
 
 
@@ -339,7 +340,7 @@ namespace Sando.UI
             ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".cs" }, new SrcMLCSharpParser(_srcMLArchive));
             ////extensionPointsRepository.RegisterParserImplementation(new List<string> { ".h", ".cpp", ".cxx", ".c" }, new SrcMLCppParser(_srcMLArchive));
             // JZ: End of code changes
-            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml", ".xml" }, new XAMLFileParser());
+            extensionPointsRepository.RegisterParserImplementation(new List<string> { ".xaml" }, new XAMLFileParser());
 			//extensionPointsRepository.RegisterParserImplementation(new List<string> { ".txt" },
 																  // new TextFileParser());
 
@@ -415,18 +416,30 @@ namespace Sando.UI
 		}
 
 
-        public void HandleIndexingStateChange(object sender, IsReadyChangedEventArgs args)
+        public void HandleIndexingStateChange(bool ready)
         {            
-            CallShowProgressBar(!args.ReadyState);
-            if (args.ReadyState)
+            CallShowProgressBar(!ready);
+            if (ready)
                 ServiceLocator.Resolve<InitialIndexingWatcher>().InitialIndexingCompleted();
+            UpdateIndexingFilesList();
+        }
+
+        public void UpdateIndexingFilesList()
+        { 
             if (srcMLService != null)
             {
                 if (srcMLService.MonitoredDirectories.Count > 0)
                 {
                     var path = GetDisplayPathMonitoredFiles(srcMLService, this);
-                    var control = ServiceLocator.Resolve<SearchViewControl>();
-                    control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));                                                                    
+                    try
+                    {
+                        var control = ServiceLocator.Resolve<SearchViewControl>();
+                        control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));
+                    }
+                    catch (InvalidOperationException notInited)
+                    {
+                        //OK, window not inited so can't update it
+                    }
                 }
             }
         }
@@ -499,7 +512,8 @@ namespace Sando.UI
                 ServiceLocator.RegisterInstance(new IndexFilterManager());                
 
                 ServiceLocator.RegisterInstance<Analyzer>(GetAnalyzer());
-                var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(4));
+                SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
+                var currentIndexer = new DocumentIndexer(srcMLArchiveEventsHandlers, TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10));
                 ServiceLocator.RegisterInstance(currentIndexer);
 
                 ServiceLocator.RegisterInstance(new IndexUpdateManager());
@@ -522,12 +536,11 @@ namespace Sando.UI
                     ServiceLocator.RegisterInstance(srcMLService);
                 }                                               
                 // Register all types of events from the SrcML Service.
-                SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers = ServiceLocator.Resolve<SrcMLArchiveEventsHandlers>();
+                
                 if (!SetupHandlers)
                 {
                     SetupHandlers = true;
                     srcMLService.SourceFileChanged += srcMLArchiveEventsHandlers.SourceFileChanged;
-                    srcMLService.IsReadyChanged += HandleIndexingStateChange;
                     srcMLService.MonitoringStopped += srcMLArchiveEventsHandlers.MonitoringStopped;
                 }
 
@@ -558,8 +571,6 @@ namespace Sando.UI
                     (ServiceLocator.Resolve<SolutionKey>()));
                 ServiceLocator.RegisterInstance(history);
                                 
-                progressAction = () => ProgressBarAction(srcMLArchiveEventsHandlers);
-                TimedProcessor.GetInstance().AddTimedTask(progressAction, 3 * 1000);                    
 
                 // End of code changes
 
@@ -571,16 +582,25 @@ namespace Sando.UI
                 {
                     SandoLogManager.StopDataCollectionLogging();
                 }
-                // TODO: xige
-
 				LogEvents.SolutionOpened(this, Path.GetFileName(solutionPath));
 
                 if (isIndexRecreationRequired)
                 {
-                    CallShowProgressBar(true);
+                    //just recreate the whole index
                     var indexingTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
                         {
-                            var files = srcMLService.GetSrcMLArchive().GetFiles();
+                            Collection<string> files = null;
+                            while (files == null)
+                            {
+                                try
+                                {
+                                    files = srcMLService.GetSrcMLArchive().GetFiles();                                    
+                                }
+                                catch (NullReferenceException ne)
+                                {
+                                    System.Threading.Thread.Sleep(3000);
+                                }
+                            }                            
                             foreach (var file in srcMLService.GetSrcMLArchive().FileUnits)
                             {                                
                                 var fileName = ABB.SrcML.SrcMLElement.GetFileNameForUnit(file);
@@ -588,12 +608,31 @@ namespace Sando.UI
                             }
                             srcMLArchiveEventsHandlers.WaitForIndexing();
                         });
-                    indexingTask.ContinueWith(uiUpdate => CallShowProgressBar(false));
                 }
                 else
                 {
-                    CallShowProgressBar(!srcMLService.IsReady);
-                }
+                    //make sure you're not missing any files 
+                    var indexingTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
+                    {
+                        Collection<string> files = null;
+                        while (files == null)
+                        {
+                            try
+                            {
+                                files = srcMLService.GetSrcMLArchive().GetFiles();
+                            }
+                            catch (NullReferenceException ne)
+                            {
+                                System.Threading.Thread.Sleep(3000);
+                            }
+                        }
+                        foreach (var fileName in srcMLService.GetSrcMLArchive().GetFiles())
+                        {                            
+                            srcMLArchiveEventsHandlers.SourceFileChanged(srcMLService, new FileEventRaisedArgs(FileEventType.FileRenamed, fileName));
+                        }
+                        srcMLArchiveEventsHandlers.WaitForIndexing();
+                    });                    
+                }                
             }
             catch (Exception e)
             {
@@ -602,21 +641,6 @@ namespace Sando.UI
         }
 
         Action progressAction;
-
-        private void ProgressBarAction(SrcMLArchiveEventsHandlers srcMLArchiveEventsHandlers)
-        {
-            if (srcMLService != null)
-            {
-                if (srcMLService.IsReady && srcMLService.MonitoredDirectories!=null && srcMLService.MonitoredDirectories.Count > 0 && !"".Equals(srcMLService.MonitoredDirectories.First().Trim()))
-                {
-                    srcMLArchiveEventsHandlers.StartupCompleted(null, new IsReadyChangedEventArgs(true));
-                    HandleIndexingStateChange(null, new IsReadyChangedEventArgs(true));
-                    if (progressAction != null)
-                        TimedProcessor.GetInstance().RemoveTimedTask(progressAction);
-                }
-            }
-        }
-
  
         private Analyzer GetAnalyzer()
         {

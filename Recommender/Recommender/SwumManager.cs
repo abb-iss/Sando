@@ -518,5 +518,20 @@ namespace Sando.Recommender {
         }
 
         #endregion Protected methods
+
+        public bool ContainsFile(string sourcePath)
+        {
+            var fullPath = Path.GetFullPath(sourcePath);
+            lock (signaturesToSwum)
+            {
+                foreach (var sig in signaturesToSwum.Keys)
+                {
+                    var sdr = signaturesToSwum[sig];
+                    if (sdr.FileNames.Contains(fullPath))
+                        return true;
+                }
+            }
+            return false;
+        }
     }
 }

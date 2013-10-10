@@ -45,6 +45,7 @@ namespace Sando.UI.View
                 throw new NotSupportedException(Resources.CanNotCreateWindow);
             }
             IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
+            _toolWindowFinder.UpdateIndexingFilesList();
             return windowFrame;
         }
 
@@ -71,7 +72,7 @@ namespace Sando.UI.View
             // Dock Sando to the bottom of Visual Studio.
             windowFrame.SetFramePos(VSSETFRAMEPOS.SFP_fDockRight, Guid.Empty, 0, 0, 0, 0);            
             Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
-            File.Create(GetFullIntroduceSandoFlagPath());
+            File.Create(GetFullIntroduceSandoFlagPath());                       
         }
 
         public bool ShouldShow()
@@ -96,5 +97,7 @@ namespace Sando.UI.View
     public  interface IToolWindowFinder
     {
         ToolWindowPane FindToolWindow(Type type, int i, bool b);
+
+        void UpdateIndexingFilesList();
     }
 }
