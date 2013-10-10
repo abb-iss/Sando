@@ -46,7 +46,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.True(method.ClassId != null && method.ClassId != Guid.Empty, "Class id is invalid!");
             Assert.AreEqual(method.ClassName, "ImageCapture", "Method class name differs!");
 			Assert.AreEqual(method.DefinitionLineNumber, 83, "Method definition line number differs!");
-			Assert.True(method.FullFilePath.EndsWith("\\TestFiles\\MethodElementTestFiles\\ImageCapture.cs"), "Method full file path is invalid!");
+            Assert.True(method.FullFilePath.EndsWith("\\TestFiles\\MethodElementTestFiles\\ImageCapture.cs".ToLowerInvariant()), "Method full file path is invalid!");
 			Assert.AreEqual(method.Name, "FetchOutputStream", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");
@@ -78,7 +78,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.True(method.ClassId != null && method.ClassId != Guid.Empty, "Class id is invalid!");
             Assert.AreEqual(method.ClassName, "SimpleSearchCriteria", "Method class name differs!");
 			Assert.AreEqual(method.DefinitionLineNumber, 31, "Method definition line number differs!");
-			Assert.True(method.FullFilePath.EndsWith("\\TestFiles\\MethodElementTestFiles\\Searcher.cs"), "Method full file path is invalid!");
+            Assert.True(method.FullFilePath.EndsWith("\\TestFiles\\MethodElementTestFiles\\Searcher.cs".ToLowerInvariant()), "Method full file path is invalid!");
 			Assert.AreEqual(method.Name, "ToQueryString", "Method name differs!");
 			Assert.AreEqual(method.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(method.ReturnType, "void", "Method return type differs!");

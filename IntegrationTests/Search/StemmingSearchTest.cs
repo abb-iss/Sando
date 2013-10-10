@@ -39,7 +39,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(classElement.AccessLevel, AccessLevel.Public, "Class access level differs!");
 			Assert.AreEqual(classElement.ExtendedClasses, String.Empty, "Class extended classes differs!");
 			Assert.AreEqual(classElement.DefinitionLineNumber, 10, "Class definition line number differs!");
-			Assert.True(classElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Class full file path is invalid!");
+            Assert.True(classElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs".ToLowerInvariant()), "Class full file path is invalid!");
 			Assert.AreEqual(classElement.Name, "FileNameTemplate", "Class name differs!");
 			Assert.AreEqual(classElement.ProgramElementType, ProgramElementType.Class, "Program element type differs!");
 			Assert.AreEqual(classElement.ImplementedInterfaces, String.Empty, "Class implemented interfaces differs!");
@@ -57,7 +57,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.True(methodElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
 			Assert.AreEqual(methodElement.ClassName, "FileNameTemplate", "Method class name differs!");
 			Assert.AreEqual(methodElement.DefinitionLineNumber, 17, "Method definition line number differs!");
-			Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Method full file path is invalid!");
+            Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs".ToLowerInvariant()), "Method full file path is invalid!");
 			Assert.AreEqual(methodElement.Name, "Parse", "Method name differs!");
 			Assert.AreEqual(methodElement.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(methodElement.ReturnType, "ImagePairNames", "Method return type differs!");
@@ -75,7 +75,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.True(methodElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
             Assert.AreEqual(methodElement.ClassName, "FileNameTemplate", "Method class name differs!");
 			Assert.AreEqual(methodElement.DefinitionLineNumber, 53, "Method definition line number differs!");
-			Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Method full file path is invalid!");
+            Assert.True(methodElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs".ToLowerInvariant()), "Method full file path is invalid!");
 			Assert.AreEqual(methodElement.Name, "TryAddTemplatePrompt", "Method name differs!");
 			Assert.AreEqual(methodElement.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			//Assert.AreEqual(methodElement.ReturnType, "ImagePairNames", "Method return type differs!");
@@ -91,7 +91,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.True(fieldElement.ClassId != null && methodElement.ClassId != Guid.Empty, "Class id is invalid!");
             Assert.AreEqual(fieldElement.ClassName, "FileNameTemplate", "Field class name differs!");
 			Assert.AreEqual(fieldElement.DefinitionLineNumber, 12, "Field definition line number differs!");
-			Assert.True(fieldElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs"), "Field full file path is invalid!");
+            Assert.True(fieldElement.FullFilePath.EndsWith("\\TestFiles\\StemmingTestFiles\\FileNameTemplate.cs".ToLowerInvariant()), "Field full file path is invalid!");
 			Assert.AreEqual(fieldElement.Name, "fileName", "Field name differs!");
 			Assert.AreEqual(fieldElement.ProgramElementType, ProgramElementType.Field, "Program element type differs!");
 			Assert.AreEqual(fieldElement.FieldType, "string", "Field return type differs!");

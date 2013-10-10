@@ -36,7 +36,7 @@ namespace Sando.IntegrationTests.Search
 			Assert.AreEqual(classElement.AccessLevel, AccessLevel.Public, "Class access level differs!");
 			Assert.AreEqual(classElement.ExtendedClasses, "IResolver", "Class extended classes differs!");
 			Assert.AreEqual(classElement.DefinitionLineNumber, 8, "Class definition line number differs!");
-			Assert.True(classElement.FullFilePath.EndsWith("\\TestFiles\\NamesWithNumbersTestFiles\\Problem0010Resolver.cs"), "Class full file path is invalid!");
+            Assert.True(classElement.FullFilePath.EndsWith("\\TestFiles\\NamesWithNumbersTestFiles\\Problem0010Resolver.cs".ToLowerInvariant()), "Class full file path is invalid!");
 			Assert.AreEqual(classElement.Name, "Problem0010Resolver", "Class name differs!");
 			Assert.AreEqual(classElement.ProgramElementType, ProgramElementType.Class, "Program element type differs!");
 			Assert.AreEqual(classElement.ImplementedInterfaces, String.Empty, "Class implemented interfaces differs!");
@@ -51,7 +51,7 @@ namespace Sando.IntegrationTests.Search
 			//Assert.AreEqual(constructorElement.AccessLevel, AccessLevel.Public, "Constructor access level differs!");
 			Assert.IsTrue(constructorElement.IsConstructor, "IResolver", "Constructor extended classes differs!");
 			Assert.AreEqual(constructorElement.DefinitionLineNumber, 10, "Constructor definition line number differs!");
-			Assert.True(constructorElement.FullFilePath.EndsWith("\\TestFiles\\NamesWithNumbersTestFiles\\Problem0010Resolver.cs"), "Constructor full file path is invalid!");
+            Assert.True(constructorElement.FullFilePath.EndsWith("\\TestFiles\\NamesWithNumbersTestFiles\\Problem0010Resolver.cs".ToLowerInvariant()), "Constructor full file path is invalid!");
 			Assert.AreEqual(constructorElement.Name, "Problem0010Resolver", "Constructor name differs!");
 			Assert.AreEqual(constructorElement.ProgramElementType, ProgramElementType.Method, "Program element type differs!");
 			Assert.AreEqual(constructorElement.ReturnType, String.Empty, "Constructor should have an empty return type!");
