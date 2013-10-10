@@ -15,7 +15,8 @@ namespace Sando.IntegrationTests.Search
         [Test]
         public void CloseAndReopen()
         {
-            ServiceLocator.Resolve<DocumentIndexer>().Dispose();
+            var indexer = ServiceLocator.Resolve<DocumentIndexer>();
+            indexer.Dispose();
             var currentIndexer = new DocumentIndexer(TimeSpan.FromSeconds(10), GetTimeToCommit());
             ServiceLocator.RegisterInstance(currentIndexer);
             Assert.IsTrue(currentIndexer.GetNumberOfIndexedDocuments() > 5, "The index is being destroyed when it is closed and reopened");

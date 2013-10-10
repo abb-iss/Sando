@@ -51,14 +51,9 @@ namespace Sando.UI.Monitoring
 
         public void WaitForIndexing()
         {
-            bool running = true;
-            while (running)
+            while (LimitedConcurrencyLevelTaskScheduler._currentThreadIsProcessingItems)
             {
                 Thread.Sleep(500);
-                lock (tasksTrackerLock)
-                {
-                    running = tasks.Count > 0;
-                }
             }
         }
 
@@ -238,7 +233,7 @@ namespace Sando.UI.Monitoring
         {
             // Indicates whether the current thread is processing work items.
             [ThreadStatic]
-            private static bool _currentThreadIsProcessingItems;
+            public static bool _currentThreadIsProcessingItems;
 
             // The list of tasks to be executed  
             private readonly LinkedList<Task> _tasks = new LinkedList<Task>(); // protected by lock(_tasks) 

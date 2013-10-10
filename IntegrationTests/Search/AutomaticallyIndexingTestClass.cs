@@ -28,6 +28,7 @@ using System.Text;
 using Sando.Indexer.Documents;
 using Lucene.Net.Analysis.Standard;
 using Sando.Core.QueryRefomers;
+using Sando.UI;
 
 namespace Sando.IntegrationTests.Search
 {
@@ -37,7 +38,7 @@ namespace Sando.IntegrationTests.Search
 
         [TestFixtureSetUp]
         public void Setup()
-        {
+        {        
             IndexSpecifiedFiles(GetFilesDirectory(), GetIndexDirName());
         }
 
@@ -126,6 +127,8 @@ namespace Sando.IntegrationTests.Search
 
         private void CreateIndexer()
         {
+            ServiceLocator.Resolve<UIPackage>();
+
             ServiceLocator.RegisterInstance(new IndexFilterManager());
 
             PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new SnowballAnalyzer("English"));            
