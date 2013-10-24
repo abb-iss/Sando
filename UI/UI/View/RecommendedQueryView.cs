@@ -324,10 +324,17 @@ namespace Sando.UI.View
 
         internal static Brush GetHistoryTextColor()
         {
-            if (FileOpener.Is2012())
+            if (FileOpener.Is2012OrLater())
             {
                 var key = Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowTabMouseOverTextKey;
-                return (Brush)Application.Current.Resources[key];
+                var color = (Brush)Application.Current.Resources[key];
+                var other = (Brush)Application.Current.Resources[Microsoft.VisualStudio.Shell.VsBrushes.ToolWindowBackgroundKey];
+                if (color.ToString().Equals(other.ToString()))
+                {
+                    return (Brush)Application.Current.Resources[Microsoft.VisualStudio.Shell.VsBrushes.HelpSearchResultLinkSelectedKey];
+                }
+                else
+                    return color;
             }
             else
             {

@@ -130,7 +130,7 @@
             <RowDefinition Height="Auto" MinHeight="0"/>
             <RowDefinition Height="15" MinHeight="15"/>
             <RowDefinition Height="15" MinHeight="15"/>
-            <RowDefinition Height="Auto" MinHeight="15"/>            
+            <RowDefinition Height="Auto" MinHeight="15"/>
             <RowDefinition Height="*" MinHeight="100"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -151,8 +151,8 @@
                      KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" Text="Currently Indexing:"/>
 
 
-            
-            <TextBox  BorderThickness="0" IsReadOnly="True" Grid.Column="1" Name="IndexingList" Margin="2,0,5,1" FontSize="11" FontStyle="Italic" HorizontalAlignment="Stretch" Text="{Binding Path=OpenSolutionPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="IndexingList_KeyDown" PreviewMouseDown="TextBox_MouseLeftButtonDown"
+
+            <TextBox KeyboardNavigation.IsTabStop="False"   BorderThickness="0" IsReadOnly="True" Grid.Column="1" Name="IndexingList" Margin="2,0,5,1" FontSize="11" FontStyle="Italic" HorizontalAlignment="Stretch" Text="{Binding Path=OpenSolutionPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="IndexingList_KeyDown" PreviewMouseDown="TextBox_MouseLeftButtonDown"
                 Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
                 Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" 
                      MouseLeave="IndexingList_MouseLeave" MouseEnter="IndexingList_MouseEnter"
@@ -177,7 +177,9 @@
         <Grid Grid.Row="1" Margin="5,0,5,0" Grid.Column="0">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="31*"/>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="25" />
             </Grid.ColumnDefinitions>
 
@@ -189,7 +191,7 @@
                 MinimumPrefixLength="0" MaxDropDownHeight="290" 
                 ValueMemberPath="Query" VerticalAlignment="Top" 
                 Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}"
-                Background="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBackgroundKey}}">
+                Background="{DynamicResource {x:Static vsfx:VsBrushes.DropDownBackgroundKey}}" Grid.ColumnSpan="3">
                 <controls:AutoCompleteBox.ToolTip>
                     <StackPanel>
                         <TextBlock>Add ALL relevant words (i.e., Google-style query)</TextBlock>
@@ -220,8 +222,8 @@
             </controls:AutoCompleteBox>
 
             <Button Style="{DynamicResource NoChromeButton}" Background="Gainsboro"
-                    Click="TagCloudPopUp" Grid.Column="1" 
-                    Height="25" Margin="0,0,0,4" ToolTip="Show tag cloud">
+                    Click="TagCloudPopUp" Grid.Column="3" 
+                    Height="25" ToolTip="Show tag cloud">
                 <Image Source="..\Resources\cloud.png"/>
             </Button>
         </Grid>
