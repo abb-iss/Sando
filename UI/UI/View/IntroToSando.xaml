@@ -4,7 +4,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
-    Title="Welcome to Sando"  Width="430.189" Height="455">
+    Title="Welcome to Sando"  Width="430.189" Height="480">
     <StackPanel Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
         <RichTextBox Margin="0,0,0,0" Name="richTB" HorizontalAlignment="Stretch" IsDocumentEnabled="False" IsEnabled="False">
             <FlowDocument >
