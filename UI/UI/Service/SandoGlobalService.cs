@@ -114,9 +114,13 @@ namespace Sando.UI.Service {
             manager.AddListener(this);
             _results = null;
             manager.Search(searchkeywords);
+            int i = 0;
             while (_results == null)
             {
-                System.Threading.Thread.Sleep(50);                
+                System.Threading.Thread.Sleep(50);
+                i++;
+                if (i > 100)
+                    break;
             }
             return _results;
         }

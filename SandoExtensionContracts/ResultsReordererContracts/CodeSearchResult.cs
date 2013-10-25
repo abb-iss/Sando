@@ -41,14 +41,15 @@ namespace Sando.ExtensionContracts.ResultsReordererContracts
         public string ParentOrFile
         {
             get 
-            {
-                //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem
+            {                
+                //NOTE: shortening is happening in this UI class instead of in the xaml because of xaml's limitations around controling column width inside of a listviewitem                
+                var myFileName = Directory.GetFiles(Path.GetDirectoryName(ProgramElement.FullFilePath), Path.GetFileName(ProgramElement.FullFilePath)).FirstOrDefault();
                 var parentOrFile = "";
                 if (string.IsNullOrEmpty(Parent))
-                    parentOrFile = Path.GetFileName(FileName);
+                    parentOrFile = Path.GetFileName(myFileName);
                 else
                 {
-                    var fileName = Path.GetFileName(FileName);
+                    var fileName = Path.GetFileName(myFileName);
                     if (fileName.StartsWith(Parent))
                     {
                         parentOrFile = fileName;

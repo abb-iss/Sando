@@ -40,7 +40,7 @@ namespace Sando.UI.Actions
         }
 
 
-        public static bool Is2012()
+        public static bool Is2012OrLater()
         {
             EnvDTE.DTE dte = (EnvDTE.DTE)Package.GetGlobalService(typeof(EnvDTE.DTE));
             if (dte.Version.Contains("11.0") || dte.Version.Contains("12.0") || dte.Version.Contains("13.0"))
@@ -55,6 +55,7 @@ namespace Sando.UI.Actions
                 _dte = ServiceLocator.Resolve<DTE2>();
             }
         }
+        
     }
 
 }
