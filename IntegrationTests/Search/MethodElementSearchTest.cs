@@ -18,7 +18,6 @@ using Sando.Core.Tools;
 using Sando.Indexer.IndexFiltering;
 using Sando.UI.Options;
 using Configuration.OptionsPages;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using System.Threading;
 

@@ -17,7 +17,6 @@ using Sando.Recommender;
 using Sando.Indexer.IndexFiltering;
 using Sando.UI.Options;
 using Configuration.OptionsPages;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using ABB.SrcML;
 using System.Threading;
 using Sando.Core.Tools;
@@ -372,6 +371,11 @@ namespace Sando.IntegrationTests.Search
             {
                 throw new NotImplementedException();
             }
+        }
+
+
+        ABB.SrcML.Data.IDataRepository ISrcMLGlobalService.GetDataRepository() {
+            throw new NotImplementedException();
         }
     }
 }
