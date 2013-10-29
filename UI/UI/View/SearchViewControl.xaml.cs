@@ -28,6 +28,9 @@ using Sando.DependencyInjection;
 using ABB.SrcML.VisualStudio.SrcMLService;
 using System.IO;
 using Microsoft.Practices.Unity;
+using System.Windows.Controls.Primitives;
+using System.Collections;
+using System.Windows.Media;
 
 namespace Sando.UI.View
 {
@@ -603,11 +606,67 @@ namespace Sando.UI.View
             try
             {
                 var listview = sender as ListView;
+                ShowPopup(listview, e.AddedItems, true);
+                ShowPopup(listview, e.RemovedItems, false);
                 LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
             }
             catch (Exception ee)
             {
                 LogEvents.UIGenericError(this, ee);
+            }
+        }
+
+        private void MyToolWindow_LostFocus(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (this.searchResultListbox.Items.Count > 0)
+                {
+                    foreach (var item in this.searchResultListbox.Items)
+                        ShowPopupOneItem(this.searchResultListbox, false, item);
+                }
+            }
+            catch (Exception ee)
+            {
+                LogEvents.UIGenericError(this, ee);
+            }
+        }
+
+        private static void ShowPopup( ListView listview, IList list, bool showOrRemove)
+        {
+            if (list.Count > 0)
+            {
+                var item = list[0];
+                ShowPopupOneItem(listview, showOrRemove, item);
+            }
+        }
+
+        private static void ShowPopupOneItem(ListView listview, bool showOrRemove, object item)
+        {
+            ListViewItem lvi = (ListViewItem)listview.ItemContainerGenerator.ContainerFromItem(item);
+            foreach (Popup popup in FindVisualChildren<Popup>(lvi))
+            {
+                (popup as Popup).IsOpen = showOrRemove;
+            }
+        }
+
+        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        yield return (T)child;
+                    }
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        yield return childOfChild;
+                    }
+                }
             }
         }
 
@@ -956,6 +1015,8 @@ namespace Sando.UI.View
         {
             IndexingList.Background = GetToolBackgroundHighlightColor();
         }
+
+    
 
     }
 }
