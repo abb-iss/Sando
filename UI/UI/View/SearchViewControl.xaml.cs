@@ -54,6 +54,13 @@ namespace Sando.UI.View
             _recommender = new QueryRecommender();            
             ServiceLocator.RegisterInstance<QueryRecommender>(_recommender);
             ServiceLocator.RegisterInstance<SearchViewControl>(this);
+			_gatheredResultFeedback = true;
+			_savedClickedResult = null;
+			_inactivityStopwatch = new Stopwatch();
+
+			var inactivityMonitorWorker = new BackgroundWorker();
+			inactivityMonitorWorker.DoWork += inactivityMonitorWorker_DoWork;
+			inactivityMonitorWorker.RunWorkerAsync(Dispatcher);
         }
 
      
@@ -193,14 +200,14 @@ namespace Sando.UI.View
         private void SearchButtonClick(object sender, RoutedEventArgs e)
         {
 
-            BeginSearch(searchBox.Text);
+			BeginSearch(searchBox.Text);
         }
 
         private void OnKeyUpHandler(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
             {
-                var text = sender as AutoCompleteBox;
+				var text = sender as AutoCompleteBox;
                 if (text != null)
                 {
                     BeginSearch(text.Text);
@@ -250,18 +257,27 @@ namespace Sando.UI.View
             SearchAsync(searchString, Criteria);
         }
 
-        private void RemoveOldResults()
-        {
-            try
-            {
-                while (SearchResults.Count > 0)
-                    SearchResults.RemoveAt(0);
-            }
-            catch (Exception ee)
-            {
-                LogEvents.UIGenericError(this, ee);
-            }
-        }
+		//FSM: activity monitor
+		void inactivityMonitorWorker_DoWork(object sender, DoWorkEventArgs e)
+		{
+			while(true)
+			{
+				if(!_gatheredSearchFeedback && _inactivityStopwatch.ElapsedMilliseconds > (1000 * 30))
+				{
+					var uiDispatcher = (Dispatcher)e.Argument;
+
+					if(!_gatheredResultFeedback && _savedClickedResult != null)
+					{
+						uiDispatcher.BeginInvoke(new Action(() => ShowResultExplicitFeedbackPopup(_savedClickedResult)));
+						_gatheredResultFeedback = true;
+					}
+
+					uiDispatcher.BeginInvoke(new Action(() => ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery)));
+					_gatheredSearchFeedback = true;
+				}
+				Thread.Sleep(100);
+			}
+		}
 
         private void SearchAsync(String text, SimpleSearchCriteria searchCriteria)
         {
@@ -324,6 +340,16 @@ namespace Sando.UI.View
 
                     var matchDescription = QueryMetrics.DescribeQueryProgramElementMatch(searchResult.ProgramElement, searchBox.Text);
                     LogEvents.OpeningCodeSearchResult(searchResult, SearchResults.IndexOf(searchResult) + 1, matchDescription);
+
+					//FSM role = open in editor
+					if(!_gatheredResultFeedback && _savedClickedResult != null)
+					{
+						ShowResultExplicitFeedbackPopup(_savedClickedResult);
+						_gatheredResultFeedback = true;
+					}
+					ResetInactivityStopwatch();
+					_gatheredResultFeedback = false;
+					_savedClickedResult = searchResult;
                 }
             }
             catch (ArgumentException aex)
@@ -360,6 +386,24 @@ namespace Sando.UI.View
                     {
                         exceptions.Enqueue(exc);
                     }
+
+			//FSM role = show results
+			if(_gatheredSearchFeedback && results.Count() > 0)
+			{
+				_gatheredSearchFeedback = false;
+				if(!_inactivityStopwatch.IsRunning)
+				{
+					_inactivityStopwatch.Start();
+				}
+				else
+				{
+					ResetInactivityStopwatch();
+				}
+			}
+			else
+			{
+				ResetInactivityStopwatch();
+			}
                 }
                );
             }).
@@ -575,8 +619,21 @@ namespace Sando.UI.View
             return check.HasValue && check == true;
         }
 
+		//FSM role = recommend state
         private void searchBox_Populating(object sender, PopulatingEventArgs e)
         {
+			if(!_gatheredResultFeedback && _savedClickedResult != null)
+			{
+				ShowResultExplicitFeedbackPopup(_savedClickedResult);
+				_gatheredResultFeedback = true;
+			}
+			if(!_gatheredSearchFeedback && QueryMetrics.SavedQuery != String.Empty)
+			{
+				ShowSearchExplicitFeedbackPopup(QueryMetrics.SavedQuery);
+				_gatheredSearchFeedback = true;
+			}
+			ResetInactivityStopwatch();
+
             var recommendationWorker = new BackgroundWorker();
             recommendationWorker.DoWork += recommendationWorker_DoWork;
             e.Cancel = true;
@@ -604,6 +661,14 @@ namespace Sando.UI.View
             {
                 var listview = sender as ListView;
                 LogEvents.SelectingCodeSearchResult(this, listview.SelectedIndex + 1);
+
+			//FSM role = expand snippet
+			if(!_gatheredResultFeedback && _savedClickedResult != null)
+			{
+				ShowResultExplicitFeedbackPopup(_savedClickedResult);
+				_gatheredResultFeedback = true;
+			}
+			ResetInactivityStopwatch();
             }
             catch (Exception ee)
             {
@@ -810,37 +875,37 @@ namespace Sando.UI.View
             }
         }
 
-        private void Options_Click(object sender, RoutedEventArgs e)
-        {
-            var uiPackage = ServiceLocator.Resolve<UIPackage>();
-            if (uiPackage != null)
-                uiPackage.OpenSandoOptions();
-        }
+		private void ShowResultExplicitFeedbackPopup(CodeSearchResult result)
+		{
+			//do this with probability of 0.33
+			Random random = new Random();
+            int rand = random.Next(0, 3);
+			if(rand == 0)
+			{
+				ResultExplicitFeedback resultFeedback = new ResultExplicitFeedback(result);
+				resultFeedback.ShowDialog();
+			}
+		}
 
+		private void ShowSearchExplicitFeedbackPopup(string previousQuery)
+		{
+			SearchExplicitFeedback searchFeedback = new SearchExplicitFeedback(previousQuery);
+			searchFeedback.ShowDialog();
+		}
 
+		private void ResetInactivityStopwatch()
+		{
+			if(_inactivityStopwatch.IsRunning)
+			{
+				_inactivityStopwatch.Reset();
+				_inactivityStopwatch.Start();
+			}
+		}
 
-
-
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            OpenFolderSelection();
-        }
-
-        private void OpenFolderSelection()
-        {
-            try
-            {
-                var srcMlService = ServiceLocator.Resolve<ISrcMLGlobalService>();
-                if (srcMlService != null)
-                {
-                    if (srcMlService.MonitoredDirectories != null)
-                    {
-                        while (MonitoredFiles.Count > 0)
-                            MonitoredFiles.RemoveAt(0);
-                        foreach (var dir in srcMlService.MonitoredDirectories)
-                            MonitoredFiles.Add(new CheckedListItem(dir));
-                        CurrentlyIndexingFoldersPopup.IsOpen = true;
-                    }
+		private bool _gatheredSearchFeedback;
+		private bool _gatheredResultFeedback;
+		private CodeSearchResult _savedClickedResult;
+		private Stopwatch _inactivityStopwatch;
                 }
             }
             catch (ResolutionFailedException resFailed)

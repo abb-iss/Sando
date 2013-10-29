@@ -16,9 +16,53 @@ namespace Sando.Core.Logging.Events
                 DefaultLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), sender as string);
         }
 
-        #region ParserEvents
+		#region ExplicitFeedbackEvents
 
-        public static void ParserFileNotFoundInArchiveError(Object sender, string fileName)
+		public static void Search_SAT(Object sender, string query)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=SAT, Query=" + query);
+		}
+
+		public static void Search_SomeSAT(Object sender, string query)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=SomeSAT, Query=" + query);
+		}
+
+		public static void Search_FewSAT(Object sender, string query)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=FewSAT, Query=" + query);
+		}
+
+		public static void Search_NotSAT(Object sender, string query)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=NotSAT, Query=" + query);
+		}
+
+		public static void Search_NoFeedback(Object sender, string query)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Search Explicit Feedback: Feedback=NoFeedback, Query=" + query);
+		}
+
+		public static void Result_SAT(Object sender, string resultName)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Result Explicit Feedback: Feedback=SAT, ResultName=" + resultName);
+		}
+
+		public static void Result_NotSAT(Object sender, string resultName)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Result Explicit Feedback: Feedback=NotSAT, ResultName=" + resultName);
+		}
+
+		public static void Result_NoFeedback(Object sender, string resultName)
+		{
+			DataCollectionLogEventHandlers.WriteInfoLogMessage(sender.GetType().ToString(), "Result Explicit Feedback: Feedback=NoFeedback, ResultName=" + resultName);
+		}
+		
+		#endregion ExplicitFeedbackEvents
+
+		#region ParserEvents
+
+		public static void ParserFileNotFoundInArchiveError(Object sender, string fileName)
         {
             DefaultLogEventHandlers.WriteErrorLogMessage(sender.GetType().ToString(), "File not found in archive: " + fileName);
         }
