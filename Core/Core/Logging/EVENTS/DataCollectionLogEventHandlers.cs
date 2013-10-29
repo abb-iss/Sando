@@ -52,7 +52,7 @@ namespace Sando.Core.Logging.Events
 		{
             if (SandoLogManager.DataCollectionOn && _initialized)
             {
-				DoS3Upload();
+				//DoS3Upload();
             }
 		}
 
