@@ -12,7 +12,6 @@ using Sando.Indexer.Documents;
 using Sando.Indexer.Searching;
 using Sando.UnitTestHelpers;
 using UnitTestHelpers;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 
 namespace Sando.SearchEngine.UnitTests

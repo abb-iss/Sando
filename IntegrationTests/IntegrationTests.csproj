@@ -81,11 +81,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\LIBS\srcML.NET\ABB.SrcML.Data.dll</HintPath>
     </Reference>
+    <Reference Include="ABB.SrcML.Data.Core, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\NavigationTool\External\SrcML.NET\ABB.SrcML.Data.Core.dll</HintPath>
+    </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.Interfaces">
       <HintPath>..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="ABB.SrcML.VisualStudio.SolutionMonitor">
-      <HintPath>..\LIBS\SrcML.NET\ABB.SrcML.VisualStudio.SolutionMonitor.dll</HintPath>
     </Reference>
     <Reference Include="ABB.SrcML.VisualStudio.SrcMLService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
