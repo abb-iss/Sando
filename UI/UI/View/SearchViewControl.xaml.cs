@@ -31,6 +31,7 @@ using Microsoft.Practices.Unity;
 using System.Windows.Controls.Primitives;
 using System.Collections;
 using System.Windows.Media;
+using ABB.SrcML;
 
 namespace Sando.UI.View
 {
@@ -957,9 +958,13 @@ namespace Sando.UI.View
                                 {
                                     srcMlService.AddDirectoryToMonitor(folder.Id);
                                 }
-                                catch (Exception ee)
+                                catch (DirectoryScanningMonitorSubDirectoryException cantAdd)
                                 {
-                                    LogEvents.UIGenericError(this, ee);
+                                    MessageBox.Show("Sub-directories of existing directories cannot be added - " + cantAdd.Message, "Invalid Directory", MessageBoxButton.OK, MessageBoxImage.Warning);                                    
+                                }
+                                catch (ForbiddenDirectoryException cantAdd)
+                                {
+                                    MessageBox.Show("Special directories like 'My Documents' cannot be added - " + cantAdd.Message, "Invalid Directory", MessageBoxButton.OK, MessageBoxImage.Warning);
                                 }
                             }
                         }
@@ -970,6 +975,7 @@ namespace Sando.UI.View
             {
                 //ignore
             }
+            
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
