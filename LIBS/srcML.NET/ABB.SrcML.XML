@@ -388,39 +388,6 @@
             <see cref="T:ABB.SrcML.AbstractArchive"/> objects. By default it is false.
             </summary>
         </member>
-        <member name="T:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException">
-            <summary>
-            This exception is thrown exclusively by
-            <see cref="M:ABB.SrcML.DirectoryScanningMonitor.AddDirectory(System.String)"/> when the parameter is a
-            subdirectory of a directory that is already in
-            <see cref="P:ABB.SrcML.DirectoryScanningMonitor.MonitoredDirectories"/>.
-            </summary>
-        </member>
-        <member name="M:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.#ctor(System.String,System.String,ABB.SrcML.DirectoryScanningMonitor)">
-            <summary>
-            Creates a new directory scanning monitor subdirectory exception
-            </summary>
-            <param name="directory">The directory that someone tried to add via see
-            cref="DirectoryScanningMonitor.AddDirectory(string)"/></param>
-            <param name="parentDirectory">The parent directory that caused the exception</param>
-            <param name="monitor">The monitor</param>
-        </member>
-        <member name="P:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.Directory">
-            <summary>
-            The directory that someone tried to add via
-            <see cref="M:ABB.SrcML.DirectoryScanningMonitor.AddDirectory(System.String)"/>.
-            </summary>
-        </member>
-        <member name="P:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.Monitor">
-            <summary>
-            The monitor
-            </summary>
-        </member>
-        <member name="P:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.ParentDirectory">
-            <summary>
-            The parent directory that caused the exception.
-            </summary>
-        </member>
         <member name="T:ABB.SrcML.Extensions">
             <summary>
             Extensions for working with SrcML documents

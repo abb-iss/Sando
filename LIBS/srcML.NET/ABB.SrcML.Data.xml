@@ -597,6 +597,13 @@
             The programming language this alias was produced from
             </summary>
         </member>
+        <member name="T:ABB.SrcML.Data.BinaryLoader">
+            <summary>
+            The binary loader class provides a wrapper around the <see cref="T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter"/> class.
+            It also subscribes to the <see cref="E:System.AppDomain.AssemblyResolve"/> event in order to ensure
+            that assemblies are resolved properly.
+            </summary>
+        </member>
         <member name="T:ABB.SrcML.Data.BuiltInTypeFactory">
             <summary>
             The Built-In type factory creates on-demand instances of built-in types for each language.

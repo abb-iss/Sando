@@ -4,6 +4,51 @@
         <name>ABB.SrcML.Core</name>
     </assembly>
     <members>
+        <member name="T:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException">
+            <summary>
+            This exception is thrown exclusively by
+            <see cref="!:DirectoryScanningMonitor.AddDirectory(string)"/> when the parameter is a
+            subdirectory of a directory that is already in
+            <see cref="!:DirectoryScanningMonitor.MonitoredDirectories"/>.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.#ctor(System.String,System.String)">
+            <summary>
+            Creates a new directory scanning monitor subdirectory exception
+            </summary>
+            <param name="directory">The directory that someone tried to add via see
+            cref="DirectoryScanningMonitor.AddDirectory(string)"/></param>
+            <param name="parentDirectory">The parent directory that caused the exception</param>
+            <param name="monitor">The monitor</param>
+        </member>
+        <member name="P:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.Directory">
+            <summary>
+            The directory that someone tried to add via
+            <see cref="!:DirectoryScanningMonitor.AddDirectory(string)"/>.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.DirectoryScanningMonitorSubDirectoryException.ParentDirectory">
+            <summary>
+            The parent directory that caused the exception.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.ForbiddenDirectoryException.#ctor(System.String,System.String)">
+            <summary>
+            Create a new forbidden directory exception
+            </summary>
+            <param name="directory">The forbidden directory</param>
+            <param name="reason">The reason it is forbidden</param>
+        </member>
+        <member name="P:ABB.SrcML.ForbiddenDirectoryException.Directory">
+            <summary>
+            The forbidden directory
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.ForbiddenDirectoryException.Reason">
+            <summary>
+            The reason the directory is forbidden
+            </summary>
+        </member>
         <member name="T:ABB.SrcML.IFileMonitor">
             <summary>
             This interface is designed for all events that can be raised from SrcML.NET.

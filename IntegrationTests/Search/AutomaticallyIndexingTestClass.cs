@@ -377,5 +377,15 @@ namespace Sando.IntegrationTests.Search
         ABB.SrcML.Data.IDataRepository ISrcMLGlobalService.GetDataRepository() {
             throw new NotImplementedException();
         }
+
+
+        public double SaveInterval {
+            get {
+                throw new NotImplementedException();
+            }
+            set {
+                throw new NotImplementedException();
+            }
+        }
     }
 }
