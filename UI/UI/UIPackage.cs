@@ -428,7 +428,8 @@ namespace Sando.UI
         { 
             if (srcMLService != null)
             {
-                if (srcMLService.MonitoredDirectories.Count > 0)
+
+                if (srcMLService.MonitoredDirectories!=null && srcMLService.MonitoredDirectories.Count > 0) 
                 {
                     var path = GetDisplayPathMonitoredFiles(srcMLService, this);
                     try
