@@ -260,6 +260,7 @@
     <Compile Include="Service\SandoGlobalService.cs" />
     <Compile Include="Service\SandoLocalService.cs" />
     <Compile Include="TextBlockEx.cs" />
+    <Compile Include="View\Search\Converters\BackgroundConverter.cs" />
     <Compile Include="View\RecommendedQueryView.cs" />
     <Compile Include="View\Search\Converters\HighlightSearchKey.cs" />
     <Compile Include="View\Converters\MyFontConverter.cs" />

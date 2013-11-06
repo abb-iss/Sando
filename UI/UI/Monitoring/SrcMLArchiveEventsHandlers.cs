@@ -18,6 +18,7 @@ using System.Linq;
 using Sando.UI.View;
 using Sando.ExtensionContracts.TaskFactoryContracts;
 using System.Diagnostics;
+using System.ComponentModel;
 
 
 namespace Sando.UI.Monitoring
@@ -30,13 +31,19 @@ namespace Sando.UI.Monitoring
         private TaskScheduler scheduler;
         public TaskFactory factory;
         public static SrcMLArchiveEventsHandlers Instance;
+        System.Timers.Timer hideProgressBarTimer = new System.Timers.Timer(500);
 
         public SrcMLArchiveEventsHandlers()
         {
             scheduler = new LimitedConcurrencyLevelTaskScheduler(2,this);
             factory = new TaskFactory(scheduler);
             Instance = this;
+            hideProgressBarTimer.Elapsed += waitToUpdateProgressBar_Elapsed;
         }
+
+   
+
+     
 
         public void SourceFileChanged(object sender, FileEventRaisedArgs args)
         {
@@ -201,28 +208,37 @@ namespace Sando.UI.Monitoring
         }
 
         internal void StartingToIndex()
-        {
+        {            
+            hideProgressBarTimer.Stop();            
             try
-            {
+            { 
                 ServiceLocator.Resolve<UIPackage>().HandleIndexingStateChange(false);
             }
-            catch (Exception e)
+            catch (Exception ee)
             {
                 //ignore
-            }
+            }                                        
         }
 
         internal void FinishedIndexing()
+        {
+            hideProgressBarTimer.Stop();
+            hideProgressBarTimer.Start();
+        }
+       
+        void waitToUpdateProgressBar_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             try
             {
                 ServiceLocator.Resolve<UIPackage>().HandleIndexingStateChange(true);
             }
-            catch (Exception e)
+            catch (Exception errorToIgnore)
             {
                 //ignore
             }
         }
+
+
 
 
 
@@ -272,7 +288,7 @@ namespace Sando.UI.Monitoring
                 // delegates currently queued or running to process tasks, schedule another.  
                 lock (_tasks)
                 {
-                    if (_tasks.Count == 0)
+                    if (_tasks.Count > 2)
                         _handler.StartingToIndex();
                     _tasks.AddLast(task);
                     if (_delegatesQueuedOrRunning < _maxDegreeOfParallelism)

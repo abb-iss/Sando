@@ -920,6 +920,10 @@ namespace Sando.UI.View
             public CheckedListItem(string path)
             {
                 Name = Path.GetFileName(path);
+                if (string.IsNullOrWhiteSpace(Name))
+                    Name = Path.GetDirectoryName(path);
+                if (string.IsNullOrWhiteSpace(Name))
+                    Name = path;
                 Id = path;
                 IsChecked = true;
             }
@@ -964,7 +968,7 @@ namespace Sando.UI.View
                                 }
                                 catch (ForbiddenDirectoryException cantAdd)
                                 {
-                                    MessageBox.Show("Special directories like 'My Documents' cannot be added - " + cantAdd.Message, "Invalid Directory", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                    MessageBox.Show( cantAdd.Message, "Invalid Directory", MessageBoxButton.OK, MessageBoxImage.Warning);
                                 }
                             }
                         }
@@ -1012,15 +1016,7 @@ namespace Sando.UI.View
             e.Handled = true;
         }
 
-        private void IndexingList_MouseLeave(object sender, MouseEventArgs e)
-        {
-            IndexingList.Background = GetToolBackgroundcolor();
-        }
-
-        private void IndexingList_MouseEnter(object sender, MouseEventArgs e)
-        {
-            IndexingList.Background = GetToolBackgroundHighlightColor();
-        }
+  
 
     
 

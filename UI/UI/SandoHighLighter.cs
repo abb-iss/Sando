@@ -99,13 +99,15 @@ namespace Sando.UI
                         var entity = (HighlightedEntity)state;
                         entities.Remove(entity);
                         entity.Dispose();
-                        entityChanged(entities.ToList());
+                        if (entityChanged != null)
+                            entityChanged(entities.ToList());
                     }
                 });
                 if (!entities.Contains(ent))
                 {
                     entities.Add(ent);
-                    entityChanged(entities.ToList());
+                    if (entityChanged != null)
+                        entityChanged(entities.ToList());
                 }
             }
         }
@@ -117,7 +119,8 @@ namespace Sando.UI
                 int index = entities.FindIndex(e => e.Path.Equals(path) && e.StartLineNumber == start 
                             && e.Rawsource.Equals(rawSource));
                 entities.RemoveAt(index);
-                entityChanged(entities.ToList());
+                if (entityChanged != null)
+                    entityChanged(entities.ToList());
             }
         }
 
@@ -126,7 +129,8 @@ namespace Sando.UI
             lock (entities)
             {
                 entities.Clear();
-                entityChanged(entities.ToList());
+                if(entityChanged!=null)
+                    entityChanged(entities.ToList());
             }
         }
     }
