@@ -1916,11 +1916,6 @@
             The file name to serialize to
             </summary>
         </member>
-        <member name="P:ABB.SrcML.Data.DataRepository.GlobalScope">
-            <summary>
-            The top-level Scope for the data in the archive.
-            </summary>
-        </member>
         <member name="P:ABB.SrcML.Data.DataRepository.IsReady">
             <summary>
             True if this repository is idle; false if it is responding to file updates
