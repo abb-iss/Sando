@@ -487,7 +487,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                //ignore
             }
         }
 
