@@ -400,7 +400,7 @@ namespace Sando.UI
                 ServiceLocator.Resolve<DictionaryBasedSplitter>().Dispose();
                 ServiceLocator.Resolve<SearchHistory>().Dispose();
                 var control = ServiceLocator.Resolve<SearchViewControl>();
-                control.Dispatcher.Invoke((Action)(() => UpdateDirectory("", control)));                                                                    
+                control.Dispatcher.Invoke((Action)(() => UpdateDirectory(SearchViewControl.DefaultOpenSolutionMessage, control)));                                                                    
             }
             catch (Exception e)
             {
@@ -487,7 +487,7 @@ namespace Sando.UI
             }
             catch (Exception e)
             {
-                FileLogger.DefaultLogger.Error(e);
+                //ignore
             }
         }
 
