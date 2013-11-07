@@ -155,8 +155,11 @@ namespace Sando.Recommender {
         public void AddSourceFile(string sourcePath, XElement sourceXml) {
             try {
                 if(sourceXml != null) {
-                    AddSwumForMethodDefinitions(sourceXml, sourcePath);
-                    AddSwumForFieldDefinitions(sourceXml, sourcePath);
+                    if (!sourcePath.EndsWith("xaml"))
+                    {
+                        AddSwumForMethodDefinitions(sourceXml, sourcePath);
+                        AddSwumForFieldDefinitions(sourceXml, sourcePath);
+                    }
                 }
             } catch(Exception e) {
                 LogEvents.SwumErrorCreatingSwum(this, sourcePath, e);
