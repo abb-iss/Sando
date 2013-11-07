@@ -52,7 +52,7 @@ namespace Sando.UI.View.Search.Converters
         private Brush GetColorNormal()
         {
             if (normalColor == null)
-                normalColor = ServiceLocator.Resolve<SearchViewControl>().GetNormalTextColor();
+                normalColor = SearchViewControl.GetNormalTextColor();
             return normalColor;
         }
 

@@ -14,15 +14,11 @@ namespace Sando.UI.View.Search.Converters
         public object Convert(object value, Type targetType,
                               object parameter, CultureInfo culture)
         {            
-            if (value==null || string.IsNullOrEmpty(value.ToString()))
+            if (value!=null && SearchViewControl.PleaseAddDirectoriesMessage.Equals(value.ToString()))
                 return Brushes.MistyRose;
             else
-            {
-                var view = ServiceLocator.Resolve<SearchViewControl>();
-                if (view != null)
-                    return view.GetToolBackgroundcolor();
-                else
-                    return Brushes.White;
+            {                
+                return SearchViewControl.GetToolBackgroundcolor();                
             }
         }
 

@@ -58,10 +58,13 @@ namespace Sando.UI.View
             _recommender = new QueryRecommender();            
             ServiceLocator.RegisterInstance<QueryRecommender>(_recommender);
             ServiceLocator.RegisterInstance<SearchViewControl>(this);
+            OpenSolutionPaths = DefaultOpenSolutionMessage;
         }
 
      
-
+        public static string DefaultOpenSolutionMessage =  "<open solution to begin searching>";
+        public static string PleaseAddDirectoriesMessage = "<add folders to begin indexing!>";
+        
 
         public ObservableCollection<AccessWrapper> AccessLevels
         {
@@ -1002,6 +1005,8 @@ namespace Sando.UI.View
                 {
                     if (srcMlService.MonitoredDirectories != null && srcMlService.MonitoredDirectories.Count > 0)
                         OpenSolutionPaths = UIPackage.GetDisplayPathMonitoredFiles(srcMlService, this);
+                    else if (srcMlService.MonitoredDirectories != null && srcMlService.MonitoredDirectories.Count == 0)
+                        OpenSolutionPaths = PleaseAddDirectoriesMessage;
                 }
             }
             catch (ResolutionFailedException resFailed)
