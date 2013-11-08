@@ -325,7 +325,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="ABB.SrcML.VisualStudio.SrcMLService.vsix">
+    <Content Include="..\..\LIBS\srcML.NET\ABB.SrcML.VisualStudio.SrcMLService.vsix">
+      <Link>ABB.SrcML.VisualStudio.SrcMLService.vsix</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="sandoKey.snk" />
