@@ -1021,6 +1021,20 @@ namespace Sando.UI.View
             e.Handled = true;
         }
 
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            var srcMlService = ServiceLocator.Resolve<ISrcMLGlobalService>();
+            if (srcMlService == null)
+            {
+                MessageBox.Show("Could not reset the index.", "Failed to Reset", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+            else
+            {
+                srcMlService.Reset();
+                MessageBox.Show("Restart this Visual Studio Instance to complete the index reset.", "Restart to Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
   
 
     
