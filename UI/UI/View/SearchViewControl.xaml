@@ -136,7 +136,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="100"/>
-            <ColumnDefinition Width="65" />
+            <ColumnDefinition Width="85" />
         </Grid.ColumnDefinitions>
 
         <Grid Grid.Row="0" Grid.ColumnSpan="2"  Margin="5,0,5,0">
@@ -145,18 +145,19 @@
                 </ColumnDefinition>
                 <ColumnDefinition Width="*">
                 </ColumnDefinition>
+                
             </Grid.ColumnDefinitions>
 
             <TextBox Margin="-3,0,0,0"  Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" BorderThickness="0" FontSize="11" FontStyle="Italic" Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" IsReadOnly="True"   Grid.Row="0"  HorizontalAlignment="Left" 
                      Width="127"  Grid.Column="0" Height="Auto"  
-                     KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" Text="Currently Indexing:"/>
+                     KeyboardNavigation.IsTabStop="False" TextWrapping="Wrap" Text="Currently Indexing:" Grid.ColumnSpan="2"/>
 
 
 
             <TextBox KeyboardNavigation.IsTabStop="False"   BorderThickness="0" IsReadOnly="True" Grid.Column="1" Name="IndexingList" Margin="2,0,5,1" FontSize="11" FontStyle="Italic" HorizontalAlignment="Stretch" Text="{Binding Path=OpenSolutionPaths, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" KeyDown="IndexingList_KeyDown" PreviewMouseDown="TextBox_MouseLeftButtonDown"
-                Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" ToolTip="Specify folders to index for open solution">
-                <TextBox.Background>                    
-                    <Binding Path="OpenSolutionPaths" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource BackgroundConverter}"/>                                                                    
+                Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" ToolTip="Specify folders to index for open solution" Grid.ColumnSpan="2">
+                <TextBox.Background>
+                    <Binding Path="OpenSolutionPaths" Mode="OneWay" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource BackgroundConverter}"/>
                 </TextBox.Background>
             </TextBox>
             <Popup Name="CurrentlyIndexingFoldersPopup" Placement="Bottom" PlacementTarget="{Binding ElementName=IndexingList}" StaysOpen="True" IsOpen="False" Width="Auto">
@@ -287,6 +288,8 @@
             </StackPanel>
         </Popup>
 
+
+
         <!-- details -->
         <Expander Grid.Row="5" Grid.Column="0" Name="LayoutRoot"
             >
@@ -368,7 +371,15 @@
         <StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1"  Margin="0,0,0,0" Grid.RowSpan="2">
 
 
-            <Button Name="Options"  Margin="0,3,0,0"
+            <Button Name="Reset"  Margin="0,3,0,0"
+                FontFamily="ExtraBold" IsEnabled="True" 
+                    Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
+        		KeyboardNavigation.IsTabStop="False" 
+                Click="Reset_Click" FontWeight="ExtraBold" Height="19" Width="19" VerticalAlignment="Top" 
+                ToolTip="Reset Sando Index">☢
+            </Button>
+
+            <Button Name="Options"  Margin="1,3,0,0"
                 FontFamily="ExtraBold" IsEnabled="True" 
                     Foreground="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowTextKey}}" 
         		KeyboardNavigation.IsTabStop="False" 
@@ -596,7 +607,7 @@
 
                                             <Popup Name="Details" Placement="Left" StaysOpen="False" Width="Auto" AllowsTransparency="true"                                            
                                                 PlacementTarget="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}}" 
-                                                   IsOpen="False">                                   
+                                                   IsOpen="False">
                                                 <Border BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.DockTargetBorderKey}}" BorderThickness="3,3,0,0">
                                                     <Border BorderBrush="{DynamicResource {x:Static vsfx:VsBrushes.FileTabBorderKey}}" BorderThickness="1,1,3,3">
                                                         <Grid Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}">

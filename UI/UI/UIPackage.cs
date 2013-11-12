@@ -424,18 +424,27 @@ namespace Sando.UI
             UpdateIndexingFilesList();
         }
 
+        public void UpdateIndexingFilesListIfEmpty()
+        {   
+            if (!updatedForThisSolution)
+            {
+                UpdateIndexingFilesList();
+            }             
+        }
+
         public void UpdateIndexingFilesList()
-        { 
+        {
             if (srcMLService != null)
             {
 
-                if (srcMLService.MonitoredDirectories!=null && srcMLService.MonitoredDirectories.Count > 0) 
+                if (srcMLService.MonitoredDirectories != null && srcMLService.MonitoredDirectories.Count > 0)
                 {
                     var path = GetDisplayPathMonitoredFiles(srcMLService, this);
                     try
                     {
                         var control = ServiceLocator.Resolve<SearchViewControl>();
                         control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));
+                        updatedForThisSolution = true;
                     }
                     catch (InvalidOperationException notInited)
                     {
@@ -443,6 +452,7 @@ namespace Sando.UI
                     }
                 }
             }
+
         }
 
         public static string GetDisplayPathMonitoredFiles(ISrcMLGlobalService service, object callingObject )
@@ -499,6 +509,7 @@ namespace Sando.UI
         {
             try
             {
+                updatedForThisSolution = false;
                 //TODO if solution is reopen - the guid should be read from file - future change
                 var solutionId = Guid.NewGuid();
                 var openSolution = ServiceLocator.Resolve<DTE2>().Solution;
@@ -642,6 +653,7 @@ namespace Sando.UI
         }
 
         Action progressAction;
+        private bool updatedForThisSolution = false;
  
         private Analyzer GetAnalyzer()
         {

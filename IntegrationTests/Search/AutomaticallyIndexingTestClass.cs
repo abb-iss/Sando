@@ -35,6 +35,11 @@ namespace Sando.IntegrationTests.Search
     { 
         public event EventHandler<IsReadyChangedEventArgs> IsReadyChanged;
 
+        public void Reset()
+        {
+
+        }
+
         [TestFixtureSetUp]
         public void Setup()
         {        
