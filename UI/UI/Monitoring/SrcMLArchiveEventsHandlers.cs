@@ -211,7 +211,8 @@ namespace Sando.UI.Monitoring
         {            
             hideProgressBarTimer.Stop();            
             try
-            { 
+            {
+                ServiceLocator.Resolve<UIPackage>().UpdateIndexingFilesListIfEmpty();
                 ServiceLocator.Resolve<UIPackage>().HandleIndexingStateChange(false);
             }
             catch (Exception ee)
