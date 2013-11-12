@@ -109,9 +109,16 @@ namespace Sando.UI.Monitoring
                                     SwumManager.Instance.AddSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
                                     break;
                                 case FileEventType.FileChanged:
-                                    documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());
-                                    indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
-                                    SwumManager.Instance.UpdateSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
+                                    
+                                    var elapsed = lastTime - DateTime.Now;
+                                    if (!lastFile.Equals(sourceFilePath.ToLowerInvariant()) || elapsed.TotalMilliseconds > 1000)
+                                    {
+                                        documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());
+                                        indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
+                                        SwumManager.Instance.UpdateSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
+                                    }
+                                    lastFile = sourceFilePath.ToLowerInvariant();
+                                    lastTime = DateTime.Now;
                                     break;
                                 case FileEventType.FileDeleted:
                                     documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant(), commitImmediately);
@@ -173,6 +180,8 @@ namespace Sando.UI.Monitoring
         }
 
         private object tasksTrackerLock = new object();
+        private string lastFile = "";
+        private DateTime lastTime = DateTime.Now;
         
 
         public void StartupCompleted(object sender, IsReadyChangedEventArgs args)
