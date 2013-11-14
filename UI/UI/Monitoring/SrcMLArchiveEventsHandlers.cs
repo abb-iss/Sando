@@ -74,9 +74,7 @@ namespace Sando.UI.Monitoring
             }
             task.ContinueWith(removeTask => RemoveTask(task, c));
             return task;
-        }
-        
-        private static Dictionary<string, int> duplicateCounter = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+        }      
         public void SourceFileChanged(object sender, FileEventRaisedArgs args, bool commitImmediately = false)
         {
             var cancelTokenSource = new CancellationTokenSource();
