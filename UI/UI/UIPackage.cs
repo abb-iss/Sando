@@ -437,14 +437,15 @@ namespace Sando.UI
             if (srcMLService != null)
             {
 
-                if (srcMLService.MonitoredDirectories != null && srcMLService.MonitoredDirectories.Count > 0)
+                if (srcMLService.MonitoredDirectories != null)
                 {
                     var path = GetDisplayPathMonitoredFiles(srcMLService, this);
                     try
                     {
                         var control = ServiceLocator.Resolve<SearchViewControl>();
                         control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));
-                        updatedForThisSolution = true;
+                         if(srcMLService.MonitoredDirectories.Count > 0)
+                            updatedForThisSolution = true;
                     }
                     catch (InvalidOperationException notInited)
                     {
@@ -457,18 +458,25 @@ namespace Sando.UI
 
         public static string GetDisplayPathMonitoredFiles(ISrcMLGlobalService service, object callingObject )
         {
-            var fullpath = service.MonitoredDirectories.First();
-            var path = Path.GetFileName(fullpath);
-            try
+            if (service.MonitoredDirectories.Count > 0)
             {
-                var parent = Path.GetFileName(Path.GetDirectoryName(fullpath));
-                path += " in folder " + parent;
+                var fullpath = service.MonitoredDirectories.First();
+                var path = Path.GetFileName(fullpath);
+                try
+                {
+                    var parent = Path.GetFileName(Path.GetDirectoryName(fullpath));
+                    path += " in folder " + parent;
+                }
+                catch (Exception e)
+                {
+                    LogEvents.UIIndexUpdateError(callingObject, e);
+                }
+                return path;
             }
-            catch (Exception e)
+            else
             {
-                LogEvents.UIIndexUpdateError(callingObject, e);
+                return SearchViewControl.PleaseAddDirectoriesMessage;
             }
-            return path;
         }
 
         private void UpdateDirectory(string path, SearchViewControl control)
@@ -649,7 +657,23 @@ namespace Sando.UI
             catch (Exception e)
             {
                 LogEvents.UIRespondToSolutionOpeningError(this, e);
-            }    
+            }
+            var updateListedFoldersTask = System.Threading.Tasks.Task.Factory.StartNew(() =>
+            {
+                bool done = false;
+                while (!done)
+                {
+                    System.Threading.Thread.Sleep(2000);
+                    if (srcMLService != null)
+                    {
+                        if (srcMLService.MonitoredDirectories != null)
+                        {
+                            UpdateIndexingFilesList();
+                            done = true;
+                        }
+                    }
+                }
+            });
         }
 
         Action progressAction;
