@@ -75,7 +75,8 @@ namespace Sando.UI.Monitoring
             task.ContinueWith(removeTask => RemoveTask(task, c));
             return task;
         }
-
+        
+        private static Dictionary<string, int> duplicateCounter = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
         public void SourceFileChanged(object sender, FileEventRaisedArgs args, bool commitImmediately = false)
         {
             var cancelTokenSource = new CancellationTokenSource();
@@ -100,38 +101,41 @@ namespace Sando.UI.Monitoring
                             cancelToken.ThrowIfCancellationRequested();
                             var xelement = GetXElementForFile(args, srcMLService);
                             var indexUpdateManager = ServiceLocator.Resolve<IndexUpdateManager>();
-
-                            switch (args.EventType)
+                            var elapsed = lastTime - DateTime.Now;
+                            if (FileEventType.FileDeleted==args.EventType || !lastFile.Equals(sourceFilePath.ToLowerInvariant()) || elapsed.TotalMilliseconds > 1000)
                             {
-                                case FileEventType.FileAdded:
-                                    documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());    //"just to be safe!"
-                                    indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
-                                    SwumManager.Instance.AddSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
-                                    break;
-                                case FileEventType.FileChanged:
-                                    
-                                    var elapsed = lastTime - DateTime.Now;
-                                    if (!lastFile.Equals(sourceFilePath.ToLowerInvariant()) || elapsed.TotalMilliseconds > 1000)
-                                    {
-                                        documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());
-                                        indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
-                                        SwumManager.Instance.UpdateSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
-                                    }
-                                    lastFile = sourceFilePath.ToLowerInvariant();
-                                    lastTime = DateTime.Now;
-                                    break;
-                                case FileEventType.FileDeleted:
-                                    documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant(), commitImmediately);
-                                    SwumManager.Instance.RemoveSourceFile(sourceFilePath.ToLowerInvariant());
-                                    break;
-                                case FileEventType.FileRenamed: // FileRenamed is repurposed. Now means you may already know about it, so check and only parse if not existing
-                                    if (!SwumManager.Instance.ContainsFile(sourceFilePath.ToLowerInvariant()))
-                                    {
+                                switch (args.EventType)
+                                {
+                                    case FileEventType.FileAdded:
                                         documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());    //"just to be safe!"
                                         indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
                                         SwumManager.Instance.AddSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
-                                    }
-                                    break;
+                                        break;
+                                    case FileEventType.FileChanged:
+
+
+                                        documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());
+                                        indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
+                                        SwumManager.Instance.UpdateSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
+                                        break;
+                                    case FileEventType.FileDeleted:
+                                        documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant(), commitImmediately);
+                                        SwumManager.Instance.RemoveSourceFile(sourceFilePath.ToLowerInvariant());
+                                        break;
+                                    case FileEventType.FileRenamed: // FileRenamed is repurposed. Now means you may already know about it, so check and only parse if not existing
+                                        if (!SwumManager.Instance.ContainsFile(sourceFilePath.ToLowerInvariant()))
+                                        {
+                                            documentIndexer.DeleteDocuments(sourceFilePath.ToLowerInvariant());    //"just to be safe!"
+                                            indexUpdateManager.Update(sourceFilePath.ToLowerInvariant(), xelement);
+                                            SwumManager.Instance.AddSourceFile(sourceFilePath.ToLowerInvariant(), xelement);
+                                        }
+                                        break;
+                                }
+                                if (args.EventType != FileEventType.FileDeleted)
+                                {
+                                    lastFile = sourceFilePath.ToLowerInvariant();
+                                    lastTime = DateTime.Now;
+                                }
                             }
                         }
                     }
