@@ -15,7 +15,6 @@ using Sando.SearchEngine;
 using Sando.UI.Monitoring;
 using UnitTestHelpers;
 using Sando.Recommender;
-using ABB.SrcML.VisualStudio.SolutionMonitor;
 using Sando.Core.Tools;
 
 namespace Sando.IntegrationTests.Search
