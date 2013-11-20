@@ -490,22 +490,13 @@ namespace Sando.UI
 
         private void CallShowProgressBar(bool show)
         {
-            try
-            {
-                var window = FindToolWindow(typeof(SearchToolWindow), 0, true);
-                if ((null == window) || (null == window.Frame))
-                {
-                    throw new NotSupportedException(Resources.CanNotCreateWindow);
+            try {
+                var control = ServiceLocator.Resolve<SearchViewControl>();
+                if(null != control) {
+                    control.Dispatcher.BeginInvoke((Action) (() => control.ShowProgressBar(show)));
                 }
-                var stw = window as SearchToolWindow;
-                if (stw != null)
-                {
-                    stw.GetSearchViewControl().ShowProgressBar(show);
-                }
-            }
-            catch (Exception e)
-            {
-                //ignore
+            } catch(TargetInvocationException e) {
+                FileLogger.DefaultLogger.Error(e);
             }
         }
 
