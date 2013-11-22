@@ -97,6 +97,7 @@ namespace Sando.UI
         private ViewManager _viewManager;		
         private WindowEvents _windowEvents;
         private bool SetupHandlers = false;
+        private bool WindowActivated = false;
 
         /// <summary>
         /// Default constructor of the package.
@@ -242,6 +243,7 @@ namespace Sando.UI
                     if (stw != null)
                     {
                         stw.GetSearchViewControl().FocusOnText();
+                        WindowActivated = true;
                     }
                 }
             }
@@ -434,26 +436,18 @@ namespace Sando.UI
 
         public void UpdateIndexingFilesList()
         {
-            if (srcMLService != null)
+            if(srcMLService != null && srcMLService.MonitoredDirectories != null && WindowActivated)
             {
-
-                if (srcMLService.MonitoredDirectories != null)
-                {
-                    var path = GetDisplayPathMonitoredFiles(srcMLService, this);
-                    try
-                    {
-                        var control = ServiceLocator.Resolve<SearchViewControl>();
-                        control.Dispatcher.Invoke((Action)(() => UpdateDirectory(path, control)));
-                         if(srcMLService.MonitoredDirectories.Count > 0)
-                            updatedForThisSolution = true;
-                    }
-                    catch (InvalidOperationException notInited)
-                    {
-                        //OK, window not inited so can't update it
-                    }
+                var path = GetDisplayPathMonitoredFiles(srcMLService, this);
+                try {
+                    var control = ServiceLocator.Resolve<SearchViewControl>();
+                    control.Dispatcher.Invoke((Action) (() => UpdateDirectory(path, control)));
+                    if(srcMLService.MonitoredDirectories.Count > 0)
+                        updatedForThisSolution = true;
+                } catch(InvalidOperationException notInited) {
+                    //OK, window not inited so can't update it
                 }
             }
-
         }
 
         public static string GetDisplayPathMonitoredFiles(ISrcMLGlobalService service, object callingObject )
@@ -490,13 +484,16 @@ namespace Sando.UI
 
         private void CallShowProgressBar(bool show)
         {
-            try {
-                var control = ServiceLocator.Resolve<SearchViewControl>();
-                if(null != control) {
-                    control.Dispatcher.BeginInvoke((Action) (() => control.ShowProgressBar(show)));
+            if(WindowActivated)
+            {
+                try {
+                    var control = ServiceLocator.Resolve<SearchViewControl>();
+                    if(null != control) {
+                        control.Dispatcher.BeginInvoke((Action) (() => control.ShowProgressBar(show)));
+                    }
+                } catch(TargetInvocationException e) {
+                    FileLogger.DefaultLogger.Error(e);
                 }
-            } catch(TargetInvocationException e) {
-                FileLogger.DefaultLogger.Error(e);
             }
         }
 
